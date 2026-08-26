@@ -95,6 +95,26 @@ def out(ok, msg, **extra):
     r = {"ok": ok, "msg": msg}; r.update(extra); print(json.dumps(r, ensure_ascii=False))
 
 # ---------- 커맨드 ----------
+ADMIN_IDS = set(os.environ.get("NOTEBOOK_ADMIN_IDS", "").split(",")) - {""}  # 관리자 Discord ID 목록 (환경변수 NOTEBOOK_ADMIN_IDS, 쉼표 구분)
+
+def cmd_reset(uid, target, name):
+    """관리자 전용: 몬스터 초기화. reset <target_uid> [새이름]"""
+    if uid not in ADMIN_IDS:
+        return out(False, "이 명령어는 관리자만 쓸 수 있어.")
+    st = load_state(target)
+    if not st:
+        return out(False, f"{target} 은(는) 몬스터가 없어.")
+    old_name = st["name"]
+    os.remove(state_path(target))
+    if len(name) > 1:  # 새 이름이 오면 바로 재탄생
+        import io, contextlib
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            cmd_start(target, name)
+        r = json.loads(buf.getvalue())
+        return out(True, f"{old_name} 초기화 후 {r.get('species')} {name} 재탄생!", **{k: v for k, v in r.items() if k not in ("ok", "msg")})
+    return out(True, f"{old_name} 초기화 완료. !공책시작 으로 다시 키울 수 있어.")
+
 def cmd_start(uid, name):
     if load_state(uid): return out(False, "이미 키우는 몬스터가 있어. (!상태 로 확인)")
     sp = random.choice(list(G["species"].keys()))
@@ -259,7 +279,7 @@ def main():
     # 커맨드가 user_id 자리에 오는 오용 방지: 두 번째 인자가 커맨드 후보면 swap
     known = {"start", "공책시작", "status", "상태", "밥줘", "놀아줘", "간식줘", "재워줘", "잘자",
              "train", "훈련", "walk", "산책", "battle", "배틀", "catch", "포획",
-             "attendance", "출석", "pokedex", "도감"}
+             "attendance", "출석", "pokedex", "도감", "reset"}
     rest = args[1:]
     if cmd not in known and rest and rest[0] in known:
         cmd, rest = rest[0], [cmd] + rest[1:]
@@ -268,6 +288,10 @@ def main():
     if cmd in ("start", "공책시작"):
         name_parts = rest[1:] if len(rest) > 1 else []
         return cmd_start(uid, " ".join(name_parts) if name_parts else "모험가")
+    if cmd == "reset":
+        target = rest[1] if len(rest) > 1 else uid
+        new_name = " ".join(rest[2:]) if len(rest) > 2 else ""
+        return cmd_reset(uid, target, new_name)
     if not require(st): return
     table = {
         "status": lambda: cmd_status(st), "밥줘": lambda: cmd_care(st, "feed"),
