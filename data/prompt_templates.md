@@ -48,9 +48,11 @@ image_generate 호출 시 이전 단계 이미지를 reference_image_urls로 전
 ## 공통 스타일 (고정)
 
 ```
-Digimon style digital monster character design, notebook doodle aesthetic,
-clean lineart with light watercolor coloring, big expressive eyes,
-centered on plain white background, game character concept art
+official Pokemon and Digimon character art style, kawaii chibi mascot,
+extremely cute baby monster, huge sparkling eyes with highlights, tiny paws,
+soft rounded plush-like body, pastel candy colors, glossy sticker shading,
+adorable smile, notebook doodle aesthetic, clean bold lineart with light watercolor coloring,
+centered on plain white background, game character concept art, masterpiece, best quality
 ```
 
 ## 4단계 분기 추가 문구
