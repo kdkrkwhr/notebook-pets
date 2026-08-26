@@ -253,12 +253,21 @@ def cmd_help():
 def main():
     args = sys.argv[1:]
     if not args: return cmd_help()
-    cmd, rest = args[0], args[1:]
+    cmd = args[0]
     if cmd in ("help", "도움말"): return cmd_help()
     if cmd in ("rank", "랭킹"): return cmd_rank()
-    uid = rest[0] if rest else "local_test"
+    # 커맨드가 user_id 자리에 오는 오용 방지: 두 번째 인자가 커맨드 후보면 swap
+    known = {"start", "공책시작", "status", "상태", "밥줘", "놀아줘", "간식줘", "재워줘", "잘자",
+             "train", "훈련", "walk", "산책", "battle", "배틀", "catch", "포획",
+             "attendance", "출석", "pokedex", "도감"}
+    rest = args[1:]
+    if cmd not in known and rest and rest[0] in known:
+        cmd, rest = rest[0], [cmd] + rest[1:]
+    uid = rest[0] if rest else "owner"
     st = load_state(uid)
-    if cmd in ("start", "공책시작"): return cmd_start(uid, rest[1] if len(rest) > 1 else "모험가")
+    if cmd in ("start", "공책시작"):
+        name_parts = rest[1:] if len(rest) > 1 else []
+        return cmd_start(uid, " ".join(name_parts) if name_parts else "모험가")
     if not require(st): return
     table = {
         "status": lambda: cmd_status(st), "밥줘": lambda: cmd_care(st, "feed"),
