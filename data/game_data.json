@@ -1,0 +1,55 @@
+{
+  "version": 2,
+  "species": {
+    "mammal":    {"name_kr": "포유류족", "emoji": "🦁", "growth": {"hp": 1.0, "atk": 1.0, "def": 1.0}, "intimacy_rate": 1.2, "trait": "친밀도 상승 빠름"},
+    "bird":      {"name_kr": "조류족",   "emoji": "🦅", "growth": {"hp": 0.8, "atk": 1.0, "def": 0.9}, "intimacy_rate": 1.0, "trait": "민첩 특화, 회피 성향"},
+    "reptile":   {"name_kr": "파충류족", "emoji": "🦎", "growth": {"hp": 1.3, "atk": 0.9, "def": 1.3}, "intimacy_rate": 0.9, "trait": "HP/방어 특화, 성장 둔함"},
+    "machine":   {"name_kr": "기계족",   "emoji": "⚙️", "growth": {"hp": 1.0, "atk": 0.9, "def": 1.5}, "intimacy_rate": 0.7, "trait": "방어 최고, 친밀도 까다로움"},
+    "fairy":     {"name_kr": "요정족",   "emoji": "🧚", "growth": {"hp": 0.9, "atk": 1.0, "def": 0.9}, "intimacy_rate": 1.1, "trait": "행운 특화, 포획 보너스"},
+    "monster":   {"name_kr": "괴수족",   "emoji": "👾", "growth": {"hp": 1.1, "atk": 1.4, "def": 0.9}, "intimacy_rate": 0.8, "trait": "공격 특화, 친밀도 낮으면 폭주"},
+    "dragon":    {"name_kr": "용족",     "emoji": "🐉", "growth": {"hp": 1.2, "atk": 1.2, "def": 1.2}, "intimacy_rate": 0.9, "trait": "올라운드, 후반 캐리"},
+    "plant":     {"name_kr": "식물족",   "emoji": "🌱", "growth": {"hp": 1.4, "atk": 0.8, "def": 1.1}, "intimacy_rate": 1.0, "trait": "광합성: 포만감 감소 느림"},
+    "ghost":     {"name_kr": "유령족",   "emoji": "👻", "growth": {"hp": 0.8, "atk": 1.1, "def": 0.9}, "intimacy_rate": 1.0, "trait": "회피/변칙"}
+  },
+  "elements": {
+    "fire":     {"name_kr": "불",   "emoji": "🔥"},
+    "water":    {"name_kr": "물",   "emoji": "💧"},
+    "thunder":  {"name_kr": "번개", "emoji": "⚡"},
+    "nature":   {"name_kr": "자연", "emoji": "🌿"},
+    "wind":     {"name_kr": "바람", "emoji": "🌪️"},
+    "earth":    {"name_kr": "땅",   "emoji": "🪨"},
+    "light":    {"name_kr": "빛",   "emoji": "✨"},
+    "dark":     {"name_kr": "어둠", "emoji": "🌑"}
+  },
+  "type_chart": {
+    "fire":    {"strong_vs": ["nature", "earth"],  "weak_vs": ["water"]},
+    "nature":  {"strong_vs": ["earth", "water"],   "weak_vs": ["fire"]},
+    "earth":   {"strong_vs": ["thunder", "fire"],  "weak_vs": ["nature"]},
+    "thunder": {"strong_vs": ["water", "wind"],    "weak_vs": ["earth"]},
+    "water":   {"strong_vs": ["fire"],             "weak_vs": ["thunder", "nature"]},
+    "wind":    {"strong_vs": ["nature", "earth"],  "weak_vs": ["thunder"]},
+    "light":   {"strong_vs": ["dark"],             "weak_vs": ["dark"]},
+    "dark":    {"strong_vs": ["light"],            "weak_vs": ["light"]}
+  },
+  "stages": [
+    {"stage": 1, "min_lv": 1,  "max_lv": 30,  "label": "새싹기"},
+    {"stage": 2, "min_lv": 31, "max_lv": 50,  "label": "성장기"},
+    {"stage": 3, "min_lv": 51, "max_lv": 80,  "label": "성숙기"},
+    {"stage": 4, "min_lv": 81, "max_lv": 100, "label": "완전체"}
+  ],
+  "xp_per_level": {"default": 100, "s2": 200, "s3": 400, "s4": 800},
+  "commands": {
+    "start":    {"xp": 0,   "cooldown_min": null, "daily_limit": null},
+    "feed":     {"xp": 10,  "cooldown_min": 60,   "daily_limit": null, "satiety": 30},
+    "snack":    {"xp": 5,   "cooldown_min": null, "daily_limit": 3,    "intimacy": 15},
+    "play":     {"xp": 10,  "cooldown_min": 60,   "daily_limit": null, "intimacy": 20, "satiety_cost": 10},
+    "sleep":    {"xp": 0,   "cooldown_min": null, "daily_limit": 1,    "buff_next_day_pct": 20},
+    "train":    {"xp": 40,  "cooldown_min": null, "daily_limit": 3,    "satiety_cost": 20},
+    "walk":     {"xp": 20,  "cooldown_min": null, "daily_limit": 5,    "encounter_chance": 0.3},
+    "battle":   {"xp_win_min": 80, "xp_win_max": 150, "xp_lose": 20, "daily_limit": 5},
+    "catch":    {"per_encounter": true},
+    "attendance":{"xp": 50, "cooldown_min": null, "daily_limit": 1}
+  },
+  "evolution_branch_threshold": 70,
+  "max_level": 100
+}

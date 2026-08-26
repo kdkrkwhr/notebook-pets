@@ -1,0 +1,7 @@
+# 유저 상태 파일 (게임 데이터)
+state/*.json
+!state/.gitkeep
+
+__pycache__/
+*.pyc
+.DS_Store
