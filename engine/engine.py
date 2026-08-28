@@ -127,6 +127,42 @@ def out(ok, msg, **extra):
 
 # ---------- 커맨드 ----------
 ADMIN_IDS = set(os.environ.get("NOTEBOOK_ADMIN_IDS", "").split(",")) - {""}  # 관리자 Discord ID 목록 (환경변수 NOTEBOOK_ADMIN_IDS, 쉼표 구분)
+ACCESS = os.path.join(BASE, "data", "access.json")  # 소유주(owner) 영속 저장 — 엔진이 권한을 강제(SoT). LLM 판단 아님.
+
+def is_admin(uid): return uid in ADMIN_IDS
+
+def load_access():
+    try:
+        with open(ACCESS, encoding="utf-8") as f: return json.load(f)
+    except (OSError, json.JSONDecodeError):
+        return {"owner_id": "", "owner_name": ""}
+
+def save_access(a):
+    with open(ACCESS, "w", encoding="utf-8") as f:
+        json.dump(a, f, ensure_ascii=False, indent=2)
+
+def access_check(uid):
+    """소유주 게이트. 반환 (allowed, owner_name).
+    소유주 미등록 → 전체 개방. 등록 시 → 소유주 본인 또는 관리자만."""
+    a = load_access()
+    owner = a.get("owner_id", "")
+    if not owner: return True, ""                                   # open
+    if uid == owner or is_admin(uid): return True, a.get("owner_name", "")
+    return False, a.get("owner_name", "")
+
+def cmd_set_owner(uid, target, name):
+    """관리자 전용: 소유주 등록. 이후 그 ID(+관리자)만 게임 가능."""
+    if not is_admin(uid): return out(False, "이 명령어는 관리자만 쓸 수 있어.")
+    if not target or not target.isdigit():
+        return out(False, "등록할 Discord 숫자 ID가 필요해. 예: !공책소유주 279818141754982401 박형민")
+    save_access({"owner_id": target, "owner_name": name or ""})
+    return out(True, "소유주 등록 완료", owner_id=target, owner_name=name or "")
+
+def cmd_clear_owner(uid):
+    """관리자 전용: 소유주 해제 → 전체 개방으로 복귀."""
+    if not is_admin(uid): return out(False, "이 명령어는 관리자만 쓸 수 있어.")
+    save_access({"owner_id": "", "owner_name": ""})
+    return out(True, "소유주 해제 완료 — 이제 누구나 놀 수 있어.")
 
 def cmd_reset(uid, target, name):
     """관리자 전용: 몬스터 초기화. reset <target_uid> [새이름]"""
@@ -321,19 +357,34 @@ def main():
     # 커맨드가 user_id 자리에 오는 오용 방지: 두 번째 인자가 커맨드 후보면 swap
     known = {"start", "공책시작", "status", "상태", "밥줘", "놀아줘", "간식줘", "재워줘", "잘자",
              "train", "훈련", "walk", "산책", "battle", "배틀", "catch", "포획",
-             "attendance", "출석", "pokedex", "도감", "titles", "칭호", "reset"}
+             "attendance", "출석", "pokedex", "도감", "titles", "칭호", "reset",
+             "owner", "소유주", "clearowner", "개방", "소유주해제"}
     rest = args[1:]
     if cmd not in known and rest and rest[0] in known:
         cmd, rest = rest[0], [cmd] + rest[1:]
     uid = rest[0] if rest else "owner"
-    st = load_state(uid)
-    if cmd in ("start", "공책시작"):
-        name_parts = rest[1:] if len(rest) > 1 else []
-        return cmd_start(uid, " ".join(name_parts) if name_parts else "모험가")
+
+    # 관리자 전용 (소유주 게이트 이전) — 소유주 등록/해제/리셋
+    if cmd in ("owner", "소유주"):
+        target = rest[1] if len(rest) > 1 else ""
+        name = " ".join(rest[2:]) if len(rest) > 2 else ""
+        return cmd_set_owner(uid, target, name)
+    if cmd in ("clearowner", "개방", "소유주해제"):
+        return cmd_clear_owner(uid)
     if cmd == "reset":
         target = rest[1] if len(rest) > 1 else uid
         new_name = " ".join(rest[2:]) if len(rest) > 2 else ""
         return cmd_reset(uid, target, new_name)
+
+    # 소유주 게이트: 등록됐으면 소유주/관리자만. 나머진 not_owner (몬스터 말투 거절은 봇이 담당)
+    allowed, owner_name = access_check(uid)
+    if not allowed:
+        return out(False, "not_owner", reason="not_owner", owner_name=owner_name)
+
+    st = load_state(uid)
+    if cmd in ("start", "공책시작"):
+        name_parts = rest[1:] if len(rest) > 1 else []
+        return cmd_start(uid, " ".join(name_parts) if name_parts else "모험가")
     if not require(st): return
     table = {
         "status": lambda: cmd_status(st), "밥줘": lambda: cmd_care(st, "feed"),

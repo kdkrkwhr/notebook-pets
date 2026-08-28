@@ -88,6 +88,47 @@ def test_snack_consumes_rare_feed_and_boosts_xp():
         engine.STATE_DIR = orig
 
 
+def test_owner_gate_open_when_unset():
+    tmp = tempfile.mkdtemp()
+    orig = engine.ACCESS
+    engine.ACCESS = os.path.join(tmp, "access.json")
+    try:
+        assert engine.access_check("999") == (True, "")  # 미등록 → 전체 개방
+    finally:
+        engine.ACCESS = orig
+
+
+def test_owner_gate_restricts_when_set():
+    tmp = tempfile.mkdtemp()
+    orig_a, orig_admin = engine.ACCESS, engine.ADMIN_IDS
+    engine.ACCESS = os.path.join(tmp, "access.json")
+    engine.ADMIN_IDS = {"362"}
+    try:
+        engine.save_access({"owner_id": "279", "owner_name": "박형민"})
+        assert engine.access_check("279") == (True, "박형민")   # 소유주 본인
+        assert engine.access_check("362") == (True, "박형민")   # 관리자 우회
+        allowed, name = engine.access_check("999")              # 남 → 거절
+        assert allowed is False and name == "박형민"
+    finally:
+        engine.ACCESS, engine.ADMIN_IDS = orig_a, orig_admin
+
+
+def test_set_owner_admin_only_and_persists():
+    tmp = tempfile.mkdtemp()
+    orig_a, orig_admin = engine.ACCESS, engine.ADMIN_IDS
+    engine.ACCESS = os.path.join(tmp, "access.json")
+    engine.ADMIN_IDS = {"362"}
+    try:
+        assert run_cmd(lambda: engine.cmd_set_owner("999", "279", "박형민"))["ok"] is False  # 비관리자 거절
+        r = run_cmd(lambda: engine.cmd_set_owner("362", "279", "박형민"))                    # 관리자 OK
+        assert r["ok"] is True and engine.load_access()["owner_id"] == "279"
+        assert run_cmd(lambda: engine.cmd_set_owner("362", "박형민", ""))["ok"] is False      # 비숫자 ID 거절
+        assert run_cmd(lambda: engine.cmd_clear_owner("362"))["ok"] is True                   # 해제
+        assert engine.load_access()["owner_id"] == ""
+    finally:
+        engine.ACCESS, engine.ADMIN_IDS = orig_a, orig_admin
+
+
 if __name__ == "__main__":
     fns = [v for k, v in sorted(globals().items()) if k.startswith("test_")]
     for fn in fns:
