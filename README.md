@@ -1,4 +1,7 @@
-# notebook-pets (공책 AI 키우기)
+# 노트버디 (notebuddy)
+
+> 공책에서 태어난 AI 친구 — Discord 몬스터 육성 게임
+> *(GitHub repo `notebuddy`, 로컬 개발 코드네임 `notebook-monster`)*
 
 Discord에서 키우는 디지몬풍 몬스터 육성 게임. **판정은 결정론 엔진, 서사는 AI 에이전트**가 담당한다.
 
@@ -24,10 +27,11 @@ tools/gen_image.py         ComfyUI 이미지 생성 래퍼
 tools/prerender_all.py     종족×속성 전조합 이미지 프리렌더 배치
 tools/daily_decay.py       방치 페널티 배치 (cron용)
 tools/preview_roll.py      종족/속성 랜덤 미리보기
+tests/test_engine.py       엔진 로직 self-check (python -X utf8 tests/test_engine.py)
 docs/MANUAL.md             운영 매뉴얼 (설치/권한/시나리오/장애대응)
 docs/HARNESS.md            Discord 연결 하네스 설계 (프롬프트 라우팅 방식)
 docs/PLAN.md               게임 기획서
-assets/samples/            생성된 몬스터 이미지
+assets/samples/            생성된 몬스터 이미지 (프리렌더 캐시)
 state/                     유저 상태 파일 (gitignore — 커밋 안 됨)
 ```
 
@@ -54,7 +58,7 @@ python engine/engine.py <관리자ID> reset <대상ID> 새이름   # 관리자 �
 | 분류 | 커맨드 |
 |---|---|
 | 시작 | 공책시작 <이름> |
-| 조회 | 상태 / 도감 / 랭킹 / 도움말 |
+| 조회 | 상태 / 도감 / 칭호 / 랭킹 / 도움말 |
 | 돌보기 | 밥줘 / 간식줘 / 놀아줘 / 재워줘 |
 | 성장 | 훈련 / 산책 |
 | 전투 | 배틀 / 포획 (산책으로 야생 조우 후) |

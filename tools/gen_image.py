@@ -24,18 +24,25 @@ SPECIES_MAP, ELEMENT_MAP = _load_maps()
 
 STAGE_EN = {"새싹기": "sprout", "성장기": "growth", "성숙기": "mature", "완전체": "ultimate"}
 
-# 영어 키 -> 이미지 생성용 자연어 명사
-SPECIES_NOUN = {
-    "mammal": "mammal", "bird": "bird", "reptile": "reptile",
-    "machine": "robot", "fairy": "fairy", "monster": "monster",
-    "dragon": "dragon", "plant": "plant", "ghost": "ghost",
+# 영어 키 -> 이미지 생성용 종족별 상세 명사 조각 (data/prompt_templates.md 종족조각 기반)
+# "bird" 한 단어만 넣으면 SD1.5가 새 디테일을 못 살리므로 구체적 조각 사용
+SPECIES_PIECE = {
+    "mammal": "small fluffy mammal creature with rounded ears and paw pads",
+    "bird": "tiny bird-like creature with stubby feathered wings, a feather tuft on its head and a small beak",
+    "reptile": "small reptile creature with smooth scales and a little tail",
+    "machine": "chibi robot creature with riveted metal plates and glowing LED eyes",
+    "fairy": "fairy-like sprite creature with translucent shimmering wings and sparkles",
+    "monster": "kaiju-inspired baby monster with small horns and a mischievous grin",
+    "dragon": "baby dragon with a chubby body, tiny wings and small fangs",
+    "plant": "plant creature with leaf sprouts on its head and a vine tail",
+    "ghost": "ghost creature with a wispy floating tail and a semi-transparent body",
 }
 # 영어 키 -> 색감 테마 (명확한 색 지정)
 ELEMENT_THEME = {
     "fire": "fiery red and orange", "water": "aqua blue",
-    "thunder": "electric yellow and purple", "nature": "green leafy",
-    "wind": "pale cyan", "earth": "brown rocky",
-    "light": "radiant white and gold", "dark": "dark purple and black",
+    "thunder": "electric yellow and purple", "nature": "soft green accents",
+    "wind": "pale cyan and white", "earth": "brown rocky",
+    "light": "golden glowing halo, bright holy light, luminous gold and pale yellow, colored", "dark": "dark purple and black",
 }
 
 def _to_en(kr, mapping):
@@ -47,13 +54,17 @@ def build_prompt(species_kr, element_kr, stage_kr, seed):
     sp_key = _to_en(species_kr, SPECIES_MAP)
     el_key = _to_en(element_kr, ELEMENT_MAP)
     st_en = STAGE_EN.get(stage_kr, stage_kr)
-    sp_noun = SPECIES_NOUN.get(sp_key, sp_key)
+    sp_noun = SPECIES_PIECE.get(sp_key, sp_key)
     el_theme = ELEMENT_THEME.get(el_key, el_key)
-    pos = (f"cute {st_en} {sp_noun} monster, Digimon style digital creature, "
+    pos = (f"cute {st_en} monster, {sp_noun}, Digimon style digital creature, "
            f"{el_theme} color theme and motifs, chubby round body, big expressive eyes, "
-           f"notebook doodle aesthetic, clean lineart, light watercolor coloring, "
-           f"plain white background, game character concept art, masterpiece, best quality")
-    neg = "ugly, blurry, low quality, deformed, realistic, photo, human"
+           f"flat cel shaded, bold black outlines, vibrant solid colors, "
+           f"plain solid white background, no scenery, no objects, isolated character, "
+           f"game character concept art, masterpiece, best quality")
+    neg = ("ugly, blurry, low quality, deformed, realistic, photo, human, "
+           "lineart, sketch, coloring book, outline only, black and white, monochrome, "
+           "colored background, wood texture, wood grain, sky background, scenery, "
+           "notebook paper, desk, pencil drawing")
     wf["6"]["inputs"]["text"] = pos
     wf["7"]["inputs"]["text"] = neg
     wf["3"]["inputs"]["seed"] = seed

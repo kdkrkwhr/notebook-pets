@@ -1,7 +1,22 @@
-# 유저 상태 파일 (게임 데이터)
+# 유저 상태 파일 (게임 SoT — 유저별 세이브)
 state/*.json
 !state/.gitkeep
 
+# 생성 로그 (이미지 PNG 자체는 게임 에셋으로 커밋)
+assets/prerender_log.json
+
+# Python
 __pycache__/
 *.pyc
+.pytest_cache/
+
+# 가상환경 / 시크릿
+.venv/
+venv/
+.env
+.env.*
+
+# OS
 .DS_Store
+Thumbs.db
+desktop.ini

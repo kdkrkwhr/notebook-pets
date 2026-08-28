@@ -52,6 +52,37 @@ def type_mult(atk_el, def_el):
     if def_el in c.get("weak_vs", []):   return 0.67
     return 1.0
 
+def berserk(st):
+    """괴수족 폭주: 친밀도가 종족 임계 미만이면 공격↑·편차↑(제어 어려움). game_data 기반."""
+    sp = G["species"][st["species"]]
+    return "berserk_below" in sp and st["intimacy"] < sp["berserk_below"]
+
+def catch_rate(st, w):
+    """포획 확률(0~0.9). 종족 성장 HP + 요정족 행운(catch_bonus) + 상성 우위."""
+    sp = G["species"][st["species"]]
+    rate = 0.25 + 0.05 * sp.get("growth", {}).get("hp", 1)
+    rate += sp.get("catch_bonus", 0)  # 요정족 포획 보너스
+    if st["element"] and w["element_key"] in G["type_chart"].get(st["element"], {}).get("strong_vs", []):
+        rate += 0.15
+    return min(0.9, rate)
+
+# ponytail: 칭호 규칙은 코드 내 표. 기획팀이 자주 바꾸면 game_data로 이동.
+def titles(st):
+    """전적·레벨·진화·친밀도에서 파생되는 칭호 목록 (순수 함수)."""
+    got = []
+    w = st["record"]["win"]
+    caught = sum(1 for h in st.get("history", []) if h.get("event") == "caught")
+    if st["level"] >= G["max_level"]: got.append("완전체 마스터")
+    if st["stage"] >= 4:
+        got.append("빛의 성체" if st.get("evolution_branch") == "light" else "어둠의 성체")
+    if w >= 50: got.append("전설의 조련사")
+    elif w >= 10: got.append("백전노장")
+    elif w >= 1: got.append("초보 트레이너")
+    if caught >= 10: got.append("도감 마스터")
+    elif caught >= 1: got.append("포획가")
+    if st["intimacy"] >= 90: got.append("단짝")
+    return got
+
 def add_xp(st, amount):
     amount = int(amount * (1.2 if st["daily"].get("sleep_buff") else 1.0))
     evolutions = []
@@ -145,12 +176,17 @@ def cmd_status(st):
                element=G["elements"][st["element"]]["name_kr"], stage_label=dict((s["stage"], s["label"]) for s in G["stages"])[st["stage"]],
                level=st["level"], xp=st["xp"], xp_next=xp_needed(st["level"]),
                stats=t, intimacy=st["intimacy"], satiety=st["satiety"],
-               record=st["record"], mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
+               record=st["record"], title=(titles(st)[0] if titles(st) else "새내기"),
+               mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
+
+def cmd_titles(st):
+    return out(True, "", titles=titles(st), record=st["record"])
 
 def cmd_care(st, key):
     ok, why = check_limit(st, key)
     if not ok: return out(False, why)
     c = G["commands"][key]
+    rare_used = False
     if key == "feed":
         if st["inventory"]["normal_feed"] <= 0: return out(False, "사료가 없어. 배틀로 보상을 모아.")
         st["inventory"]["normal_feed"] -= 1
@@ -160,13 +196,17 @@ def cmd_care(st, key):
         st["satiety"] = max(0, st["satiety"] - c["satiety_cost"])
     elif key == "snack":
         st["intimacy"] = min(100, st["intimacy"] + c["intimacy"])
+        if st["inventory"].get("rare_feed", 0) > 0:  # 맛있는 사료: 있으면 자동 소비 → XP 부스트
+            st["inventory"]["rare_feed"] -= 1
+            rare_used = True
     elif key == "sleep":
         st["daily"]["sleep_buff"] = True
     if st["satiety"] < 30: c_xp = max(1, c["xp"] // 2)   # 배고프면 XP 반토막
     else: c_xp = c["xp"]
+    if rare_used: c_xp += c.get("rare_xp_bonus", 0)
     mark(st, key); x = add_xp(st, c_xp)
     save_state(st)
-    return out(True, f"{key} 완료", xp_result=x, evolution=x["evolutions"])
+    return out(True, f"{key} 완료", xp_result=x, evolution=x["evolutions"], used_rare_feed=rare_used)
 
 def cmd_train(st):
     ok, why = check_limit(st, "train")
@@ -204,7 +244,11 @@ def cmd_battle(st):
     w = st.get("_wild")
     if not w: return out(False, "야생 몬스터가 없어. !산책 으로 조우부터.")
     my_t = stat_total(st)
-    my_atk = my_t["atk"] * type_mult(st["element"], w["element_key"]) * random.uniform(0.9, 1.1)
+    bers = berserk(st)
+    sp = G["species"][st["species"]]
+    atk_var = random.uniform(0.6, 1.4) if bers else random.uniform(0.9, 1.1)  # 폭주: 편차↑
+    atk_mult = sp.get("berserk_atk_mult", 1.0) if bers else 1.0               # 폭주: 공격↑
+    my_atk = my_t["atk"] * type_mult(st["element"], w["element_key"]) * atk_var * atk_mult
     dodge = 0.10 if st["species"] == "ghost" or st["species"] == "bird" else 0.05
     enemy_dodged = random.random() < dodge
     enemy_atk = (10 + w["level"] * 1.2) * type_mult(w["element_key"], st["element"]) * random.uniform(0.9, 1.1)
@@ -229,14 +273,12 @@ def cmd_battle(st):
         loot = {}
     st["_wild"] = None
     save_state(st)
-    return out(True, msg, won=win, dmg_me=round(my_dmg, 1), dmg_enemy=round(en_dmg, 1), xp_result=x, loot=loot)
+    return out(True, msg, won=win, dmg_me=round(my_dmg, 1), dmg_enemy=round(en_dmg, 1), xp_result=x, loot=loot, berserk=bers)
 
 def cmd_catch(st):
     w = st.get("_wild")
     if not w: return out(False, "조우한 야생 몬스터가 없어.")
-    rate = 0.25 + 0.05 * G["species"][st["species"]].get("growth", {}).get("hp", 1)  # 간단 공식
-    if st["element"] and w["element_key"] in G["type_chart"].get(st["element"], {}).get("strong_vs", []): rate += 0.15
-    rate = min(0.9, rate)
+    rate = catch_rate(st, w)
     success = random.random() < rate
     st["_wild"] = None
     if success:
@@ -267,7 +309,7 @@ def cmd_rank():
     return out(True, "", ranking=ranks[:10])
 
 def cmd_help():
-    return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + ["status", "pokedex", "rank", "help"])
+    return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + ["status", "pokedex", "titles", "rank", "help"])
 
 # ---------- main ----------
 def main():
@@ -279,7 +321,7 @@ def main():
     # 커맨드가 user_id 자리에 오는 오용 방지: 두 번째 인자가 커맨드 후보면 swap
     known = {"start", "공책시작", "status", "상태", "밥줘", "놀아줘", "간식줘", "재워줘", "잘자",
              "train", "훈련", "walk", "산책", "battle", "배틀", "catch", "포획",
-             "attendance", "출석", "pokedex", "도감", "reset"}
+             "attendance", "출석", "pokedex", "도감", "titles", "칭호", "reset"}
     rest = args[1:]
     if cmd not in known and rest and rest[0] in known:
         cmd, rest = rest[0], [cmd] + rest[1:]
@@ -299,11 +341,11 @@ def main():
         "재워줘": lambda: cmd_care(st, "sleep"), "train": lambda: cmd_train(st),
         "walk": lambda: cmd_walk(st), "battle": lambda: cmd_battle(st),
         "catch": lambda: cmd_catch(st), "attendance": lambda: cmd_attendance(st),
-        "pokedex": lambda: cmd_pokedex(st),
+        "pokedex": lambda: cmd_pokedex(st), "titles": lambda: cmd_titles(st),
     }
     aliases = {"상태": "status", "훈련": "train", "산책": "walk", "배틀": "battle",
                "포획": "catch", "출석": "attendance", "도감": "pokedex",
-               "잘자": "재워줘"}
+               "칭호": "titles", "잘자": "재워줘"}
     key = aliases.get(cmd, cmd)
     fn = table.get(key)
     if not fn: return out(False, f"모르는 커맨드: {cmd}")
