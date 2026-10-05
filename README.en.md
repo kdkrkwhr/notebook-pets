@@ -22,7 +22,7 @@ The repository is named `notebook-pets`; the service name is **Notebuddy (노트
 | --- | --- |
 | Monsters | 9 species × 8 elements: 72 starter combinations |
 | Care | Feeding, snacks, play, sleep, intimacy, and satiety |
-| Activities | Training, walks, wild encounters, battles, and capture |
+| Activities | Training with persistent stat gains, walks, wild encounters, battles, and capture |
 | Records | Battle records, capture collection, titles, and rankings |
 | Progression rules | Stage transitions at levels 31, 51, and 81; level cap of 100 |
 | Final evolution | Light branch at intimacy 70 or above; dark branch below 70 |
@@ -173,9 +173,10 @@ Preserve and back up `state/` and, when used, `data/access.json` separately duri
 ```bash
 python -B -X utf8 tests/test_engine.py
 python -B -X utf8 -m unittest discover -s tests -p test_p0.py -v
+python -B -X utf8 -m unittest discover -s tests -p test_p1.py -v
 ```
 
-Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, and concurrent processes. Test data is stored in temporary files.
+Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, training, and combat calculations. Test data is stored in temporary files.
 
 ## Design and operations notes
 

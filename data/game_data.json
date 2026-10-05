@@ -44,9 +44,10 @@
     "snack":    {"xp": 5,   "cooldown_min": null, "daily_limit": 3,    "intimacy": 15, "rare_xp_bonus": 15},
     "play":     {"xp": 10,  "cooldown_min": 60,   "daily_limit": null, "intimacy": 20, "satiety_cost": 10},
     "sleep":    {"xp": 0,   "cooldown_min": null, "daily_limit": 1,    "buff_next_day_pct": 20},
-    "train":    {"xp": 40,  "cooldown_min": null, "daily_limit": 3,    "satiety_cost": 20},
+    "train":    {"xp": 40,  "cooldown_min": null, "daily_limit": 3,    "satiety_cost": 20, "stat_gain": 1},
     "walk":     {"xp": 20,  "cooldown_min": null, "daily_limit": 5,    "encounter_chance": 0.3},
-    "battle":   {"xp_win_min": 80, "xp_win_max": 150, "xp_lose": 20, "daily_limit": 5},
+    "battle":   {"xp_win_min": 80, "xp_win_max": 150, "xp_lose": 20, "daily_limit": 5,
+                 "defense_factor": 0.5, "dodge_default": 0.05, "dodge_by_species": {"bird": 0.1, "ghost": 0.1}},
     "catch":    {"per_encounter": true},
     "attendance":{"xp": 50, "cooldown_min": null, "daily_limit": 1}
   },

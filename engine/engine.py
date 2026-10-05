@@ -6,7 +6,8 @@
 사용법: python engine.py <user_id> <command> [args...]
 출력: 단일 JSON (Discord 중계용)
 """
-import json, math, os, random, sys, time
+import copy, json, math, os, random, re, sys, time
+from contextvars import ContextVar
 from datetime import date, timedelta
 from runtime import MISSING, GameError, atomic_write_json, game_clock, game_date, read_json, store_lock, validate_user_id
 
@@ -14,6 +15,7 @@ BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "data", "game_data.json")
 DATA_ROOT = os.path.abspath(os.environ.get("NOTEBOOK_DATA_DIR", BASE))
 STATE_DIR = os.path.join(DATA_ROOT, "state")
+_pending_save = ContextVar("pending_save", default=None)
 
 with open(DATA, encoding="utf-8") as f:
     G = json.load(f)
@@ -37,6 +39,10 @@ def load_state(uid):
 
 def save_state(st):
     validate_state(st, st.get("user_id"))
+    pending = _pending_save.get()
+    if pending is not None:
+        pending.append(st)
+        return
     atomic_write_json(state_path(st["user_id"]), st)
 
 def today(): return game_date().isoformat()
@@ -59,6 +65,17 @@ def validate_state(st, uid):
         require(st["xp"] >= 0 and 0 <= st["satiety"] <= 100 and 0 <= st["intimacy"] <= 100)
         for key in ("daily", "inventory", "record", "cooldowns", "stats"):
             require(isinstance(st[key], dict))
+        bonuses = st.get("training_bonus", {})
+        require(isinstance(bonuses, dict))
+        for key, value in bonuses.items():
+            require(key in ("hp", "atk", "def") and type(value) is int and value >= 0)
+        receipts = st.get("processed_requests", {})
+        require(isinstance(receipts, dict))
+        for key, receipt in receipts.items():
+            require(isinstance(key, str) and re.fullmatch(r"[A-Za-z0-9:_-]{1,128}", key) is not None)
+            require(isinstance(receipt, dict) and isinstance(receipt["command"], str))
+            require(isinstance(receipt["arguments"], list) and all(isinstance(v, str) for v in receipt["arguments"]))
+            require(isinstance(receipt["result"], dict) and type(receipt["result"]["ok"]) is bool)
         date.fromisoformat(st["daily"]["date"])
         for key, value in st["daily"].items():
             if key not in ("date", "sleep_buff"):
@@ -169,7 +186,7 @@ def add_xp(st, amount):
 def stat_total(st):
     g = G["species"][st["species"]]["growth"]
     base = 10 + st["level"] * 0.8
-    return {k: round(base * v) for k, v in g.items()}
+    return {k: round(base * v) + st.get("training_bonus", {}).get(k, 0) for k, v in g.items()}
 
 def check_limit(st, key):
     lim = G["commands"].get(key, {}).get("daily_limit")
@@ -257,7 +274,7 @@ def cmd_start(uid, name, replace=False):
     st = {
         "version": 3, "user_id": uid, "name": name,
         "species": sp, "element": el, "stage": 1, "level": 1, "xp": 0,
-        "stats": {}, "intimacy": 50, "satiety": 80,
+        "stats": {}, "training_bonus": {}, "processed_requests": {}, "intimacy": 50, "satiety": 80,
         "record": {"win": 0, "lose": 0},
         "cooldowns": {}, "daily": {"date": today(), "train": 0, "battle": 0, "snack": 0, "walk": 0, "attendance": 0, "sleep": 0},
         "sleep_bonus_dates": [], "last_decay_date": None,
@@ -293,7 +310,8 @@ def cmd_care(st, key):
         st["inventory"]["normal_feed"] -= 1
         st["satiety"] = min(100, st["satiety"] + c["satiety"])
     elif key == "play":
-        st["intimacy"] = min(100, round(min(100, st["intimacy"] + c["intimacy"]) * G["species"][st["species"]]["intimacy_rate"]))
+        gain = round(c["intimacy"] * G["species"][st["species"]]["intimacy_rate"])
+        st["intimacy"] = min(100, st["intimacy"] + gain)
         st["satiety"] = max(0, st["satiety"] - c["satiety_cost"])
     elif key == "snack":
         st["intimacy"] = min(100, st["intimacy"] + c["intimacy"])
@@ -317,9 +335,12 @@ def cmd_train(st):
     st["satiety"] -= G["commands"]["train"]["satiety_cost"]
     t = stat_total(st)
     pick = random.choice(list(t.keys()))
+    gain = G["commands"]["train"]["stat_gain"]
+    bonuses = st.setdefault("training_bonus", {})
+    bonuses[pick] = bonuses.get(pick, 0) + gain
     mark(st, "train"); x = add_xp(st, G["commands"]["train"]["xp"])
     save_state(st)
-    return out(True, f"{pick} 훈련 완료", trained_stat=pick, stats_after=stat_total(st), xp_result=x)
+    return out(True, f"{pick} 훈련 완료", trained_stat=pick, stat_gain=gain, stats_after=stat_total(st), xp_result=x)
 
 def cmd_walk(st):
     ok, why = check_limit(st, "walk")
@@ -336,38 +357,44 @@ def cmd_walk(st):
     r = out(True, "산책 완료", xp_result=x, encounter=bool(encounter))
     return r
 
-def wild_power(w, el_key):
-    base = 10 + w["level"] * 1.2
-    return base * random.uniform(0.85, 1.15) * type_mult(el_key, el_key)  # 자기자신 기준 1.0이라 사실상 랜덤만
+def battle_damage(st, w):
+    """One exchange: each defender supplies defense and independently dodges."""
+    my_t = stat_total(st)
+    enemy_t = stat_total({"species": w["species_key"], "level": w["level"]})
+    bers = berserk(st)
+    sp = G["species"][st["species"]]
+    rules = G["commands"]["battle"]
+    atk_var = random.uniform(0.6, 1.4) if bers else random.uniform(0.9, 1.1)
+    atk_mult = sp.get("berserk_atk_mult", 1.0) if bers else 1.0
+    my_atk = my_t["atk"] * type_mult(st["element"], w["element_key"]) * atk_var * atk_mult
+    enemy_atk = enemy_t["atk"] * type_mult(w["element_key"], st["element"]) * random.uniform(0.9, 1.1)
+    def dodge_rate(species):
+        return rules["dodge_by_species"].get(species, rules["dodge_default"])
+    enemy_dodged = random.random() < dodge_rate(w["species_key"])
+    i_dodged = random.random() < dodge_rate(st["species"])
+    my_dmg = 0 if enemy_dodged else max(0, my_atk - enemy_t["def"] * rules["defense_factor"])
+    en_dmg = 0 if i_dodged else max(0, enemy_atk - my_t["def"] * rules["defense_factor"])
+    return my_dmg, en_dmg, enemy_dodged, i_dodged
 
 def cmd_battle(st):
     ok, why = check_limit(st, "battle")
     if not ok: return out(False, why)
     w = st.get("_wild")
     if not w: return out(False, "야생 몬스터가 없어. !산책 으로 조우부터.")
-    my_t = stat_total(st)
     bers = berserk(st)
-    sp = G["species"][st["species"]]
-    atk_var = random.uniform(0.6, 1.4) if bers else random.uniform(0.9, 1.1)  # 폭주: 편차↑
-    atk_mult = sp.get("berserk_atk_mult", 1.0) if bers else 1.0               # 폭주: 공격↑
-    my_atk = my_t["atk"] * type_mult(st["element"], w["element_key"]) * atk_var * atk_mult
-    dodge = 0.10 if st["species"] == "ghost" or st["species"] == "bird" else 0.05
-    enemy_dodged = random.random() < dodge
-    enemy_atk = (10 + w["level"] * 1.2) * type_mult(w["element_key"], st["element"]) * random.uniform(0.9, 1.1)
-    i_dodged = (not enemy_dodged) and random.random() < dodge * 0.5
-    my_dmg = 0 if enemy_dodged else my_atk - my_t["def"] * 0.4
-    en_dmg = 0 if i_dodged else enemy_atk - my_t["def"] * 0.6
+    my_dmg, en_dmg, enemy_dodged, i_dodged = battle_damage(st, w)
     win = my_dmg >= en_dmg
     mark(st, "battle")
     if win:
         st["record"]["win"] += 1
         reward_feed = random.random() < 0.5
         if reward_feed: st["inventory"]["normal_feed"] += 1
-        if random.random() < 0.15: st["inventory"]["rare_feed"] += 1
+        reward_rare = random.random() < 0.15
+        if reward_rare: st["inventory"]["rare_feed"] += 1
         xp = random.randint(G["commands"]["battle"]["xp_win_min"], G["commands"]["battle"]["xp_win_max"])
         x = add_xp(st, xp)
         msg = f"{w['species']}({w['element']}) Lv{w['level']} 격파!"
-        loot = {"normal_feed": 1 if reward_feed else 0, "rare_feed": st["inventory"]["rare_feed"]}
+        loot = {"normal_feed": int(reward_feed), "rare_feed": int(reward_rare)}
     else:
         st["record"]["lose"] += 1
         x = add_xp(st, G["commands"]["battle"]["xp_lose"])
@@ -375,7 +402,8 @@ def cmd_battle(st):
         loot = {}
     st["_wild"] = None
     save_state(st)
-    return out(True, msg, won=win, dmg_me=round(my_dmg, 1), dmg_enemy=round(en_dmg, 1), xp_result=x, loot=loot, berserk=bers)
+    return out(True, msg, won=win, dmg_me=round(my_dmg, 1), dmg_enemy=round(en_dmg, 1), xp_result=x, loot=loot, berserk=bers,
+               enemy_dodged=enemy_dodged, dodged=i_dodged)
 
 def cmd_catch(st):
     w = st.get("_wild")
@@ -422,9 +450,55 @@ ALIASES = {
     "소유주": "owner", "개방": "clearowner", "소유주해제": "clearowner",
 }
 COMMANDS = set(G["commands"]) | {"status", "pokedex", "titles", "rank", "help", "owner", "clearowner", "reset"}
+PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
 
 
-def execute(actor_id, command, arguments=()):
+def dispatch_player(actor_id, command, arguments):
+    if command == "rank":
+        return cmd_rank()
+    if command == "start":
+        return cmd_start(actor_id, " ".join(arguments) or "모험가")
+    st = load_state(actor_id)
+    if st is None:
+        return out(False, "!공책시작 으로 먼저 몬스터를 만들어.", code="not_started")
+    fresh_daily(st)
+    table = {
+        "status": lambda: cmd_status(st), "feed": lambda: cmd_care(st, "feed"),
+        "play": lambda: cmd_care(st, "play"), "snack": lambda: cmd_care(st, "snack"),
+        "sleep": lambda: cmd_care(st, "sleep"), "train": lambda: cmd_train(st),
+        "walk": lambda: cmd_walk(st), "battle": lambda: cmd_battle(st),
+        "catch": lambda: cmd_catch(st), "attendance": lambda: cmd_attendance(st),
+        "pokedex": lambda: cmd_pokedex(st), "titles": lambda: cmd_titles(st),
+    }
+    return table[command]()
+
+
+def execute_once(actor_id, command, arguments, request_id):
+    """Called under the store lock. Commit reward and receipt in ONE save."""
+    st = load_state(actor_id)
+    receipt = st.get("processed_requests", {}).get(request_id) if st else None
+    if receipt is not None:
+        if receipt["command"] != command or receipt["arguments"] != list(arguments):
+            return out(False, "이미 다른 명령으로 처리한 메시지입니다.", code="request_conflict")
+        return copy.deepcopy(receipt["result"])
+    pending = []
+    token = _pending_save.set(pending)
+    try:
+        result = dispatch_player(actor_id, command, arguments)
+    finally:
+        _pending_save.reset(token)
+    if pending:
+        saved = pending[-1]
+        if len(pending) != 1 or saved["user_id"] != actor_id:
+            raise GameError("invalid_transaction", "저장 대상을 확인해 주세요.")
+        saved.setdefault("processed_requests", {})[request_id] = {
+            "command": command, "arguments": list(arguments), "result": copy.deepcopy(result),
+        }
+        save_state(saved)
+    return result
+
+
+def execute(actor_id, command, arguments=(), *, request_id=None):
     """Trusted adapter entry point: actor_id comes from the platform session.
 
     This is not remote authentication: local CLI callers have OS-level access.
@@ -436,6 +510,16 @@ def execute(actor_id, command, arguments=()):
             raise GameError("unknown_command", "모르는 커맨드입니다.")
         if not isinstance(arguments, (list, tuple)) or any(not isinstance(v, str) for v in arguments):
             raise GameError("invalid_arguments", "명령 인자가 올바르지 않습니다.")
+        bound_event = os.environ.get("NOTEBOOK_EVENT_ID")
+        if bound_event is not None:
+            if request_id is not None and request_id != bound_event:
+                raise GameError("request_mismatch", "플랫폼 메시지 ID가 일치하지 않습니다.")
+            request_id = bound_event
+        if request_id is not None:
+            if not isinstance(request_id, str) or re.fullmatch(r"[A-Za-z0-9:_-]{1,128}", request_id) is None:
+                raise GameError("invalid_request_id", "메시지 ID 형식이 올바르지 않습니다.")
+            if command not in PLAYER_COMMANDS:
+                raise GameError("unsupported_request_id", "관리자 명령은 메시지 기반 게임 도구에서 실행할 수 없습니다.")
         if command == "help":
             if arguments:
                 raise GameError("invalid_arguments", "도움말에는 추가 인자가 필요하지 않습니다.")
@@ -475,23 +559,9 @@ def execute(actor_id, command, arguments=()):
                 return out(False, "not_owner", reason="not_owner", owner_name=owner_name)
             if command == "reset":
                 return cmd_reset(actor_id, target, name)
-            if command == "rank":
-                return cmd_rank()
-            if command == "start":
-                return cmd_start(actor_id, name or "모험가")
-            st = load_state(actor_id)
-            if st is None:
-                return out(False, "!공책시작 으로 먼저 몬스터를 만들어.", code="not_started")
-            fresh_daily(st)
-            table = {
-                "status": lambda: cmd_status(st), "feed": lambda: cmd_care(st, "feed"),
-                "play": lambda: cmd_care(st, "play"), "snack": lambda: cmd_care(st, "snack"),
-                "sleep": lambda: cmd_care(st, "sleep"), "train": lambda: cmd_train(st),
-                "walk": lambda: cmd_walk(st), "battle": lambda: cmd_battle(st),
-                "catch": lambda: cmd_catch(st), "attendance": lambda: cmd_attendance(st),
-                "pokedex": lambda: cmd_pokedex(st), "titles": lambda: cmd_titles(st),
-            }
-            return table[command]()
+            if request_id is not None and actor_id is not None:
+                return execute_once(actor_id, command, arguments, request_id)
+            return dispatch_player(actor_id, command, arguments)
     except GameError as exc:
         return out(False, str(exc), code=exc.code)
     except (KeyError, TypeError, ValueError):
