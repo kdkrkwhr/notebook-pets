@@ -86,6 +86,7 @@ def validate_state(st, uid):
             require(type(st["inventory"][key]) is int and st["inventory"][key] >= 0)
         for key in ("win", "lose"):
             require(type(st["record"][key]) is int and st["record"][key] >= 0)
+        require(type(st["record"].get("draw", 0)) is int and st["record"].get("draw", 0) >= 0)
         require(isinstance(st["history"], list) and all(isinstance(h, dict) for h in st["history"]))
         require(st["evolution_branch"] in (None, "light", "dark"))
         wild = st.get("_wild")
@@ -275,7 +276,7 @@ def cmd_start(uid, name, replace=False):
         "version": 3, "user_id": uid, "name": name,
         "species": sp, "element": el, "stage": 1, "level": 1, "xp": 0,
         "stats": {}, "training_bonus": {}, "processed_requests": {}, "intimacy": 50, "satiety": 80,
-        "record": {"win": 0, "lose": 0},
+        "record": {"win": 0, "lose": 0, "draw": 0},
         "cooldowns": {}, "daily": {"date": today(), "train": 0, "battle": 0, "snack": 0, "walk": 0, "attendance": 0, "sleep": 0},
         "sleep_bonus_dates": [], "last_decay_date": None,
         "inventory": {"normal_feed": 3, "rare_feed": 0},
@@ -293,7 +294,7 @@ def cmd_status(st):
     return out(True, "", name=st["name"], species=G["species"][st["species"]]["name_kr"],
                element=G["elements"][st["element"]]["name_kr"], stage_label=dict((s["stage"], s["label"]) for s in G["stages"])[st["stage"]],
                level=st["level"], xp=st["xp"], xp_next=xp_needed(st["level"]),
-               stats=t, intimacy=st["intimacy"], satiety=st["satiety"],
+               stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"),
                record=st["record"], title=(titles(st)[0] if titles(st) else "새내기"),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
 
@@ -306,7 +307,7 @@ def cmd_care(st, key):
     c = G["commands"][key]
     rare_used = False
     if key == "feed":
-        if st["inventory"]["normal_feed"] <= 0: return out(False, "사료가 없어. 배틀로 보상을 모아.")
+        if st["inventory"]["normal_feed"] <= 0: return out(False, "사료가 없어. 출석 보급이나 배틀 보상으로 모아.")
         st["inventory"]["normal_feed"] -= 1
         st["satiety"] = min(100, st["satiety"] + c["satiety"])
     elif key == "play":
@@ -343,38 +344,81 @@ def cmd_train(st):
     return out(True, f"{pick} 훈련 완료", trained_stat=pick, stat_gain=gain, stats_after=stat_total(st), xp_result=x)
 
 def cmd_walk(st):
+    if st.get("_wild") is not None:
+        return out(False, "만난 몬스터가 기다리고 있어. 배틀·포획·도망 중 하나를 먼저 선택해.",
+                   code="encounter_pending", encounter=st["_wild"])
     ok, why = check_limit(st, "walk")
     if not ok: return out(False, why)
     mark(st, "walk"); x = add_xp(st, G["commands"]["walk"]["xp"])
     encounter = None
     if random.random() < G["commands"]["walk"]["encounter_chance"]:
         wsp = random.choice(list(G["species"].keys())); wel = random.choice(list(G["elements"].keys()))
-        wlv = max(1, st["level"] + random.randint(-3, 3))
+        wlv = min(G["max_level"], max(1, st["level"] + random.randint(-3, 3)))
         encounter = {"species": G["species"][wsp]["name_kr"], "element": G["elements"][wel]["name_kr"],
                      "species_key": wsp, "element_key": wel, "level": wlv}
         st["_wild"] = encounter
     save_state(st)
-    r = out(True, "산책 완료", xp_result=x, encounter=bool(encounter))
+    r = out(True, "산책 완료", xp_result=x, encounter=bool(encounter), wild=encounter)
     return r
 
-def battle_damage(st, w):
+def cmd_flee(st):
+    if st.get("_wild") is None:
+        return out(False, "떠날 조우가 없어.", code="no_encounter")
+    st["_wild"] = None
+    save_state(st)
+    return out(True, "야생 몬스터와 헤어졌어. 다시 산책할 수 있어.")
+
+
+def battle_damage(st, w, rng=None):
     """One exchange: each defender supplies defense and independently dodges."""
+    rng = rng or random
     my_t = stat_total(st)
     enemy_t = stat_total({"species": w["species_key"], "level": w["level"]})
     bers = berserk(st)
     sp = G["species"][st["species"]]
     rules = G["commands"]["battle"]
-    atk_var = random.uniform(0.6, 1.4) if bers else random.uniform(0.9, 1.1)
+    atk_var = rng.uniform(0.6, 1.4) if bers else rng.uniform(0.9, 1.1)
     atk_mult = sp.get("berserk_atk_mult", 1.0) if bers else 1.0
     my_atk = my_t["atk"] * type_mult(st["element"], w["element_key"]) * atk_var * atk_mult
-    enemy_atk = enemy_t["atk"] * type_mult(w["element_key"], st["element"]) * random.uniform(0.9, 1.1)
+    enemy_atk = enemy_t["atk"] * type_mult(w["element_key"], st["element"]) * rng.uniform(0.9, 1.1)
     def dodge_rate(species):
         return rules["dodge_by_species"].get(species, rules["dodge_default"])
-    enemy_dodged = random.random() < dodge_rate(w["species_key"])
-    i_dodged = random.random() < dodge_rate(st["species"])
+    enemy_dodged = rng.random() < dodge_rate(w["species_key"])
+    i_dodged = rng.random() < dodge_rate(st["species"])
     my_dmg = 0 if enemy_dodged else max(0, my_atk - enemy_t["def"] * rules["defense_factor"])
     en_dmg = 0 if i_dodged else max(0, enemy_atk - my_t["def"] * rules["defense_factor"])
     return my_dmg, en_dmg, enemy_dodged, i_dodged
+
+
+def simulate_battle(st, w, rng=None):
+    """Bounded simultaneous rounds; HP is local to this battle, never persisted."""
+    my_max = stat_total(st)["hp"]
+    enemy_max = stat_total({"species": w["species_key"], "level": w["level"]})["hp"]
+    my_hp, enemy_hp = float(my_max), float(enemy_max)
+    total_me = total_enemy = 0.0
+    dodges_me = dodges_enemy = 0
+    for rounds in range(1, G["commands"]["battle"]["max_rounds"] + 1):
+        outgoing, incoming, enemy_dodged, dodged = battle_damage(st, w, rng)
+        outgoing, incoming = min(enemy_hp, outgoing), min(my_hp, incoming)
+        enemy_hp, my_hp = max(0.0, enemy_hp - outgoing), max(0.0, my_hp - incoming)
+        total_me += outgoing
+        total_enemy += incoming
+        dodges_me += int(dodged)
+        dodges_enemy += int(enemy_dodged)
+        if my_hp == 0 or enemy_hp == 0:
+            break
+    # At the round cap compare HP fractions, not absolute HP across species.
+    my_ratio, enemy_ratio = my_hp / my_max, enemy_hp / enemy_max
+    if math.isclose(my_ratio, enemy_ratio, abs_tol=1e-9):
+        outcome = "draw"
+    else:
+        outcome = "win" if my_ratio > enemy_ratio else "lose"
+    return {"outcome": outcome, "rounds": rounds,
+            "hp_me": round(my_hp, 2), "hp_enemy": round(enemy_hp, 2),
+            "max_hp_me": my_max, "max_hp_enemy": enemy_max,
+            "dmg_me": round(total_me, 2), "dmg_enemy": round(total_enemy, 2),
+            "dodges_me": dodges_me, "dodges_enemy": dodges_enemy}
+
 
 def cmd_battle(st):
     ok, why = check_limit(st, "battle")
@@ -382,8 +426,8 @@ def cmd_battle(st):
     w = st.get("_wild")
     if not w: return out(False, "야생 몬스터가 없어. !산책 으로 조우부터.")
     bers = berserk(st)
-    my_dmg, en_dmg, enemy_dodged, i_dodged = battle_damage(st, w)
-    win = my_dmg >= en_dmg
+    combat = simulate_battle(st, w)
+    win = combat["outcome"] == "win"
     mark(st, "battle")
     if win:
         st["record"]["win"] += 1
@@ -395,15 +439,20 @@ def cmd_battle(st):
         x = add_xp(st, xp)
         msg = f"{w['species']}({w['element']}) Lv{w['level']} 격파!"
         loot = {"normal_feed": int(reward_feed), "rare_feed": int(reward_rare)}
-    else:
+    elif combat["outcome"] == "lose":
         st["record"]["lose"] += 1
         x = add_xp(st, G["commands"]["battle"]["xp_lose"])
         msg = f"{w['species']}({w['element']})에게 패배..."
         loot = {}
+    else:
+        st["record"]["draw"] = st["record"].get("draw", 0) + 1
+        x = add_xp(st, G["commands"]["battle"]["xp_draw"])
+        msg = f"{w['species']}와 무승부!"
+        loot = {}
     st["_wild"] = None
     save_state(st)
-    return out(True, msg, won=win, dmg_me=round(my_dmg, 1), dmg_enemy=round(en_dmg, 1), xp_result=x, loot=loot, berserk=bers,
-               enemy_dodged=enemy_dodged, dodged=i_dodged)
+    return out(True, msg, won=win, xp_result=x, loot=loot, berserk=bers,
+               enemy_dodged=combat["dodges_enemy"] > 0, dodged=combat["dodges_me"] > 0, **combat)
 
 def cmd_catch(st):
     w = st.get("_wild")
@@ -422,8 +471,10 @@ def cmd_attendance(st):
     ok, why = check_limit(st, "attendance")
     if not ok: return out(False, "오늘 출석 이미 했어.")
     mark(st, "attendance"); x = add_xp(st, G["commands"]["attendance"]["xp"])
+    supplies = G["commands"]["attendance"]["normal_feed"]
+    st["inventory"]["normal_feed"] += supplies
     save_state(st)
-    return out(True, "출석 보너스", xp_result=x)
+    return out(True, "출석 보너스", xp_result=x, loot={"normal_feed": supplies})
 
 def cmd_pokedex(st):
     return out(True, "", catches=[h for h in st["history"] if h.get("event") == "caught"],
@@ -448,6 +499,7 @@ ALIASES = {
     "산책": "walk", "배틀": "battle", "포획": "catch", "출석": "attendance",
     "도감": "pokedex", "칭호": "titles", "랭킹": "rank", "도움말": "help",
     "소유주": "owner", "개방": "clearowner", "소유주해제": "clearowner",
+    "도망": "flee",
 }
 COMMANDS = set(G["commands"]) | {"status", "pokedex", "titles", "rank", "help", "owner", "clearowner", "reset"}
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
@@ -467,6 +519,7 @@ def dispatch_player(actor_id, command, arguments):
         "play": lambda: cmd_care(st, "play"), "snack": lambda: cmd_care(st, "snack"),
         "sleep": lambda: cmd_care(st, "sleep"), "train": lambda: cmd_train(st),
         "walk": lambda: cmd_walk(st), "battle": lambda: cmd_battle(st),
+        "flee": lambda: cmd_flee(st),
         "catch": lambda: cmd_catch(st), "attendance": lambda: cmd_attendance(st),
         "pokedex": lambda: cmd_pokedex(st), "titles": lambda: cmd_titles(st),
     }

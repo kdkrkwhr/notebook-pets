@@ -22,7 +22,7 @@ The repository is named `notebook-pets`; the service name is **Notebuddy (노트
 | --- | --- |
 | Monsters | 9 species × 8 elements: 72 starter combinations |
 | Care | Feeding, snacks, play, sleep, intimacy, and satiety |
-| Activities | Training with persistent stat gains, walks, wild encounters, battles, and capture |
+| Activities | Persistent stat training, walks, HP-based automatic battles, capture, and fleeing |
 | Records | Battle records, capture collection, titles, and rankings |
 | Progression rules | Stage transitions at levels 31, 51, and 81; level cap of 100 |
 | Final evolution | Light branch at intimacy 70 or above; dark branch below 70 |
@@ -100,13 +100,15 @@ python -X utf8 engine/engine.py <user_id> <command> [arguments...]
 | Feed / give a snack | `feed` / `밥줘`, `snack` / `간식줘` |
 | Play / sleep | `play` / `놀아줘`, `sleep` / `재워줘` / `잘자` |
 | Train / walk | `train` / `훈련`, `walk` / `산책` |
-| Battle / capture | `battle` / `배틀`, `catch` / `포획` |
-| Daily attendance | `attendance` / `출석` |
+| Battle / capture / flee | `battle` / `배틀`, `catch` / `포획`, `flee` / `도망` |
+| Daily attendance (XP + 3 normal feed) | `attendance` / `출석` |
 | Collection / titles | `pokedex` / `도감`, `titles` / `칭호` |
 | Rankings | `python -X utf8 engine/engine.py rank` or `랭킹` — omit the ID |
 | Help | `python -X utf8 engine/engine.py help` or `도움말` — omit the ID |
 
-Battles and captures require a wild encounter from a walk. Either action ends the encounter. Daily limits reset at midnight in Korea (KST); sleep grants an XP bonus for the following calendar day. When owner access is enabled, rankings also require an allowed user ID.
+Resolve a wild encounter by battling, capturing, or fleeing before walking again. Use `status` to inspect the current encounter. Automatic battles start at full HP and last up to 20 rounds; HP, attack, and defense training all contribute. Simultaneous knockouts are draws.
+
+Daily limits reset at midnight in Korea (KST); sleep grants an XP bonus for the following calendar day. Attendance provides three normal feed once per day. When owner access is enabled, rankings also require an allowed user ID.
 
 ### Administrator and owner settings
 
@@ -172,8 +174,7 @@ Preserve and back up `state/` and, when used, `data/access.json` separately duri
 
 ```bash
 python -B -X utf8 tests/test_engine.py
-python -B -X utf8 -m unittest discover -s tests -p test_p0.py -v
-python -B -X utf8 -m unittest discover -s tests -p test_p1.py -v
+python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 ```
 
 Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, training, and combat calculations. Test data is stored in temporary files.

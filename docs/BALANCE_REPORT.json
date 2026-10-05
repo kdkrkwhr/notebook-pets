@@ -1,0 +1,1635 @@
+{
+  "seed": 20261005,
+  "trials_per_matchup": 50,
+  "rules_sha256": "12714fecc8925ea99f14aa97874227c58736a26e0689884c02e1c18d3d3a0ee6",
+  "engine_sha256": "0513c453e1341e3e35a1b1847c602739139987fd7b6d55420115d4aa39ead201",
+  "combat": [
+    {
+      "mode": "neutral",
+      "level": 1,
+      "species": "mammal",
+      "battles": 450,
+      "wins": 98,
+      "draws": 154,
+      "losses": 198,
+      "win_pct": 21.78,
+      "draw_pct": 34.22,
+      "score_pct": 38.89,
+      "mean_rounds": 2.48
+    },
+    {
+      "mode": "neutral",
+      "level": 1,
+      "species": "bird",
+      "battles": 450,
+      "wins": 45,
+      "draws": 171,
+      "losses": 234,
+      "win_pct": 10.0,
+      "draw_pct": 38.0,
+      "score_pct": 29.0,
+      "mean_rounds": 2.18
+    },
+    {
+      "mode": "neutral",
+      "level": 1,
+      "species": "reptile",
+      "battles": 450,
+      "wins": 246,
+      "draws": 71,
+      "losses": 133,
+      "win_pct": 54.67,
+      "draw_pct": 15.78,
+      "score_pct": 62.56,
+      "mean_rounds": 3.4
+    },
+    {
+      "mode": "neutral",
+      "level": 1,
+      "species": "machine",
+      "battles": 450,
+      "wins": 277,
+      "draws": 53,
+      "losses": 120,
+      "win_pct": 61.56,
+      "draw_pct": 11.78,
+      "score_pct": 67.44,
+      "mean_rounds": 3.44
+    },
+    {
+      "mode": "neutral",
+      "level": 1,
+      "species": "fairy",
+      "battles": 450,
+      "wins": 23,
+      "draws": 180,
+      "losses": 247,
+      "win_pct": 5.11,
+      "draw_pct": 40.0,
+      "score_pct": 25.11,
+      "mean_rounds": 2.22
+    },
+    {
+      "mode": "neutral",
+      "level": 1,
+      "species": "monster",
+      "battles": 450,
+      "wins": 302,
+      "draws": 130,
+      "losses": 18,
+      "win_pct": 67.11,
+      "draw_pct": 28.89,
+      "score_pct": 81.56,
+      "mean_rounds": 1.83
+    },
+    {
+      "mode": "neutral",
+      "level": 1,
+      "species": "dragon",
+      "battles": 450,
+      "wins": 341,
+      "draws": 87,
+      "losses": 22,
+      "win_pct": 75.78,
+      "draw_pct": 19.33,
+      "score_pct": 85.44,
+      "mean_rounds": 2.4
+    },
+    {
+      "mode": "neutral",
+      "level": 1,
+      "species": "plant",
+      "battles": 450,
+      "wins": 91,
+      "draws": 106,
+      "losses": 253,
+      "win_pct": 20.22,
+      "draw_pct": 23.56,
+      "score_pct": 32.0,
+      "mean_rounds": 3.55
+    },
+    {
+      "mode": "neutral",
+      "level": 1,
+      "species": "ghost",
+      "battles": 450,
+      "wins": 63,
+      "draws": 194,
+      "losses": 193,
+      "win_pct": 14.0,
+      "draw_pct": 43.11,
+      "score_pct": 35.56,
+      "mean_rounds": 2.14
+    },
+    {
+      "mode": "neutral",
+      "level": 30,
+      "species": "mammal",
+      "battles": 450,
+      "wins": 87,
+      "draws": 168,
+      "losses": 195,
+      "win_pct": 19.33,
+      "draw_pct": 37.33,
+      "score_pct": 38.0,
+      "mean_rounds": 2.52
+    },
+    {
+      "mode": "neutral",
+      "level": 30,
+      "species": "bird",
+      "battles": 450,
+      "wins": 43,
+      "draws": 144,
+      "losses": 263,
+      "win_pct": 9.56,
+      "draw_pct": 32.0,
+      "score_pct": 25.56,
+      "mean_rounds": 2.11
+    },
+    {
+      "mode": "neutral",
+      "level": 30,
+      "species": "reptile",
+      "battles": 450,
+      "wins": 264,
+      "draws": 45,
+      "losses": 141,
+      "win_pct": 58.67,
+      "draw_pct": 10.0,
+      "score_pct": 63.67,
+      "mean_rounds": 3.4
+    },
+    {
+      "mode": "neutral",
+      "level": 30,
+      "species": "machine",
+      "battles": 450,
+      "wins": 300,
+      "draws": 38,
+      "losses": 112,
+      "win_pct": 66.67,
+      "draw_pct": 8.44,
+      "score_pct": 70.89,
+      "mean_rounds": 3.52
+    },
+    {
+      "mode": "neutral",
+      "level": 30,
+      "species": "fairy",
+      "battles": 450,
+      "wins": 24,
+      "draws": 167,
+      "losses": 259,
+      "win_pct": 5.33,
+      "draw_pct": 37.11,
+      "score_pct": 23.89,
+      "mean_rounds": 2.24
+    },
+    {
+      "mode": "neutral",
+      "level": 30,
+      "species": "monster",
+      "battles": 450,
+      "wins": 321,
+      "draws": 119,
+      "losses": 10,
+      "win_pct": 71.33,
+      "draw_pct": 26.44,
+      "score_pct": 84.56,
+      "mean_rounds": 1.75
+    },
+    {
+      "mode": "neutral",
+      "level": 30,
+      "species": "dragon",
+      "battles": 450,
+      "wins": 356,
+      "draws": 71,
+      "losses": 23,
+      "win_pct": 79.11,
+      "draw_pct": 15.78,
+      "score_pct": 87.0,
+      "mean_rounds": 2.33
+    },
+    {
+      "mode": "neutral",
+      "level": 30,
+      "species": "plant",
+      "battles": 450,
+      "wins": 72,
+      "draws": 129,
+      "losses": 249,
+      "win_pct": 16.0,
+      "draw_pct": 28.67,
+      "score_pct": 30.33,
+      "mean_rounds": 3.72
+    },
+    {
+      "mode": "neutral",
+      "level": 30,
+      "species": "ghost",
+      "battles": 450,
+      "wins": 55,
+      "draws": 201,
+      "losses": 194,
+      "win_pct": 12.22,
+      "draw_pct": 44.67,
+      "score_pct": 34.56,
+      "mean_rounds": 2.08
+    },
+    {
+      "mode": "neutral",
+      "level": 60,
+      "species": "mammal",
+      "battles": 450,
+      "wins": 72,
+      "draws": 165,
+      "losses": 213,
+      "win_pct": 16.0,
+      "draw_pct": 36.67,
+      "score_pct": 34.33,
+      "mean_rounds": 2.52
+    },
+    {
+      "mode": "neutral",
+      "level": 60,
+      "species": "bird",
+      "battles": 450,
+      "wins": 22,
+      "draws": 144,
+      "losses": 284,
+      "win_pct": 4.89,
+      "draw_pct": 32.0,
+      "score_pct": 20.89,
+      "mean_rounds": 2.1
+    },
+    {
+      "mode": "neutral",
+      "level": 60,
+      "species": "reptile",
+      "battles": 450,
+      "wins": 247,
+      "draws": 49,
+      "losses": 154,
+      "win_pct": 54.89,
+      "draw_pct": 10.89,
+      "score_pct": 60.33,
+      "mean_rounds": 3.57
+    },
+    {
+      "mode": "neutral",
+      "level": 60,
+      "species": "machine",
+      "battles": 450,
+      "wins": 296,
+      "draws": 35,
+      "losses": 119,
+      "win_pct": 65.78,
+      "draw_pct": 7.78,
+      "score_pct": 69.67,
+      "mean_rounds": 3.7
+    },
+    {
+      "mode": "neutral",
+      "level": 60,
+      "species": "fairy",
+      "battles": 450,
+      "wins": 11,
+      "draws": 163,
+      "losses": 276,
+      "win_pct": 2.44,
+      "draw_pct": 36.22,
+      "score_pct": 20.56,
+      "mean_rounds": 2.22
+    },
+    {
+      "mode": "neutral",
+      "level": 60,
+      "species": "monster",
+      "battles": 450,
+      "wins": 301,
+      "draws": 141,
+      "losses": 8,
+      "win_pct": 66.89,
+      "draw_pct": 31.33,
+      "score_pct": 82.56,
+      "mean_rounds": 1.78
+    },
+    {
+      "mode": "neutral",
+      "level": 60,
+      "species": "dragon",
+      "battles": 450,
+      "wins": 344,
+      "draws": 88,
+      "losses": 18,
+      "win_pct": 76.44,
+      "draw_pct": 19.56,
+      "score_pct": 86.22,
+      "mean_rounds": 2.35
+    },
+    {
+      "mode": "neutral",
+      "level": 60,
+      "species": "plant",
+      "battles": 450,
+      "wins": 91,
+      "draws": 102,
+      "losses": 257,
+      "win_pct": 20.22,
+      "draw_pct": 22.67,
+      "score_pct": 31.56,
+      "mean_rounds": 3.73
+    },
+    {
+      "mode": "neutral",
+      "level": 60,
+      "species": "ghost",
+      "battles": 450,
+      "wins": 35,
+      "draws": 203,
+      "losses": 212,
+      "win_pct": 7.78,
+      "draw_pct": 45.11,
+      "score_pct": 30.33,
+      "mean_rounds": 2.06
+    },
+    {
+      "mode": "neutral",
+      "level": 100,
+      "species": "mammal",
+      "battles": 450,
+      "wins": 94,
+      "draws": 157,
+      "losses": 199,
+      "win_pct": 20.89,
+      "draw_pct": 34.89,
+      "score_pct": 38.33,
+      "mean_rounds": 2.52
+    },
+    {
+      "mode": "neutral",
+      "level": 100,
+      "species": "bird",
+      "battles": 450,
+      "wins": 46,
+      "draws": 146,
+      "losses": 258,
+      "win_pct": 10.22,
+      "draw_pct": 32.44,
+      "score_pct": 26.44,
+      "mean_rounds": 2.12
+    },
+    {
+      "mode": "neutral",
+      "level": 100,
+      "species": "reptile",
+      "battles": 450,
+      "wins": 258,
+      "draws": 49,
+      "losses": 143,
+      "win_pct": 57.33,
+      "draw_pct": 10.89,
+      "score_pct": 62.78,
+      "mean_rounds": 3.57
+    },
+    {
+      "mode": "neutral",
+      "level": 100,
+      "species": "machine",
+      "battles": 450,
+      "wins": 297,
+      "draws": 39,
+      "losses": 114,
+      "win_pct": 66.0,
+      "draw_pct": 8.67,
+      "score_pct": 70.33,
+      "mean_rounds": 3.69
+    },
+    {
+      "mode": "neutral",
+      "level": 100,
+      "species": "fairy",
+      "battles": 450,
+      "wins": 31,
+      "draws": 162,
+      "losses": 257,
+      "win_pct": 6.89,
+      "draw_pct": 36.0,
+      "score_pct": 24.89,
+      "mean_rounds": 2.23
+    },
+    {
+      "mode": "neutral",
+      "level": 100,
+      "species": "monster",
+      "battles": 450,
+      "wins": 311,
+      "draws": 124,
+      "losses": 15,
+      "win_pct": 69.11,
+      "draw_pct": 27.56,
+      "score_pct": 82.89,
+      "mean_rounds": 1.79
+    },
+    {
+      "mode": "neutral",
+      "level": 100,
+      "species": "dragon",
+      "battles": 450,
+      "wins": 346,
+      "draws": 85,
+      "losses": 19,
+      "win_pct": 76.89,
+      "draw_pct": 18.89,
+      "score_pct": 86.33,
+      "mean_rounds": 2.38
+    },
+    {
+      "mode": "neutral",
+      "level": 100,
+      "species": "plant",
+      "battles": 450,
+      "wins": 104,
+      "draws": 102,
+      "losses": 244,
+      "win_pct": 23.11,
+      "draw_pct": 22.67,
+      "score_pct": 34.44,
+      "mean_rounds": 3.73
+    },
+    {
+      "mode": "neutral",
+      "level": 100,
+      "species": "ghost",
+      "battles": 450,
+      "wins": 57,
+      "draws": 199,
+      "losses": 194,
+      "win_pct": 12.67,
+      "draw_pct": 44.22,
+      "score_pct": 34.78,
+      "mean_rounds": 2.09
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 1,
+      "species": "mammal",
+      "battles": 450,
+      "wins": 119,
+      "draws": 132,
+      "losses": 199,
+      "win_pct": 26.44,
+      "draw_pct": 29.33,
+      "score_pct": 41.11,
+      "mean_rounds": 2.17
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 1,
+      "species": "bird",
+      "battles": 450,
+      "wins": 86,
+      "draws": 124,
+      "losses": 240,
+      "win_pct": 19.11,
+      "draw_pct": 27.56,
+      "score_pct": 32.89,
+      "mean_rounds": 1.87
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 1,
+      "species": "reptile",
+      "battles": 450,
+      "wins": 241,
+      "draws": 63,
+      "losses": 146,
+      "win_pct": 53.56,
+      "draw_pct": 14.0,
+      "score_pct": 60.56,
+      "mean_rounds": 2.9
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 1,
+      "species": "machine",
+      "battles": 450,
+      "wins": 269,
+      "draws": 50,
+      "losses": 131,
+      "win_pct": 59.78,
+      "draw_pct": 11.11,
+      "score_pct": 65.33,
+      "mean_rounds": 2.93
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 1,
+      "species": "fairy",
+      "battles": 450,
+      "wins": 83,
+      "draws": 128,
+      "losses": 239,
+      "win_pct": 18.44,
+      "draw_pct": 28.44,
+      "score_pct": 32.67,
+      "mean_rounds": 1.96
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 1,
+      "species": "monster",
+      "battles": 450,
+      "wins": 281,
+      "draws": 120,
+      "losses": 49,
+      "win_pct": 62.44,
+      "draw_pct": 26.67,
+      "score_pct": 75.78,
+      "mean_rounds": 1.6
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 1,
+      "species": "dragon",
+      "battles": 450,
+      "wins": 324,
+      "draws": 67,
+      "losses": 59,
+      "win_pct": 72.0,
+      "draw_pct": 14.89,
+      "score_pct": 79.44,
+      "mean_rounds": 2.1
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 1,
+      "species": "plant",
+      "battles": 450,
+      "wins": 134,
+      "draws": 81,
+      "losses": 235,
+      "win_pct": 29.78,
+      "draw_pct": 18.0,
+      "score_pct": 38.78,
+      "mean_rounds": 3.0
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 1,
+      "species": "ghost",
+      "battles": 450,
+      "wins": 95,
+      "draws": 156,
+      "losses": 199,
+      "win_pct": 21.11,
+      "draw_pct": 34.67,
+      "score_pct": 38.44,
+      "mean_rounds": 1.84
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 30,
+      "species": "mammal",
+      "battles": 450,
+      "wins": 118,
+      "draws": 125,
+      "losses": 207,
+      "win_pct": 26.22,
+      "draw_pct": 27.78,
+      "score_pct": 40.11,
+      "mean_rounds": 2.18
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 30,
+      "species": "bird",
+      "battles": 450,
+      "wins": 68,
+      "draws": 123,
+      "losses": 259,
+      "win_pct": 15.11,
+      "draw_pct": 27.33,
+      "score_pct": 28.78,
+      "mean_rounds": 1.85
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 30,
+      "species": "reptile",
+      "battles": 450,
+      "wins": 235,
+      "draws": 46,
+      "losses": 169,
+      "win_pct": 52.22,
+      "draw_pct": 10.22,
+      "score_pct": 57.33,
+      "mean_rounds": 2.91
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 30,
+      "species": "machine",
+      "battles": 450,
+      "wins": 261,
+      "draws": 39,
+      "losses": 150,
+      "win_pct": 58.0,
+      "draw_pct": 8.67,
+      "score_pct": 62.33,
+      "mean_rounds": 2.97
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 30,
+      "species": "fairy",
+      "battles": 450,
+      "wins": 67,
+      "draws": 128,
+      "losses": 255,
+      "win_pct": 14.89,
+      "draw_pct": 28.44,
+      "score_pct": 29.11,
+      "mean_rounds": 1.91
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 30,
+      "species": "monster",
+      "battles": 450,
+      "wins": 284,
+      "draws": 105,
+      "losses": 61,
+      "win_pct": 63.11,
+      "draw_pct": 23.33,
+      "score_pct": 74.78,
+      "mean_rounds": 1.6
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 30,
+      "species": "dragon",
+      "battles": 450,
+      "wins": 302,
+      "draws": 71,
+      "losses": 77,
+      "win_pct": 67.11,
+      "draw_pct": 15.78,
+      "score_pct": 75.0,
+      "mean_rounds": 2.12
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 30,
+      "species": "plant",
+      "battles": 450,
+      "wins": 116,
+      "draws": 92,
+      "losses": 242,
+      "win_pct": 25.78,
+      "draw_pct": 20.44,
+      "score_pct": 36.0,
+      "mean_rounds": 3.18
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 30,
+      "species": "ghost",
+      "battles": 450,
+      "wins": 79,
+      "draws": 153,
+      "losses": 218,
+      "win_pct": 17.56,
+      "draw_pct": 34.0,
+      "score_pct": 34.56,
+      "mean_rounds": 1.81
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 60,
+      "species": "mammal",
+      "battles": 450,
+      "wins": 119,
+      "draws": 102,
+      "losses": 229,
+      "win_pct": 26.44,
+      "draw_pct": 22.67,
+      "score_pct": 37.78,
+      "mean_rounds": 2.13
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 60,
+      "species": "bird",
+      "battles": 450,
+      "wins": 69,
+      "draws": 113,
+      "losses": 268,
+      "win_pct": 15.33,
+      "draw_pct": 25.11,
+      "score_pct": 27.89,
+      "mean_rounds": 1.8
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 60,
+      "species": "reptile",
+      "battles": 450,
+      "wins": 227,
+      "draws": 45,
+      "losses": 178,
+      "win_pct": 50.44,
+      "draw_pct": 10.0,
+      "score_pct": 55.44,
+      "mean_rounds": 2.95
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 60,
+      "species": "machine",
+      "battles": 450,
+      "wins": 250,
+      "draws": 42,
+      "losses": 158,
+      "win_pct": 55.56,
+      "draw_pct": 9.33,
+      "score_pct": 60.22,
+      "mean_rounds": 3.01
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 60,
+      "species": "fairy",
+      "battles": 450,
+      "wins": 58,
+      "draws": 131,
+      "losses": 261,
+      "win_pct": 12.89,
+      "draw_pct": 29.11,
+      "score_pct": 27.44,
+      "mean_rounds": 1.91
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 60,
+      "species": "monster",
+      "battles": 450,
+      "wins": 276,
+      "draws": 101,
+      "losses": 73,
+      "win_pct": 61.33,
+      "draw_pct": 22.44,
+      "score_pct": 72.56,
+      "mean_rounds": 1.57
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 60,
+      "species": "dragon",
+      "battles": 450,
+      "wins": 301,
+      "draws": 63,
+      "losses": 86,
+      "win_pct": 66.89,
+      "draw_pct": 14.0,
+      "score_pct": 73.89,
+      "mean_rounds": 2.05
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 60,
+      "species": "plant",
+      "battles": 450,
+      "wins": 121,
+      "draws": 79,
+      "losses": 250,
+      "win_pct": 26.89,
+      "draw_pct": 17.56,
+      "score_pct": 35.67,
+      "mean_rounds": 3.17
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 60,
+      "species": "ghost",
+      "battles": 450,
+      "wins": 76,
+      "draws": 154,
+      "losses": 220,
+      "win_pct": 16.89,
+      "draw_pct": 34.22,
+      "score_pct": 34.0,
+      "mean_rounds": 1.77
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 100,
+      "species": "mammal",
+      "battles": 450,
+      "wins": 132,
+      "draws": 144,
+      "losses": 174,
+      "win_pct": 29.33,
+      "draw_pct": 32.0,
+      "score_pct": 45.33,
+      "mean_rounds": 2.12
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 100,
+      "species": "bird",
+      "battles": 450,
+      "wins": 97,
+      "draws": 127,
+      "losses": 226,
+      "win_pct": 21.56,
+      "draw_pct": 28.22,
+      "score_pct": 35.67,
+      "mean_rounds": 1.8
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 100,
+      "species": "reptile",
+      "battles": 450,
+      "wins": 245,
+      "draws": 51,
+      "losses": 154,
+      "win_pct": 54.44,
+      "draw_pct": 11.33,
+      "score_pct": 60.11,
+      "mean_rounds": 2.86
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 100,
+      "species": "machine",
+      "battles": 450,
+      "wins": 262,
+      "draws": 54,
+      "losses": 134,
+      "win_pct": 58.22,
+      "draw_pct": 12.0,
+      "score_pct": 64.22,
+      "mean_rounds": 2.91
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 100,
+      "species": "fairy",
+      "battles": 450,
+      "wins": 82,
+      "draws": 148,
+      "losses": 220,
+      "win_pct": 18.22,
+      "draw_pct": 32.89,
+      "score_pct": 34.67,
+      "mean_rounds": 1.88
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 100,
+      "species": "monster",
+      "battles": 450,
+      "wins": 298,
+      "draws": 99,
+      "losses": 53,
+      "win_pct": 66.22,
+      "draw_pct": 22.0,
+      "score_pct": 77.22,
+      "mean_rounds": 1.53
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 100,
+      "species": "dragon",
+      "battles": 450,
+      "wins": 318,
+      "draws": 66,
+      "losses": 66,
+      "win_pct": 70.67,
+      "draw_pct": 14.67,
+      "score_pct": 78.0,
+      "mean_rounds": 2.01
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 100,
+      "species": "plant",
+      "battles": 450,
+      "wins": 139,
+      "draws": 92,
+      "losses": 219,
+      "win_pct": 30.89,
+      "draw_pct": 20.44,
+      "score_pct": 41.11,
+      "mean_rounds": 3.08
+    },
+    {
+      "mode": "mixed_elements",
+      "level": 100,
+      "species": "ghost",
+      "battles": 450,
+      "wins": 112,
+      "draws": 151,
+      "losses": 187,
+      "win_pct": 24.89,
+      "draw_pct": 33.56,
+      "score_pct": 41.67,
+      "mean_rounds": 1.75
+    }
+  ],
+  "progression": [
+    {
+      "species": "mammal",
+      "seed": 20261005,
+      "days": 60,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 13,
+        "81": 36,
+        "100": 60
+      },
+      "food_remaining": 81,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 55,
+        "hp": 67,
+        "def": 58
+      },
+      "trained": 180,
+      "feeds_used": 140,
+      "lose": 7,
+      "win": 80,
+      "draw": 9
+    },
+    {
+      "species": "mammal",
+      "seed": 20261006,
+      "days": 63,
+      "level": 100,
+      "milestone_days": {
+        "31": 7,
+        "51": 13,
+        "81": 36,
+        "100": 63
+      },
+      "food_remaining": 81,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 67,
+        "atk": 60,
+        "hp": 62
+      },
+      "trained": 189,
+      "feeds_used": 147,
+      "draw": 8,
+      "win": 76,
+      "lose": 8
+    },
+    {
+      "species": "mammal",
+      "seed": 20261007,
+      "days": 61,
+      "level": 100,
+      "milestone_days": {
+        "31": 7,
+        "51": 14,
+        "81": 34,
+        "100": 61
+      },
+      "food_remaining": 78,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 66,
+        "atk": 58,
+        "def": 59
+      },
+      "trained": 183,
+      "feeds_used": 142,
+      "lose": 7,
+      "win": 75,
+      "draw": 8
+    },
+    {
+      "species": "bird",
+      "seed": 20261005,
+      "days": 62,
+      "level": 100,
+      "milestone_days": {
+        "31": 7,
+        "51": 15,
+        "81": 36,
+        "100": 62
+      },
+      "food_remaining": 83,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 67,
+        "hp": 61,
+        "def": 58
+      },
+      "trained": 186,
+      "feeds_used": 144,
+      "lose": 11,
+      "win": 75,
+      "draw": 11
+    },
+    {
+      "species": "bird",
+      "seed": 20261006,
+      "days": 63,
+      "level": 100,
+      "milestone_days": {
+        "31": 7,
+        "51": 15,
+        "81": 36,
+        "100": 63
+      },
+      "food_remaining": 83,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 73,
+        "atk": 62,
+        "hp": 54
+      },
+      "trained": 189,
+      "feeds_used": 147,
+      "lose": 12,
+      "win": 76,
+      "draw": 8
+    },
+    {
+      "species": "bird",
+      "seed": 20261007,
+      "days": 61,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 14,
+        "81": 33,
+        "100": 61
+      },
+      "food_remaining": 77,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 64,
+        "atk": 62,
+        "def": 57
+      },
+      "trained": 183,
+      "feeds_used": 142,
+      "lose": 9,
+      "win": 77,
+      "draw": 9
+    },
+    {
+      "species": "reptile",
+      "seed": 20261005,
+      "days": 57,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 13,
+        "81": 33,
+        "100": 57
+      },
+      "food_remaining": 80,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 60,
+        "hp": 62,
+        "def": 49
+      },
+      "trained": 171,
+      "feeds_used": 133,
+      "win": 90,
+      "lose": 4,
+      "draw": 5
+    },
+    {
+      "species": "reptile",
+      "seed": 20261006,
+      "days": 61,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 14,
+        "81": 35,
+        "100": 61
+      },
+      "food_remaining": 80,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 63,
+        "atk": 53,
+        "hp": 67
+      },
+      "trained": 183,
+      "feeds_used": 142,
+      "win": 76,
+      "lose": 8,
+      "draw": 5
+    },
+    {
+      "species": "reptile",
+      "seed": 20261007,
+      "days": 60,
+      "level": 100,
+      "milestone_days": {
+        "31": 5,
+        "51": 13,
+        "81": 34,
+        "100": 60
+      },
+      "food_remaining": 78,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 67,
+        "atk": 65,
+        "def": 48
+      },
+      "trained": 180,
+      "feeds_used": 140,
+      "lose": 4,
+      "win": 79,
+      "draw": 4
+    },
+    {
+      "species": "machine",
+      "seed": 20261005,
+      "days": 57,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 13,
+        "81": 33,
+        "100": 57
+      },
+      "food_remaining": 80,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 60,
+        "hp": 62,
+        "def": 49
+      },
+      "trained": 171,
+      "feeds_used": 133,
+      "win": 90,
+      "lose": 4,
+      "draw": 5
+    },
+    {
+      "species": "machine",
+      "seed": 20261006,
+      "days": 61,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 14,
+        "81": 35,
+        "100": 61
+      },
+      "food_remaining": 80,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 63,
+        "atk": 53,
+        "hp": 67
+      },
+      "trained": 183,
+      "feeds_used": 142,
+      "win": 76,
+      "lose": 8,
+      "draw": 5
+    },
+    {
+      "species": "machine",
+      "seed": 20261007,
+      "days": 60,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 14,
+        "81": 33,
+        "100": 60
+      },
+      "food_remaining": 83,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 66,
+        "atk": 64,
+        "def": 50
+      },
+      "trained": 180,
+      "feeds_used": 140,
+      "lose": 3,
+      "draw": 4,
+      "win": 81
+    },
+    {
+      "species": "fairy",
+      "seed": 20261005,
+      "days": 62,
+      "level": 100,
+      "milestone_days": {
+        "31": 7,
+        "51": 15,
+        "81": 35,
+        "100": 62
+      },
+      "food_remaining": 76,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 63,
+        "hp": 61,
+        "def": 62
+      },
+      "trained": 186,
+      "feeds_used": 144,
+      "lose": 11,
+      "win": 73,
+      "draw": 11
+    },
+    {
+      "species": "fairy",
+      "seed": 20261006,
+      "days": 60,
+      "level": 100,
+      "milestone_days": {
+        "31": 7,
+        "51": 15,
+        "81": 36,
+        "100": 60
+      },
+      "food_remaining": 81,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 68,
+        "atk": 64,
+        "hp": 48
+      },
+      "trained": 180,
+      "feeds_used": 140,
+      "lose": 12,
+      "win": 81,
+      "draw": 7
+    },
+    {
+      "species": "fairy",
+      "seed": 20261007,
+      "days": 62,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 15,
+        "81": 35,
+        "100": 62
+      },
+      "food_remaining": 87,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 62,
+        "atk": 66,
+        "def": 58
+      },
+      "trained": 186,
+      "feeds_used": 144,
+      "lose": 13,
+      "win": 70,
+      "draw": 19
+    },
+    {
+      "species": "monster",
+      "seed": 20261005,
+      "days": 57,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 13,
+        "81": 32,
+        "100": 57
+      },
+      "food_remaining": 85,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 53,
+        "hp": 61,
+        "def": 57
+      },
+      "trained": 171,
+      "feeds_used": 133,
+      "win": 89,
+      "lose": 5,
+      "draw": 1
+    },
+    {
+      "species": "monster",
+      "seed": 20261006,
+      "days": 59,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 14,
+        "81": 34,
+        "100": 59
+      },
+      "food_remaining": 88,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {
+        "def": 72,
+        "atk": 48,
+        "hp": 57
+      },
+      "trained": 177,
+      "feeds_used": 137,
+      "win": 87,
+      "draw": 3,
+      "lose": 1
+    },
+    {
+      "species": "monster",
+      "seed": 20261007,
+      "days": 59,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 13,
+        "81": 33,
+        "100": 59
+      },
+      "food_remaining": 82,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 63,
+        "atk": 59,
+        "def": 55
+      },
+      "trained": 177,
+      "feeds_used": 137,
+      "lose": 6,
+      "win": 82,
+      "draw": 8
+    },
+    {
+      "species": "dragon",
+      "seed": 20261005,
+      "days": 58,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 12,
+        "81": 33,
+        "100": 58
+      },
+      "food_remaining": 84,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 53,
+        "hp": 62,
+        "def": 59
+      },
+      "trained": 174,
+      "feeds_used": 135,
+      "win": 86,
+      "draw": 2,
+      "lose": 5
+    },
+    {
+      "species": "dragon",
+      "seed": 20261006,
+      "days": 57,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 12,
+        "81": 32,
+        "100": 57
+      },
+      "food_remaining": 85,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {
+        "def": 64,
+        "atk": 55,
+        "hp": 52
+      },
+      "trained": 171,
+      "feeds_used": 133,
+      "win": 93,
+      "draw": 2,
+      "lose": 1
+    },
+    {
+      "species": "dragon",
+      "seed": 20261007,
+      "days": 58,
+      "level": 100,
+      "milestone_days": {
+        "31": 5,
+        "51": 11,
+        "81": 31,
+        "100": 58
+      },
+      "food_remaining": 83,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 59,
+        "atk": 59,
+        "def": 56
+      },
+      "trained": 174,
+      "feeds_used": 135,
+      "lose": 3,
+      "win": 86,
+      "draw": 5
+    },
+    {
+      "species": "plant",
+      "seed": 20261005,
+      "days": 60,
+      "level": 100,
+      "milestone_days": {
+        "31": 7,
+        "51": 14,
+        "81": 34,
+        "100": 60
+      },
+      "food_remaining": 88,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 45,
+        "hp": 70,
+        "def": 65
+      },
+      "trained": 180,
+      "feeds_used": 140,
+      "draw": 3,
+      "win": 83,
+      "lose": 6
+    },
+    {
+      "species": "plant",
+      "seed": 20261006,
+      "days": 63,
+      "level": 100,
+      "milestone_days": {
+        "31": 7,
+        "51": 14,
+        "81": 35,
+        "100": 63
+      },
+      "food_remaining": 81,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 70,
+        "atk": 66,
+        "hp": 53
+      },
+      "trained": 189,
+      "feeds_used": 147,
+      "win": 72,
+      "lose": 7,
+      "draw": 6
+    },
+    {
+      "species": "plant",
+      "seed": 20261007,
+      "days": 62,
+      "level": 100,
+      "milestone_days": {
+        "31": 7,
+        "51": 14,
+        "81": 34,
+        "100": 62
+      },
+      "food_remaining": 83,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 62,
+        "atk": 69,
+        "def": 55
+      },
+      "trained": 186,
+      "feeds_used": 144,
+      "lose": 13,
+      "win": 76,
+      "draw": 7
+    },
+    {
+      "species": "ghost",
+      "seed": 20261005,
+      "days": 60,
+      "level": 100,
+      "milestone_days": {
+        "31": 7,
+        "51": 15,
+        "81": 34,
+        "100": 60
+      },
+      "food_remaining": 83,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 63,
+        "hp": 60,
+        "def": 57
+      },
+      "trained": 180,
+      "feeds_used": 140,
+      "lose": 11,
+      "win": 81,
+      "draw": 11
+    },
+    {
+      "species": "ghost",
+      "seed": 20261006,
+      "days": 61,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 13,
+        "81": 35,
+        "100": 61
+      },
+      "food_remaining": 86,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {
+        "def": 73,
+        "atk": 54,
+        "hp": 56
+      },
+      "trained": 183,
+      "feeds_used": 142,
+      "win": 79,
+      "draw": 6,
+      "lose": 9
+    },
+    {
+      "species": "ghost",
+      "seed": 20261007,
+      "days": 61,
+      "level": 100,
+      "milestone_days": {
+        "31": 6,
+        "51": 14,
+        "81": 34,
+        "100": 61
+      },
+      "food_remaining": 89,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 74,
+        "atk": 71,
+        "def": 38
+      },
+      "trained": 183,
+      "feeds_used": 142,
+      "lose": 6,
+      "win": 78,
+      "draw": 19
+    }
+  ],
+  "food_without_battle_rewards": {
+    "without_attendance_supply": {
+      "species": "mammal",
+      "seed": 20261005,
+      "days": 30,
+      "level": 46,
+      "milestone_days": {
+        "31": 14
+      },
+      "food_remaining": 0,
+      "minimum_end_of_day_food": 0,
+      "training_bonus": {
+        "atk": 2,
+        "hp": 4,
+        "def": 1
+      },
+      "trained": 7,
+      "feeds_used": 3,
+      "feed_refusals": 86,
+      "training_refusals": 83
+    },
+    "with_attendance_supply": {
+      "species": "mammal",
+      "seed": 20261005,
+      "days": 30,
+      "level": 61,
+      "milestone_days": {
+        "31": 9,
+        "51": 19
+      },
+      "food_remaining": 23,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 32,
+        "hp": 31,
+        "def": 27
+      },
+      "trained": 90,
+      "feeds_used": 70
+    }
+  }
+}

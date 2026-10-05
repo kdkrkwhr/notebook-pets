@@ -50,7 +50,15 @@ result = game_tool("snack")
 
 놀이는 기존 친밀도에 `반올림(20 × 종족 배율)`을 더하고 100에서 제한합니다. 훈련은 `hp`, `atk`, `def` 중 하나에 영구 보너스 1을 더합니다. 기본 능력치는 레벨·종족 성장치에서 계산하고 `training_bonus`를 더합니다. 예전 세이브의 사용되지 않던 `stats`를 훈련 보너스로 해석하지 않습니다.
 
-전투는 기존처럼 한 차례 공격 교환의 피해량을 비교하며 동점은 플레이어 승리입니다. 양쪽 기본 능력치는 같은 레벨·종족 공식을 사용합니다. 피해량은 `max(0, 공격력 × 상성 × 변동률 × 폭주 배율 - 상대 방어력 × 0.5)`입니다. 폭주는 플레이어 괴수족의 기존 조건을 유지합니다. 회피는 방어하는 개체의 종족에 따라 각각 독립 판정하며 기본 5%, 조류·유령족은 10%입니다. 훈련 증가량, 방어 계수, 회피율은 `data/game_data.json`에서 조정합니다. 현재 단일 교환 전투는 HP 소모나 여러 턴을 시뮬레이션하지 않습니다.
+전투는 매번 최대 HP에서 시작해 최대 20라운드 동안 동시에 공격하고 체력을 소모합니다. 양쪽 기본 능력치는 같은 레벨·종족 공식을 사용합니다. 피해량은 `max(0, 공격력 × 상성 × 변동률 × 폭주 배율 - 상대 방어력 × 0.5)`이며 남은 HP를 초과해 피해를 기록하지 않습니다. 폭주는 플레이어 괴수족의 기존 조건을 유지합니다. 회피는 각 방어자의 종족에 따라 독립 판정하며 기본 5%, 조류·유령족은 10%입니다. HP가 0인 개체가 나오면 해당 라운드 종료 시 전투를 마칩니다. 동시 쓰러짐은 무승부이며, 20라운드 이후 양쪽이 살아 있으면 남은 HP 비율로 판정합니다. 비율이 같으면 무승부입니다. 전투 후 HP는 세이브에 저장하지 않아 다음 전투는 회복된 상태로 시작합니다.
+
+응답의 `outcome`은 `win`, `lose`, `draw`이며 `won`은 승리만 `true`입니다. 무승부는 `record.draw`에 기록하고 경험치 20만 지급합니다. `rounds`, `hp_me`, `hp_enemy`, `max_hp_me`, `max_hp_enemy`와 회피 횟수를 응답에 포함합니다. `dmg_me`·`dmg_enemy`는 전투 전체의 누적 실제 피해입니다. 이전 단일 교환 결과가 메시지 처리 기록에 있다면 재요청 시 그 원본을 반환하므로 중계 계층은 새 필드가 없는 응답도 처리해야 합니다. 훈련 증가량, 방어 계수, 회피율, 라운드 제한과 보상은 `data/game_data.json`에서 조정합니다.
+
+조우가 남아 있으면 산책은 `encounter_pending`으로 거절하고 경험치·일일 횟수를 소비하지 않습니다. `status.encounter` 또는 산책 응답의 `wild`로 상대를 확인합니다. `battle`, `catch`, `flee`(`도망`)로 조우를 마칠 수 있고, 도망에는 보상이 없습니다. 생성되는 야생 레벨은 1~100입니다. 기존 세이브의 조우는 보존합니다.
+
+출석은 경험치와 함께 일반 사료 3개를 하루 한 번 지급하며, 같은 메시지 재처리는 보급을 중복 지급하지 않습니다. 이전 버전에서 당일 출석을 이미 했다면 보급은 다음 출석부터 적용됩니다. 전투 보상을 받지 못해도 이 사료로 다시 먹이·훈련을 진행할 수 있습니다.
+
+전투 32,400회와 일일 성장·사료 수급 실험은 [밸런스 보고서](BALANCE_REPORT.md)에 정리했습니다. 보고서는 고정 일정의 시뮬레이션이며 실제 플레이 지표가 아닙니다. 재현 도구는 `tools/simulate_balance.py`이고 운영 세이브에 접근하지 않습니다.
 
 ### 저장과 배치
 
@@ -73,7 +81,13 @@ Prefer `adapter.bind_discord_event(event.author.id, event.id)`: expose only its 
 
 Successful state writes store the result and event receipt atomically in the same save. Retries return that result across restarts and calendar days; changing the command or arguments for the same user/event returns `request_conflict`. Aliases are normalized. Read-only requests and rejected actions that do not save state are not recorded. Access is checked again before replay. Receipts never expire automatically, grow with traffic, and must be backed up with saves. Administrative reset removes them: do not redeliver pre-reset events afterward. Admin commands are excluded from the bound game tool and reject event IDs. Discord reply/image deduplication remains the integration's responsibility.
 
-Play adds the rounded species-scaled gain to existing intimacy, capped at 100. Training adds a permanent +1 to one random HP/attack/defense stat via `training_bonus`; legacy `stats` values are preserved but not interpreted as bonuses. Combat still compares damage in a single exchange, with ties won by the player. Both sides use the same species/level stat formula, subtract half the opponent's defense, and clamp damage to zero. Each defender independently dodges at 5%, or 10% for birds/ghosts. Player berserk rules remain intact. Training gain, defense factor and dodge rates live in balance data. This combat model does not simulate HP depletion or multiple turns.
+Play adds the rounded species-scaled gain to existing intimacy, capped at 100. Training adds a permanent +1 to one random HP/attack/defense stat via `training_bonus`; legacy `stats` values are preserved but not interpreted as bonuses. Battles start at full HP and run simultaneous exchanges for up to 20 rounds. Both sides use the same species/level stat formula, subtract half the opponent's defense, and clamp damage between zero and remaining HP. Defenders independently dodge at 5%, or 10% for birds/ghosts. Player berserk rules remain intact. Training gain, defense factor, dodge rates, round cap and rewards live in balance data.
+
+A knockout ends the battle after that simultaneous round; double knockouts are draws. If both survive the round cap, remaining HP fractions decide the outcome, with equal fractions drawn. HP is local to the battle and not persisted. `outcome` is `win`, `lose` or `draw`; `won` is true only for wins. Draws add `record.draw` and award 20 XP with no loot. Results include round count, final/maximum HP, cumulative actual damage, and dodge counts. Historical deduplicated responses may lack the new fields: adapters must still handle them.
+
+An unresolved encounter blocks another walk with `encounter_pending` and no XP/quota consumption. Inspect `status.encounter` or a walk's `wild` field, then battle, catch, or `flee` (`도망`). Fleeing gives no reward. New wild levels are capped at 100; existing encounters are preserved. Attendance now grants three normal feed once a day along with XP, atomically with event receipts. Users already checked in under older rules receive supplies on their next attendance day.
+
+The [balance report](BALANCE_REPORT.md) contains 32,400 simulated battles and fixed-schedule progression/food experiments. These are model results, not live player data. Reproduce with `tools/simulate_balance.py`; the tool never accesses operational saves.
 
 `NOTEBOOK_DATA_DIR` selects the root for `state/` and `data/access.json`, defaulting to the repository root. Rules still come from the repository's `data/game_data.json`. Commands and decay must use the same root. The shared OS lock is intended for a local filesystem on one host, not distributed storage. It covers the entire read/modify/write operation; writes use a completed temporary file and replacement. Keep `.store.lock` in place. Process exit releases its lock; acquisition times out after 15 seconds with `busy`.
 

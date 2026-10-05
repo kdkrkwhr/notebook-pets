@@ -107,7 +107,8 @@ class RuntimeTests(unittest.TestCase):
         self.assertTrue(engine.execute("123", "attendance")["ok"])
         saved = json.loads(path.read_text(encoding="utf-8"))
         self.assertEqual((saved["version"], saved["level"], saved["xp"]), (3, 7, 69))
-        self.assertEqual(saved["inventory"], st["inventory"])
+        self.assertEqual(saved["inventory"]["normal_feed"], st["inventory"]["normal_feed"] + 3)
+        self.assertEqual(saved["inventory"]["rare_feed"], st["inventory"]["rare_feed"])
         self.assertEqual(saved["history"], st["history"])
         self.assertNotIn("sleep_buff", saved["daily"])
 
@@ -218,7 +219,7 @@ class RuntimeTests(unittest.TestCase):
             results = self.parallel([["engine/engine.py", "123", command] for _ in range(8)])
             self.assertEqual(sum(r["ok"] for r in results), 1)
             self.assertEqual(engine.load_state("123")["xp"], xp)
-        self.assertEqual(engine.load_state("123")["inventory"]["normal_feed"], 2)
+        self.assertEqual(engine.load_state("123")["inventory"]["normal_feed"], 5)
 
     def test_concurrent_decay_is_idempotent(self):
         st = self.seed(satiety=80)
