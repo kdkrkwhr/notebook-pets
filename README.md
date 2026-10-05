@@ -206,7 +206,6 @@ python -B -X utf8 tests/test_engine.py
 | `develop` | 다음 개발의 통합 브랜치. 기능·수정 브랜치는 여기에서 분기하고 PR로 합칩니다. |
 | `release` | 검토·검증한 배포 기준을 유지하는 브랜치. 준비된 `develop` 변경을 PR로 반영합니다. |
 | `v0.2.0` | 현재 버전을 고정한 태그. 이후 새 버전에는 새 태그를 만듭니다. |
-| `master` | 전환 이전 기록을 보존하는 기존 브랜치. 이후 개발 기준은 `develop`입니다. |
 
 ```text
 develop → feat/... 또는 fix/... → PR → develop

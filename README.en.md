@@ -206,7 +206,6 @@ The current prototype is recorded as **0.2.0** in `VERSION` and as Git tag **`v0
 | `develop` | Integration branch for upcoming work. Create feature/fix branches from here and merge through PRs. |
 | `release` | Reviewed and verified release baseline. Promote ready changes from `develop` through a PR. |
 | `v0.2.0` | Fixed reference to this version. Create a new tag for each future version. |
-| `master` | Preserved pre-transition history. Use `develop` for subsequent development. |
 
 ```text
 develop → feat/... or fix/... → PR → develop
