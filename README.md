@@ -11,9 +11,10 @@ Notebook Pets는 **게임 규칙은 Python이 처리하고, 캐릭터의 말투�
 저장소 이름은 `notebook-pets`, 서비스 이름은 **노트버디(notebuddy)**입니다.
 
 <p align="center">
-  <img src="assets/samples/plant_nature_stage1.png" width="160" alt="자연 속성 식물족 몬스터">
-  <img src="assets/samples/machine_fire_stage1.png" width="160" alt="불 속성 기계족 몬스터">
-  <img src="assets/samples/ghost_wind_stage1.png" width="160" alt="바람 속성 유령족 몬스터">
+  <img src="assets/examples/plant_nature_stage1.png" width="160" alt="자연 속성 식물족 몬스터">
+  <img src="assets/examples/machine_fire_stage1.png" width="160" alt="불 속성 기계족 몬스터">
+  <img src="assets/examples/ghost_wind_stage1.png" width="160" alt="바람 속성 유령족 몬스터">
+  <img src="assets/examples/dragon_light_stage4.png" width="160" alt="빛 속성 용족 완전체">
 </p>
 
 ## 게임 구성
@@ -28,7 +29,7 @@ Notebook Pets는 **게임 규칙은 Python이 처리하고, 캐릭터의 말투�
 | 최종 진화 | 친밀도 70 이상이면 빛 분기, 미만이면 어둠 분기 |
 | 이미지 | 1단계 72조합 사전 생성 이미지, ComfyUI 기반 생성 도구 |
 
-기본 캐릭터 이미지는 `assets/samples/`에서 살펴볼 수 있습니다.
+새로 생성한 대표 예시는 [assets/examples](assets/examples/README.md)에서, 기본 72조합은 `assets/samples/`에서 살펴볼 수 있습니다.
 
 ## 구조와 설계 원칙
 

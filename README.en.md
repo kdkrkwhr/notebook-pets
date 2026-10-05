@@ -11,9 +11,10 @@ Notebook Pets is a virtual-pet project where **Python handles the game rules and
 The repository is named `notebook-pets`; the service name is **Notebuddy (노트버디)**.
 
 <p align="center">
-  <img src="assets/samples/plant_nature_stage1.png" width="160" alt="A nature-element plant monster">
-  <img src="assets/samples/machine_fire_stage1.png" width="160" alt="A fire-element machine monster">
-  <img src="assets/samples/ghost_wind_stage1.png" width="160" alt="A wind-element ghost monster">
+  <img src="assets/examples/plant_nature_stage1.png" width="160" alt="A nature-element plant monster">
+  <img src="assets/examples/machine_fire_stage1.png" width="160" alt="A fire-element machine monster">
+  <img src="assets/examples/ghost_wind_stage1.png" width="160" alt="A wind-element ghost monster">
+  <img src="assets/examples/dragon_light_stage4.png" width="160" alt="A light-element dragon in its final form">
 </p>
 
 ## Game features
@@ -28,7 +29,7 @@ The repository is named `notebook-pets`; the service name is **Notebuddy (노트
 | Final evolution | Light branch at intimacy 70 or above; dark branch below 70 |
 | Artwork | All 72 stage-one combinations, plus ComfyUI generation tools |
 
-Browse the starter artwork in `assets/samples/`.
+Browse the refreshed showcase in [assets/examples](assets/examples/README.md) and all 72 starter combinations in `assets/samples/`.
 
 ## Architecture and principles
 
