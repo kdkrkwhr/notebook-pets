@@ -1,80 +1,225 @@
-# 노트버디 (notebuddy)
+# Notebook Pets · 노트버디
 
-> 공책에서 태어난 AI 친구 — Discord 몬스터 육성 게임
-> *(GitHub repo `notebuddy`, 로컬 개발 코드네임 `notebook-monster`)*
+**한국어** · [English](README.en.md)
 
-Discord에서 키우는 디지몬풍 몬스터 육성 게임. **판정은 결정론 엔진, 서사는 AI 에이전트**가 담당한다.
+기준 버전: **0.2.0** · 개발 브랜치: `develop` · 배포 기준 브랜치: `release`
 
+> 공책에서 태어난 AI 친구 — Discord에서 돌보고 성장시키는 몬스터.
+
+Notebook Pets는 **게임 규칙은 Python이 처리하고, 캐릭터의 말투와 이야기는 AI 에이전트가 표현하는** 몬스터 육성 프로젝트입니다. 먹이를 주고, 놀아주고, 산책하며 나만의 몬스터와 관계를 쌓는 경험을 목표로 합니다.
+
+저장소 이름은 `notebook-pets`, 서비스 이름은 **노트버디(notebuddy)**입니다. 이전 문서에 등장하는 `notebook-monster`와 `공책 AI 키우기`도 같은 프로젝트를 가리킵니다.
+
+<p align="center">
+  <img src="assets/samples/plant_nature_stage1.png" width="160" alt="자연 속성 식물족 몬스터">
+  <img src="assets/samples/machine_fire_stage1.png" width="160" alt="불 속성 기계족 몬스터">
+  <img src="assets/samples/ghost_wind_stage1.png" width="160" alt="바람 속성 유령족 몬스터">
+</p>
+
+## 현재 상태
+
+**개발 중인 프로토타입입니다.** 게임 엔진, 밸런스 데이터, 이미지 생성 도구와 기본 이미지가 포함되어 있습니다. Discord 운영에 사용한 Hermes 프로필·스킬과 ComfyUI 실행 환경은 별도로 준비해야 합니다.
+
+2026-10-05 코드 점검에서 **경험치 누적 누락 등 성장·시간 처리 문제가 확인되었습니다.** 이 README는 현재 구현을 설명하며, 전체 플레이 흐름이 완성되었다는 의미는 아닙니다. 재개 전 [알려진 제한과 다음 작업](#알려진-제한과-다음-작업)을 확인해 주세요.
+
+## 게임 구성
+
+| 영역 | 내용 |
+| --- | --- |
+| 몬스터 | 9종족 × 8속성, 총 72가지 기본 조합 |
+| 돌보기 | 먹이, 간식, 놀이, 수면과 친밀도·포만감 |
+| 활동 | 훈련, 산책, 야생 몬스터와 전투·포획 |
+| 기록 | 전적, 포획 도감, 칭호, 랭킹 |
+| 성장 규칙 | 레벨 31·51·81에서 단계 전환, 최고 레벨 100 |
+| 최종 진화 | 친밀도 70 이상이면 빛 분기, 미만이면 어둠 분기 |
+| 이미지 | 1단계 72조합 사전 생성 이미지, ComfyUI 기반 생성 도구 |
+
+성장 규칙은 코드와 데이터에 존재하지만, 현재 경험치 누적 오류로 정상적인 레벨업·진화 진행은 막혀 있습니다. 2·3단계 사전 생성 이미지는 없고, 4단계는 예시 1장이 포함되어 있습니다.
+
+## 구조와 설계 원칙
+
+```text
+Discord 메시지
+    ↓
+Hermes 에이전트 / 라우팅 스킬       ← 외부 설정
+    ↓ 명령과 실제 발신자 ID 전달
+Python 게임 엔진
+    ├─ game_data.json에서 규칙 읽기
+    ├─ 상태·쿨타임·전투 판정
+    └─ state/{user_id}.json 저장
+    ↓ JSON 결과
+에이전트가 몬스터 말투로 응답
+
+이미지 생성 도구 → 로컬 ComfyUI → PNG 파일
 ```
-Discord "!밥줘"  →  게임 엔진(Python) 판정  →  JSON 결과  →  봇이 몬스터 말투로 중계
-"냥~ 배불러! 🍚"
-```
 
-## 특징
+- **규칙과 표현 분리:** 에이전트는 엔진의 결과를 바탕으로 응답하며, 게임 수치를 임의로 정하지 않는 것이 설계 원칙입니다.
+- **상태는 파일에 저장:** 채팅 세션의 기억 대신 사용자별 JSON을 기준으로 삼습니다.
+- **밸런스는 데이터로 관리:** 종족, 속성, 상성, 경험치 기준, 행동 제한을 `data/game_data.json`에 모았습니다.
+- **캐릭터 관점으로 표현:** 연결 에이전트가 몬스터의 1인칭 말투를 담당합니다. 해당 페르소나 설정은 저장소에 포함되어 있지 않습니다.
 
-- 🎲 **결정론 엔진**: 스탯·쿨타임·전투 판정은 전부 Python이 계산. LLM은 개입하지 않음 (조작 불가)
-- 📁 **파일 SoT**: 유저 상태는 `state/{user_id}.json` 파일 하나로 관리, DB 불필요
-- 🧬 **9종족 × 8속성**: 조합 72가지 + 속성 상성 시스템
-- 🌱 **4단계 진화**: 새싹기 → 성장기 → 성숙기 → 완전체 (친밀도에 따라 빛/어둠 분기)
-- 🎨 **AI 이미지 생성**: 탄생·진화 시 ComfyUI(SD1.5)로 캐릭터 이미지 자동 생성
+엔진은 **규칙 기반**이며 난수를 사용합니다. 이전 문서의 “결정론 엔진”은 LLM이 판정을 하지 않는다는 취지로, 동일 입력의 결과 재현이나 보안상 조작 불가를 보장하는 표현은 아닙니다.
 
-## 구조
+## 빠르게 살펴보기
 
-```
-data/game_data.json        종족/속성/상성/XP곡선/커맨드 수치 (게임 밸런스 SoT)
-engine/engine.py           결정론 게임 엔진 (CLI, 단일 JSON 출력)
-tools/gen_image.py         ComfyUI 이미지 생성 래퍼
-tools/prerender_all.py     종족×속성 전조합 이미지 프리렌더 배치
-tools/daily_decay.py       방치 페널티 배치 (cron용)
-tools/preview_roll.py      종족/속성 랜덤 미리보기
-tests/test_engine.py       엔진 로직 self-check (python -X utf8 tests/test_engine.py)
-docs/MANUAL.md             운영 매뉴얼 (설치/권한/시나리오/장애대응)
-docs/HARNESS.md            Discord 연결 하네스 설계 (프롬프트 라우팅 방식)
-docs/PLAN.md               게임 기획서
-assets/samples/            생성된 몬스터 이미지 (프리렌더 캐시)
-state/                     유저 상태 파일 (gitignore — 커밋 안 됨)
-```
+### 요구사항
 
-## 사용법
+- Python 3. 점검 환경은 Python 3.12이며, 최소 지원 버전은 별도로 검증하지 않았습니다.
+- 엔진과 현재 테스트는 Python 표준 라이브러리만 사용합니다. 이 경로에는 별도의 `pip install`이 필요하지 않습니다.
+- 기본 CLI 확인에는 Discord, Hermes, ComfyUI, LLM API 키가 필요하지 않습니다.
+
+저장소 루트에서 실행합니다.
 
 ```bash
-python engine/engine.py <user_id> <커맨드> [args...]
+git clone --branch develop https://github.com/kdkrkwhr/notebook-pets.git
+cd notebook-pets
 
-# 예시
-python engine/engine.py 123456789012345678 공책시작 홍실록
-python engine/engine.py 123456789012345678 상태
-python engine/engine.py 123456789012345678 밥줘
-python engine/engine.py <관리자ID> reset <대상ID> 새이름   # 관리자 전용 초기화
+# 도움말: 사용자 ID 없이 실행
+python -X utf8 engine/engine.py help
+
+# 데모 사용자 생성: state/123456789012345678.json에 저장됨
+python -X utf8 engine/engine.py 123456789012345678 start Buddy
+python -X utf8 engine/engine.py 123456789012345678 status
+python -X utf8 engine/engine.py 123456789012345678 밥줘
+python -X utf8 engine/engine.py 123456789012345678 walk
+
+# 랭킹도 사용자 ID 없이 실행
+python -X utf8 engine/engine.py rank
 ```
 
-출력은 항상 단일 JSON:
+같은 ID로 다시 시작하면 기존 몬스터가 있다는 응답을 반환합니다. 데모 실행도 상태 파일을 만들고 변경하므로 실제 사용자 ID와 구분하세요. 실행 중 다른 명령이나 방치 배치를 같은 사용자에 대해 동시에 처리하지 마세요.
 
-```json
-{"ok": true, "msg": "홍실록 탄생!", "species": "요정족", "element": "빛", "level": 1}
+정상 처리 및 처리된 게임 오류는 `ok`, `msg`를 포함한 JSON으로 출력합니다. 메시지는 현재 한국어이며, JSON 필드는 명령마다 달라집니다. 예외가 처리되지 않은 파일·데이터 오류는 traceback으로 끝날 수 있습니다.
+
+## 명령어
+
+일반 형식은 다음과 같습니다. Discord의 `!` 접두사는 엔진에 직접 넣지 않습니다.
+
+```text
+python -X utf8 engine/engine.py <user_id> <command> [arguments...]
 ```
 
-## 커맨드
+| 기능 | CLI 명령 / 별칭 |
+| --- | --- |
+| 시작 | `start <이름>` / `공책시작 <이름>` |
+| 상태 | `status` / `상태` |
+| 먹이·간식 | `밥줘`, `간식줘` |
+| 놀이·수면 | `놀아줘`, `재워줘` / `잘자` |
+| 훈련·산책 | `train` / `훈련`, `walk` / `산책` |
+| 전투·포획 | `battle` / `배틀`, `catch` / `포획` |
+| 출석 | `attendance` / `출석` |
+| 도감·칭호 | `pokedex` / `도감`, `titles` / `칭호` |
+| 랭킹 | `python -X utf8 engine/engine.py rank` 또는 `랭킹` — ID 생략 |
+| 도움말 | `python -X utf8 engine/engine.py help` 또는 `도움말` — ID 생략 |
 
-| 분류 | 커맨드 |
-|---|---|
-| 시작 | 공책시작 <이름> |
-| 조회 | 상태 / 도감 / 칭호 / 랭킹 / 도움말 |
-| 돌보기 | 밥줘 / 간식줘 / 놀아줘 / 재워줘 |
-| 성장 | 훈련 / 산책 |
-| 전투 | 배틀 / 포획 (산책으로 야생 조우 후) |
-| 기타 | 출석 / 리셋(관리자 전용) |
+전투와 포획은 산책에서 야생 몬스터를 조우한 뒤 사용할 수 있습니다. 현재 구현에서는 전투 또는 포획 후 해당 조우가 종료됩니다. 도움말의 내부 키 `feed`, `play`, `snack`, `sleep`는 CLI 별칭으로 연결되지 않아 위의 한국어 돌보기 명령을 사용해야 합니다.
 
-## Discord 봇 운영
+### 관리자와 소유주 설정
 
-별도 봇 코드 없이 **Hermes Agent 프로필이 라우터**가 되는 구조다.
-설치 절차·권한 관리·장애 대응은 [docs/MANUAL.md](docs/MANUAL.md) 참고.
+관리자 ID는 `NOTEBOOK_ADMIN_IDS` 환경변수에 쉼표로 구분해 지정합니다. 기본값은 관리자 없음입니다.
 
-- 판정(스탯·쿨타임·전투) = 엔진(Python) 100%
-- 서사·말투·중계 = 에이전트(LLM) — 종족×속성별 고정 말투로 연기
-- 이미지 = 로컬 ComfyUI (:8188)
+```powershell
+# PowerShell 예시 — 실제 관리자 Discord ID로 변경
+$env:NOTEBOOK_ADMIN_IDS = "123456789012345678"
+python -X utf8 engine/engine.py 123456789012345678 owner 987654321098765432 Player
+python -X utf8 engine/engine.py 123456789012345678 clearowner
+```
 
-## 원칙
+- `owner <대상ID> [이름]`: **이 배포 전체**를 지정 소유주와 관리자만 사용하도록 제한합니다. 사용자별 몬스터 소유권 설정과는 다릅니다.
+- `clearowner`: 소유주 제한을 해제합니다.
+- `reset <대상ID> [새이름]`: 대상의 기존 세이브를 삭제합니다. 새 이름이 2자 이상이면 새 몬스터를 생성합니다.
 
-1. **엔진과 에이전트의 경계를 섞지 않는다** — 판정 조작 방지
-2. **상태는 파일 SoT** — 세션 컨텍스트에 게임 상태를 두지 않는다
-3. **봇은 항상 몬스터 1인칭** — 내레이션 금지, 과정 노출 금지
+설정은 Git에서 제외된 `data/access.json`에 저장됩니다. 일반 CLI에는 사용자 인증이 없으므로 연결 계층이 실제 발신자 ID를 전달하고 인자를 검증해야 합니다. ID는 숫자로 전달하세요. 현재 엔진은 ID를 파일 경로에 사용하며 모든 진입점에서 형식을 검사하지 않습니다.
+
+## Discord와 이미지 연결
+
+### Discord / Hermes
+
+이 저장소에는 독립적인 Discord 봇 애플리케이션이 없습니다. 기존 운영 방식은 Hermes 에이전트의 프로필·스킬이 명령을 받아 엔진을 실행하는 구조입니다.
+
+다시 연결하려면 Discord 봇 설정, 발신자 식별, 명령 라우팅, 캐릭터 페르소나, 이미지 전송을 준비해야 합니다. 토큰과 관리자 권한은 외부 환경에서 관리하세요. 기존 문서는 [운영 매뉴얼](docs/MANUAL.md)과 [하네스 설명](docs/HARNESS.md)을 참고하되, 과거 로컬 경로·프로필 이름·cron ID를 그대로 현재 설정으로 간주하지 마세요.
+
+### 이미지 생성 (선택)
+
+기존 PNG를 사용하는 데 ComfyUI는 필요하지 않습니다. 새 이미지를 만들 때는 다음을 준비합니다.
+
+- `http://127.0.0.1:8188`에서 실행되는 ComfyUI
+- `tools/sd15_txt2img.json`이 지정한 `v1-5-pruned-emaonly.safetensors` 체크포인트 또는 워크플로우에서 직접 지정한 호환 모델
+
+```bash
+python -X utf8 tools/gen_image.py plant nature sprout samples/demo_plant.png 42
+python -X utf8 tools/prerender_all.py --stage 1
+```
+
+첫 명령은 `assets/samples/demo_plant.png`에 저장합니다. 두 번째 명령은 기존 기본 이미지가 있으면 건너뜁니다. 생성 시간은 장비에 따라 다릅니다. 엔진은 생성 필요 정보나 진화 결과를 반환하지만, 이미지 도구 실행과 Discord 전송은 연결 계층의 역할입니다. 이전 이미지를 참조하는 진화 생성, 자동 재시도, 이전 이미지로의 대체는 현재 래퍼에 구현되어 있지 않습니다.
+
+## 저장소 안내
+
+```text
+engine/engine.py           게임 CLI와 규칙 처리
+data/game_data.json       밸런스 데이터
+data/prompt_templates.md  이미지 프롬프트 참고 문서
+state/                    사용자 세이브 (JSON은 Git 제외)
+assets/samples/           기본 캐릭터 이미지와 추가 샘플
+assets/samples_hd/        일부 고해상도 샘플
+tools/gen_image.py        ComfyUI 이미지 생성
+tools/prerender_all.py    조합별 이미지 일괄 생성
+tools/preview_roll.py     종족·속성 랜덤 미리보기
+tools/daily_decay.py      방치 감소 배치
+tools/upscale_images.py  업스케일 도구 (이전 로컬 경로 수정 필요)
+tests/test_engine.py      엔진 self-check
+promo/index.html         정적 소개 페이지
+docs/                    기존 기획·운영 문서
+```
+
+`state/`와 필요한 `data/access.json`은 배포 시 별도로 보존·백업해야 합니다. `version` 필드는 있지만 자동 세이브 마이그레이션은 구현되어 있지 않습니다.
+
+## 검증
+
+```bash
+python -B -X utf8 tests/test_engine.py
+```
+
+2026-10-05, Python 3.12에서 기존 **8개 self-check 통과**를 확인했습니다. 종족 보너스, 칭호, 간식 보너스 응답, 소유주 접근 제어 일부를 확인하며 임시 파일을 사용합니다. 아래의 XP 누적·시간 처리 오류는 이 테스트들이 검증하지 못하는 범위입니다. Discord 연결과 ComfyUI 생성의 종단간 검증 결과를 뜻하지 않습니다.
+
+## 알려진 제한과 다음 작업
+
+| 우선순위 | 현재 제한 | 다음 작업 |
+| --- | --- | --- |
+| 최우선 | `add_xp()`가 획득량을 저장 XP에 더하지 않음 | XP 저장·레벨업·진화를 연결해 검증 |
+| 높음 | 수면 버프가 즉시 적용되고 날짜가 바뀌어도 유지됨 | 적용일·만료일을 명시하고 “다음날” 규칙 확정 |
+| 높음 | 방치 배치를 같은 날 재실행하면 다시 차감 | 마지막 처리일 기록과 재실행 안전성 확보 |
+| 높음 | 상태 파일의 잠금·원자적 저장 없음 | 동시 명령과 중간 실패에 대비한 저장 처리 |
+| 높음 | 소유주 설정 읽기 실패 시 전체 개방, CLI 인자 신뢰 | 인증 경계·입력 검증·설정 오류 처리 보강 |
+| 보통 | 훈련이 선택한 스탯의 별도 증가분을 저장하지 않음 | 훈련 성장 정책과 저장 구조 정리 |
+| 보통 | 일부 명령 형식·이미지 키·기존 문서 불일치 | 라우팅·명명·운영 절차 통일 |
+| 보통 | 프리렌더 시드가 실행 간 바뀔 수 있는 `hash()`에 의존 | 재현 가능한 시드 생성 방식 사용 |
+
+전투 수식과 종족별 회피 처리도 밸런스 재검토 대상입니다. 일일 퀘스트, 은퇴·재시작 등 기획서의 모든 항목이 구현된 것은 아닙니다. 다음 단계는 **핵심 성장 흐름 복구 → 저장·시간 규칙 안정화 → 연결 환경 재구성**입니다.
+
+## 브랜치와 버전 관리
+
+현재 프로토타입을 `VERSION` 파일의 **0.2.0**과 Git 태그 **`v0.2.0`**으로 기록합니다. 알려진 제한을 포함한 기준점이며, 운영 준비 완료를 뜻하지 않습니다.
+
+| 브랜치 / 태그 | 역할 |
+| --- | --- |
+| `develop` | 다음 개발의 통합 브랜치. 기능·수정 브랜치는 여기에서 분기하고 PR로 합칩니다. |
+| `release` | 검토·검증한 배포 기준을 유지하는 브랜치. 준비된 `develop` 변경을 PR로 반영합니다. |
+| `v0.2.0` | 현재 버전을 고정한 태그. 이후 새 버전에는 새 태그를 만듭니다. |
+| `master` | 전환 이전 기록을 보존하는 기존 브랜치. 이후 개발 기준은 `develop`입니다. |
+
+```text
+develop → feat/... 또는 fix/... → PR → develop
+develop → 배포 검토 PR → release → vX.Y.Z 태그
+```
+
+처음에는 `develop`과 `release`가 같은 0.2.0 커밋에서 시작합니다. 다음 작업은 `develop`에서 시작하고, 버전을 올릴 때 `VERSION`과 양쪽 README의 버전 표기도 함께 갱신합니다. 배포 후에는 해당 `release` 커밋에 버전 태그를 붙입니다. 브랜치 이름만으로 자동 배포나 PR 보호 규칙이 설정되지는 않습니다.
+
+## 기획과 운영 문서
+
+- [게임 기획서](docs/PLAN.md): 초기 설계와 구현 예정 기능
+- [운영 매뉴얼](docs/MANUAL.md): 기존 환경의 설치·운영 기록
+- [Discord 하네스](docs/HARNESS.md): 에이전트를 통한 연결 방식
+- [이미지 프롬프트](data/prompt_templates.md): 종족·속성 표현 참고
+
+이 문서들은 과거 시점의 기록이며 현재 코드와 차이가 있습니다. 이번 README 갱신은 게임 코드나 외부 운영 설정을 변경하지 않습니다.
