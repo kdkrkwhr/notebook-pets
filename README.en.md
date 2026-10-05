@@ -81,7 +81,7 @@ python -X utf8 engine/engine.py 123456789012345678 walk
 python -X utf8 engine/engine.py rank
 ```
 
-Starting again with the same ID returns an existing-monster response. These commands create and modify a save file, so use a demo ID distinct from real users. Avoid running commands or the decay batch concurrently against the same user.
+Starting again with the same ID returns an existing-monster response. These commands create and modify a save file, so use a demo ID distinct from real users. Commands and decay jobs using the same store are serialized with a file lock.
 
 Successful commands and handled game errors print JSON containing `ok` and `msg`. Messages are currently in Korean, and additional fields vary by command.
 
@@ -97,8 +97,8 @@ python -X utf8 engine/engine.py <user_id> <command> [arguments...]
 | --- | --- |
 | Create a monster | `start <name>` / `공책시작 <name>` |
 | View status | `status` / `상태` |
-| Feed / give a snack | `밥줘`, `간식줘` |
-| Play / sleep | `놀아줘`, `재워줘` / `잘자` |
+| Feed / give a snack | `feed` / `밥줘`, `snack` / `간식줘` |
+| Play / sleep | `play` / `놀아줘`, `sleep` / `재워줘` / `잘자` |
 | Train / walk | `train` / `훈련`, `walk` / `산책` |
 | Battle / capture | `battle` / `배틀`, `catch` / `포획` |
 | Daily attendance | `attendance` / `출석` |
@@ -106,7 +106,7 @@ python -X utf8 engine/engine.py <user_id> <command> [arguments...]
 | Rankings | `python -X utf8 engine/engine.py rank` or `랭킹` — omit the ID |
 | Help | `python -X utf8 engine/engine.py help` or `도움말` — omit the ID |
 
-Battles and captures require a wild encounter from a walk. Either action ends the encounter in the current implementation. Use the Korean care commands listed above.
+Battles and captures require a wild encounter from a walk. Either action ends the encounter. Daily limits reset at midnight in Korea (KST); sleep grants an XP bonus for the following calendar day. When owner access is enabled, rankings also require an allowed user ID.
 
 ### Administrator and owner settings
 
@@ -123,7 +123,7 @@ python -X utf8 engine/engine.py 123456789012345678 clearowner
 - `clearowner`: removes the owner restriction.
 - `reset <target_id> [new_name]`: deletes the target save. If the new name has at least two characters, a new monster is created.
 
-Settings are stored in the Git-ignored `data/access.json`. The CLI does not authenticate callers: the integration must supply the real sender ID and validate arguments. Use numeric IDs.
+Settings are stored in the Git-ignored `data/access.json`. The CLI does not authenticate callers: the integration must supply the real sender ID. IDs must be positive integer strings of 1–20 ASCII digits. See the [runtime integration guide](docs/INTEGRATION.md) for agent integration and storage settings.
 
 ## Discord and image integration
 
@@ -172,9 +172,10 @@ Preserve and back up `state/` and, when used, `data/access.json` separately duri
 
 ```bash
 python -B -X utf8 tests/test_engine.py
+python -B -X utf8 -m unittest discover -s tests -p test_p0.py -v
 ```
 
-These self-checks cover species bonuses, titles, snack-bonus responses, and owner access behavior. Test data is stored in temporary files.
+Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, and concurrent processes. Test data is stored in temporary files.
 
 ## Design and operations notes
 

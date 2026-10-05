@@ -1,5 +1,8 @@
 # 유저 상태 파일 (게임 SoT — 유저별 세이브)
 state/*.json
+state/.store.lock
+state/.notebook-*.tmp
+data/.notebook-*.tmp
 !state/.gitkeep
 
 # 소유주 등록 (런타임 접근 제어 — 배포마다 다름)

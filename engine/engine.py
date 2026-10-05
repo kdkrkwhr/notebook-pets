@@ -6,34 +6,92 @@
 사용법: python engine.py <user_id> <command> [args...]
 출력: 단일 JSON (Discord 중계용)
 """
-import json, os, random, sys, time
-from datetime import date
+import json, math, os, random, sys, time
+from datetime import date, timedelta
+from runtime import MISSING, GameError, atomic_write_json, game_clock, game_date, read_json, store_lock, validate_user_id
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "data", "game_data.json")
-STATE_DIR = os.path.join(BASE, "state")
+DATA_ROOT = os.path.abspath(os.environ.get("NOTEBOOK_DATA_DIR", BASE))
+STATE_DIR = os.path.join(DATA_ROOT, "state")
 
 with open(DATA, encoding="utf-8") as f:
     G = json.load(f)
 
-def state_path(uid): return os.path.join(STATE_DIR, f"{uid}.json")
+def state_path(uid):
+    return os.path.join(STATE_DIR, f"{validate_user_id(uid)}.json")
 
 def load_state(uid):
-    p = state_path(uid)
-    if not os.path.exists(p): return None
-    with open(p, encoding="utf-8") as f: return json.load(f)
+    st = read_json(state_path(uid))
+    if st is MISSING:
+        return None
+    validate_state(st, uid)
+    # Old sleep_buff has no reliable activation date: expire it on migration.
+    # Preserve all progression, inventory and records; never guess old rewards.
+    if st.get("version") == 2:
+        st["version"] = 3
+        st["sleep_bonus_dates"] = []
+        st["daily"].pop("sleep_buff", None)
+    st.setdefault("last_decay_date", None)
+    return st
 
 def save_state(st):
-    with open(state_path(st["user_id"]), "w", encoding="utf-8") as f:
-        json.dump(st, f, ensure_ascii=False, indent=2)
+    validate_state(st, st.get("user_id"))
+    atomic_write_json(state_path(st["user_id"]), st)
 
-def today(): return date.today().isoformat()
+def today(): return game_date().isoformat()
+
+
+def validate_state(st, uid):
+    """Reject incompatible/corrupt saves without overwriting them."""
+    validate_user_id(uid)
+    def require(condition):
+        if not condition:
+            raise ValueError("Invalid save field")
+    try:
+        require(isinstance(st, dict) and st["user_id"] == uid)
+        require(type(st["version"]) is int and st["version"] in (2, 3))
+        require(isinstance(st["name"], str))
+        require(st["species"] in G["species"] and st["element"] in G["elements"])
+        for key in ("level", "stage", "xp", "satiety", "intimacy"):
+            require(type(st[key]) is int)
+        require(1 <= st["level"] <= G["max_level"] and st["stage"] == stage_of(st["level"])[0])
+        require(st["xp"] >= 0 and 0 <= st["satiety"] <= 100 and 0 <= st["intimacy"] <= 100)
+        for key in ("daily", "inventory", "record", "cooldowns", "stats"):
+            require(isinstance(st[key], dict))
+        date.fromisoformat(st["daily"]["date"])
+        for key, value in st["daily"].items():
+            if key not in ("date", "sleep_buff"):
+                require(type(value) is int and value >= 0)
+        for value in st["cooldowns"].values():
+            require(type(value) in (int, float) and math.isfinite(value) and value >= 0)
+        for key in ("normal_feed", "rare_feed"):
+            require(type(st["inventory"][key]) is int and st["inventory"][key] >= 0)
+        for key in ("win", "lose"):
+            require(type(st["record"][key]) is int and st["record"][key] >= 0)
+        require(isinstance(st["history"], list) and all(isinstance(h, dict) for h in st["history"]))
+        require(st["evolution_branch"] in (None, "light", "dark"))
+        wild = st.get("_wild")
+        if wild is not None:
+            require(isinstance(wild, dict))
+            require(wild["species_key"] in G["species"] and wild["element_key"] in G["elements"])
+            require(type(wild["level"]) is int and wild["level"] > 0)
+            require(isinstance(wild["species"], str) and isinstance(wild["element"], str))
+        if st.get("last_decay_date") is not None:
+            date.fromisoformat(st["last_decay_date"])
+        if st["version"] == 3:
+            require(isinstance(st["sleep_bonus_dates"], list))
+            for value in st["sleep_bonus_dates"]:
+                date.fromisoformat(value)
+    except (KeyError, TypeError, ValueError, OverflowError) as exc:
+        raise GameError("invalid_state", "세이브 형식이 올바르지 않습니다. 원본을 보존하고 관리자에게 문의해 주세요.") from exc
 
 def fresh_daily(st):
     if st["daily"]["date"] != today():
-        carry = st["daily"].get("sleep_buff", False)
         st["daily"] = {"date": today(), "train": 0, "battle": 0, "snack": 0,
-                       "walk": 0, "attendance": 0, "sleep_buff": carry}
+                       "walk": 0, "attendance": 0, "sleep": 0}
+    st["daily"].pop("sleep_buff", None)
+    st["sleep_bonus_dates"] = [d for d in st.get("sleep_bonus_dates", []) if d >= today()]
 
 def xp_needed(lv):
     s = G["stages"]
@@ -84,7 +142,14 @@ def titles(st):
     return got
 
 def add_xp(st, amount):
-    amount = int(amount * (1.2 if st["daily"].get("sleep_buff") else 1.0))
+    if type(amount) is not int or amount < 0:
+        raise GameError("invalid_xp", "경험치 값이 올바르지 않습니다.")
+    bonus = G["commands"]["sleep"]["buff_next_day_pct"] if today() in st.get("sleep_bonus_dates", []) else 0
+    amount = amount * (100 + bonus) // 100
+    if st["level"] >= G["max_level"]:
+        st["xp"] = 0
+        return {"gained": 0, "evolutions": [], "leveled_to": st["level"]}
+    st["xp"] += amount
     evolutions = []
     while st["level"] < G["max_level"] and st["xp"] >= xp_needed(st["level"]):
         st["xp"] -= xp_needed(st["level"])
@@ -97,6 +162,8 @@ def add_xp(st, amount):
                 branch = "light" if st["intimacy"] >= G["evolution_branch_threshold"] else "dark"
                 st["evolution_branch"] = branch
             evolutions.append({"to_stage": ns, "branch": branch, "level": st["level"]})
+    if st["level"] == G["max_level"]:
+        st["xp"] = 0
     return {"gained": amount, "evolutions": evolutions, "leveled_to": st["level"]}
 
 def stat_total(st):
@@ -123,23 +190,29 @@ def mark(st, key):
     if cd: st["cooldowns"][key] = time.time()
 
 def out(ok, msg, **extra):
-    r = {"ok": ok, "msg": msg}; r.update(extra); print(json.dumps(r, ensure_ascii=False))
+    r = {"ok": ok, "msg": msg}; r.update(extra); return r
 
 # ---------- 커맨드 ----------
-ADMIN_IDS = set(os.environ.get("NOTEBOOK_ADMIN_IDS", "").split(",")) - {""}  # 관리자 Discord ID 목록 (환경변수 NOTEBOOK_ADMIN_IDS, 쉼표 구분)
-ACCESS = os.path.join(BASE, "data", "access.json")  # 소유주(owner) 영속 저장 — 엔진이 권한을 강제(SoT). LLM 판단 아님.
+ADMIN_IDS = {v.strip() for v in os.environ.get("NOTEBOOK_ADMIN_IDS", "").split(",") if v.strip()}
+ACCESS = os.path.join(DATA_ROOT, "data", "access.json")
 
 def is_admin(uid): return uid in ADMIN_IDS
 
 def load_access():
-    try:
-        with open(ACCESS, encoding="utf-8") as f: return json.load(f)
-    except (OSError, json.JSONDecodeError):
+    a = read_json(ACCESS)
+    if a is MISSING:
         return {"owner_id": "", "owner_name": ""}
+    if not isinstance(a, dict) or not isinstance(a.get("owner_id"), str) or not isinstance(a.get("owner_name"), str):
+        raise GameError("invalid_access", "접근 설정이 올바르지 않습니다. 관리자에게 문의해 주세요.")
+    if a["owner_id"]:
+        try:
+            validate_user_id(a["owner_id"])
+        except GameError as exc:
+            raise GameError("invalid_access", "접근 설정이 올바르지 않습니다. 관리자에게 문의해 주세요.") from exc
+    return a
 
 def save_access(a):
-    with open(ACCESS, "w", encoding="utf-8") as f:
-        json.dump(a, f, ensure_ascii=False, indent=2)
+    atomic_write_json(ACCESS, a)
 
 def access_check(uid):
     """소유주 게이트. 반환 (allowed, owner_name).
@@ -153,8 +226,7 @@ def access_check(uid):
 def cmd_set_owner(uid, target, name):
     """관리자 전용: 소유주 등록. 이후 그 ID(+관리자)만 게임 가능."""
     if not is_admin(uid): return out(False, "이 명령어는 관리자만 쓸 수 있어.")
-    if not target or not target.isdigit():
-        return out(False, "등록할 Discord 숫자 ID가 필요해. 예: !공책소유주 279818141754982401 박형민")
+    validate_user_id(target)
     save_access({"owner_id": target, "owner_name": name or ""})
     return out(True, "소유주 등록 완료", owner_id=target, owner_name=name or "")
 
@@ -172,26 +244,23 @@ def cmd_reset(uid, target, name):
     if not st:
         return out(False, f"{target} 은(는) 몬스터가 없어.")
     old_name = st["name"]
-    os.remove(state_path(target))
     if len(name) > 1:  # 새 이름이 오면 바로 재탄생
-        import io, contextlib
-        buf = io.StringIO()
-        with contextlib.redirect_stdout(buf):
-            cmd_start(target, name)
-        r = json.loads(buf.getvalue())
+        r = cmd_start(target, name, replace=True)
         return out(True, f"{old_name} 초기화 후 {r.get('species')} {name} 재탄생!", **{k: v for k, v in r.items() if k not in ("ok", "msg")})
+    os.remove(state_path(target))
     return out(True, f"{old_name} 초기화 완료. !공책시작 으로 다시 키울 수 있어.")
 
-def cmd_start(uid, name):
-    if load_state(uid): return out(False, "이미 키우는 몬스터가 있어. (!상태 로 확인)")
+def cmd_start(uid, name, replace=False):
+    if not replace and load_state(uid): return out(False, "이미 키우는 몬스터가 있어. (!상태 로 확인)")
     sp = random.choice(list(G["species"].keys()))
     el = random.choice(list(G["elements"].keys()))
     st = {
-        "version": 2, "user_id": uid, "name": name,
+        "version": 3, "user_id": uid, "name": name,
         "species": sp, "element": el, "stage": 1, "level": 1, "xp": 0,
         "stats": {}, "intimacy": 50, "satiety": 80,
         "record": {"win": 0, "lose": 0},
-        "cooldowns": {}, "daily": {"date": today(), "train": 0, "battle": 0, "snack": 0, "walk": 0, "attendance": 0, "sleep_buff": False},
+        "cooldowns": {}, "daily": {"date": today(), "train": 0, "battle": 0, "snack": 0, "walk": 0, "attendance": 0, "sleep": 0},
+        "sleep_bonus_dates": [], "last_decay_date": None,
         "inventory": {"normal_feed": 3, "rare_feed": 0},
         "evolution_branch": None,
         "history": [{"ts": time.time(), "event": "hatched"}],
@@ -201,10 +270,6 @@ def cmd_start(uid, name):
     s, l = stage_of(1)
     return out(True, f"{name} 탄생!", species=G["species"][sp]["name_kr"], element=G["elements"][el]["name_kr"],
                level=1, needs_image=True, image_key=f"{sp}_{el}_lv1")
-
-def require(st):
-    if st is None: out(False, "!공책시작 으로 먼저 몬스터를 만들어."); return False
-    fresh_daily(st); return True
 
 def cmd_status(st):
     t = stat_total(st)
@@ -236,8 +301,9 @@ def cmd_care(st, key):
             st["inventory"]["rare_feed"] -= 1
             rare_used = True
     elif key == "sleep":
-        st["daily"]["sleep_buff"] = True
-    if st["satiety"] < 30: c_xp = max(1, c["xp"] // 2)   # 배고프면 XP 반토막
+        tomorrow = (date.fromisoformat(today()) + timedelta(days=1)).isoformat()
+        st["sleep_bonus_dates"] = sorted(set(st.get("sleep_bonus_dates", []) + [tomorrow]))
+    if st["satiety"] < 30 and c["xp"] > 0: c_xp = max(1, c["xp"] // 2)   # XP 없는 행동은 0 유지
     else: c_xp = c["xp"]
     if rare_used: c_xp += c.get("rare_xp_bonus", 0)
     mark(st, key); x = add_xp(st, c_xp)
@@ -348,59 +414,104 @@ def cmd_help():
     return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + ["status", "pokedex", "titles", "rank", "help"])
 
 # ---------- main ----------
+ALIASES = {
+    "공책시작": "start", "상태": "status", "밥줘": "feed", "간식줘": "snack",
+    "놀아줘": "play", "재워줘": "sleep", "잘자": "sleep", "훈련": "train",
+    "산책": "walk", "배틀": "battle", "포획": "catch", "출석": "attendance",
+    "도감": "pokedex", "칭호": "titles", "랭킹": "rank", "도움말": "help",
+    "소유주": "owner", "개방": "clearowner", "소유주해제": "clearowner",
+}
+COMMANDS = set(G["commands"]) | {"status", "pokedex", "titles", "rank", "help", "owner", "clearowner", "reset"}
+
+
+def execute(actor_id, command, arguments=()):
+    """Trusted adapter entry point: actor_id comes from the platform session.
+
+    This is not remote authentication: local CLI callers have OS-level access.
+    Never let the LLM or message body choose actor_id or runtime environment vars.
+    """
+    try:
+        command = ALIASES.get(command, command)
+        if command not in COMMANDS:
+            raise GameError("unknown_command", "모르는 커맨드입니다.")
+        if not isinstance(arguments, (list, tuple)) or any(not isinstance(v, str) for v in arguments):
+            raise GameError("invalid_arguments", "명령 인자가 올바르지 않습니다.")
+        if command == "help":
+            if arguments:
+                raise GameError("invalid_arguments", "도움말에는 추가 인자가 필요하지 않습니다.")
+            return cmd_help()
+        if actor_id is not None:
+            validate_user_id(actor_id)
+        elif command != "rank":
+            raise GameError("invalid_user_id", "실제 발신자의 사용자 ID가 필요합니다.")
+        authenticated = os.environ.get("NOTEBOOK_ACTOR_ID")
+        if authenticated is not None:
+            validate_user_id(authenticated)
+            if actor_id is None:
+                actor_id = authenticated
+            elif actor_id != authenticated:
+                raise GameError("actor_mismatch", "발신자와 요청 사용자 ID가 일치하지 않습니다.")
+        for admin in ADMIN_IDS:
+            validate_user_id(admin)
+        if command in {"owner", "reset"}:
+            if not is_admin(actor_id):
+                return out(False, "이 명령어는 관리자만 쓸 수 있어.", code="forbidden")
+            if command == "owner" and not arguments:
+                raise GameError("invalid_arguments", "소유주로 등록할 사용자 ID가 필요합니다.")
+            target = validate_user_id(arguments[0] if arguments else actor_id)
+        elif command != "start" and arguments:
+            raise GameError("invalid_arguments", "이 명령에는 추가 인자가 필요하지 않습니다.")
+        name = " ".join(arguments[1:] if command in {"owner", "reset"} else arguments)
+        if len(name) > 80 or any(ord(ch) < 32 for ch in name):
+            raise GameError("invalid_arguments", "이름은 제어문자 없이 80자 이내로 입력해 주세요.")
+        with store_lock(STATE_DIR), game_clock():
+            # Explicit admin commands can recover broken access settings.
+            if command == "owner":
+                return cmd_set_owner(actor_id, target, name)
+            if command == "clearowner":
+                return cmd_clear_owner(actor_id)
+            allowed, owner_name = access_check(actor_id)
+            if not allowed:
+                return out(False, "not_owner", reason="not_owner", owner_name=owner_name)
+            if command == "reset":
+                return cmd_reset(actor_id, target, name)
+            if command == "rank":
+                return cmd_rank()
+            if command == "start":
+                return cmd_start(actor_id, name or "모험가")
+            st = load_state(actor_id)
+            if st is None:
+                return out(False, "!공책시작 으로 먼저 몬스터를 만들어.", code="not_started")
+            fresh_daily(st)
+            table = {
+                "status": lambda: cmd_status(st), "feed": lambda: cmd_care(st, "feed"),
+                "play": lambda: cmd_care(st, "play"), "snack": lambda: cmd_care(st, "snack"),
+                "sleep": lambda: cmd_care(st, "sleep"), "train": lambda: cmd_train(st),
+                "walk": lambda: cmd_walk(st), "battle": lambda: cmd_battle(st),
+                "catch": lambda: cmd_catch(st), "attendance": lambda: cmd_attendance(st),
+                "pokedex": lambda: cmd_pokedex(st), "titles": lambda: cmd_titles(st),
+            }
+            return table[command]()
+    except GameError as exc:
+        return out(False, str(exc), code=exc.code)
+    except (KeyError, TypeError, ValueError):
+        return out(False, "저장 데이터의 형식을 확인해 주세요.", code="invalid_state")
+
+
 def main():
     args = sys.argv[1:]
-    if not args: return cmd_help()
-    cmd = args[0]
-    if cmd in ("help", "도움말"): return cmd_help()
-    if cmd in ("rank", "랭킹"): return cmd_rank()
-    # 커맨드가 user_id 자리에 오는 오용 방지: 두 번째 인자가 커맨드 후보면 swap
-    known = {"start", "공책시작", "status", "상태", "밥줘", "놀아줘", "간식줘", "재워줘", "잘자",
-             "train", "훈련", "walk", "산책", "battle", "배틀", "catch", "포획",
-             "attendance", "출석", "pokedex", "도감", "titles", "칭호", "reset",
-             "owner", "소유주", "clearowner", "개방", "소유주해제"}
-    rest = args[1:]
-    if cmd not in known and rest and rest[0] in known:
-        cmd, rest = rest[0], [cmd] + rest[1:]
-    uid = rest[0] if rest else "owner"
-
-    # 관리자 전용 (소유주 게이트 이전) — 소유주 등록/해제/리셋
-    if cmd in ("owner", "소유주"):
-        target = rest[1] if len(rest) > 1 else ""
-        name = " ".join(rest[2:]) if len(rest) > 2 else ""
-        return cmd_set_owner(uid, target, name)
-    if cmd in ("clearowner", "개방", "소유주해제"):
-        return cmd_clear_owner(uid)
-    if cmd == "reset":
-        target = rest[1] if len(rest) > 1 else uid
-        new_name = " ".join(rest[2:]) if len(rest) > 2 else ""
-        return cmd_reset(uid, target, new_name)
-
-    # 소유주 게이트: 등록됐으면 소유주/관리자만. 나머진 not_owner (몬스터 말투 거절은 봇이 담당)
-    allowed, owner_name = access_check(uid)
-    if not allowed:
-        return out(False, "not_owner", reason="not_owner", owner_name=owner_name)
-
-    st = load_state(uid)
-    if cmd in ("start", "공책시작"):
-        name_parts = rest[1:] if len(rest) > 1 else []
-        return cmd_start(uid, " ".join(name_parts) if name_parts else "모험가")
-    if not require(st): return
-    table = {
-        "status": lambda: cmd_status(st), "밥줘": lambda: cmd_care(st, "feed"),
-        "놀아줘": lambda: cmd_care(st, "play"), "간식줘": lambda: cmd_care(st, "snack"),
-        "재워줘": lambda: cmd_care(st, "sleep"), "train": lambda: cmd_train(st),
-        "walk": lambda: cmd_walk(st), "battle": lambda: cmd_battle(st),
-        "catch": lambda: cmd_catch(st), "attendance": lambda: cmd_attendance(st),
-        "pokedex": lambda: cmd_pokedex(st), "titles": lambda: cmd_titles(st),
-    }
-    aliases = {"상태": "status", "훈련": "train", "산책": "walk", "배틀": "battle",
-               "포획": "catch", "출석": "attendance", "도감": "pokedex",
-               "칭호": "titles", "잘자": "재워줘"}
-    key = aliases.get(cmd, cmd)
-    fn = table.get(key)
-    if not fn: return out(False, f"모르는 커맨드: {cmd}")
-    return fn()
+    if not args:
+        result = execute(None, "help")
+    elif ALIASES.get(args[0], args[0]) in COMMANDS:
+        command = ALIASES.get(args[0], args[0])
+        if command == "help" or (command == "rank" and len(args) == 1):
+            result = execute(None, command, args[1:])
+        else:
+            result = execute(args[1] if len(args) > 1 else None, command, args[2:])
+    else:
+        result = execute(args[0], args[1] if len(args) > 1 else "", args[2:])
+    print(json.dumps(result, ensure_ascii=False))
+    return result
 
 if __name__ == "__main__":
     random.seed()  # 실행마다 다른 시드 — 판정 로직 자체는 결정론적 규칙 적용

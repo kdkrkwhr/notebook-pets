@@ -10,23 +10,23 @@ import engine  # noqa: E402
 
 def base_state(**over):
     st = {
-        "version": 2, "user_id": "test", "name": "테스트몬", "species": "mammal",
+        "version": 3, "user_id": "123", "name": "테스트몬", "species": "mammal",
         "element": "fire", "stage": 1, "level": 1, "xp": 0, "stats": {},
         "intimacy": 50, "satiety": 80, "record": {"win": 0, "lose": 0},
         "cooldowns": {}, "daily": {"date": engine.today(), "train": 0, "battle": 0,
                                     "snack": 0, "walk": 0, "attendance": 0, "sleep_buff": False},
         "inventory": {"normal_feed": 3, "rare_feed": 0}, "evolution_branch": None,
-        "history": [], "_wild": None,
+        "history": [], "_wild": None, "sleep_bonus_dates": [], "last_decay_date": None,
     }
     st.update(over)
     return st
 
 
 def run_cmd(fn):
-    buf = io.StringIO()
-    with contextlib.redirect_stdout(buf):
-        fn()
-    return json.loads(buf.getvalue())
+    try:
+        return fn()
+    except engine.GameError as exc:
+        return {"ok": False, "code": exc.code}
 
 
 def test_catch_bonus_fairy():
