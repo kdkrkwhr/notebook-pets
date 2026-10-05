@@ -1,5 +1,9 @@
 # 런타임 연동 / Runtime integration
 
+선택적 `tools/discord_bot.py` 게이트웨이와 로컬 ComfyUI 이미지 파이프라인은 [IMAGES.md](IMAGES.md)를 참고하세요. 게임 저장과 이미지 생성을 분리하고, 게임 응답 후 같은 Discord 메시지에 그림을 첨부합니다. 아래 Hermes 연동 방식도 계속 사용할 수 있습니다.
+
+The optional `tools/discord_bot.py` gateway and local ComfyUI pipeline are documented in [IMAGES.md](IMAGES.md). They commit gameplay before rendering and attach artwork by editing the original reply. The Hermes adapter described below remains available.
+
 ## 한국어
 
 ### 발신자와 에이전트

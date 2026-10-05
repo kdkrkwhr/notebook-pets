@@ -6,10 +6,11 @@
 사용법: python engine.py <user_id> <command> [args...]
 출력: 단일 JSON (Discord 중계용)
 """
-import copy, json, math, os, random, re, sys, time
+import copy, json, math, os, random, re, sys, time, uuid
 from contextvars import ContextVar
 from datetime import date, timedelta
 from runtime import MISSING, GameError, atomic_write_json, game_clock, game_date, read_json, store_lock, validate_user_id
+import art
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "data", "game_data.json")
@@ -58,6 +59,8 @@ def validate_state(st, uid):
         require(isinstance(st, dict) and st["user_id"] == uid)
         require(type(st["version"]) is int and st["version"] in (2, 3))
         require(isinstance(st["name"], str))
+        if "pet_id" in st:
+            art.pet_identity(st)
         require(st["species"] in G["species"] and st["element"] in G["elements"])
         for key in ("level", "stage", "xp", "satiety", "intimacy"):
             require(type(st[key]) is int)
@@ -182,7 +185,10 @@ def add_xp(st, amount):
             evolutions.append({"to_stage": ns, "branch": branch, "level": st["level"]})
     if st["level"] == G["max_level"]:
         st["xp"] = 0
-    return {"gained": amount, "evolutions": evolutions, "leveled_to": st["level"]}
+    result = {"gained": amount, "evolutions": evolutions, "leveled_to": st["level"]}
+    if evolutions:
+        result["image"] = art.describe(st)
+    return result
 
 def stat_total(st):
     g = G["species"][st["species"]]["growth"]
@@ -273,7 +279,7 @@ def cmd_start(uid, name, replace=False):
     sp = random.choice(list(G["species"].keys()))
     el = random.choice(list(G["elements"].keys()))
     st = {
-        "version": 3, "user_id": uid, "name": name,
+        "version": 3, "user_id": uid, "name": name, "pet_id": uuid.uuid4().hex,
         "species": sp, "element": el, "stage": 1, "level": 1, "xp": 0,
         "stats": {}, "training_bonus": {}, "processed_requests": {}, "intimacy": 50, "satiety": 80,
         "record": {"win": 0, "lose": 0, "draw": 0},
@@ -287,14 +293,14 @@ def cmd_start(uid, name, replace=False):
     save_state(st)
     s, l = stage_of(1)
     return out(True, f"{name} 탄생!", species=G["species"][sp]["name_kr"], element=G["elements"][el]["name_kr"],
-               level=1, needs_image=True, image_key=f"{sp}_{el}_lv1")
+               level=1, needs_image=True, image_key=art.describe(st)["key"], image=art.describe(st))
 
 def cmd_status(st):
     t = stat_total(st)
     return out(True, "", name=st["name"], species=G["species"][st["species"]]["name_kr"],
                element=G["elements"][st["element"]]["name_kr"], stage_label=dict((s["stage"], s["label"]) for s in G["stages"])[st["stage"]],
                level=st["level"], xp=st["xp"], xp_next=xp_needed(st["level"]),
-               stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"),
+               stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"), image=art.describe(st),
                record=st["record"], title=(titles(st)[0] if titles(st) else "새내기"),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
 

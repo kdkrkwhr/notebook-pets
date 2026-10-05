@@ -1,0 +1,16 @@
+{
+  "request": {
+    "pet_id": "ad44401ee003443ea76a87fc05ff1881",
+    "species": "plant",
+    "element": "nature",
+    "stage": 2,
+    "branch": null,
+    "key": "plant_nature_stage2",
+    "revision": "showcase-v2"
+  },
+  "prompt": "Child growth form, more defined limbs, curious confident stance; preserve the recognizable face and species features.\ncute green leaf monster with a face, two large eyes, four paws, a leaf crown and a curled vine tail\nsoft green body, leaf-shaped markings\n(one cute fantasy monster mascot:1.3), solo, full body, centered, (plain white background:1.2), clean bold lineart, glossy cel shading, expressive eyes, rounded appealing shapes, colorful game character illustration, generous margins\nThe supplied image is the SAME individual at the previous stage. Preserve its face, eye design, distinctive markings, base palette and recognizable anatomy while evolving the proportions to the requested stage. Do not copy a baby silhouette into an adult stage. Produce one evolved creature, not a before/after comparison.",
+  "seed": 2017528797,
+  "reference": "plant_nature_stage1.png",
+  "provider": "comfyui",
+  "seconds": 3.25
+}

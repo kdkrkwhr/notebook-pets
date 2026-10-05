@@ -3,6 +3,9 @@ state/*.json
 state/.store.lock
 state/.notebook-*.tmp
 data/.notebook-*.tmp
+artwork/
+delivery/
+.gateway/
 !state/.gitkeep
 
 # 소유주 등록 (런타임 접근 제어 — 배포마다 다름)
@@ -10,6 +13,7 @@ data/access.json
 
 # 생성 로그 (이미지 PNG 자체는 게임 에셋으로 커밋)
 assets/prerender_log.json
+assets/**/*.job.json
 
 # Python
 __pycache__/

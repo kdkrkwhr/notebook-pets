@@ -4,7 +4,7 @@
 사용: python tools/prerender_all.py [--stage 1|all] [--only species,element]
 ComfyUI(:8188) 필요. CPU 모드에서 1장 약 5~13분.
 """
-import json, os, subprocess, sys, time
+import hashlib, json, os, subprocess, sys, time
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "data", "game_data.json")
@@ -30,11 +30,12 @@ def targets(stage_mode="1", only=None):
         stage_list = stages
     for sp in species_list:
         for el in element_list:
-            if only and f"{sp}_{el}" not in only:
+            if only and f"{sp}_{el}" not in only.split(","):
                 continue
             for i, stg in enumerate(stage_list, start=1):
                 n = i if stage_mode != "4" else {0: 1, 1: 2, 2: 3}.get(stage_list.index(stg), 4)
-                out.append((sp, el, stg["label"], n))
+                for branch in (("light", "dark") if n == 4 else (None,)):
+                    out.append((sp, el, stg["label"], n, branch))
     return out
 
 def main():
@@ -48,19 +49,32 @@ def main():
 
     todo = targets(stage_mode, only)
     done = existing()
-    jobs = [(sp, el, label, n) for sp, el, label, n in todo
-            if f"{sp}_{el}_stage{n}.png" not in done and f"{sp}_{el}_lv{n}.png" not in done]
+    def filename(sp, el, n, branch):
+        return f"{sp}_{el}_stage{n}" + (f"_{branch}" if branch else "") + ".png"
+    jobs = [(sp, el, label, n, branch) for sp, el, label, n, branch in todo
+            if filename(sp, el, n, branch) not in done]
 
     print(json.dumps({"total_target": len(todo), "already_done": len(todo) - len(jobs),
                       "to_generate": len(jobs)}, ensure_ascii=False))
 
     log = json.load(open(LOG, encoding="utf-8")) if os.path.exists(LOG) else {"done": [], "failed": []}
-    for sp, el, label, n in jobs:
-        fname = f"{sp}_{el}_stage{n}.png"
-        seed = abs(hash(f"{sp}_{el}_{n}")) % (2**31)  # 조합별 고정 시드 → 재현 가능
+    for sp, el, label, n, branch in jobs:
+        fname = filename(sp, el, n, branch)
+        seed = int.from_bytes(hashlib.sha256(f"{sp}_{el}_{n}_{branch}".encode()).digest()[:4], "big")
         cmd = [sys.executable, "-X", "utf8", os.path.join(BASE, "tools", "gen_image.py"),
                d["species"][sp]["name_kr"], d["elements"][el]["name_kr"], label,
                f"samples/{fname}", str(seed)]
+        if branch:
+            cmd.extend(["--branch", branch])
+        if n > 1:
+            reference = os.path.join(OUT_DIR, filename(sp, el, n - 1, None))
+            if not os.path.isfile(reference):
+                log["failed"].append({"file": fname, "err": "previous stage image missing"})
+                os.makedirs(os.path.dirname(LOG), exist_ok=True)
+                with open(LOG, "w", encoding="utf-8") as f:
+                    json.dump(log, f, ensure_ascii=False, indent=1)
+                continue
+            cmd.extend(["--reference", reference])
         print(f"[render] {fname}", flush=True)
         r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", timeout=2400)
         if '"ok": true' in (r.stdout or ""):

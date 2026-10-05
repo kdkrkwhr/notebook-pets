@@ -1,105 +1,79 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
-"""ComfyUI 로컬 생성 래퍼 — 몬스터 이미지 생성 후 assets/에 저장
+"""ComfyUI CLI using the same prompts and reference workflow as the live bot."""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "engine"))
+import art
+from comfy_images import ComfyUIProvider, build_workflow
+from image_service import atomic_png
+from runtime import GameError
 
-주의: ComfyUI의 CLIP은 영어로만 학습되어 있다. 종족/속성/단계를 한국어로
-그대로 때려 박으면 전부 무시되고 "그냥 귀여운 몬스터"만 나온다.
-반드시 data/game_data.json의 영어 키로 변환해 프롬프트에 넣는다.
-"""
-import json, sys, time, urllib.request, shutil, os
+BASE = art.ROOT
+G = json.loads((BASE / "data/game_data.json").read_text(encoding="utf-8"))
+SPECIES_MAP = {v["name_kr"]: k for k, v in G["species"].items()}
+ELEMENT_MAP = {v["name_kr"]: k for k, v in G["elements"].items()}
+STAGE_MAP = {"sprout": 1, "growth": 2, "mature": 3, "ultimate": 4,
+             **{entry["label"]: i for i, entry in enumerate(G["stages"], 1)},
+             "1": 1, "2": 2, "3": 3, "4": 4}
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-WF = os.path.join(BASE, "tools", "sd15_txt2img.json")
-HOST = "http://127.0.0.1:8188"
-GAME_DATA = os.path.join(BASE, "data", "game_data.json")
 
-# 한국어 표시명 -> 영어 키 매핑 (CLIP 호환용)
-def _load_maps():
-    g = json.load(open(GAME_DATA, encoding="utf-8"))
-    sp = {v["name_kr"]: k for k, v in g["species"].items()}
-    el = {v["name_kr"]: k for k, v in g["elements"].items()}
-    return sp, el
+def build_prompt(species, element, stage, seed, *, branch=None, reference_name=None):
+    sp, el = SPECIES_MAP.get(species, species), ELEMENT_MAP.get(element, element)
+    number = STAGE_MAP.get(str(stage))
+    prompt = art.build_prompt(sp, el, number, branch, reference_name is not None)
+    return build_workflow(prompt, seed, reference_name=reference_name,
+                          checkpoint=os.environ.get("NOTEBOOK_COMFY_CHECKPOINT"))
 
-SPECIES_MAP, ELEMENT_MAP = _load_maps()
-
-STAGE_EN = {"새싹기": "sprout", "성장기": "growth", "성숙기": "mature", "완전체": "ultimate"}
-
-# 영어 키 -> 이미지 생성용 종족별 상세 명사 조각 (data/prompt_templates.md 종족조각 기반)
-# "bird" 한 단어만 넣으면 SD1.5가 새 디테일을 못 살리므로 구체적 조각 사용
-SPECIES_PIECE = {
-    "mammal": "small fluffy mammal creature with rounded ears and paw pads",
-    "bird": "tiny bird-like creature with stubby feathered wings, a feather tuft on its head and a small beak",
-    "reptile": "small reptile creature with smooth scales and a little tail",
-    "machine": "chibi robot creature with riveted metal plates and glowing LED eyes",
-    "fairy": "fairy-like sprite creature with translucent shimmering wings and sparkles",
-    "monster": "kaiju-inspired baby monster with small horns and a mischievous grin",
-    "dragon": "baby dragon with a chubby body, tiny wings and small fangs",
-    "plant": "plant creature with leaf sprouts on its head and a vine tail",
-    "ghost": "ghost creature with a wispy floating tail and a semi-transparent body",
-}
-# 영어 키 -> 색감 테마 (명확한 색 지정)
-ELEMENT_THEME = {
-    "fire": "fiery red and orange", "water": "aqua blue",
-    "thunder": "electric yellow and purple", "nature": "soft green accents",
-    "wind": "pale cyan and white", "earth": "brown rocky",
-    "light": "golden glowing halo, bright holy light, luminous gold and pale yellow, colored", "dark": "dark purple and black",
-}
-
-def _to_en(kr, mapping):
-    return mapping.get(kr, kr)
-
-def build_prompt(species_kr, element_kr, stage_kr, seed):
-    wf = json.load(open(WF, encoding="utf-8"))
-    wf.pop("_comment", None)
-    sp_key = _to_en(species_kr, SPECIES_MAP)
-    el_key = _to_en(element_kr, ELEMENT_MAP)
-    st_en = STAGE_EN.get(stage_kr, stage_kr)
-    sp_noun = SPECIES_PIECE.get(sp_key, sp_key)
-    el_theme = ELEMENT_THEME.get(el_key, el_key)
-    pos = (f"cute {st_en} monster, {sp_noun}, Digimon style digital creature, "
-           f"{el_theme} color theme and motifs, chubby round body, big expressive eyes, "
-           f"flat cel shaded, bold black outlines, vibrant solid colors, "
-           f"plain solid white background, no scenery, no objects, isolated character, "
-           f"game character concept art, masterpiece, best quality")
-    neg = ("ugly, blurry, low quality, deformed, realistic, photo, human, "
-           "lineart, sketch, coloring book, outline only, black and white, monochrome, "
-           "colored background, wood texture, wood grain, sky background, scenery, "
-           "notebook paper, desk, pencil drawing")
-    wf["6"]["inputs"]["text"] = pos
-    wf["7"]["inputs"]["text"] = neg
-    wf["3"]["inputs"]["seed"] = seed
-    return {"prompt": wf}
 
 def main():
-    species_kr, element_kr, stage_kr, out_name = sys.argv[1:5]
-    seed = int(sys.argv[5]) if len(sys.argv) > 5 else int(time.time())
-    payload = build_prompt(species_kr, element_kr, stage_kr, seed)
-    req = urllib.request.Request(f"{HOST}/api/prompt",
-                                 data=json.dumps(payload).encode(),
-                                 headers={"Content-Type": "application/json"})
-    with urllib.request.urlopen(req, timeout=600) as r:
-        pid = json.loads(r.read())["prompt_id"]
-    # 폴링
-    for _ in range(360):  # 최대 30분 (CPU 모드 대비)
-        time.sleep(5)
-        with urllib.request.urlopen(f"{HOST}/history/{pid}", timeout=30) as r:
-            h = json.loads(r.read())
-        if pid in h:
-            outs = h[pid]["outputs"]
-            for node_id, o in outs.items():
-                for img in o.get("images", []):
-                    src = img["filename"]
-                    url = f"{HOST}/view?filename={src}&subfolder={img.get('subfolder','')}&type={img.get('type','output')}"
-                    dst_dir = os.path.join(BASE, "assets", os.path.dirname(out_name) or ".")
-                    os.makedirs(dst_dir, exist_ok=True)
-                    dst = os.path.join(BASE, "assets", out_name)
-                    with urllib.request.urlopen(url, timeout=60) as resp, open(dst, "wb") as f:
-                        shutil.copyfileobj(resp, f)
-                    print(json.dumps({"ok": True, "saved": dst, "seed": seed}, ensure_ascii=False))
-                    return
-            print(json.dumps({"ok": False, "error": "no image in outputs", "outputs": list(outs.keys())}))
-            return
-    print(json.dumps({"ok": False, "error": "timeout"}))
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("species")
+    parser.add_argument("element")
+    parser.add_argument("stage")
+    parser.add_argument("out_name", help="PNG path relative to assets/")
+    parser.add_argument("seed", type=int, nargs="?")
+    parser.add_argument("--branch", choices=("light", "dark"))
+    parser.add_argument("--reference", type=Path)
+    parser.add_argument("--timeout", type=float, default=180)
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--overwrite", action="store_true")
+    args = parser.parse_args()
+    try:
+        sp = SPECIES_MAP.get(args.species, args.species)
+        el = ELEMENT_MAP.get(args.element, args.element)
+        stage = STAGE_MAP.get(args.stage)
+        key = art.image_key(sp, el, stage, args.branch)
+        output = (BASE / "assets" / args.out_name).resolve()
+        if not output.is_relative_to((BASE / "assets").resolve()) or output.suffix.lower() != ".png":
+            raise ValueError("Output must be a PNG inside assets/")
+        if args.reference and not args.reference.is_file():
+            raise ValueError("Reference image does not exist")
+        spec = {"species": sp, "element": el, "stage": stage, "branch": args.branch,
+                "pet_id": hashlib.sha256(f"{sp}:{el}".encode()).hexdigest()[:32],
+                "key": key, "revision": art.TEMPLATE["revision"]}
+        if args.seed is not None:
+            spec["seed"] = args.seed
+        prompt = art.build_prompt(sp, el, stage, args.branch, args.reference is not None)
+        if args.dry_run:
+            print(json.dumps({"ok": True, "prompt": prompt, "seed": art.image_seed(spec),
+                              "workflow": build_workflow(prompt, art.image_seed(spec),
+                                   reference_name=args.reference.name if args.reference else None,
+                                   checkpoint=os.environ.get("NOTEBOOK_COMFY_CHECKPOINT"))}, ensure_ascii=False))
+            return 0
+        if output.exists() and not args.overwrite:
+            raise ValueError("Output exists; use --overwrite explicitly")
+        data = ComfyUIProvider(timeout=args.timeout).generate(spec, prompt, args.reference, output.with_suffix(".job.json"))
+        atomic_png(output, data)
+        print(json.dumps({"ok": True, "saved": str(output), "seed": art.image_seed(spec)}, ensure_ascii=False))
+        return 0
+    except (GameError, ValueError, OSError) as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False))
+        return 1
+
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

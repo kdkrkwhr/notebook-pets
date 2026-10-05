@@ -132,7 +132,7 @@ python -X utf8 engine/engine.py 123456789012345678 clearowner
 
 ### Discord / Hermes
 
-이 저장소에는 독립적인 Discord 봇 애플리케이션이 없습니다. 기존 운영 방식은 Hermes 에이전트의 프로필·스킬이 명령을 받아 엔진을 실행하는 구조입니다.
+Hermes 프로필·스킬을 통해 엔진을 호출하거나 `tools/discord_bot.py`의 선택적 Discord 게이트웨이를 사용할 수 있습니다. 게이트웨이는 게임 결과를 먼저 응답한 뒤 같은 메시지에 이미지를 첨부합니다. 설치와 실행은 [이미지·Discord 연결 안내](docs/IMAGES.md)를 참고하세요.
 
 다시 연결하려면 Discord 봇 설정, 발신자 식별, 명령 라우팅, 캐릭터 페르소나, 이미지 전송을 준비해야 합니다. 토큰과 관리자 권한은 외부 환경에서 관리하세요. 기존 문서는 [운영 매뉴얼](docs/MANUAL.md)과 [하네스 설명](docs/HARNESS.md)을 참고하되, 과거 로컬 경로·프로필 이름·cron ID를 그대로 현재 설정으로 간주하지 마세요.
 
@@ -141,14 +141,14 @@ python -X utf8 engine/engine.py 123456789012345678 clearowner
 기존 PNG를 사용하는 데 ComfyUI는 필요하지 않습니다. 새 이미지를 만들 때는 다음을 준비합니다.
 
 - `http://127.0.0.1:8188`에서 실행되는 ComfyUI
-- `tools/sd15_txt2img.json`이 지정한 `v1-5-pruned-emaonly.safetensors` 체크포인트 또는 워크플로우에서 직접 지정한 호환 모델
+- `tools/sd15_txt2img.json`이 지정한 `DreamShaper_8_pruned.safetensors` 체크포인트 또는 워크플로우에서 직접 지정한 호환 모델
 
 ```bash
 python -X utf8 tools/gen_image.py plant nature sprout samples/demo_plant.png 42
 python -X utf8 tools/prerender_all.py --stage 1
 ```
 
-첫 명령은 `assets/samples/demo_plant.png`에 저장합니다. 두 번째 명령은 기존 기본 이미지가 있으면 건너뜁니다. 생성 시간은 장비에 따라 다릅니다. 엔진은 생성 필요 정보나 진화 결과를 반환하지만, 이미지 도구 실행과 Discord 전송은 연결 계층의 역할입니다.
+첫 명령은 `assets/samples/demo_plant.png`에 저장합니다. 두 번째 명령은 기존 기본 이미지가 있으면 건너뜁니다. 봇과 CLI는 `data/image_prompts.json`의 공통 프롬프트를 사용하며 진화할 때 직전 이미지를 참조합니다. 생성한 이미지는 개체별로 저장하고 다시 사용합니다. 서버 점검은 `python tools/check_images.py`, 기존 펫 이미지 생성은 `python tools/render_pet.py <user_id>`로 실행합니다.
 
 ## 저장소 안내
 

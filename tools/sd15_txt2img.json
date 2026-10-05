@@ -1,5 +1,5 @@
 {
-  "_comment": "SD 1.5 text-to-image. Smallest model, fastest. Required model: v1-5-pruned-emaonly.safetensors (or any SD1.5 checkpoint)",
+  "_comment": "SD 1.5-compatible workflow. Default: DreamShaper 8. Override using NOTEBOOK_COMFY_CHECKPOINT.",
   "3": {
     "class_type": "KSampler",
     "_meta": {"title": "KSampler"},
@@ -19,7 +19,7 @@
   "4": {
     "class_type": "CheckpointLoaderSimple",
     "_meta": {"title": "Load Checkpoint"},
-    "inputs": {"ckpt_name": "v1-5-pruned-emaonly.safetensors"}
+    "inputs": {"ckpt_name": "DreamShaper_8_pruned.safetensors"}
   },
   "5": {
     "class_type": "EmptyLatentImage",

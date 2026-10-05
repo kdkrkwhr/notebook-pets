@@ -132,7 +132,7 @@ Settings are stored in the Git-ignored `data/access.json`. The CLI does not auth
 
 ### Discord / Hermes
 
-This repository does not contain a standalone Discord bot application. The original setup used a Hermes agent profile and routing skill to receive commands and invoke the engine.
+Use the existing Hermes profile/routing skill or the optional standalone gateway in `tools/discord_bot.py`. The gateway replies with the game result first, then edits that message to attach the image. See the [image and Discord setup guide](docs/IMAGES.md) for installation and configuration.
 
 Reconnecting it requires Discord bot configuration, sender identification, command routing, a character persona, and image delivery. Manage tokens and administrator permissions outside the repository. See the [operations manual](docs/MANUAL.md) and [harness notes](docs/HARNESS.md), but do not treat their historical local paths, profile names, or cron IDs as current configuration.
 
@@ -141,14 +141,14 @@ Reconnecting it requires Discord bot configuration, sender identification, comma
 Using the existing PNGs does not require ComfyUI. To generate new artwork, provide:
 
 - ComfyUI running at `http://127.0.0.1:8188`.
-- The `v1-5-pruned-emaonly.safetensors` checkpoint named in `tools/sd15_txt2img.json`, or a compatible model explicitly configured in that workflow.
+- The `DreamShaper_8_pruned.safetensors` checkpoint named in `tools/sd15_txt2img.json`, or a compatible model explicitly configured in that workflow.
 
 ```bash
 python -X utf8 tools/gen_image.py plant nature sprout samples/demo_plant.png 42
 python -X utf8 tools/prerender_all.py --stage 1
 ```
 
-The first command writes `assets/samples/demo_plant.png`. The second skips starter images that already exist. Generation time depends on hardware. The engine returns image-needed information or evolution results; invoking the generator and sending images to Discord are responsibilities of the integration.
+The first command writes `assets/samples/demo_plant.png`. The second skips starter images that already exist. The bot and CLI share `data/image_prompts.json`, and evolution uses the previous image as a reference. Artwork is cached per pet. Check the server with `python tools/check_images.py`; render an existing pet with `python tools/render_pet.py <user_id>`.
 
 ## Repository layout
 

@@ -1,0 +1,37 @@
+{
+  "revision": "showcase-v2",
+  "style": "(one cute fantasy monster mascot:1.3), solo, full body, centered, (plain white background:1.2), clean bold lineart, glossy cel shading, expressive eyes, rounded appealing shapes, colorful game character illustration, generous margins",
+  "negative": "photo, realistic human, extra eyes, third eye, malformed face, deformed, extra limbs, duplicate, extra characters, seamless pattern, wallpaper, fruit, cropped wings, cropped tail, character sheet, multiple panels, text, logo, watermark, notebook, paper, desk, scenery, monochrome, blurry",
+  "species": {
+    "mammal": "fluffy mammal creature, rounded ears, soft fur and paw pads",
+    "bird": "bird creature, feathered wings, feather tuft and a small beak",
+    "reptile": "reptile creature, smooth scales and a curved tail",
+    "machine": "robot creature, rounded riveted metal plates and expressive LED eyes, clearly mechanical rather than human armor",
+    "fairy": "fairy sprite creature, translucent shimmering wings and restrained sparkles",
+    "monster": "kaiju creature, distinctive horns and a mischievous confident expression",
+    "dragon": "dragon creature, substantial body, dragon wings, horns, claws and fangs",
+    "plant": "cute green leaf monster with a face, two large eyes, four paws, a leaf crown and a curled vine tail",
+    "ghost": "friendly ghost creature, translucent pearly body, tiny floating arms and a wispy curled tail"
+  },
+  "elements": {
+    "fire": "warm red and orange palette with small flame motifs",
+    "water": "aqua blue palette and water droplet patterns",
+    "thunder": "electric yellow palette and lightning markings",
+    "nature": "soft green body, leaf-shaped markings",
+    "wind": "pale mint green and white palette with restrained breeze curls",
+    "earth": "brown and ochre palette with small rock crystal accents",
+    "light": "white and gold palette with restrained radiant halo glow",
+    "dark": "purple and black palette with subtle starry shadow motifs"
+  },
+  "stages": {
+    "1": "baby monster, very round small body, oversized head, tiny limbs, adorable smile",
+    "2": "Child growth form, more defined limbs, curious confident stance; preserve the recognizable face and species features.",
+    "3": "Adolescent mature form, taller proportions and emerging armor-like features; this is no longer a baby.",
+    "4": "Majestic final adult form, heroic silhouette and dynamic stance, fully developed wings or limbs appropriate to the species; not a baby or a human warrior."
+  },
+  "branches": {
+    "light": "Final evolution light branch: holy radiance, subtle golden particles, noble yet fierce expression. Preserve the original element palette and identity.",
+    "dark": "Final evolution dark branch: shadow aura, crimson eye accents and a fallen guardian mood. Preserve the original element palette and identity."
+  },
+  "reference": "The supplied image is the SAME individual at the previous stage. Preserve its face, eye design, distinctive markings, base palette and recognizable anatomy while evolving the proportions to the requested stage. Do not copy a baby silhouette into an adult stage. Produce one evolved creature, not a before/after comparison."
+}
