@@ -1,0 +1,31 @@
+{
+  "request": {
+    "species": "plant",
+    "element": "nature",
+    "stage": 1,
+    "branch": null,
+    "key": "plant_nature_stage1",
+    "pet_id": "bda735ab51687c81e8d35bd64035c461",
+    "revision": "evolution-v3b"
+  },
+  "file": "plant_nature_stage1.png",
+  "seed": 2069152759,
+  "preview_seed": 42,
+  "reference": null,
+  "prompt": "round baby leaf kitten, four little paws, curled vine tail, leaf sprout crown\n(green body and pale green leaves:1.3), soft green palette\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (2d cel shaded illustration:1.2), clean outlines, generous empty margins",
+  "reference_sha256": null,
+  "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "curated",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 512,
+    "steps": 28,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 1.0
+  },
+  "seconds": 0.0
+}

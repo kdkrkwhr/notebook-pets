@@ -37,7 +37,26 @@ python -X utf8 tools/gen_image.py plant nature growth samples/demo_plant_stage2.
 
 1단계 식물/자연, 기계/불, 유령/바람 조합은 `assets/examples/`의 새 예시를 그대로 사용합니다. 나머지 조합은 ComfyUI가 생성합니다. 과거 `assets/samples/` 이미지를 자동 대체재로 섞지 않습니다. 대표 용 이미지도 임의의 용 펫 최종 모습으로 대체하지 않습니다.
 
-진화는 직전 PNG를 `/upload/image`로 업로드하고 `LoadImage → ImageScale(512) → VAEEncode → KSampler`에 전달하는 img2img 방식입니다. 기본 denoise는 0.4입니다. 누락된 단계가 있으면 1단계부터 순서대로 생성합니다. 이전 색상과 외형을 참조하지만 동일 개체나 그림체의 완전한 보존을 보장하지는 않습니다. 채팅 도구로 만든 예시와 SD 1.5 출력도 동일한 품질을 보장하지 않습니다. [실제 로컬 검증 결과](LOCAL_IMAGE_VALIDATION.md)와 [생성 예시](../assets/runtime_examples/README.md)를 참고하세요.
+진화는 직전 PNG를 업로드하고 알파 마스크를 반전해 640px 흰 캔버스에 합성합니다. 2단계에서는 512px로 축소해 여백을 만들고, 3단계부터는 640px를 유지하여 최종형이 반복 축소되는 문제를 피합니다. 합성한 이미지를 VAE로 인코딩하여 다음 단계의 초기 latent로 사용합니다.
+
+`render` 설정은 640×640, DPM++ 2M / Karras, 28 steps, CFG 6.5입니다. 참조 변형 강도(denoise)는 2단계 0.56, 3단계 0.64, 4단계 0.78으로 증가합니다. 참조 없는 새싹기는 1.0입니다. 식물·기계·유령·용은 `species_stages`의 체형 지시와 `species_branches`의 분기 지시를 추가로 사용합니다. 그 외 종족은 공통 단계·분기 지시를 사용합니다. 최종 분기를 프롬프트 앞에 두고 종족별 제외 문구로 사람형 변형 등을 억제합니다.
+
+유령은 얼굴이 무너지는 것을 줄이기 위해 0.48 / 0.56 / 0.60의 별도 강도를 사용합니다. 종족별 체형 지시가 있는 경우 장황한 공통 단계 지시를 중복하지 않습니다. 최종 분기는 분기 색상을 우선하고, 원래 속성은 불꽃·잎·바람 등의 무늬로 유지합니다. 게임의 속성 값은 바뀌지 않습니다.
+
+누락된 단계는 1단계부터 생성합니다. 같은 개체나 그림체의 완전한 보존은 보장하지 않으며 변형 강도가 높을수록 원래 특징도 바뀔 수 있습니다. 대표 네 조합의 실제 비교는 [진화 갤러리](../assets/evolution_review/index.html), 판정은 [검토 기록](../assets/evolution_review/REVIEW.md)에 있습니다. 이전 512px 파이프라인의 기록은 [초기 연결 검증](LOCAL_IMAGE_VALIDATION.md)에 남겨두었습니다.
+
+```bash
+# 게임 세이브를 읽거나 바꾸지 않는 실제 이미지 비교 생성
+python -X utf8 tools/preview_evolution.py
+# 이전 단계가 저장되어 있을 때 최종 분기만 재생성
+python -X utf8 tools/preview_evolution.py --output assets/evolution_preview --only plant --from-stage 4
+# 이미 저장한 그림으로 HTML만 갱신: 서버 호출 없음
+python -X utf8 tools/preview_evolution.py --output assets/evolution_review --gallery-only
+# 같은 참조로 다른 시드 후보 비교
+python -X utf8 tools/preview_evolution.py --output assets/evolution_preview --only ghost --from-stage 4 --seed-offset 2
+```
+
+미리보기는 검토용 파일을 덮어쓰므로 새 비교 실험에는 다른 `--output` 경로를 사용하세요. 빛·어둠 분기 모두 같은 3단계 이미지를 참조합니다. 시드, 실제 프롬프트, 참조 파일과 생성 설정은 단계별 JSON에, ComfyUI 워크플로우는 생성 PNG 메타데이터에 기록합니다. 갤러리의 검토용 샘플을 모든 사용자 펫의 이미지로 고정하는 기능은 아닙니다. 자동 외형 판별 기능은 없으며, 최종 후보 선택은 수동 검토 결과입니다.
 
 ### 저장과 실패 처리
 
@@ -68,7 +87,11 @@ The game commits its state before slow image work. Start, status and evolution r
 
 Install ComfyUI in a separate virtual environment and put the SD 1.5 checkpoint in its `models/checkpoints/` directory. Start it with `tools/start_comfyui.ps1 -ComfyPath <path>` and run `python tools/check_images.py`. The default endpoint is `http://127.0.0.1:8188`; configure `NOTEBOOK_COMFY_URL` and `NOTEBOOK_COMFY_CHECKPOINT` if needed. The commands above generate a standalone image or render an existing pet without changing gameplay.
 
-The CLI and gateway share `data/image_prompts.json`. The three matching curated starter examples are reused; other starters use text-to-image. Evolution uploads the previous PNG and feeds its encoded latent to KSampler at denoise 0.4. Missing stages are generated in order. This encourages continuity but does not guarantee character identity or the quality of the chat-generated showcase.
+The CLI and gateway share `data/image_prompts.json`. Three matching curated starter examples are reused; other starters use text-to-image. Evolution fits the previous image onto a 640px white canvas using its alpha mask and encodes the result. Sampling uses 28 steps, DPM++ 2M / Karras, CFG 6.5 and stage-specific denoise 0.56 / 0.64 / 0.78. Plant, machine, ghost and dragon have species-specific silhouettes, final branches and negative terms. Final-branch instructions come first. Missing stages are generated in order. Stronger evolution can also change identity; outputs still require visual review.
+
+Ghosts use lower strengths of 0.48 / 0.56 / 0.60 to retain facial structure. References are reduced to 512px for stage two, then kept at 640px to avoid progressively shrinking the character. Species-specific silhouettes replace redundant generic descriptions. Final branches prioritize their own palette while retaining the original element through motifs; game element values are unchanged.
+
+`tools/preview_evolution.py` generates a four-species comparison without accessing game saves. Both final branches use the same stage-three reference. Use separate output folders for experiments because preview files are overwritten. `--from-stage 4` regenerates finals using saved earlier stages; `--gallery-only` rebuilds HTML without network calls. See the [review gallery](../assets/evolution_review/index.html) and [findings](../assets/evolution_review/REVIEW.md). The historical 512px validation describes an earlier configuration.
 
 PNG files and metadata live in `artwork/<user>/<pet>/<revision>/`. A per-user image lock, atomic PNG writes, structural PNG/CRC checks and stale-request checks protect rendering. Up to three attempts are made. Persisted ComfyUI job IDs resume polling after timeouts; a crash between server acceptance and saving that ID can still duplicate work. If ComfyUI forgets a job after restarting, inspect its queue/history before archiving the affected `.job.json` and retrying. Bump the prompt revision when intentionally replacing cached artwork; changing only the model preserves existing PNGs.
 

@@ -1,37 +1,123 @@
 {
-  "revision": "showcase-v2",
-  "style": "(one cute fantasy monster mascot:1.3), solo, full body, centered, (plain white background:1.2), clean bold lineart, glossy cel shading, expressive eyes, rounded appealing shapes, colorful game character illustration, generous margins",
-  "negative": "photo, realistic human, extra eyes, third eye, malformed face, deformed, extra limbs, duplicate, extra characters, seamless pattern, wallpaper, fruit, cropped wings, cropped tail, character sheet, multiple panels, text, logo, watermark, notebook, paper, desk, scenery, monochrome, blurry",
+  "revision": "evolution-v3b",
+  "style": "(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (2d cel shaded illustration:1.2), clean outlines, generous empty margins",
+  "negative": "(text, watermark, signature, logo, letters:1.5), (two creatures, multiple characters, duplicate, background character:1.4), extra eyes, third eye, malformed face, deformed, extra limbs, photo, human face, human skin, human, person, cropped, out of frame, closeup, portrait, bust, character sheet, panels, fruit, wallpaper, notebook, desk, scenery, monochrome, blurry, photorealistic, 3d render, gray background, background rectangle",
   "species": {
     "mammal": "fluffy mammal creature, rounded ears, soft fur and paw pads",
     "bird": "bird creature, feathered wings, feather tuft and a small beak",
     "reptile": "reptile creature, smooth scales and a curved tail",
-    "machine": "robot creature, rounded riveted metal plates and expressive LED eyes, clearly mechanical rather than human armor",
+    "machine": "riveted metal shell, round mechanical head, two circular LED eyes, mechanical joints",
     "fairy": "fairy sprite creature, translucent shimmering wings and restrained sparkles",
     "monster": "kaiju creature, distinctive horns and a mischievous confident expression",
-    "dragon": "dragon creature, substantial body, dragon wings, horns, claws and fangs",
-    "plant": "cute green leaf monster with a face, two large eyes, four paws, a leaf crown and a curled vine tail",
-    "ghost": "friendly ghost creature, translucent pearly body, tiny floating arms and a wispy curled tail"
+    "dragon": "reptilian scales, short horns, leathery folded wings, expressive eyes",
+    "plant": "leaf crown, leaf markings, curled vine tail, expressive green eyes",
+    "ghost": "(nonhuman floating ghost blob:1.4), two simple oval eyes, integrated head and body, curled vapor tail"
   },
   "elements": {
-    "fire": "warm red and orange palette with small flame motifs",
+    "fire": "(red and orange body:1.3), small flames",
     "water": "aqua blue palette and water droplet patterns",
     "thunder": "electric yellow palette and lightning markings",
-    "nature": "soft green body, leaf-shaped markings",
+    "nature": "(green body and pale green leaves:1.3), soft green palette",
     "wind": "pale mint green and white palette with restrained breeze curls",
     "earth": "brown and ochre palette with small rock crystal accents",
     "light": "white and gold palette with restrained radiant halo glow",
     "dark": "purple and black palette with subtle starry shadow motifs"
   },
   "stages": {
-    "1": "baby monster, very round small body, oversized head, tiny limbs, adorable smile",
-    "2": "Child growth form, more defined limbs, curious confident stance; preserve the recognizable face and species features.",
-    "3": "Adolescent mature form, taller proportions and emerging armor-like features; this is no longer a baby.",
-    "4": "Majestic final adult form, heroic silhouette and dynamic stance, fully developed wings or limbs appropriate to the species; not a baby or a human warrior."
+    "1": "(adorable baby creature:1.25), tiny round body, oversized round head, short limbs, small undeveloped ornaments",
+    "2": "juvenile proportions, medium head relative to body, developed silhouette, emerging ornaments",
+    "3": "powerful mature proportions, smaller head relative to body, large developed ornaments, imposing silhouette",
+    "4": "majestic ultimate form, fully developed silhouette, grand species-specific ornaments"
   },
   "branches": {
-    "light": "Final evolution light branch: holy radiance, subtle golden particles, noble yet fierce expression. Preserve the original element palette and identity.",
-    "dark": "Final evolution dark branch: shadow aura, crimson eye accents and a fallen guardian mood. Preserve the original element palette and identity."
+    "light": "ivory crown, smooth golden armor trim, bright feather-shaped ornaments, noble expression, luminous aura",
+    "dark": "obsidian crown, angular black armored spikes, sharp shadow fins, crimson eyes, fierce expression"
   },
-  "reference": "The supplied image is the SAME individual at the previous stage. Preserve its face, eye design, distinctive markings, base palette and recognizable anatomy while evolving the proportions to the requested stage. Do not copy a baby silhouette into an adult stage. Produce one evolved creature, not a before/after comparison."
+  "reference": "SAME individual evolved, preserve recognizable eyes and species identity.",
+  "species_stages": {
+    "plant": {
+      "1": "round baby leaf kitten, four little paws, curled vine tail, leaf sprout crown",
+      "2": "young leaf feline, four longer legs, elongated torso, leaf collar mane, curling vine tail",
+      "3": "(one adult leaf lion:1.3), four feline paws, long feline torso, thick layered green leaf mane, vine tail",
+      "4": "(one majestic forest lion:1.3), massive feline body, four feline paws, enormous layered green leaf mane, long vine tail"
+    },
+    "machine": {
+      "1": "round baby robot, riveted orange metal shell, two circular LED eyes, tiny mechanical arms and feet, flame crest",
+      "2": "(standing biped robot:1.3), orange metal torso, two long jointed legs, two articulated arms, round head, circular LED eyes, flame crest",
+      "3": "(large biped battle mech:1.3), small round metal head, broad armored torso, two heavy legs, two large gauntlet arms, furnace chest",
+      "4": "(colossal guardian mech:1.3), small mechanical head, huge armored shoulders, long heavy jointed legs, massive articulated arms, furnace core, exhaust fins"
+    },
+    "ghost": {
+      "1": "round baby ghost blob, huge dark eyes, tiny wisp arms, curled smoke tail",
+      "2": "(floating ghost blob:1.4), pear shaped body, oval eyes, two long wispy arms, long curling smoke tail",
+      "3": "(floating ghost creature:1.3), (two round eyes on face:1.5), wide round head, long tapered ghost body, two flowing wisp arms, large curled vapor crest",
+      "4": "(floating ghost creature:1.3), (two round eyes on face:1.5), broad round head, long flowing vapor body, sweeping wisp arms, grand vapor crest"
+    },
+    "dragon": {
+      "1": "(cute baby dragon creature:1.4), (oversized round head:1.3), very short neck, tiny chubby body, tiny folded wings, four stubby paws, smooth scales, curled tail, big round eyes",
+      "2": "young dragon, long snout, long neck, four defined legs, medium wings, long curved tail, wings tucked against back, entire curled tail visible",
+      "3": "(adult quadruped dragon:1.3), long neck, muscular long body, four powerful legs, large folded wings, long tail, swept horns, wings tucked against back, entire curled tail visible",
+      "4": "(majestic ancient quadruped dragon:1.3), long neck, massive elongated scaled body, four powerful legs, enormous folded wings, branching horns, very long curved tail, wings tucked against back, entire curled tail visible"
+    }
+  },
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 512,
+    "steps": 28,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": {
+      "2": 0.56,
+      "3": 0.64,
+      "4": 0.78
+    },
+    "reference_sizes": {
+      "2": 512,
+      "3": 640,
+      "4": 640
+    },
+    "species_denoise": {
+      "ghost": {
+        "2": 0.48,
+        "3": 0.56,
+        "4": 0.6
+      }
+    }
+  },
+  "species_branches": {
+    "ghost": {
+      "light": "(ivory and gold ghost monster:1.6), bright golden eyes, rounded golden mist crest, flowing wisp arms",
+      "dark": "(dark purple and black ghost monster:1.6), red glowing eyes, jagged obsidian mist crest, sharp black wisp arms"
+    },
+    "plant": {
+      "light": "(quadrupedal leaf lion with ivory and golden leaf mane:1.4), four paws on ground, golden crown of leaves, green body, long vine tail, side view",
+      "dark": "(quadrupedal leaf lion with black spiked leaf mane:1.4), four paws on ground, obsidian leaf crown, deep green body, crimson eyes, long thorny vine tail, side view"
+    },
+    "machine": {
+      "light": "(white and gold armored robot:1.6), orange glowing core, smooth massive shoulder armor, two heavy gauntlets",
+      "dark": "(black and crimson armored robot:1.6), jagged shoulder spikes, red glowing eyes, two heavy claw gauntlets"
+    },
+    "dragon": {
+      "light": "(ivory and gold ancient dragon:1.4), four reptilian legs, elegant golden horns, radiant golden wing edges, noble expression",
+      "dark": "(black and violet ancient dragon:1.4), four reptilian legs, jagged dark horns, crimson eyes, dark spiked wings"
+    }
+  },
+  "species_negative": {
+    "dragon": "fur, furry, mammal, bat, multiple wings, extra wings, (spread wings, outstretched wings:1.3), muscular human body, doll, hair, human ears",
+    "ghost": "woman, man, human, human face, human torso, human legs, dress, breasts, robe, low contrast, faint outline, (cyclops, single eye, one eye, giant eyeball, eye on body:1.6), bat, companion, pet animal",
+    "machine": "human skin, human face",
+    "plant": "(anthropomorphic, humanoid, bipedal, man, woman, human face:1.5), hooves, deer"
+  },
+  "element_motifs": {
+    "fire": "flame motifs and a glowing furnace core",
+    "water": "water droplet markings and flowing fins",
+    "thunder": "lightning bolt markings and electric sparks",
+    "nature": "leaf markings and leafy ornaments",
+    "wind": "wind spirals and breeze curls",
+    "earth": "rock crystal ornaments",
+    "light": "radiant light markings",
+    "dark": "starry shadow markings"
+  }
 }

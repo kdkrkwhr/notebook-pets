@@ -26,7 +26,7 @@ def build_prompt(species, element, stage, seed, *, branch=None, reference_name=N
     number = STAGE_MAP.get(str(stage))
     prompt = art.build_prompt(sp, el, number, branch, reference_name is not None)
     return build_workflow(prompt, seed, reference_name=reference_name,
-                          checkpoint=os.environ.get("NOTEBOOK_COMFY_CHECKPOINT"))
+                          checkpoint=os.environ.get("NOTEBOOK_COMFY_CHECKPOINT"), stage=number, species=sp)
 
 
 def main():
@@ -62,7 +62,7 @@ def main():
             print(json.dumps({"ok": True, "prompt": prompt, "seed": art.image_seed(spec),
                               "workflow": build_workflow(prompt, art.image_seed(spec),
                                    reference_name=args.reference.name if args.reference else None,
-                                   checkpoint=os.environ.get("NOTEBOOK_COMFY_CHECKPOINT"))}, ensure_ascii=False))
+                                   checkpoint=os.environ.get("NOTEBOOK_COMFY_CHECKPOINT"), stage=stage, species=sp)}, ensure_ascii=False))
             return 0
         if output.exists() and not args.overwrite:
             raise ValueError("Output exists; use --overwrite explicitly")

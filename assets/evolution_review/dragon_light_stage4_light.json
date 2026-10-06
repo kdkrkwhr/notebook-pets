@@ -1,0 +1,31 @@
+{
+  "request": {
+    "species": "dragon",
+    "element": "light",
+    "stage": 4,
+    "branch": "light",
+    "key": "dragon_light_stage4_light",
+    "pet_id": "70ffb52808c13d5cc06bf1b8e3aab8fe",
+    "revision": "evolution-v3b"
+  },
+  "file": "dragon_light_stage4_light.png",
+  "seed": 3871994508,
+  "preview_seed": 42,
+  "reference": "dragon_light_stage3.png",
+  "prompt": "(ivory and gold ancient dragon:1.4), four reptilian legs, elegant golden horns, radiant golden wing edges, noble expression\n(majestic ancient quadruped dragon:1.3), long neck, massive elongated scaled body, four powerful legs, enormous folded wings, branching horns, very long curved tail, wings tucked against back, entire curled tail visible\nradiant light markings\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (2d cel shaded illustration:1.2), clean outlines, generous empty margins\nSAME individual evolved, preserve recognizable eyes and species identity.",
+  "reference_sha256": "4126ce3052a930701e8b2651678cb7cdc10fbbcfb2dab78d9ba868e1542990da",
+  "sha256": "927cd6a1a9d14e02c6b5220d93cafade95917dbbbb7a20707bf9609be0a5c3b9",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 28,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.78
+  },
+  "seconds": 112.61
+}

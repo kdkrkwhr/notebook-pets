@@ -12,14 +12,21 @@ from image_service import MAX_IMAGE_BYTES, validate_png
 from runtime import GameError, MISSING, atomic_write_json, read_json
 
 
-def build_workflow(prompt, seed, *, reference_name=None, checkpoint=None, denoise=0.4):
+def build_workflow(prompt, seed, *, reference_name=None, checkpoint=None, denoise=None, stage=1, species=None):
+    settings = art.render_settings(stage, reference_name is not None, species)
+    denoise = settings["denoise"] if denoise is None else denoise
     if not math.isfinite(denoise) or not 0 < denoise <= 1:
         raise ValueError("denoise must be > 0 and <= 1")
     wf = json.loads((art.ROOT / "tools/sd15_txt2img.json").read_text(encoding="utf-8"))
     wf.pop("_comment", None)
     wf["6"]["inputs"]["text"] = prompt
     wf["7"]["inputs"]["text"] = art.TEMPLATE["negative"]
+    if species in art.TEMPLATE.get("species_negative", {}):
+        wf["7"]["inputs"]["text"] += ", " + art.TEMPLATE["species_negative"][species]
     wf["3"]["inputs"]["seed"] = seed
+    wf["3"]["inputs"].update(steps=settings["steps"], cfg=settings["cfg"],
+                              sampler_name=settings["sampler"], scheduler=settings["scheduler"])
+    wf["5"]["inputs"].update(width=settings["width"], height=settings["height"])
     wf["9"]["inputs"]["filename_prefix"] = "notebook-pets"
     if checkpoint:
         wf["4"]["inputs"]["ckpt_name"] = checkpoint
@@ -27,8 +34,14 @@ def build_workflow(prompt, seed, *, reference_name=None, checkpoint=None, denois
         wf.pop("5")
         wf["10"] = {"class_type": "LoadImage", "inputs": {"image": reference_name}}
         wf["11"] = {"class_type": "ImageScale", "inputs": {
-            "image": ["10", 0], "upscale_method": "bicubic", "width": 512, "height": 512, "crop": "disabled"}}
-        wf["12"] = {"class_type": "VAEEncode", "inputs": {"pixels": ["11", 0], "vae": ["4", 2]}}
+            "image": ["10", 0], "upscale_method": "bicubic", "width": settings["reference_size"], "height": settings["reference_size"], "crop": "disabled"}}
+        wf["13"] = {"class_type": "EmptyImage", "inputs": {"width": settings["width"], "height": settings["height"], "batch_size": 1, "color": 16777215}}
+        wf["14"] = {"class_type": "InvertMask", "inputs": {"mask": ["10", 1]}}
+        pad = (settings["width"] - settings["reference_size"]) // 2
+        wf["15"] = {"class_type": "ImageCompositeMasked", "inputs": {
+            "destination": ["13", 0], "source": ["11", 0], "mask": ["14", 0],
+            "x": pad, "y": pad, "resize_source": False}}
+        wf["12"] = {"class_type": "VAEEncode", "inputs": {"pixels": ["15", 0], "vae": ["4", 2]}}
         wf["3"]["inputs"].update({"latent_image": ["12", 0], "denoise": denoise})
     return {"prompt": wf}
 
@@ -36,7 +49,7 @@ def build_workflow(prompt, seed, *, reference_name=None, checkpoint=None, denois
 class ComfyUIProvider:
     name = "comfyui"
 
-    def __init__(self, host=None, *, checkpoint=None, timeout=180, poll_interval=1, denoise=0.4):
+    def __init__(self, host=None, *, checkpoint=None, timeout=180, poll_interval=1, denoise=None):
         self.host = (host or os.environ.get("NOTEBOOK_COMFY_URL", "http://127.0.0.1:8188")).rstrip("/")
         url = parse.urlsplit(self.host)
         if url.scheme not in ("http", "https") or not url.netloc or url.username or url.query or url.fragment:
@@ -44,7 +57,7 @@ class ComfyUIProvider:
         self.checkpoint = checkpoint or os.environ.get("NOTEBOOK_COMFY_CHECKPOINT")
         if not math.isfinite(timeout) or timeout <= 0 or not math.isfinite(poll_interval) or poll_interval < 0:
             raise ValueError("Invalid timeout/poll interval")
-        if not math.isfinite(denoise) or not 0 < denoise <= 1:
+        if denoise is not None and (not math.isfinite(denoise) or not 0 < denoise <= 1):
             raise ValueError("Invalid denoise")
         self.timeout, self.poll_interval, self.denoise = timeout, poll_interval, denoise
 
@@ -82,8 +95,12 @@ class ComfyUIProvider:
     def generate(self, spec, prompt, reference, job_path):
         seed = art.image_seed(spec)
         reference_hash = hashlib.sha256(Path(reference).read_bytes()).hexdigest() if reference else None
+        workflow_template_hash = hashlib.sha256((art.ROOT / "tools/sd15_txt2img.json").read_bytes()).hexdigest()
         fingerprint = hashlib.sha256(json.dumps([spec, prompt, reference_hash, self.host,
-                                                self.checkpoint, self.denoise], sort_keys=True).encode()).hexdigest()
+                                                self.checkpoint, self.denoise,
+                                                art.render_settings(spec["stage"], reference is not None, spec["species"]),
+                                                art.TEMPLATE["negative"], art.TEMPLATE.get("species_negative", {}).get(spec["species"]),
+                                                workflow_template_hash], sort_keys=True).encode()).hexdigest()
         job = read_json(job_path)
         if job is MISSING:
             job = {}
@@ -92,7 +109,7 @@ class ComfyUIProvider:
         if job.get("fingerprint") != fingerprint or job.get("state") == "failed":
             reference_name = self.upload(reference) if reference else None
             workflow = build_workflow(prompt, seed, reference_name=reference_name,
-                                      checkpoint=self.checkpoint, denoise=self.denoise)
+                                      checkpoint=self.checkpoint, denoise=self.denoise, stage=spec["stage"], species=spec["species"])
             result = self._http("/prompt", json.dumps(workflow).encode(), "application/json")
             prompt_id = result.get("prompt_id") if isinstance(result, dict) else None
             if not isinstance(prompt_id, str) or not prompt_id or result.get("node_errors"):

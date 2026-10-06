@@ -40,13 +40,23 @@ def describe(st):
 
 def build_prompt(species, element, stage, branch=None, reference=False):
     image_key(species, element, stage, branch)
-    pieces = [TEMPLATE["stages"][str(stage)], TEMPLATE["species"][species],
-              TEMPLATE["elements"][element], TEMPLATE["style"]]
+    shape = TEMPLATE.get("species_stages", {}).get(species, {}).get(str(stage))
+    pieces = ([shape] if shape else [TEMPLATE["stages"][str(stage)], TEMPLATE["species"][species]])
+    element_prompt = TEMPLATE.get("element_motifs", TEMPLATE["elements"])[element] if branch else TEMPLATE["elements"][element]
+    pieces += [element_prompt, TEMPLATE["style"]]
     if branch:
-        pieces.append(TEMPLATE["branches"][branch])
+        pieces.insert(0, TEMPLATE.get("species_branches", {}).get(species, {}).get(branch, TEMPLATE["branches"][branch]))
     if reference:
         pieces.append(TEMPLATE["reference"])
     return "\n".join(pieces)
+
+
+def render_settings(stage, reference=False, species=None):
+    settings = dict(TEMPLATE["render"])
+    settings["reference_size"] = settings.pop("reference_sizes", {}).get(str(stage), settings["reference_size"])
+    strengths = settings.pop("species_denoise", {}).get(species, settings["denoise"])
+    settings["denoise"] = strengths.get(str(stage), 0.62) if reference else 1.0
+    return settings
 
 
 def image_seed(request):

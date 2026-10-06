@@ -1,0 +1,31 @@
+{
+  "request": {
+    "species": "plant",
+    "element": "nature",
+    "stage": 4,
+    "branch": "light",
+    "key": "plant_nature_stage4_light",
+    "pet_id": "bda735ab51687c81e8d35bd64035c461",
+    "revision": "evolution-v3b"
+  },
+  "file": "plant_nature_stage4_light.png",
+  "seed": 744201122,
+  "preview_seed": 42,
+  "reference": "plant_nature_stage3.png",
+  "prompt": "(quadrupedal leaf lion with ivory and golden leaf mane:1.4), four paws on ground, golden crown of leaves, green body, long vine tail, side view\n(one majestic forest lion:1.3), massive feline body, four feline paws, enormous layered green leaf mane, long vine tail\nleaf markings and leafy ornaments\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (2d cel shaded illustration:1.2), clean outlines, generous empty margins\nSAME individual evolved, preserve recognizable eyes and species identity.",
+  "reference_sha256": "09303793dca989cdbd508513f06a15619e5fa80b7c849e1d609534eb62f4df70",
+  "sha256": "c126459d8744a8fd500e2012ae816c4f94e2b61cd886e804f47ac2bd8ef9e102",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 28,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.78
+  },
+  "seconds": 8.33
+}

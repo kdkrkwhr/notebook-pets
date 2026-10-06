@@ -1,0 +1,31 @@
+{
+  "request": {
+    "species": "ghost",
+    "element": "wind",
+    "stage": 2,
+    "branch": null,
+    "key": "ghost_wind_stage2",
+    "pet_id": "0603a0b75a28733949ae053d0aff1c8b",
+    "revision": "evolution-v3b"
+  },
+  "file": "ghost_wind_stage2.png",
+  "seed": 1248235032,
+  "preview_seed": 42,
+  "reference": "ghost_wind_stage1.png",
+  "prompt": "(floating ghost blob:1.4), pear shaped body, oval eyes, two long wispy arms, long curling smoke tail\npale mint green and white palette with restrained breeze curls\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (2d cel shaded illustration:1.2), clean outlines, generous empty margins\nSAME individual evolved, preserve recognizable eyes and species identity.",
+  "reference_sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2",
+  "sha256": "c71f7318d24ee93787ecff7a194fa9566e52e5e8a44ec7b58aaa437c7cb1c13f",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 512,
+    "steps": 28,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.48
+  },
+  "seconds": 8.16
+}

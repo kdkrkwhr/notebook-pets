@@ -1,0 +1,33 @@
+{
+  "request": {
+    "species": "ghost",
+    "element": "wind",
+    "stage": 4,
+    "branch": "light",
+    "key": "ghost_wind_stage4_light",
+    "pet_id": "0603a0b75a28733949ae053d0aff1c8b",
+    "revision": "evolution-v3b",
+    "seed": 422592499
+  },
+  "file": "ghost_wind_stage4_light.png",
+  "seed": 422592499,
+  "preview_seed": 42,
+  "seed_offset": 2,
+  "reference": "ghost_wind_stage3.png",
+  "prompt": "(ivory and gold ghost monster:1.6), bright golden eyes, rounded golden mist crest, flowing wisp arms\n(floating ghost creature:1.3), (two round eyes on face:1.5), broad round head, long flowing vapor body, sweeping wisp arms, grand vapor crest\nwind spirals and breeze curls\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (2d cel shaded illustration:1.2), clean outlines, generous empty margins\nSAME individual evolved, preserve recognizable eyes and species identity.",
+  "reference_sha256": "eb906629d6c69460553fdf707b7380370d657c31e0bec6d577674d29dda9c8c8",
+  "sha256": "76373a6648f90aeb54facdddf4d9562db7ab3c487cd57e2bd6d6a448d28a74bb",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 28,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.6
+  },
+  "seconds": 7.09
+}

@@ -45,8 +45,13 @@ class ImageTests(unittest.TestCase):
                 for stage in (1, 2, 3, 4):
                     for branch in (("light", "dark") if stage == 4 else (None,)):
                         prompt = art.build_prompt(sp, el, stage, branch, reference=stage > 1)
-                        self.assertIn(art.TEMPLATE["species"][sp], prompt)
-                        self.assertIn(art.TEMPLATE["stages"][str(stage)], prompt)
+                        shape = art.TEMPLATE.get("species_stages", {}).get(sp, {}).get(str(stage))
+                        if shape:
+                            self.assertIn(shape, prompt)
+                        else:
+                            self.assertIn(art.TEMPLATE["species"][sp], prompt)
+                            self.assertIn(art.TEMPLATE["stages"][str(stage)], prompt)
+                        self.assertIn(art.TEMPLATE["element_motifs" if branch else "elements"][el], prompt)
                         if stage > 1:
                             self.assertIn("SAME individual", prompt)
         self.assertNotEqual(art.image_key("dragon", "light", 4, "light"), art.image_key("dragon", "light", 4, "dark"))
@@ -158,12 +163,53 @@ class ImageTests(unittest.TestCase):
             self.assertEqual(generate_mock.call_count, 1)
 
     def test_workflow_encodes_reference_instead_of_empty_latent(self):
-        workflow = build_workflow("evolve", 42, reference_name="previous.png")["prompt"]
+        workflow = build_workflow("evolve", 42, reference_name="previous.png", stage=2)["prompt"]
         self.assertEqual(workflow["10"]["inputs"]["image"], "previous.png")
         self.assertEqual(workflow["3"]["inputs"]["latent_image"], ["12", 0])
-        self.assertEqual(workflow["3"]["inputs"]["denoise"], 0.4)
+        self.assertEqual(workflow["3"]["inputs"]["denoise"], 0.56)
+        self.assertEqual(workflow["12"]["inputs"]["pixels"], ["15", 0])
+        self.assertEqual(workflow["14"]["inputs"]["mask"], ["10", 1])
+        self.assertEqual(workflow["15"]["inputs"]["mask"], ["14", 0])
+        self.assertEqual(workflow["13"]["inputs"]["color"], 16777215)
         self.assertNotIn("5", workflow)
         self.assertIn("5", build_workflow("new pet", 42)["prompt"])
+
+    def test_stage_profiles_increase_change_and_species_shapes_are_distinct(self):
+        strengths = [art.render_settings(stage, True)["denoise"] for stage in (2, 3, 4)]
+        self.assertEqual(strengths, sorted(set(strengths)))
+        for species in ("plant", "machine", "ghost", "dragon"):
+            self.assertEqual(len(set(art.TEMPLATE["species_stages"][species].values())), 4)
+            for stage in (1, 2, 3, 4):
+                branch = "light" if stage == 4 else None
+                prompt = art.build_prompt(species, "fire", stage, branch)
+                self.assertIn(art.TEMPLATE["species_stages"][species][str(stage)], prompt)
+        self.assertEqual(art.render_settings(4, False)["denoise"], 1.0)
+        self.assertNotIn("cute", art.TEMPLATE["style"])
+
+    def test_cli_dry_run_and_provider_share_final_evolution_settings(self):
+        import subprocess
+        import sys
+        root = Path(__file__).resolve().parents[1]
+        result = subprocess.run([sys.executable, "-X", "utf8", str(root / "tools/gen_image.py"),
+            "plant", "nature", "ultimate", "samples/dry.png", "42", "--branch", "dark",
+            "--reference", str(root / "assets/examples/plant_nature_stage1.png"), "--dry-run"],
+            capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        workflow = json.loads(result.stdout)["workflow"]["prompt"]
+        self.assertEqual(workflow["3"]["inputs"]["denoise"], art.render_settings(4, True)["denoise"])
+        self.assertEqual(workflow["13"]["inputs"]["width"], art.TEMPLATE["render"]["width"])
+
+    def test_ghost_preserves_face_with_lower_strength_and_final_branches_keep_element_motifs(self):
+        for stage in (2, 3, 4):
+            ghost = build_workflow("ghost", 42, reference_name="ghost.png", stage=stage, species="ghost")["prompt"]
+            other = art.render_settings(stage, True, "machine")
+            self.assertLess(ghost["3"]["inputs"]["denoise"], other["denoise"])
+            if stage >= 3:
+                self.assertEqual(ghost["15"]["inputs"]["x"], 0)
+        prompt = art.build_prompt("ghost", "wind", 4, "dark", True)
+        self.assertTrue(prompt.startswith(art.TEMPLATE["species_branches"]["ghost"]["dark"]))
+        self.assertIn(art.TEMPLATE["element_motifs"]["wind"], prompt)
+        self.assertNotIn(art.TEMPLATE["elements"]["wind"], prompt)
 
     def test_timeout_reuses_persisted_comfy_job(self):
         provider = ComfyUIProvider(timeout=0.02, poll_interval=0)
@@ -225,7 +271,7 @@ class ImageTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         payload = json.loads(result.stdout)
         self.assertEqual(payload["seed"], 42)
-        self.assertIn(art.TEMPLATE["stages"]["2"], payload["prompt"])
+        self.assertIn(art.TEMPLATE["species_stages"]["plant"]["2"], payload["prompt"])
         result = subprocess.run(cli + ["../outside.png", "--dry-run"], capture_output=True,
                                 text=True, encoding="utf-8")
         self.assertEqual(result.returncode, 1)

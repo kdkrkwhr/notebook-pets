@@ -1,0 +1,31 @@
+{
+  "request": {
+    "species": "machine",
+    "element": "fire",
+    "stage": 4,
+    "branch": "dark",
+    "key": "machine_fire_stage4_dark",
+    "pet_id": "03412110a619073355d02bc49f3720b1",
+    "revision": "evolution-v3b"
+  },
+  "file": "machine_fire_stage4_dark.png",
+  "seed": 3230695549,
+  "preview_seed": 42,
+  "reference": "machine_fire_stage3.png",
+  "prompt": "(black and crimson armored robot:1.6), jagged shoulder spikes, red glowing eyes, two heavy claw gauntlets\n(colossal guardian mech:1.3), small mechanical head, huge armored shoulders, long heavy jointed legs, massive articulated arms, furnace core, exhaust fins\nflame motifs and a glowing furnace core\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (2d cel shaded illustration:1.2), clean outlines, generous empty margins\nSAME individual evolved, preserve recognizable eyes and species identity.",
+  "reference_sha256": "9f634767de7f7f00a964fe7337c9055332f7266e196b46015516afe7b6e94954",
+  "sha256": "bcd75f1ca11d40431ff543b184e9d9fbf38a8416d27f143675df6c1824ca2f68",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 28,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.78
+  },
+  "seconds": 10.12
+}

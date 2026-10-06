@@ -1,0 +1,31 @@
+{
+  "request": {
+    "species": "ghost",
+    "element": "wind",
+    "stage": 3,
+    "branch": null,
+    "key": "ghost_wind_stage3",
+    "pet_id": "0603a0b75a28733949ae053d0aff1c8b",
+    "revision": "evolution-v3b"
+  },
+  "file": "ghost_wind_stage3.png",
+  "seed": 2421140030,
+  "preview_seed": 42,
+  "reference": "ghost_wind_stage2.png",
+  "prompt": "(floating ghost creature:1.3), (two round eyes on face:1.5), wide round head, long tapered ghost body, two flowing wisp arms, large curled vapor crest\npale mint green and white palette with restrained breeze curls\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (2d cel shaded illustration:1.2), clean outlines, generous empty margins\nSAME individual evolved, preserve recognizable eyes and species identity.",
+  "reference_sha256": "c71f7318d24ee93787ecff7a194fa9566e52e5e8a44ec7b58aaa437c7cb1c13f",
+  "sha256": "eb906629d6c69460553fdf707b7380370d657c31e0bec6d577674d29dda9c8c8",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 28,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.56
+  },
+  "seconds": 8.17
+}

@@ -1,0 +1,31 @@
+{
+  "request": {
+    "species": "dragon",
+    "element": "light",
+    "stage": 1,
+    "branch": null,
+    "key": "dragon_light_stage1",
+    "pet_id": "70ffb52808c13d5cc06bf1b8e3aab8fe",
+    "revision": "evolution-v3b"
+  },
+  "file": "dragon_light_stage1.png",
+  "seed": 1480531878,
+  "preview_seed": 42,
+  "reference": null,
+  "prompt": "(cute baby dragon creature:1.4), (oversized round head:1.3), very short neck, tiny chubby body, tiny folded wings, four stubby paws, smooth scales, curled tail, big round eyes\nwhite and gold palette with restrained radiant halo glow\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (2d cel shaded illustration:1.2), clean outlines, generous empty margins",
+  "reference_sha256": null,
+  "sha256": "a25f7bbc46002ba7827db1673821379b522d25639aa0bef41834675ec73a63a2",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 512,
+    "steps": 28,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 1.0
+  },
+  "seconds": 7.14
+}

@@ -1,0 +1,189 @@
+{
+  "frames": 20,
+  "generated": 17,
+  "curated": 3,
+  "shared_stage_three_reference": true,
+  "html_images_and_links_valid": true,
+  "checks": [
+    {
+      "file": "plant_nature_stage1.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "plant_nature_stage2.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "plant_nature_stage3.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "plant_nature_stage4_light.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "plant_nature_stage4_dark.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "machine_fire_stage1.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "machine_fire_stage2.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "machine_fire_stage3.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "machine_fire_stage4_light.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "machine_fire_stage4_dark.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "ghost_wind_stage1.png",
+      "size": [
+        1254,
+        1254
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "ghost_wind_stage2.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "ghost_wind_stage3.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "ghost_wind_stage4_light.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "ghost_wind_stage4_dark.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "dragon_light_stage1.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "dragon_light_stage2.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "dragon_light_stage3.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "dragon_light_stage4_light.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    },
+    {
+      "file": "dragon_light_stage4_dark.png",
+      "size": [
+        640,
+        640
+      ],
+      "metadata_matches": true,
+      "reference_matches": true
+    }
+  ]
+}

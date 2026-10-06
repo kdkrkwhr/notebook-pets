@@ -128,6 +128,7 @@ class ImageService:
                     atomic_write_json(destination.with_suffix(".json"), {
                         "request": spec, "prompt": prompt, "seed": art.image_seed(spec),
                         "reference": previous.name if previous else None, "provider": provider_name,
+                        "render": art.render_settings(stage, previous is not None, spec["species"]),
                     })
                     previous = destination
                     break

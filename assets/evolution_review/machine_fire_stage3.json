@@ -1,0 +1,31 @@
+{
+  "request": {
+    "species": "machine",
+    "element": "fire",
+    "stage": 3,
+    "branch": null,
+    "key": "machine_fire_stage3",
+    "pet_id": "03412110a619073355d02bc49f3720b1",
+    "revision": "evolution-v3b"
+  },
+  "file": "machine_fire_stage3.png",
+  "seed": 3192441638,
+  "preview_seed": 42,
+  "reference": "machine_fire_stage2.png",
+  "prompt": "(large biped battle mech:1.3), small round metal head, broad armored torso, two heavy legs, two large gauntlet arms, furnace chest\n(red and orange body:1.3), small flames\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (2d cel shaded illustration:1.2), clean outlines, generous empty margins\nSAME individual evolved, preserve recognizable eyes and species identity.",
+  "reference_sha256": "2ff487e5039dd94d67718fe5c6eeafca4fbe733bfb43a27c9d3d0eba72250e09",
+  "sha256": "9f634767de7f7f00a964fe7337c9055332f7266e196b46015516afe7b6e94954",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 28,
+    "cfg": 6.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.64
+  },
+  "seconds": 9.19
+}
