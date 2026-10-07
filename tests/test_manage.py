@@ -4,7 +4,6 @@ from pathlib import Path
 import subprocess
 import sys
 import unittest
-from unittest.mock import patch
 import test_p0
 import manage
 
@@ -31,15 +30,15 @@ class ManageTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             manage.initialize(config)
         settings, _ = manage.load_settings(config, {})
-        self.assertEqual(Path(settings['data_root']), config.parent)
-        self.assertEqual(Path(settings['backup_root']), config.parent/'backups')
+        self.assertTrue(Path(settings['data_root']).samefile(config.parent))
+        self.assertEqual(Path(settings['backup_root']), (config.parent/'backups').resolve())
 
     def test_env_precedence_preserves_actor_and_secrets_without_showing_them(self):
         config = self.configuration()
         values = {'NOTEBOOK_DATA_DIR': str(self.root), 'NOTEBOOK_CHANNEL_IDS':'123,456',
                   'NOTEBOOK_ACTOR_ID':'123', 'DISCORD_BOT_TOKEN':'never-print-me'}
         settings, env = manage.load_settings(config, values)
-        self.assertEqual(settings['data_root'], str(self.root))
+        self.assertTrue(Path(settings['data_root']).samefile(self.root))
         self.assertEqual(settings['channel_ids'], ['123','456'])
         self.assertEqual(env['NOTEBOOK_ACTOR_ID'], '123')
         self.assertEqual(env['DISCORD_BOT_TOKEN'], 'never-print-me')
@@ -71,7 +70,7 @@ class ManageTests(unittest.TestCase):
         self.assertEqual(checked.returncode, 0, checked.stdout + checked.stderr)
         album = self.cli(config, 'album', '123')
         self.assertEqual(album.returncode, 0, album.stdout + album.stderr)
-        self.assertEqual(Path(json.loads(album.stdout)['path']).parent, config.parent/'albums')
+        self.assertTrue(Path(json.loads(album.stdout)['path']).parent.samefile(config.parent/'albums'))
 
     def test_child_failure_exit_code_propagates(self):
         config = self.configuration()
