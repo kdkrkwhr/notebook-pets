@@ -63,6 +63,14 @@ Notebook Pets는 **게임 규칙은 Python이 처리하고, 캐릭터의 말투�
 
 ## 빠르게 살펴보기
 
+환경을 한 번 설정하고 여러 도구에서 공유하려면 아래 통합 실행기를 사용하세요. `notebook.local.json`의 상대 경로는 설정 파일 위치를 기준으로 합니다. [설정과 실행 안내](docs/CONFIGURATION.md)에 옵션과 환경변수 우선순위를 정리했습니다.
+
+```bash
+python -X utf8 tools/manage.py init
+python -X utf8 tools/manage.py config
+python -X utf8 tools/manage.py doctor
+```
+
 ### 요구사항
 
 - Python 3.12에서 실행을 확인했습니다.
@@ -224,6 +232,8 @@ tools/daily_backup.py     자동 백업 실행·검증·보관 정책
 tools/register_backup_task.ps1 Windows 일일 백업 예약
 tools/doctor.py           세이브·백업·선택 연결 환경 점검
 tools/export_album.py     파트너 진화 앨범 HTML 내보내기
+tools/manage.py           공통 설정으로 점검·게임·봇·백업 실행
+notebook.example.json     비밀값 없는 설정 예시
 tools/upscale_images.py  이미지 업스케일 도구
 tests/test_engine.py      엔진 self-check
 promo/index.html         정적 소개 페이지
@@ -247,9 +257,11 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 종족 보너스, 경험치·진화, 수면, 접근 제어, 저장 실패, 동시 실행, 메시지 재처리, 전투, 이미지 파이프라인과 에이전트 연결을 확인합니다. 테스트 데이터는 임시 파일에 저장합니다.
 
-`requirements-mcp.txt`를 설치하면 실제 stdio 클라이언트·서버 통신 테스트도 실행됩니다. 미설치 시 해당 테스트만 건너뜁니다. 현재 검증 결과는 **unittest 139개 + 엔진 self-check 6개 통과**이며, 외부 LLM 계정 없이 실행합니다. 파트너 진화 기록·앨범, 동시 저장 잠금, 복구 후 중복 요청 재처리와 백업 보관 정책도 검증합니다.
+`requirements-mcp.txt`를 설치하면 실제 stdio 클라이언트·서버 통신 테스트도 실행됩니다. 미설치 시 해당 테스트만 건너뜁니다. 현재 검증 결과는 **unittest 145개 + 엔진 self-check 6개 통과**이며, 외부 LLM 계정 없이 실행합니다. 파트너 진화 기록·앨범, 동시 저장 잠금, 복구 후 중복 요청 재처리와 백업 보관 정책도 검증합니다.
 
 ## 문서
+
+- [설정과 통합 실행](docs/CONFIGURATION.md): 공통 설정·환경변수·실행 명령
 
 - [진화 앨범](docs/ALBUM.md): 한 파트너의 성장 기록과 이미지·HTML 앨범
 

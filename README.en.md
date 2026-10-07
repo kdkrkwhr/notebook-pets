@@ -63,6 +63,14 @@ Species selection, encounters, and battles use randomness governed by the game r
 
 ## Quick start
 
+Use the launcher to share one configuration across tools. Relative paths in `notebook.local.json` are resolved from the configuration file's directory. See [configuration and launcher](docs/CONFIGURATION.md) for settings and environment precedence.
+
+```bash
+python -X utf8 tools/manage.py init
+python -X utf8 tools/manage.py config
+python -X utf8 tools/manage.py doctor
+```
+
 ### Requirements
 
 - Verified with Python 3.12.
@@ -224,6 +232,8 @@ tools/daily_backup.py     Verified backup job and retention policy
 tools/register_backup_task.ps1 Windows daily backup scheduling
 tools/doctor.py           Store, backup, and optional service preflight checks
 tools/export_album.py     Offline HTML partner evolution album
+tools/manage.py           Shared configuration for diagnostics, game, bot, and backups
+notebook.example.json     Configuration example without secrets
 tools/upscale_images.py  Image upscaling tool
 tests/test_engine.py      Engine self-checks
 promo/index.html         Static promotional page
@@ -247,9 +257,11 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, combat, image pipelines, and agent integration. Test data is stored in temporary files.
 
-Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **139 unittest cases and 6 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, event replay after restoration, retention, and interrupted-job recovery.
+Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **145 unittest cases and 6 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, event replay after restoration, retention, and interrupted-job recovery.
 
 ## Documentation
+
+- [Configuration and launcher](docs/CONFIGURATION.md): shared settings, environment, and commands
 
 - [Evolution album](docs/ALBUM.md): one partner's growth history and image/HTML album
 

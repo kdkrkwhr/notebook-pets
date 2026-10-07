@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "data_root": ".",
+  "backup_root": "backups",
+  "album_root": "albums",
+  "comfy_url": "http://127.0.0.1:8188",
+  "comfy_checkpoint": null,
+  "channel_ids": [],
+  "admin_ids": [],
+  "backup_keep_days": 30,
+  "backup_keep_min": 7
+}
