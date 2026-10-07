@@ -6,7 +6,7 @@ Version **0.2.0**
 
 > An AI companion born in a notebook — a monster you care for and raise on Discord.
 
-Notebook Pets is a virtual-pet project where **Python handles the game rules and an AI agent gives the character its voice and story**. Feed your monster, play together, and take walks to build a relationship with your companion. Connect Hermes or another AI agent through shared Python tools or MCP, or use the standalone Discord gateway.
+Notebook Pets is a virtual-pet project where **Python handles the game rules and an AI agent gives the character its voice and story**. Raise **the single partner you first meet** through feeding, play, and walks in a Tamagotchi-style game. Connect Hermes or another AI agent through shared Python tools or MCP, or use the standalone Discord gateway.
 
 The repository is named `notebook-pets`; the service name is **Notebuddy (노트버디)**.
 
@@ -24,8 +24,8 @@ The repository is named `notebook-pets`; the service name is **Notebuddy (노트
 | Monsters | 9 species × 8 elements: 72 starter combinations |
 | Care | Feeding, snacks, play, sleep, intimacy, and satiety |
 | Daily quest | Feed once, train twice, and walk once to claim a reward |
-| Activities | Persistent stat training, walks, HP-based automatic battles, capture, and fleeing |
-| Records | Battle records, capture collection, titles, and rankings |
+| Activities | Persistent stat training, walks, HP-based automatic battles and fleeing |
+| Records | Partner evolution album, battle records, titles, and rankings |
 | Progression rules | Stage transitions at levels 31, 51, and 81; level cap of 100 |
 | Final evolution | Light branch at intimacy 70 or above; dark branch below 70 |
 | Artwork | Per-pet artwork and evolution with local ComfyUI and IP-Adapter |
@@ -105,16 +105,22 @@ python -X utf8 engine/engine.py <user_id> <command> [arguments...]
 | Feed / give a snack | `feed` / `밥줘`, `snack` / `간식줘` |
 | Play / sleep | `play` / `놀아줘`, `sleep` / `재워줘` / `잘자` |
 | Train / walk | `train` / `훈련`, `walk` / `산책` |
-| Battle / capture / flee | `battle` / `배틀`, `catch` / `포획`, `flee` / `도망` |
+| Battle / flee | `battle` / `배틀`, `flee` / `도망` |
 | Daily attendance (XP + 3 normal feed) | `attendance` / `출석` |
 | Quest progress / claim reward | `quests` / `퀘스트` / `일일퀘스트`, `claimquest` / `퀘스트보상` |
-| Collection / titles | `pokedex` / `도감`, `titles` / `칭호` |
+| Evolution album / titles | `album` / `앨범` / `진화앨범`, `titles` / `칭호` |
 | Rankings | `python -X utf8 engine/engine.py rank` or `랭킹` — omit the ID |
 | Help | `python -X utf8 engine/engine.py help` or `도움말` — omit the ID |
 
-Resolve a wild encounter by battling, capturing, or fleeing before walking again. Use `status` to inspect the current encounter. Automatic battles start at full HP and last up to 20 rounds; HP, attack, and defense training all contribute. Simultaneous knockouts are draws.
+Resolve a wild encounter by battling or fleeing before walking again. Use `status` to inspect the current encounter. Automatic battles start at full HP and last up to 20 rounds; HP, attack, and defense training all contribute. Simultaneous knockouts are draws.
 
 Daily limits reset at midnight in Korea (KST); sleep grants an XP bonus for the following calendar day. Attendance provides three normal feed once per day. When owner access is enabled, rankings also require an allowed user ID.
+
+### Evolution album
+
+Use `album` or Discord's `!앨범` / `!진화앨범` to see your original partner's growth stages and evolution dates. Only cached artwork is shown; future stages remain locked and missing historical dates are not inferred.
+
+Run `python -X utf8 tools/export_album.py <user_id> --output albums/buddy.html` to create an offline HTML album with embedded images. See [evolution albums](docs/ALBUM.md).
 
 ### Daily quest
 
@@ -215,6 +221,7 @@ tools/backup_store.py     Save snapshots, verification, and recovery to a new ro
 tools/daily_backup.py     Verified backup job and retention policy
 tools/register_backup_task.ps1 Windows daily backup scheduling
 tools/doctor.py           Store, backup, and optional service preflight checks
+tools/export_album.py     Offline HTML partner evolution album
 tools/upscale_images.py  Image upscaling tool
 tests/test_engine.py      Engine self-checks
 promo/index.html         Static promotional page
@@ -236,9 +243,11 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, combat, image pipelines, and agent integration. Test data is stored in temporary files.
 
-Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **128 unittest cases and 8 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, event replay after restoration, retention, and interrupted-job recovery.
+Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **137 unittest cases and 6 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, event replay after restoration, retention, and interrupted-job recovery.
 
 ## Documentation
+
+- [Evolution album](docs/ALBUM.md): one partner's growth history and image/HTML album
 
 - [Preflight checks](docs/OPERATIONS.md): store, backup, and connection configuration checks
 

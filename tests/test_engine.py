@@ -29,24 +29,6 @@ def run_cmd(fn):
         return {"ok": False, "code": exc.code}
 
 
-def test_catch_bonus_fairy():
-    wild = {"element_key": "water", "level": 5}  # 상성 무관 속성으로 고정
-    # 같은 종족 기준으로 catch_bonus 순효과만 검증(성장치 교란 배제)
-    with_bonus = engine.catch_rate(base_state(species="fairy", element="fire"), wild)
-    engine.G["species"]["fairy"]["catch_bonus"] = 0.0
-    try:
-        without = engine.catch_rate(base_state(species="fairy", element="fire"), wild)
-    finally:
-        engine.G["species"]["fairy"]["catch_bonus"] = 0.15
-    assert abs(with_bonus - without - 0.15) < 1e-9, "요정족 포획 보너스는 +0.15"
-
-
-def test_catch_rate_cap():
-    wild = {"element_key": "nature", "level": 5}  # fire→nature 상성 우위
-    fairy = base_state(species="fairy", element="fire")
-    assert engine.catch_rate(fairy, wild) <= 0.9, "포획률 상한 0.9"
-
-
 def test_berserk_only_low_intimacy_monster():
     assert engine.berserk(base_state(species="monster", intimacy=30)) is True
     assert engine.berserk(base_state(species="monster", intimacy=60)) is False

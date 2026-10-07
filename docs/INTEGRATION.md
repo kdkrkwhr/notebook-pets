@@ -68,7 +68,7 @@ result = game_tool("snack")
 
 응답의 `outcome`은 `win`, `lose`, `draw`이며 `won`은 승리만 `true`입니다. 무승부는 `record.draw`에 기록하고 경험치 20만 지급합니다. `rounds`, `hp_me`, `hp_enemy`, `max_hp_me`, `max_hp_enemy`와 회피 횟수를 응답에 포함합니다. `dmg_me`·`dmg_enemy`는 전투 전체의 누적 실제 피해입니다. 이전 단일 교환 결과가 메시지 처리 기록에 있다면 재요청 시 그 원본을 반환하므로 중계 계층은 새 필드가 없는 응답도 처리해야 합니다. 훈련 증가량, 방어 계수, 회피율, 라운드 제한과 보상은 `data/game_data.json`에서 조정합니다.
 
-조우가 남아 있으면 산책은 `encounter_pending`으로 거절하고 경험치·일일 횟수를 소비하지 않습니다. `status.encounter` 또는 산책 응답의 `wild`로 상대를 확인합니다. `battle`, `catch`, `flee`(`도망`)로 조우를 마칠 수 있고, 도망에는 보상이 없습니다. 생성되는 야생 레벨은 1~100입니다. 기존 세이브의 조우는 보존합니다.
+조우가 남아 있으면 산책은 `encounter_pending`으로 거절하고 경험치·일일 횟수를 소비하지 않습니다. `status.encounter` 또는 산책 응답의 `wild`로 상대를 확인합니다. `battle`, `flee`(`도망`)로 조우를 마칠 수 있고, 도망에는 보상이 없습니다. 생성되는 야생 레벨은 1~100입니다. 기존 세이브의 조우는 보존합니다.
 
 출석은 경험치와 함께 일반 사료 3개를 하루 한 번 지급하며, 같은 메시지 재처리는 보급을 중복 지급하지 않습니다. 이전 버전에서 당일 출석을 이미 했다면 보급은 다음 출석부터 적용됩니다. 전투 보상을 받지 못해도 이 사료로 다시 먹이·훈련을 진행할 수 있습니다.
 
@@ -99,7 +99,7 @@ Play adds the rounded species-scaled gain to existing intimacy, capped at 100. T
 
 A knockout ends the battle after that simultaneous round; double knockouts are draws. If both survive the round cap, remaining HP fractions decide the outcome, with equal fractions drawn. HP is local to the battle and not persisted. `outcome` is `win`, `lose` or `draw`; `won` is true only for wins. Draws add `record.draw` and award 20 XP with no loot. Results include round count, final/maximum HP, cumulative actual damage, and dodge counts. Historical deduplicated responses may lack the new fields: adapters must still handle them.
 
-An unresolved encounter blocks another walk with `encounter_pending` and no XP/quota consumption. Inspect `status.encounter` or a walk's `wild` field, then battle, catch, or `flee` (`도망`). Fleeing gives no reward. New wild levels are capped at 100; existing encounters are preserved. Attendance now grants three normal feed once a day along with XP, atomically with event receipts. Users already checked in under older rules receive supplies on their next attendance day.
+An unresolved encounter blocks another walk with `encounter_pending` and no XP/quota consumption. Inspect `status.encounter` or a walk's `wild` field, then battle or `flee` (`도망`). Fleeing gives no reward. New wild levels are capped at 100; existing encounters are preserved. Attendance now grants three normal feed once a day along with XP, atomically with event receipts. Users already checked in under older rules receive supplies on their next attendance day.
 
 The [balance report](BALANCE_REPORT.md) contains 32,400 simulated battles and fixed-schedule progression/food experiments. These are model results, not live player data. Reproduce with `tools/simulate_balance.py`; the tool never accesses operational saves.
 

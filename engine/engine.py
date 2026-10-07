@@ -8,8 +8,8 @@
 """
 import copy, json, math, os, random, re, sys, time, uuid
 from contextvars import ContextVar
-from datetime import date, timedelta
-from runtime import MISSING, GameError, atomic_write_json, game_clock, game_date, read_json, store_lock, validate_user_id
+from datetime import date, datetime, timedelta
+from runtime import KST, MISSING, GameError, atomic_write_json, game_clock, game_date, read_json, store_lock, validate_user_id
 import art
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -137,29 +137,17 @@ def berserk(st):
     sp = G["species"][st["species"]]
     return "berserk_below" in sp and st["intimacy"] < sp["berserk_below"]
 
-def catch_rate(st, w):
-    """포획 확률(0~0.9). 종족 성장 HP + 요정족 행운(catch_bonus) + 상성 우위."""
-    sp = G["species"][st["species"]]
-    rate = 0.25 + 0.05 * sp.get("growth", {}).get("hp", 1)
-    rate += sp.get("catch_bonus", 0)  # 요정족 포획 보너스
-    if st["element"] and w["element_key"] in G["type_chart"].get(st["element"], {}).get("strong_vs", []):
-        rate += 0.15
-    return min(0.9, rate)
-
 # ponytail: 칭호 규칙은 코드 내 표. 기획팀이 자주 바꾸면 game_data로 이동.
 def titles(st):
     """전적·레벨·진화·친밀도에서 파생되는 칭호 목록 (순수 함수)."""
     got = []
     w = st["record"]["win"]
-    caught = sum(1 for h in st.get("history", []) if h.get("event") == "caught")
     if st["level"] >= G["max_level"]: got.append("완전체 마스터")
     if st["stage"] >= 4:
         got.append("빛의 성체" if st.get("evolution_branch") == "light" else "어둠의 성체")
     if w >= 50: got.append("전설의 조련사")
     elif w >= 10: got.append("백전노장")
     elif w >= 1: got.append("초보 트레이너")
-    if caught >= 10: got.append("도감 마스터")
-    elif caught >= 1: got.append("포획가")
     if st["intimacy"] >= 90: got.append("단짝")
     return got
 
@@ -184,6 +172,8 @@ def add_xp(st, amount):
                 branch = "light" if st["intimacy"] >= G["evolution_branch_threshold"] else "dark"
                 st["evolution_branch"] = branch
             evolutions.append({"to_stage": ns, "branch": branch, "level": st["level"]})
+            st["history"].append({"event": "evolved", "ts": time.time(),
+                                  "stage": ns, "level": st["level"], "branch": branch})
     if st["level"] == G["max_level"]:
         st["xp"] = 0
     result = {"gained": amount, "evolutions": evolutions, "leveled_to": st["level"]}
@@ -359,7 +349,7 @@ def cmd_train(st):
 
 def cmd_walk(st):
     if st.get("_wild") is not None:
-        return out(False, "만난 몬스터가 기다리고 있어. 배틀·포획·도망 중 하나를 먼저 선택해.",
+        return out(False, "만난 몬스터가 기다리고 있어. 배틀·도망 중 하나를 먼저 선택해.",
                    code="encounter_pending", encounter=st["_wild"])
     ok, why = check_limit(st, "walk")
     if not ok: return out(False, why)
@@ -468,19 +458,6 @@ def cmd_battle(st):
     return out(True, msg, won=win, xp_result=x, loot=loot, berserk=bers,
                enemy_dodged=combat["dodges_enemy"] > 0, dodged=combat["dodges_me"] > 0, **combat)
 
-def cmd_catch(st):
-    w = st.get("_wild")
-    if not w: return out(False, "조우한 야생 몬스터가 없어.")
-    rate = catch_rate(st, w)
-    success = random.random() < rate
-    st["_wild"] = None
-    if success:
-        st["history"].append({"ts": time.time(), "event": "caught", "what": f"{w['species']}({w['element']}) Lv{w['level']}"})
-        save_state(st)
-        return out(True, f"{w['species']} 포획 성공! 도감에 등록됐다.", caught=w, catch_rate=round(rate, 2))
-    save_state(st)
-    return out(True, f"{w['species']} 놓쳤다... (포획률 {round(rate*100)}%)", caught=None)
-
 def cmd_attendance(st):
     ok, why = check_limit(st, "attendance")
     if not ok: return out(False, "오늘 출석 이미 했어.")
@@ -490,9 +467,34 @@ def cmd_attendance(st):
     save_state(st)
     return out(True, "출석 보너스", xp_result=x, loot={"normal_feed": supplies})
 
-def cmd_pokedex(st):
-    return out(True, "", catches=[h for h in st["history"] if h.get("event") == "caught"],
-               record=st["record"], branch=st["evolution_branch"])
+def cmd_album(st):
+    current = art.describe(st)
+    entries = []
+    for stage in G['stages']:
+        number = stage['stage']
+        reached = number <= st['stage']
+        recorded_at = None
+        for event in st['history']:
+            matches = (number == 1 and event.get('event') == 'hatched') or (
+                event.get('event') == 'evolved' and event.get('stage') == number)
+            timestamp = event.get('ts')
+            if matches and type(timestamp) in (int, float) and math.isfinite(timestamp):
+                try:
+                    recorded_at = datetime.fromtimestamp(timestamp, KST).isoformat()
+                    break
+                except (ValueError, OverflowError, OSError):
+                    pass
+        spec = None
+        if reached:
+            spec = {**current, 'stage': number, 'branch': current['branch'] if number == 4 else None}
+            spec['key'] = art.image_key(spec['species'], spec['element'], number, spec['branch'])
+        entries.append({'stage': number, 'label': stage['label'], 'min_level': stage['min_lv'],
+                        'reached': reached, 'current': number == st['stage'],
+                        'achieved_at': recorded_at if reached else None, 'image': spec})
+    return out(True, '처음 만난 너와 함께한 성장 앨범', album={
+        'name': st['name'], 'species': G['species'][st['species']]['name_kr'],
+        'element': G['elements'][st['element']]['name_kr'], 'level': st['level'],
+        'branch': st.get('evolution_branch'), 'current_image': current, 'entries': entries})
 
 
 def daily_quest(st):
@@ -536,21 +538,21 @@ def cmd_rank():
     return out(True, "", ranking=ranks[:10])
 
 def cmd_help():
-    return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + ["status", "quests", "claimquest", "pokedex", "titles", "rank", "help"])
+    return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + ["status", "quests", "claimquest", "album", "titles", "rank", "help"])
 
 # ---------- main ----------
 ALIASES = {
     "공책시작": "start", "상태": "status", "밥줘": "feed", "간식줘": "snack",
     "놀아줘": "play", "재워줘": "sleep", "잘자": "sleep", "훈련": "train",
-    "산책": "walk", "배틀": "battle", "포획": "catch", "출석": "attendance",
-    "도감": "pokedex", "칭호": "titles", "랭킹": "rank", "도움말": "help",
+    "산책": "walk", "배틀": "battle", "출석": "attendance",
+    "앨범": "album", "진화앨범": "album", "칭호": "titles", "랭킹": "rank", "도움말": "help",
     "소유주": "owner", "개방": "clearowner", "소유주해제": "clearowner",
     "도망": "flee",
     "퀘스트": "quests", "일일퀘스트": "quests", "퀘스트보상": "claimquest",
 }
-COMMANDS = set(G["commands"]) | {"status", "quests", "claimquest", "pokedex", "titles", "rank", "help", "owner", "clearowner", "reset"}
+COMMANDS = set(G["commands"]) | {"status", "quests", "claimquest", "album", "titles", "rank", "help", "owner", "clearowner", "reset"}
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
-READ_COMMANDS = frozenset({"status", "quests", "pokedex", "titles", "rank", "help"})
+READ_COMMANDS = frozenset({"status", "quests", "album", "titles", "rank", "help"})
 
 
 def dispatch_player(actor_id, command, arguments):
@@ -568,8 +570,8 @@ def dispatch_player(actor_id, command, arguments):
         "sleep": lambda: cmd_care(st, "sleep"), "train": lambda: cmd_train(st),
         "walk": lambda: cmd_walk(st), "battle": lambda: cmd_battle(st),
         "flee": lambda: cmd_flee(st),
-        "catch": lambda: cmd_catch(st), "attendance": lambda: cmd_attendance(st),
-        "pokedex": lambda: cmd_pokedex(st), "titles": lambda: cmd_titles(st),
+        "attendance": lambda: cmd_attendance(st),
+        "album": lambda: cmd_album(st), "titles": lambda: cmd_titles(st),
         "quests": lambda: cmd_quests(st), "claimquest": lambda: cmd_claimquest(st),
     }
     result = table[command]()

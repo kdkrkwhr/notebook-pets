@@ -2,6 +2,7 @@
 import asyncio
 from pathlib import Path
 import shlex
+from contextlib import ExitStack
 import engine
 from adapter import bind_discord_event
 from runtime import MISSING, atomic_write_json, read_json, validate_user_id
@@ -31,13 +32,18 @@ def response_text(result):
                 f"경험치 {result['xp']}/{result['xp_next']} · 친밀도 {result['intimacy']} · 포만감 {result['satiety']}\n"
                 f"HP {stats['hp']} · 공격 {stats['atk']} · 방어 {stats['def']}")
         if result.get("encounter"):
-            text += "\n만난 몬스터가 기다리고 있어. !배틀 / !포획 / !도망"
+            text += "\n만난 몬스터가 기다리고 있어. !배틀 / !도망"
     elif "commands" in result:
         text = "함께 놀자! " + " · ".join("!" + c for c in result["commands"])
     elif "ranking" in result:
         text = "랭킹\n" + "\n".join(f"{i}. {r['name']} · Lv.{r['lv']}" for i, r in enumerate(result["ranking"], 1))
-    elif "catches" in result:
-        text = f"우리 도감에 {len(result['catches'])}마리가 있어!"
+    elif 'album' in result:
+        album = result['album']
+        text = f"{album['name']}와 함께한 성장 앨범 · Lv.{album['level']}"
+        for entry in album['entries']:
+            when = entry['achieved_at'][:10] if entry['achieved_at'] else '날짜 기록 없음'
+            detail = when if entry['reached'] else f"Lv.{entry['min_level']}에 만날 모습"
+            text += f"\n{entry['label']}{' (현재)' if entry['current'] else ''} · {detail}"
     elif "titles" in result:
         text = "내 칭호: " + (", ".join(result["titles"]) or "새내기")
     else:
@@ -117,6 +123,14 @@ class DiscordDelivery:
         elif not result["ok"]:
             await reply.edit(content=text, attachments=[], allowed_mentions=mentions)
         spec = result.get("image") or result.get("xp_result", {}).get("image")
+        if result['ok'] and 'album' in result:
+            request = result['album']['current_image']
+            cached = await asyncio.to_thread(self.images.album, uid, request)
+            if cached['status'] == 'ready' and await asyncio.to_thread(self.images.current, uid, request):
+                with ExitStack() as stack:
+                    attachments = [stack.enter_context(self.discord.File(item['path'])) for item in cached['images']]
+                    note = '' if attachments else '\n저장된 그림이 아직 없어. !상태로 현재 모습을 준비해 줘.'
+                    await reply.edit(content=text + note, attachments=attachments, allowed_mentions=mentions)
         if result["ok"] and spec:
             image = await asyncio.to_thread(self.images.render, uid, spec)
             if image.get("path") and await asyncio.to_thread(self.images.current, uid, spec):

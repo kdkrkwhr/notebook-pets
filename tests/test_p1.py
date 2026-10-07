@@ -142,8 +142,8 @@ class GameTests(unittest.TestCase):
         self.assertEqual((self.state / "123.json").read_bytes(), before)
         self.assertEqual(engine.execute("123", "start", ["Other"], request_id="m1")["code"], "request_conflict")
 
-    def test_battle_and_capture_replay_do_not_consume_new_encounters(self):
-        for command in ("battle", "catch"):
+    def test_battle_and_flee_replay_do_not_consume_new_encounters(self):
+        for command in ("battle", "flee"):
             with self.subTest(command=command):
                 self.seed(_wild=wild())
                 first = engine.execute("123", command, request_id="m1")

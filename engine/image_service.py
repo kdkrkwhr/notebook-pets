@@ -75,6 +75,28 @@ class ImageService:
             st = engine.load_state(actor_id) if allowed else None
             return st is not None and art.describe(st) == request
 
+    def album(self, actor_id, request):
+        """Return only existing artwork for this current partner; never generate."""
+        validate_user_id(actor_id)
+        if not isinstance(request, dict) or request.get('user_id') != actor_id or not self.current(actor_id, request):
+            return {'status': 'stale', 'images': []}
+        folder = self.root / actor_id / request['pet_id'] / request['revision']
+        images = []
+        for stage in range(1, request['stage'] + 1):
+            key = art.image_key(request['species'], request['element'], stage,
+                                request['branch'] if stage == 4 else None)
+            path = folder / (key + '.png')
+            try:
+                if path.is_symlink() or not path.resolve().is_relative_to(self.root.resolve()):
+                    continue
+                validate_png(path.read_bytes())
+                images.append({'stage': stage, 'path': str(path.resolve())})
+            except (GameError, OSError):
+                continue
+        if not self.current(actor_id, request):
+            return {'status': 'stale', 'images': []}
+        return {'status': 'ready', 'images': images}
+
     def render(self, actor_id, request):
         """Synchronous worker API. Call from a background thread, never gateway loop."""
         try:
