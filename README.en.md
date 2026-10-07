@@ -212,6 +212,8 @@ tools/prerender_all.py    Batch generation for combinations
 tools/preview_roll.py     Random species/element preview
 tools/daily_decay.py      Inactivity decay batch
 tools/backup_store.py     Save snapshots, verification, and recovery to a new root
+tools/daily_backup.py     Verified backup job and retention policy
+tools/register_backup_task.ps1 Windows daily backup scheduling
 tools/upscale_images.py  Image upscaling tool
 tests/test_engine.py      Engine self-checks
 promo/index.html         Static promotional page
@@ -219,6 +221,8 @@ docs/                    Agent, artwork, and runtime integration guides
 ```
 
 Run `python -X utf8 tools/backup_store.py create --output backups/save.json` to snapshot saves, quest claims, event receipts, and access settings together. Use `verify backups/save.json` to check the snapshot and `restore backups/save.json --target <new-directory>` to recover without overwriting existing data. See [backup and recovery](docs/BACKUP.md) for separate artwork preservation and deployment switching.
+
+For scheduled execution, use `tools/daily_backup.py --destination backups`. It verifies each new snapshot before applying a default 30-day retention window with at least the newest seven preserved. Manual backups are excluded from pruning. The Windows scheduling helper supports configuration previews and registration with `-Register`.
 
 ## Verification
 
@@ -229,7 +233,7 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, combat, image pipelines, and agent integration. Test data is stored in temporary files.
 
-Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **113 unittest cases and 8 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, and event replay after restoration.
+Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **120 unittest cases and 8 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, event replay after restoration, retention, and interrupted-job recovery.
 
 ## Documentation
 

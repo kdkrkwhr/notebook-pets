@@ -212,6 +212,8 @@ tools/prerender_all.py    조합별 이미지 일괄 생성
 tools/preview_roll.py     종족·속성 랜덤 미리보기
 tools/daily_decay.py      방치 감소 배치
 tools/backup_store.py     세이브 백업·검증·새 데이터 루트 복구
+tools/daily_backup.py     자동 백업 실행·검증·보관 정책
+tools/register_backup_task.ps1 Windows 일일 백업 예약
 tools/upscale_images.py  이미지 업스케일 도구
 tests/test_engine.py      엔진 self-check
 promo/index.html         정적 소개 페이지
@@ -219,6 +221,8 @@ docs/                    에이전트·이미지·운영 연결 안내
 ```
 
 `python -X utf8 tools/backup_store.py create --output backups/save.json`으로 세이브·퀘스트 수령 기록·메시지 처리 기록과 접근 설정을 함께 백업할 수 있습니다. `verify backups/save.json`으로 검증하고, `restore backups/save.json --target <새폴더>`로 복구합니다. 기존 데이터 폴더는 덮어쓰지 않습니다. 이미지 별도 보관과 운영 경로 전환은 [백업·복구 안내](docs/BACKUP.md)를 참고하세요.
+
+정기 실행에는 `tools/daily_backup.py --destination backups`를 사용합니다. 새 백업을 검증한 뒤 기본 30일·최소 최신 7개를 보관하며, 수동 백업은 정리하지 않습니다. Windows 예약 도구는 설정 미리보기와 `-Register` 등록을 지원합니다.
 
 ## 검증
 
@@ -229,7 +233,7 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 종족 보너스, 경험치·진화, 수면, 접근 제어, 저장 실패, 동시 실행, 메시지 재처리, 전투, 이미지 파이프라인과 에이전트 연결을 확인합니다. 테스트 데이터는 임시 파일에 저장합니다.
 
-`requirements-mcp.txt`를 설치하면 실제 stdio 클라이언트·서버 통신 테스트도 실행됩니다. 미설치 시 해당 테스트만 건너뜁니다. 현재 검증 결과는 **unittest 113개 + 엔진 self-check 8개 통과**이며, 외부 LLM 계정 없이 실행합니다. 백업·복구 검증에는 동시 저장 잠금, 파일 손상, 복구 후 중복 요청 재처리도 포함합니다.
+`requirements-mcp.txt`를 설치하면 실제 stdio 클라이언트·서버 통신 테스트도 실행됩니다. 미설치 시 해당 테스트만 건너뜁니다. 현재 검증 결과는 **unittest 120개 + 엔진 self-check 8개 통과**이며, 외부 LLM 계정 없이 실행합니다. 백업·복구 검증에는 동시 저장 잠금, 파일 손상, 복구 후 중복 요청 재처리, 보관 정책과 작업 중단 후 재실행도 포함합니다.
 
 ## 문서
 
