@@ -4,6 +4,8 @@
 
 버전 **0.2.0**
 
+[![Tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/ci.yml)
+
 > 공책에서 태어난 AI 친구 — Discord에서 돌보고 성장시키는 몬스터.
 
 Notebook Pets는 **게임 규칙은 Python이 처리하고, 캐릭터의 말투와 이야기는 AI 에이전트가 표현하는** 몬스터 육성 프로젝트입니다. **처음 만난 파트너 한 마리**에게 먹이를 주고, 놀아주고, 산책하며 함께 성장하는 다마고치형 게임입니다. Hermes를 비롯한 AI 에이전트에 공통 Python 도구 또는 MCP로 연결할 수 있으며, 독립 Discord 게이트웨이도 제공합니다.
@@ -233,6 +235,8 @@ docs/                    에이전트·이미지·운영 연결 안내
 정기 실행에는 `tools/daily_backup.py --destination backups`를 사용합니다. 새 백업을 검증한 뒤 기본 30일·최소 최신 7개를 보관하며, 수동 백업은 정리하지 않습니다. Windows 예약 도구는 설정 미리보기와 `-Register` 등록을 지원합니다.
 
 ## 검증
+
+GitHub Actions에서 모든 브랜치의 푸시와 `develop`·`release` 대상 PR마다 **Windows·Linux / Python 3.12** 테스트를 실행합니다. MCP 의존성을 설치해 실제 stdio 통신 테스트도 포함합니다. 세이브 호환성·진화 앨범·백업 회귀 테스트는 임시 데이터와 가짜 전송 계층을 사용하므로 Discord 토큰, GPU, 운영 서버가 필요하지 않습니다. 실패한 테스트 이름과 상세 오류는 [Actions 실행 로그](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/ci.yml)에서 확인할 수 있습니다.
 
 실행 환경은 `python -X utf8 tools/doctor.py`로 점검합니다. 자동 백업은 `--backup-root backups`, Discord 설정은 `--discord`, 이미지 서버는 `--comfy`로 선택하고, 모니터링에는 `--json`을 사용합니다. 항목별 점검 범위는 [실행 전 점검 안내](docs/OPERATIONS.md)에 있습니다.
 

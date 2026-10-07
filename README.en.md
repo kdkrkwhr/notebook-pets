@@ -4,6 +4,8 @@
 
 Version **0.2.0**
 
+[![Tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/ci.yml)
+
 > An AI companion born in a notebook — a monster you care for and raise on Discord.
 
 Notebook Pets is a virtual-pet project where **Python handles the game rules and an AI agent gives the character its voice and story**. Raise **the single partner you first meet** through feeding, play, and walks in a Tamagotchi-style game. Connect Hermes or another AI agent through shared Python tools or MCP, or use the standalone Discord gateway.
@@ -233,6 +235,8 @@ Run `python -X utf8 tools/backup_store.py create --output backups/save.json` to 
 For scheduled execution, use `tools/daily_backup.py --destination backups`. It verifies each new snapshot before applying a default 30-day retention window with at least the newest seven preserved. Manual backups are excluded from pruning. The Windows scheduling helper supports configuration previews and registration with `-Register`.
 
 ## Verification
+
+GitHub Actions runs the suite on **Windows and Linux / Python 3.12** for every branch push and PR targeting `develop` or `release`. MCP is installed so the real stdio test runs too. Save compatibility, evolution albums, and backup tests use temporary data and fake delivery transports; no Discord token, GPU, or live server is required. See [Actions logs](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/ci.yml) for failing test names and tracebacks.
 
 Run `python -X utf8 tools/doctor.py` to check the store. Add `--backup-root backups`, `--discord`, or `--comfy` to include those components; use `--json` for monitoring. See [preflight checks](docs/OPERATIONS.md) for the scope of each check.
 
