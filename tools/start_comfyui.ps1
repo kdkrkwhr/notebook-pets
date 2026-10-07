@@ -1,6 +1,7 @@
 param(
     [string]$ComfyPath = $env:NOTEBOOK_COMFY_PATH,
-    [int]$Port = 8188
+    [int]$Port = 8188,
+    [switch]$EnableIPAdapter
 )
 $ErrorActionPreference = 'Stop'
 if (-not $ComfyPath) { throw 'Specify -ComfyPath or NOTEBOOK_COMFY_PATH.' }
@@ -13,7 +14,11 @@ if (-not (Test-Path -LiteralPath $comfyPython) -or -not (Test-Path -LiteralPath 
 }
 Push-Location -LiteralPath $comfyRoot
 try {
-    & $comfyPython $entry --listen 127.0.0.1 --port $Port --disable-auto-launch --disable-all-custom-nodes --offline
+    $comfyArguments = @($entry, '--listen', '127.0.0.1', '--port', $Port, '--disable-auto-launch', '--disable-all-custom-nodes', '--offline')
+    if ($EnableIPAdapter) {
+        $comfyArguments += @('--whitelist-custom-nodes', 'ComfyUI_IPAdapter_plus')
+    }
+    & $comfyPython @comfyArguments
     $result = $LASTEXITCODE
 } finally { Pop-Location }
 exit $result

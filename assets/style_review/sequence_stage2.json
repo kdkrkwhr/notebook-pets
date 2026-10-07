@@ -1,0 +1,223 @@
+{
+  "fingerprint": "97b6ce97c3d12d44cdb374aff74152a4a4d8c00a06c07364e07af32a6d1bb0d8",
+  "prompt_id": "6d862dd7-2486-4c2f-9316-7ed55758be27",
+  "workflow": {
+    "3": {
+      "class_type": "KSampler",
+      "_meta": {
+        "title": "KSampler"
+      },
+      "inputs": {
+        "seed": 42102,
+        "steps": 32,
+        "cfg": 5.5,
+        "sampler_name": "dpmpp_2m",
+        "scheduler": "karras",
+        "denoise": 0.62,
+        "model": [
+          "23",
+          0
+        ],
+        "positive": [
+          "6",
+          0
+        ],
+        "negative": [
+          "7",
+          0
+        ],
+        "latent_image": [
+          "12",
+          0
+        ]
+      }
+    },
+    "4": {
+      "class_type": "CheckpointLoaderSimple",
+      "_meta": {
+        "title": "Load Checkpoint"
+      },
+      "inputs": {
+        "ckpt_name": "DreamShaper_8_pruned.safetensors"
+      }
+    },
+    "6": {
+      "class_type": "CLIPTextEncode",
+      "_meta": {
+        "title": "Positive Prompt"
+      },
+      "inputs": {
+        "text": "slightly taller plump body, short rounded paws, a fuller collar of small leaves, three leaves on head, (one cute leaf kitten creature:1.25), round friendly face, two huge glossy emerald eyes, leaf shaped ears, cream muzzle, tiny pink mouth, soft lime green body, forehead leaf marking, curled vine tail, (soft watercolor game character illustration:1.2), delicate warm outlines, painterly shading, pastel colors, subtle paper texture, full body centered, white background, no text",
+        "clip": [
+          "4",
+          1
+        ]
+      }
+    },
+    "7": {
+      "class_type": "CLIPTextEncode",
+      "_meta": {
+        "title": "Negative Prompt"
+      },
+      "inputs": {
+        "text": "photograph, realistic, 3d render, hard vector shading, thick black outlines, lion, tiger, human, anthropomorphic, scary, sharp teeth, extra legs, extra tail, extra ears, multiple creatures, cropped, text, watermark, logo, blurry, low quality",
+        "clip": [
+          "4",
+          1
+        ]
+      }
+    },
+    "8": {
+      "class_type": "VAEDecode",
+      "_meta": {
+        "title": "VAE Decode"
+      },
+      "inputs": {
+        "samples": [
+          "3",
+          0
+        ],
+        "vae": [
+          "4",
+          2
+        ]
+      }
+    },
+    "9": {
+      "class_type": "SaveImage",
+      "_meta": {
+        "title": "Save Image"
+      },
+      "inputs": {
+        "filename_prefix": "notebook-pets",
+        "images": [
+          "8",
+          0
+        ]
+      }
+    },
+    "10": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "notebook-8a04418d9884af5155d937da.png"
+      }
+    },
+    "11": {
+      "class_type": "ImageScale",
+      "inputs": {
+        "image": [
+          "10",
+          0
+        ],
+        "upscale_method": "bicubic",
+        "width": 640,
+        "height": 640,
+        "crop": "disabled"
+      }
+    },
+    "13": {
+      "class_type": "EmptyImage",
+      "inputs": {
+        "width": 640,
+        "height": 640,
+        "batch_size": 1,
+        "color": 16777215
+      }
+    },
+    "14": {
+      "class_type": "InvertMask",
+      "inputs": {
+        "mask": [
+          "10",
+          1
+        ]
+      }
+    },
+    "15": {
+      "class_type": "ImageCompositeMasked",
+      "inputs": {
+        "destination": [
+          "13",
+          0
+        ],
+        "source": [
+          "11",
+          0
+        ],
+        "mask": [
+          "14",
+          0
+        ],
+        "x": 0,
+        "y": 0,
+        "resize_source": false
+      }
+    },
+    "12": {
+      "class_type": "VAEEncode",
+      "inputs": {
+        "pixels": [
+          "15",
+          0
+        ],
+        "vae": [
+          "4",
+          2
+        ]
+      }
+    },
+    "20": {
+      "class_type": "LoadImage",
+      "inputs": {
+        "image": "notebook-8a04418d9884af5155d937da.png"
+      }
+    },
+    "21": {
+      "class_type": "CLIPVisionLoader",
+      "inputs": {
+        "clip_name": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors"
+      }
+    },
+    "22": {
+      "class_type": "IPAdapterModelLoader",
+      "inputs": {
+        "ipadapter_file": "ip-adapter-plus_sd15.safetensors"
+      }
+    },
+    "23": {
+      "class_type": "IPAdapterAdvanced",
+      "inputs": {
+        "model": [
+          "4",
+          0
+        ],
+        "ipadapter": [
+          "22",
+          0
+        ],
+        "image": [
+          "20",
+          0
+        ],
+        "clip_vision": [
+          "21",
+          0
+        ],
+        "weight": 0.6,
+        "weight_type": "linear",
+        "combine_embeds": "concat",
+        "start_at": 0.0,
+        "end_at": 1.0,
+        "embeds_scaling": "V only"
+      }
+    }
+  },
+  "source": "original_stage1.png",
+  "anchor": "original_stage1.png",
+  "source_sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0",
+  "anchor_sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0",
+  "weight": 0.6,
+  "denoise": 0.62,
+  "seed": 42102,
+  "sha256": "e6ce2584776abbe58e2f7196335384763af939986c1ffef31a1b3d8dbd9e2e8f"
+}
