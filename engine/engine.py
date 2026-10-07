@@ -509,6 +509,7 @@ ALIASES = {
 }
 COMMANDS = set(G["commands"]) | {"status", "pokedex", "titles", "rank", "help", "owner", "clearowner", "reset"}
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
+READ_COMMANDS = frozenset({"status", "pokedex", "titles", "rank", "help"})
 
 
 def dispatch_player(actor_id, command, arguments):
@@ -618,7 +619,7 @@ def execute(actor_id, command, arguments=(), *, request_id=None):
                 return out(False, "not_owner", reason="not_owner", owner_name=owner_name)
             if command == "reset":
                 return cmd_reset(actor_id, target, name)
-            if request_id is not None and actor_id is not None:
+            if request_id is not None and actor_id is not None and command not in READ_COMMANDS:
                 return execute_once(actor_id, command, arguments, request_id)
             return dispatch_player(actor_id, command, arguments)
     except GameError as exc:

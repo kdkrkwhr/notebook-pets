@@ -36,7 +36,7 @@ Browse the refreshed showcase in [assets/examples](assets/examples/README.md) an
 ```text
 Discord message
     ↓
-Hermes agent / routing skill          ← configured outside this repository
+AI agent / Python tools or MCP        ← Hermes or another host
     ↓ command and authenticated sender ID
 Python game engine
     ├─ reads rules from game_data.json
@@ -131,6 +131,8 @@ Settings are stored in the Git-ignored `data/access.json`. The CLI does not auth
 ## Discord and image integration
 
 ### Discord / Hermes
+
+Other AI agents can use the shared Python tool or optional stdio MCP server with the same actor binding and event deduplication. See [AI agent integration](docs/AGENT_INTEGRATION.md) for setup and examples.
 
 Use the existing Hermes profile/routing skill or the optional standalone gateway in `tools/discord_bot.py`. The gateway replies with the game result first, then edits that message to attach the image. See the [image and Discord setup guide](docs/IMAGES.md) for installation and configuration.
 

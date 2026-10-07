@@ -36,7 +36,7 @@ Notebook Pets는 **게임 규칙은 Python이 처리하고, 캐릭터의 말투�
 ```text
 Discord 메시지
     ↓
-Hermes 에이전트 / 라우팅 스킬       ← 외부 설정
+AI 에이전트 / Python 도구·MCP      ← Hermes 등 호스트 연결
     ↓ 명령과 실제 발신자 ID 전달
 Python 게임 엔진
     ├─ game_data.json에서 규칙 읽기
@@ -131,6 +131,8 @@ python -X utf8 engine/engine.py 123456789012345678 clearowner
 ## Discord와 이미지 연결
 
 ### Discord / Hermes
+
+다른 AI 에이전트에서도 공통 Python 도구나 stdio MCP로 연결할 수 있습니다. 사용자·메시지별 중복 처리 규칙을 유지합니다. 설치와 예시는 [AI 에이전트 연결 안내](docs/AGENT_INTEGRATION.md)를 참고하세요.
 
 Hermes 프로필·스킬을 통해 엔진을 호출하거나 `tools/discord_bot.py`의 선택적 Discord 게이트웨이를 사용할 수 있습니다. 게이트웨이는 게임 결과를 먼저 응답한 뒤 같은 메시지에 이미지를 첨부합니다. 설치와 실행은 [이미지·Discord 연결 안내](docs/IMAGES.md)를 참고하세요.
 

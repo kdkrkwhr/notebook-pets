@@ -1,0 +1,2 @@
+# Optional MCP transport. Keep the supported v1 API until a tested v2 migration.
+mcp>=1.28,<2
