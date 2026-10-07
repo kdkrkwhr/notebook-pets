@@ -6,7 +6,7 @@
 
 > 공책에서 태어난 AI 친구 — Discord에서 돌보고 성장시키는 몬스터.
 
-Notebook Pets는 **게임 규칙은 Python이 처리하고, 캐릭터의 말투와 이야기는 AI 에이전트가 표현하는** 몬스터 육성 프로젝트입니다. 먹이를 주고, 놀아주고, 산책하며 나만의 몬스터와 관계를 쌓는 경험을 목표로 합니다.
+Notebook Pets는 **게임 규칙은 Python이 처리하고, 캐릭터의 말투와 이야기는 AI 에이전트가 표현하는** 몬스터 육성 프로젝트입니다. 먹이를 주고, 놀아주고, 산책하며 나만의 몬스터와 관계를 쌓습니다. Hermes를 비롯한 AI 에이전트에 공통 Python 도구 또는 MCP로 연결할 수 있으며, 독립 Discord 게이트웨이도 제공합니다.
 
 저장소 이름은 `notebook-pets`, 서비스 이름은 **노트버디(notebuddy)**입니다.
 
@@ -27,31 +27,34 @@ Notebook Pets는 **게임 규칙은 Python이 처리하고, 캐릭터의 말투�
 | 기록 | 전적, 포획 도감, 칭호, 랭킹 |
 | 성장 규칙 | 레벨 31·51·81에서 단계 전환, 최고 레벨 100 |
 | 최종 진화 | 친밀도 70 이상이면 빛 분기, 미만이면 어둠 분기 |
-| 이미지 | 1단계 72조합 사전 생성 이미지, ComfyUI 기반 생성 도구 |
+| 이미지 | 로컬 ComfyUI·IP-Adapter 기반 개체별 이미지와 단계별 진화 |
+| 에이전트 연결 | 공통 Python 도구 호출, stdio MCP, Discord 게이트웨이 |
 
-새로 생성한 대표 예시는 [assets/examples](assets/examples/README.md)에서, 기본 72조합은 `assets/samples/`에서 살펴볼 수 있습니다.
+대표 캐릭터는 [예시 이미지](assets/examples/README.md), 식물·기계·유령·용의 성장과 빛·어둠 분기는 [진화 갤러리](assets/anchored_evolution/index.html)에서 살펴볼 수 있습니다. `assets/samples/`에는 기존 72조합 이미지가 보관되어 있습니다.
 
 ## 구조와 설계 원칙
 
 ```text
-Discord 메시지
-    ↓
-AI 에이전트 / Python 도구·MCP      ← Hermes 등 호스트 연결
-    ↓ 명령과 실제 발신자 ID 전달
-Python 게임 엔진
-    ├─ game_data.json에서 규칙 읽기
-    ├─ 상태·쿨타임·전투 판정
-    └─ state/{user_id}.json 저장
-    ↓ JSON 결과
-에이전트가 몬스터 말투로 응답
+사용자 메시지 → 연결 호스트가 실제 사용자·이벤트 식별
+    ├─ AI 에이전트 → 공통 Python 도구 / stdio MCP
+    └─ 독립 Discord 게이트웨이 → 명령 처리
+                        ↓
+                 Python 게임 엔진
+    ├─ game_data.json 기반 성장·전투·행동 판정
+    ├─ 접근 제어·파일 잠금·중복 요청 처리
+    └─ state/{user_id}.json에 결과와 처리 기록 저장
+                        ↓
+                 JSON 결과 → 응답
 
-이미지 생성 도구 → 로컬 ComfyUI → PNG 파일
+이미지 요청 → ImageService → 로컬 ComfyUI·IP-Adapter
+                         → 개체별 캐시 → 호스트가 이미지 전달
 ```
 
 - **규칙과 표현 분리:** 에이전트는 엔진의 결과를 바탕으로 응답하며, 게임 수치를 임의로 정하지 않는 것이 설계 원칙입니다.
 - **상태는 파일에 저장:** 채팅 세션의 기억 대신 사용자별 JSON을 기준으로 삼습니다.
 - **밸런스는 데이터로 관리:** 종족, 속성, 상성, 경험치 기준, 행동 제한을 `data/game_data.json`에 모았습니다.
-- **캐릭터 관점으로 표현:** 연결 에이전트가 몬스터의 1인칭 말투를 담당합니다. 해당 페르소나 설정은 저장소에 포함되어 있지 않습니다.
+- **에이전트 교체 가능:** 모델에 노출하는 인자는 명령과 명령 인자뿐입니다. 사용자·이벤트 ID는 연결 호스트가 지정하고, 모델을 바꿔 재시도해도 같은 처리 기록을 사용합니다.
+- **게임 저장과 이미지 생성 분리:** 이미지 생성 실패가 이미 저장된 경험치나 진화를 되돌리지 않습니다. 에이전트 말투 지침 예시는 [연결 안내](docs/AGENT_INTEGRATION.md)에 있습니다.
 
 종족 선택, 조우, 전투에는 게임 규칙에 따른 난수가 사용됩니다.
 
@@ -60,7 +63,7 @@ Python 게임 엔진
 ### 요구사항
 
 - Python 3.12에서 실행을 확인했습니다.
-- 엔진과 현재 테스트는 Python 표준 라이브러리만 사용합니다. 이 경로에는 별도의 `pip install`이 필요하지 않습니다.
+- 엔진·공통 Python 연결부·기본 테스트는 표준 라이브러리만 사용합니다. MCP에는 `requirements-mcp.txt`, Discord 게이트웨이에는 `requirements-discord.txt`를 별도로 설치합니다.
 - 기본 CLI 확인에는 Discord, Hermes, ComfyUI, LLM API 키가 필요하지 않습니다.
 
 저장소 루트에서 실행합니다.
@@ -128,29 +131,56 @@ python -X utf8 engine/engine.py 123456789012345678 clearowner
 
 설정은 Git에서 제외된 `data/access.json`에 저장됩니다. 일반 CLI에는 사용자 인증이 없으므로 연결 계층이 실제 발신자 ID를 전달해야 합니다. ID는 1~20자리 양의 정수 문자열로 검증합니다. 에이전트 연결과 저장 경로 설정은 [런타임 연동 안내](docs/INTEGRATION.md)를 참고하세요.
 
-## Discord와 이미지 연결
+## 에이전트와 Discord 연결
 
-### Discord / Hermes
+| 연결 방식 | 용도 |
+| --- | --- |
+| Python 도구 호출 | 자체 에이전트·Hermes 등 호스트에 게임 도구 등록 |
+| stdio MCP | MCP 호스트에서 상태 조회, 이벤트별 게이트웨이를 통한 게임 조작 |
+| 독립 Discord 봇 | AI 에이전트 없이 명령 처리와 이미지 응답 |
 
-다른 AI 에이전트에서도 공통 Python 도구나 stdio MCP로 연결할 수 있습니다. 사용자·메시지별 중복 처리 규칙을 유지합니다. 설치와 예시는 [AI 에이전트 연결 안내](docs/AGENT_INTEGRATION.md)를 참고하세요.
+### 공통 Python 도구
 
-Hermes 프로필·스킬을 통해 엔진을 호출하거나 `tools/discord_bot.py`의 선택적 Discord 게이트웨이를 사용할 수 있습니다. 게이트웨이는 게임 결과를 먼저 응답한 뒤 같은 메시지에 이미지를 첨부합니다. 설치와 실행은 [이미지·Discord 연결 안내](docs/IMAGES.md)를 참고하세요.
+호스트의 Python 모듈 검색 경로에 `engine/`을 추가한 뒤 사용합니다. 아래 ID는 예시이며, 실제 값은 인증된 메시지 메타데이터에서 가져옵니다.
 
-다시 연결하려면 Discord 봇 설정, 발신자 식별, 명령 라우팅, 캐릭터 페르소나, 이미지 전송을 준비해야 합니다. 토큰과 관리자 권한은 외부 환경에서 관리하세요. 기존 문서는 [운영 매뉴얼](docs/MANUAL.md)과 [하네스 설명](docs/HARNESS.md)을 참고하되, 과거 로컬 경로·프로필 이름·cron ID를 그대로 현재 설정으로 간주하지 마세요.
+```python
+from adapter import bind_game_event, dispatch_tool, tool_definition
+
+game = bind_game_event(actor_id="123", event_id="discord:456")
+definition = tool_definition()  # 호스트 SDK에 맞춰 도구 등록
+result = dispatch_tool(game, {"command": "feed", "arguments": []})
+```
+
+같은 이벤트의 조작을 재시도하면 저장된 결과를 반환합니다. 이미 조작한 이벤트로 다른 조작을 요청하면 거절하고, 상태 조회는 계속 허용합니다. 관리자 명령은 에이전트 도구에서 제외됩니다.
+
+### MCP
+
+```bash
+python -m pip install -r requirements-mcp.txt
+```
+
+MCP 호스트에서 `tools/mcp_server.py`를 stdio 서버로 실행하고 `NOTEBOOK_ACTOR_ID`와 `NOTEBOOK_DATA_DIR`를 지정합니다. **상시 연결은 조회 전용**입니다. 게임 조작은 신뢰할 수 있는 게이트웨이가 사용자 메시지별로 `NOTEBOOK_EVENT_ID`를 전달하는 방식이며, 상시 설정에 고정 이벤트 ID를 넣지 않습니다. MCP 도구는 게임 JSON을 반환하고 이미지 생성·전송은 호스트가 담당합니다.
+
+설정 JSON과 요청별 연결 방식은 [AI 에이전트 연결 안내](docs/AGENT_INTEGRATION.md)에 있습니다.
+
+### Discord 봇
+
+`tools/discord_bot.py`는 게임 결과를 먼저 응답한 뒤 같은 메시지에 생성 이미지를 첨부합니다. 봇 토큰·허용 채널과 로컬 이미지 서버 설정은 [이미지·Discord 연결 안내](docs/IMAGES.md)를 참고하세요. Hermes 등 외부 에이전트도 공통 연결부를 통해 같은 엔진을 사용할 수 있습니다.
 
 ### 이미지 생성 (선택)
 
 기존 PNG를 사용하는 데 ComfyUI는 필요하지 않습니다. 새 이미지를 만들 때는 다음을 준비합니다.
 
 - `http://127.0.0.1:8188`에서 실행되는 ComfyUI
-- `tools/sd15_txt2img.json`이 지정한 `DreamShaper_8_pruned.safetensors` 체크포인트 또는 워크플로우에서 직접 지정한 호환 모델
+- `DreamShaper_8_pruned.safetensors` 체크포인트
+- `ComfyUI_IPAdapter_plus` 노드와 IP-Adapter Plus·CLIP Vision 모델 — [설치 안내](docs/IMAGES.md)
 
 ```bash
 python -X utf8 tools/gen_image.py plant nature sprout samples/demo_plant.png 42
 python -X utf8 tools/prerender_all.py --stage 1
 ```
 
-첫 명령은 `assets/samples/demo_plant.png`에 저장합니다. 두 번째 명령은 기존 기본 이미지가 있으면 건너뜁니다. 봇과 CLI는 `data/image_prompts.json`의 공통 프롬프트를 사용하며 진화할 때 직전 이미지를 참조합니다. 생성한 이미지는 개체별로 저장하고 다시 사용합니다. 서버 점검은 `python tools/check_images.py`, 기존 펫 이미지 생성은 `python tools/render_pet.py <user_id>`로 실행합니다.
+첫 명령은 `assets/samples/demo_plant.png`에 저장합니다. 두 번째 명령은 기존 기본 이미지가 있으면 건너뜁니다. 봇과 CLI는 `data/image_prompts.json`의 공통 프롬프트를 사용합니다. 진화 시 직전 단계 이미지는 형태의 출발점으로, 최초 1단계 이미지는 그림체·캐릭터 참조로 사용합니다. 두 최종 분기는 같은 3단계에서 출발합니다. 생성한 이미지는 개체별로 저장하고 다시 사용합니다. 서버 점검은 `python tools/check_images.py`, 기존 펫 이미지 생성은 `python tools/render_pet.py <user_id>`로 실행합니다.
 
 식물·기계·유령·용의 성장 단계와 최종 빛·어둠 분기는 [진화 이미지 비교 갤러리](assets/anchored_evolution/index.html)에서 볼 수 있습니다. 최초 모습의 그림체를 참조하면서 성숙기부터 체형이 성장하도록 생성합니다. HTML을 로컬에서 열면 종족별 필터와 확대 보기를 사용할 수 있습니다.
 
@@ -158,6 +188,12 @@ python -X utf8 tools/prerender_all.py --stage 1
 
 ```text
 engine/engine.py           게임 CLI와 규칙 처리
+engine/adapter.py          에이전트 공통 도구·사용자/이벤트 바인딩
+engine/image_service.py    개체별 이미지 생성·캐시
+tools/mcp_server.py        stdio MCP 서버
+tools/discord_bot.py       독립 Discord 게이트웨이
+data/image_prompts.json   공통 이미지 프롬프트·참조 설정
+assets/anchored_evolution/ 성장 단계·최종 분기 갤러리
 data/game_data.json       밸런스 데이터
 data/prompt_templates.md  이미지 프롬프트 참고 문서
 state/                    사용자 세이브 (JSON은 Git 제외)
@@ -170,7 +206,7 @@ tools/daily_decay.py      방치 감소 배치
 tools/upscale_images.py  이미지 업스케일 도구
 tests/test_engine.py      엔진 self-check
 promo/index.html         정적 소개 페이지
-docs/                    기존 기획·운영 문서
+docs/                    에이전트·이미지·운영 연결 안내
 ```
 
 `state/`와 필요한 `data/access.json`은 배포 시 별도로 보존·백업해야 합니다.
@@ -182,13 +218,14 @@ python -B -X utf8 tests/test_engine.py
 python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-종족 보너스, 경험치·진화, 수면, 접근 제어, 저장 실패, 동시 실행, 메시지 재처리, 훈련·전투 계산을 확인합니다. 테스트 데이터는 임시 파일에 저장합니다.
+종족 보너스, 경험치·진화, 수면, 접근 제어, 저장 실패, 동시 실행, 메시지 재처리, 전투, 이미지 파이프라인과 에이전트 연결을 확인합니다. 테스트 데이터는 임시 파일에 저장합니다.
 
-## 기획과 운영 문서
+`requirements-mcp.txt`를 설치하면 실제 stdio 클라이언트·서버 통신 테스트도 실행됩니다. 미설치 시 해당 테스트만 건너뜁니다. 현재 검증 결과는 **unittest 93개 + 엔진 self-check 8개 통과**이며, 외부 LLM 계정 없이 실행합니다.
 
-- [게임 기획서](docs/PLAN.md): 초기 설계와 구현 예정 기능
-- [운영 매뉴얼](docs/MANUAL.md): 기존 환경의 설치·운영 기록
-- [Discord 하네스](docs/HARNESS.md): 에이전트를 통한 연결 방식
-- [이미지 프롬프트](data/prompt_templates.md): 종족·속성 표현 참고
+## 문서
 
-운영 문서의 경로와 프로필 설정은 사용하는 환경에 맞게 조정하세요.
+- [AI 에이전트 연결](docs/AGENT_INTEGRATION.md): Python 도구·MCP 설정과 호출 지침
+- [런타임 연동](docs/INTEGRATION.md): 사용자 식별·중복 처리·저장 규칙
+- [이미지·Discord 연결](docs/IMAGES.md): ComfyUI와 봇 실행
+- [진화 갤러리](assets/anchored_evolution/index.html): 대표 네 종족의 성장 단계 비교
+- [밸런스 보고서](docs/BALANCE_REPORT.md): 전투·성장 시뮬레이션

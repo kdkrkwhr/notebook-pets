@@ -6,7 +6,7 @@ Version **0.2.0**
 
 > An AI companion born in a notebook — a monster you care for and raise on Discord.
 
-Notebook Pets is a virtual-pet project where **Python handles the game rules and an AI agent gives the character its voice and story**. Feed your monster, play together, and take walks to build a relationship with your companion.
+Notebook Pets is a virtual-pet project where **Python handles the game rules and an AI agent gives the character its voice and story**. Feed your monster, play together, and take walks to build a relationship with your companion. Connect Hermes or another AI agent through shared Python tools or MCP, or use the standalone Discord gateway.
 
 The repository is named `notebook-pets`; the service name is **Notebuddy (노트버디)**.
 
@@ -27,31 +27,34 @@ The repository is named `notebook-pets`; the service name is **Notebuddy (노트
 | Records | Battle records, capture collection, titles, and rankings |
 | Progression rules | Stage transitions at levels 31, 51, and 81; level cap of 100 |
 | Final evolution | Light branch at intimacy 70 or above; dark branch below 70 |
-| Artwork | All 72 stage-one combinations, plus ComfyUI generation tools |
+| Artwork | Per-pet artwork and evolution with local ComfyUI and IP-Adapter |
+| Agent integration | Shared Python tools, stdio MCP, and a Discord gateway |
 
-Browse the refreshed showcase in [assets/examples](assets/examples/README.md) and all 72 starter combinations in `assets/samples/`.
+Browse the [character showcase](assets/examples/README.md) and the [evolution gallery](assets/anchored_evolution/index.html) for plant, machine, ghost, and dragon growth, including light/dark branches. Earlier artwork for all 72 starter combinations is preserved in `assets/samples/`.
 
 ## Architecture and principles
 
 ```text
-Discord message
-    ↓
-AI agent / Python tools or MCP        ← Hermes or another host
-    ↓ command and authenticated sender ID
-Python game engine
-    ├─ reads rules from game_data.json
-    ├─ evaluates state, cooldowns, and battles
-    └─ writes state/{user_id}.json
-    ↓ JSON result
-Agent replies in the monster's voice
+User message → host binds authenticated actor and event
+    ├─ AI agent → shared Python tool / stdio MCP
+    └─ standalone Discord gateway → command handling
+                        ↓
+                 Python game engine
+    ├─ growth, combat, and action rules from game_data.json
+    ├─ access control, file locking, and event deduplication
+    └─ state/{user_id}.json stores state and processing receipts
+                        ↓
+                 JSON result → reply
 
-Image-generation tool → local ComfyUI → PNG file
+Image request → ImageService → local ComfyUI + IP-Adapter
+                            → per-pet cache → host delivers artwork
 ```
 
 - **Separate rules from expression:** the agent is intended to narrate engine results rather than invent game outcomes.
 - **Persist state in files:** per-user JSON, rather than conversational memory, is the source of game state.
 - **Keep balance in data:** species, elements, matchups, XP thresholds, and action limits live in `data/game_data.json`.
-- **Speak as the character:** the connected agent provides the monster's first-person persona. That configuration is not included here.
+- **Swap agents:** models receive only command arguments. The trusted host binds actor and event IDs; retries keep the same receipt even when changing providers.
+- **Separate saves from rendering:** image failures do not roll back committed XP or evolution. Example persona instructions are in the [integration guide](docs/AGENT_INTEGRATION.md).
 
 Species selection, encounters, and battles use randomness governed by the game rules.
 
@@ -60,7 +63,7 @@ Species selection, encounters, and battles use randomness governed by the game r
 ### Requirements
 
 - Verified with Python 3.12.
-- The engine and current tests use only the Python standard library. No `pip install` is needed for this path.
+- The engine, shared Python adapter, and basic tests use only the standard library. Install `requirements-mcp.txt` for MCP or `requirements-discord.txt` for the Discord gateway.
 - Discord, Hermes, ComfyUI, and LLM API keys are not required to try the basic CLI.
 
 Run these commands from the repository root:
@@ -128,29 +131,56 @@ python -X utf8 engine/engine.py 123456789012345678 clearowner
 
 Settings are stored in the Git-ignored `data/access.json`. The CLI does not authenticate callers: the integration must supply the real sender ID. IDs must be positive integer strings of 1–20 ASCII digits. See the [runtime integration guide](docs/INTEGRATION.md) for agent integration and storage settings.
 
-## Discord and image integration
+## Agent and Discord integration
 
-### Discord / Hermes
+| Connection | Use |
+| --- | --- |
+| Python tools | Register the game with a custom agent, Hermes, or another host |
+| stdio MCP | Persistent read-only access, or event-scoped gameplay through a gateway |
+| Standalone Discord bot | Command handling and artwork delivery without an AI agent |
 
-Other AI agents can use the shared Python tool or optional stdio MCP server with the same actor binding and event deduplication. See [AI agent integration](docs/AGENT_INTEGRATION.md) for setup and examples.
+### Shared Python tool
 
-Use the existing Hermes profile/routing skill or the optional standalone gateway in `tools/discord_bot.py`. The gateway replies with the game result first, then edits that message to attach the image. See the [image and Discord setup guide](docs/IMAGES.md) for installation and configuration.
+Add `engine/` to the host's Python module search path. Replace these example IDs with authenticated message metadata.
 
-Reconnecting it requires Discord bot configuration, sender identification, command routing, a character persona, and image delivery. Manage tokens and administrator permissions outside the repository. See the [operations manual](docs/MANUAL.md) and [harness notes](docs/HARNESS.md), but do not treat their historical local paths, profile names, or cron IDs as current configuration.
+```python
+from adapter import bind_game_event, dispatch_tool, tool_definition
+
+game = bind_game_event(actor_id="123", event_id="discord:456")
+definition = tool_definition()  # Register using your host SDK's format
+result = dispatch_tool(game, {"command": "feed", "arguments": []})
+```
+
+Retrying the same event returns the saved result. A different mutation for an already committed event is rejected; reads remain available. Administrative commands are excluded from agent tools.
+
+### MCP
+
+```bash
+python -m pip install -r requirements-mcp.txt
+```
+
+Configure your MCP host to launch `tools/mcp_server.py` over stdio with `NOTEBOOK_ACTOR_ID` and `NOTEBOOK_DATA_DIR`. **Persistent connections are read-only.** For gameplay mutations, a trusted gateway supplies `NOTEBOOK_EVENT_ID` for each authenticated user message. Do not put a fixed event ID in persistent configuration. The tool returns game JSON; rendering and image delivery remain host responsibilities.
+
+See [AI agent integration](docs/AGENT_INTEGRATION.md) for configuration JSON and event-scoped connections.
+
+### Discord bot
+
+`tools/discord_bot.py` replies with the game result first, then edits that message to attach artwork. See [image and Discord setup](docs/IMAGES.md) for the bot token, allowed channels, and local image server configuration. External agents such as Hermes can use the same engine through the shared adapter.
 
 ### Image generation (optional)
 
 Using the existing PNGs does not require ComfyUI. To generate new artwork, provide:
 
 - ComfyUI running at `http://127.0.0.1:8188`.
-- The `DreamShaper_8_pruned.safetensors` checkpoint named in `tools/sd15_txt2img.json`, or a compatible model explicitly configured in that workflow.
+- The `DreamShaper_8_pruned.safetensors` checkpoint.
+- The `ComfyUI_IPAdapter_plus` node and IP-Adapter Plus / CLIP Vision models — see [setup](docs/IMAGES.md).
 
 ```bash
 python -X utf8 tools/gen_image.py plant nature sprout samples/demo_plant.png 42
 python -X utf8 tools/prerender_all.py --stage 1
 ```
 
-The first command writes `assets/samples/demo_plant.png`. The second skips starter images that already exist. The bot and CLI share `data/image_prompts.json`, and evolution uses the previous image as a reference. Artwork is cached per pet. Check the server with `python tools/check_images.py`; render an existing pet with `python tools/render_pet.py <user_id>`.
+The first command writes `assets/samples/demo_plant.png`. The second skips starter images that already exist. The bot and CLI share `data/image_prompts.json`. Evolution uses the previous stage as its starting image and the original starter as its style and character reference. Both final branches start from the same stage-three image. Artwork is cached per pet. Check the server with `python tools/check_images.py`; render an existing pet with `python tools/render_pet.py <user_id>`.
 
 Compare plant, machine, ghost and dragon growth and final light/dark branches in the [evolution gallery](assets/anchored_evolution/index.html). Evolution references each pet's original appearance while changing body proportions at maturity. Open the HTML locally to filter by species and inspect full-size images.
 
@@ -158,6 +188,12 @@ Compare plant, machine, ghost and dragon growth and final light/dark branches in
 
 ```text
 engine/engine.py           Game CLI and rule processing
+engine/adapter.py          Shared agent tools and actor/event binding
+engine/image_service.py    Per-pet image rendering and cache
+tools/mcp_server.py        stdio MCP server
+tools/discord_bot.py       Standalone Discord gateway
+data/image_prompts.json   Shared image prompts and reference settings
+assets/anchored_evolution/ Growth and final-branch gallery
 data/game_data.json       Balance data
 data/prompt_templates.md  Image-prompt reference
 state/                    User saves (JSON files are Git-ignored)
@@ -170,7 +206,7 @@ tools/daily_decay.py      Inactivity decay batch
 tools/upscale_images.py  Image upscaling tool
 tests/test_engine.py      Engine self-checks
 promo/index.html         Static promotional page
-docs/                    Historical design and operations notes
+docs/                    Agent, artwork, and runtime integration guides
 ```
 
 Preserve and back up `state/` and, when used, `data/access.json` separately during deployment.
@@ -182,15 +218,14 @@ python -B -X utf8 tests/test_engine.py
 python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 ```
 
-Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, training, and combat calculations. Test data is stored in temporary files.
+Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, combat, image pipelines, and agent integration. Test data is stored in temporary files.
 
-## Design and operations notes
+Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **93 unittest cases and 8 engine self-checks passed**, without an external LLM account.
 
-The linked documents are currently in Korean:
+## Documentation
 
-- [Game plan](docs/PLAN.md): initial design and planned features
-- [Operations manual](docs/MANUAL.md): installation and operating notes for the earlier environment
-- [Discord harness](docs/HARNESS.md): agent-mediated integration
-- [Image prompts](data/prompt_templates.md): species and element references
-
-Adjust paths and profile settings in the operations notes to match your environment.
+- [AI agent integration](docs/AGENT_INTEGRATION.md): Python tools, MCP setup, and agent instructions
+- [Runtime integration](docs/INTEGRATION.md): identity, deduplication, and storage rules
+- [Image and Discord setup](docs/IMAGES.md): running ComfyUI and the bot
+- [Evolution gallery](assets/anchored_evolution/index.html): growth across four representative species
+- [Balance report](docs/BALANCE_REPORT.md): combat and progression simulations
