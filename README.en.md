@@ -211,13 +211,14 @@ tools/gen_image.py        ComfyUI image generator
 tools/prerender_all.py    Batch generation for combinations
 tools/preview_roll.py     Random species/element preview
 tools/daily_decay.py      Inactivity decay batch
+tools/backup_store.py     Save snapshots, verification, and recovery to a new root
 tools/upscale_images.py  Image upscaling tool
 tests/test_engine.py      Engine self-checks
 promo/index.html         Static promotional page
 docs/                    Agent, artwork, and runtime integration guides
 ```
 
-Preserve and back up `state/` and, when used, `data/access.json` separately during deployment.
+Run `python -X utf8 tools/backup_store.py create --output backups/save.json` to snapshot saves, quest claims, event receipts, and access settings together. Use `verify backups/save.json` to check the snapshot and `restore backups/save.json --target <new-directory>` to recover without overwriting existing data. See [backup and recovery](docs/BACKUP.md) for separate artwork preservation and deployment switching.
 
 ## Verification
 
@@ -228,9 +229,11 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, combat, image pipelines, and agent integration. Test data is stored in temporary files.
 
-Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **104 unittest cases and 8 engine self-checks passed**, without an external LLM account.
+Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **113 unittest cases and 8 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, and event replay after restoration.
 
 ## Documentation
+
+- [Backup and recovery](docs/BACKUP.md): save snapshots, validation, and restoration to a new data root
 
 - [AI agent integration](docs/AGENT_INTEGRATION.md): Python tools, MCP setup, and agent instructions
 - [Runtime integration](docs/INTEGRATION.md): identity, deduplication, and storage rules

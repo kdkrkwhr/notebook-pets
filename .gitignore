@@ -6,6 +6,7 @@ data/.notebook-*.tmp
 artwork/
 delivery/
 .gateway/
+backups/
 !state/.gitkeep
 
 # 소유주 등록 (런타임 접근 제어 — 배포마다 다름)

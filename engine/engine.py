@@ -229,6 +229,11 @@ def load_access():
     a = read_json(ACCESS)
     if a is MISSING:
         return {"owner_id": "", "owner_name": ""}
+    return validate_access(a)
+
+
+def validate_access(a):
+    """Validate stored access settings without reading or modifying a store."""
     if not isinstance(a, dict) or not isinstance(a.get("owner_id"), str) or not isinstance(a.get("owner_name"), str):
         raise GameError("invalid_access", "접근 설정이 올바르지 않습니다. 관리자에게 문의해 주세요.")
     if a["owner_id"]:
