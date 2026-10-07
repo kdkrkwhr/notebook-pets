@@ -42,6 +42,16 @@ def response_text(result):
         text = "내 칭호: " + (", ".join(result["titles"]) or "새내기")
     else:
         text = result.get("msg") or "완료했어!"
+    quest = result.get("quest")
+    if quest:
+        text += "\n오늘의 목표 · " + " / ".join(f"{t['label']} {t['progress']}/{t['target']}" for t in quest["tasks"])
+        if quest["claimed"]:
+            text += "\n퀘스트 보상 수령 완료"
+        elif quest["ready"]:
+            text += "\n목표 달성! !퀘스트보상 으로 보상을 받아 줘."
+        else:
+            reward = quest["reward"]
+            text += f"\n달성 보상: 기본 경험치 {reward['xp']} · 맛있는 사료 {reward['rare_feed']}개"
     xp = result.get("xp_result", {})
     if xp.get("gained"):
         text += f"\n경험치 +{xp['gained']}"
@@ -49,6 +59,8 @@ def response_text(result):
         text += f"\n{xp['leveled_to']}레벨로 성장했어!"
     if result.get("loot", {}).get("normal_feed"):
         text += f"\n사료 +{result['loot']['normal_feed']}"
+    if result.get("loot", {}).get("rare_feed"):
+        text += f"\n맛있는 사료 +{result['loot']['rare_feed']}"
     return text[:1800]
 
 

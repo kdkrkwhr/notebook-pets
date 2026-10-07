@@ -69,6 +69,11 @@ class AgentTests(unittest.TestCase):
                     self.assertNotIn('actor_id', listing.tools[0].inputSchema['properties'])
                     result = await client.call_tool('notebook_game', {'command': 'status'})
                     self.assertTrue(json.loads(result.content[0].text)['ok'])
+                    quests = await client.call_tool('notebook_game', {'command': 'quests'})
+                    self.assertEqual(len(json.loads(quests.content[0].text)['quest']['tasks']), 3)
+                    if not event:
+                        claim = await client.call_tool('notebook_game', {'command': 'claimquest'})
+                        self.assertTrue(claim.isError)
                     denied = await client.call_tool('notebook_game', {'command': 'reset'})
                     self.assertTrue(denied.isError)
                     spoof = await client.call_tool('notebook_game', {'command': 'status', 'actor_id': '999'})

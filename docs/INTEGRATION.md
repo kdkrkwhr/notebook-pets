@@ -1,5 +1,13 @@
 # 런타임 연동 / Runtime integration
 
+## 일일 퀘스트 / Daily quest
+
+`quests`(`퀘스트`, `일일퀘스트`)는 조회 전용이며 `claimquest`(`퀘스트보상`)는 하루 한 번 보상을 지급합니다. 목표는 먹이 1회·훈련 2회·산책 1회, 보상은 기본 경험치 30과 맛있는 사료 1개입니다. 성공한 행동의 일일 카운터를 사용하며 KST 날짜 변경 시 진행도와 수령 표시를 초기화합니다. 전날 미수령 보상은 이월하지 않습니다.
+
+기존 세이브는 그대로 읽습니다. 이미 기록된 당일 훈련·산책은 반영하고, 이전 버전에 없던 먹이 횟수는 업데이트 후 성공한 행동부터 집계합니다. 조회만으로 파일을 변경하지 않습니다. 보상·수령 표시·이벤트 처리 기록은 같은 저장에 포함되므로 동시 호출이나 응답 유실 후 재시도로 보상이 중복되지 않습니다. 과거 이벤트 재전송은 원래 결과를 반환하며 새 날짜의 보상을 지급하지 않습니다.
+
+`quests` is read-only; `claimquest` grants 30 base XP and one rare feed after feeding once, training twice, and walking once. Successful action counters reset at midnight KST, with no carry-over of unclaimed rewards. Existing saves remain compatible: recorded training/walk counts apply, while feed counts begin with actions after this update. Reads do not write saves. Rewards, the claim flag, and event receipts commit together; retries preserve the original result even on a later day. Existing sleep bonuses, level caps, and evolution rules apply.
+
 Hermes 외 에이전트와 MCP 연결은 [AI 에이전트 연결 안내](AGENT_INTEGRATION.md)를 참고하세요. / For provider-neutral tools and MCP, see [AI agent integration](AGENT_INTEGRATION.md).
 
 선택적 `tools/discord_bot.py` 게이트웨이와 로컬 ComfyUI 이미지 파이프라인은 [IMAGES.md](IMAGES.md)를 참고하세요. 게임 저장과 이미지 생성을 분리하고, 게임 응답 후 같은 Discord 메시지에 그림을 첨부합니다. 아래 Hermes 연동 방식도 계속 사용할 수 있습니다.

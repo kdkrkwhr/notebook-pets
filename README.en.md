@@ -23,6 +23,7 @@ The repository is named `notebook-pets`; the service name is **Notebuddy (노트
 | --- | --- |
 | Monsters | 9 species × 8 elements: 72 starter combinations |
 | Care | Feeding, snacks, play, sleep, intimacy, and satiety |
+| Daily quest | Feed once, train twice, and walk once to claim a reward |
 | Activities | Persistent stat training, walks, HP-based automatic battles, capture, and fleeing |
 | Records | Battle records, capture collection, titles, and rankings |
 | Progression rules | Stage transitions at levels 31, 51, and 81; level cap of 100 |
@@ -106,6 +107,7 @@ python -X utf8 engine/engine.py <user_id> <command> [arguments...]
 | Train / walk | `train` / `훈련`, `walk` / `산책` |
 | Battle / capture / flee | `battle` / `배틀`, `catch` / `포획`, `flee` / `도망` |
 | Daily attendance (XP + 3 normal feed) | `attendance` / `출석` |
+| Quest progress / claim reward | `quests` / `퀘스트` / `일일퀘스트`, `claimquest` / `퀘스트보상` |
 | Collection / titles | `pokedex` / `도감`, `titles` / `칭호` |
 | Rankings | `python -X utf8 engine/engine.py rank` or `랭킹` — omit the ID |
 | Help | `python -X utf8 engine/engine.py help` or `도움말` — omit the ID |
@@ -113,6 +115,12 @@ python -X utf8 engine/engine.py <user_id> <command> [arguments...]
 Resolve a wild encounter by battling, capturing, or fleeing before walking again. Use `status` to inspect the current encounter. Automatic battles start at full HP and last up to 20 rounds; HP, attack, and defense training all contribute. Simultaneous knockouts are draws.
 
 Daily limits reset at midnight in Korea (KST); sleep grants an XP bonus for the following calendar day. Attendance provides three normal feed once per day. When owner access is enabled, rankings also require an allowed user ID.
+
+### Daily quest
+
+Use `quests` to check progress. Feed once, train twice, and walk once, then use `claimquest` to receive **30 base XP and one rare feed**. Discord aliases are `!퀘스트` and `!퀘스트보상`. Status and successful objective actions also include progress.
+
+Only successful actions count; rewards can be claimed once per day. Progress and claim eligibility reset at midnight KST; unclaimed rewards do not carry over. Existing sleep bonuses, level caps, and evolution rules apply to XP rewards. Configure objectives and rewards in `data/game_data.json` under `daily_quest`.
 
 ### Administrator and owner settings
 
@@ -220,7 +228,7 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, combat, image pipelines, and agent integration. Test data is stored in temporary files.
 
-Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **93 unittest cases and 8 engine self-checks passed**, without an external LLM account.
+Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **104 unittest cases and 8 engine self-checks passed**, without an external LLM account.
 
 ## Documentation
 

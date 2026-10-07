@@ -83,6 +83,7 @@ def validate_state(st, uid):
         for key, value in st["daily"].items():
             if key not in ("date", "sleep_buff"):
                 require(type(value) is int and value >= 0)
+        require(st["daily"].get("quest_claimed", 0) in (0, 1))
         for value in st["cooldowns"].values():
             require(type(value) in (int, float) and math.isfinite(value) and value >= 0)
         for key in ("normal_feed", "rare_feed"):
@@ -209,7 +210,9 @@ def check_limit(st, key):
 
 def mark(st, key):
     lim = G["commands"].get(key, {}).get("daily_limit")
-    if lim is not None: st["daily"][key] = st["daily"].get(key, 0) + 1
+    quest_actions = {item["command"] for item in G["daily_quest"]["requirements"]}
+    if lim is not None or key in quest_actions:
+        st["daily"][key] = st["daily"].get(key, 0) + 1
     cd = G["commands"].get(key, {}).get("cooldown_min")
     if cd: st["cooldowns"][key] = time.time()
 
@@ -301,7 +304,7 @@ def cmd_status(st):
                element=G["elements"][st["element"]]["name_kr"], stage_label=dict((s["stage"], s["label"]) for s in G["stages"])[st["stage"]],
                level=st["level"], xp=st["xp"], xp_next=xp_needed(st["level"]),
                stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"), image=art.describe(st),
-               record=st["record"], title=(titles(st)[0] if titles(st) else "새내기"),
+               record=st["record"], quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
 
 def cmd_titles(st):
@@ -486,6 +489,38 @@ def cmd_pokedex(st):
     return out(True, "", catches=[h for h in st["history"] if h.get("event") == "caught"],
                record=st["record"], branch=st["evolution_branch"])
 
+
+def daily_quest(st):
+    """Read-only view of today's successful actions; callers refresh the KST day."""
+    definition = G["daily_quest"]
+    tasks = []
+    for item in definition["requirements"]:
+        progress = min(st["daily"].get(item["command"], 0), item["target"])
+        tasks.append({**item, "progress": progress, "complete": progress >= item["target"]})
+    claimed = st["daily"].get("quest_claimed", 0) == 1
+    return {"date": st["daily"]["date"], "tasks": tasks, "claimed": claimed,
+            "ready": all(item["complete"] for item in tasks) and not claimed,
+            "reward": copy.deepcopy(definition["reward"])}
+
+
+def cmd_quests(st):
+    return out(True, "오늘의 퀘스트", quest=daily_quest(st))
+
+
+def cmd_claimquest(st):
+    quest = daily_quest(st)
+    if quest["claimed"]:
+        return out(False, "오늘의 퀘스트 보상은 이미 받았어.", code="quest_already_claimed", quest=quest)
+    if not quest["ready"]:
+        return out(False, "아직 오늘의 목표를 다 채우지 못했어. !퀘스트로 확인해 줘.", code="quest_incomplete", quest=quest)
+    reward = quest["reward"]
+    st["daily"]["quest_claimed"] = 1
+    st["inventory"]["rare_feed"] += reward["rare_feed"]
+    xp = add_xp(st, reward["xp"])
+    save_state(st)
+    return out(True, "오늘의 퀘스트 완료! 함께해 줘서 고마워.", quest=daily_quest(st),
+               xp_result=xp, loot={"rare_feed": reward["rare_feed"]})
+
 def cmd_rank():
     ranks = []
     for fn in os.listdir(STATE_DIR):
@@ -496,7 +531,7 @@ def cmd_rank():
     return out(True, "", ranking=ranks[:10])
 
 def cmd_help():
-    return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + ["status", "pokedex", "titles", "rank", "help"])
+    return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + ["status", "quests", "claimquest", "pokedex", "titles", "rank", "help"])
 
 # ---------- main ----------
 ALIASES = {
@@ -506,10 +541,11 @@ ALIASES = {
     "도감": "pokedex", "칭호": "titles", "랭킹": "rank", "도움말": "help",
     "소유주": "owner", "개방": "clearowner", "소유주해제": "clearowner",
     "도망": "flee",
+    "퀘스트": "quests", "일일퀘스트": "quests", "퀘스트보상": "claimquest",
 }
-COMMANDS = set(G["commands"]) | {"status", "pokedex", "titles", "rank", "help", "owner", "clearowner", "reset"}
+COMMANDS = set(G["commands"]) | {"status", "quests", "claimquest", "pokedex", "titles", "rank", "help", "owner", "clearowner", "reset"}
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
-READ_COMMANDS = frozenset({"status", "pokedex", "titles", "rank", "help"})
+READ_COMMANDS = frozenset({"status", "quests", "pokedex", "titles", "rank", "help"})
 
 
 def dispatch_player(actor_id, command, arguments):
@@ -529,8 +565,12 @@ def dispatch_player(actor_id, command, arguments):
         "flee": lambda: cmd_flee(st),
         "catch": lambda: cmd_catch(st), "attendance": lambda: cmd_attendance(st),
         "pokedex": lambda: cmd_pokedex(st), "titles": lambda: cmd_titles(st),
+        "quests": lambda: cmd_quests(st), "claimquest": lambda: cmd_claimquest(st),
     }
-    return table[command]()
+    result = table[command]()
+    if result["ok"] and command in {item["command"] for item in G["daily_quest"]["requirements"]}:
+        result["quest"] = daily_quest(st)
+    return result
 
 
 def execute_once(actor_id, command, arguments, request_id):
