@@ -1,0 +1,41 @@
+{
+  "request": {
+    "species": "dragon",
+    "element": "light",
+    "stage": 3,
+    "branch": null,
+    "key": "dragon_light_stage3",
+    "pet_id": "70ffb52808c13d5cc06bf1b8e3aab8fe",
+    "revision": "anchored-growth-v4",
+    "seed": 42103
+  },
+  "file": "dragon_light_stage3.png",
+  "seed": 42103,
+  "preview_seed": 42,
+  "seed_offset": 0,
+  "reference": "dragon_light_stage2.png",
+  "prompt": "(standing mature quadruped dragon:1.3), small rounded head relative to long body, long graceful neck, four sturdy legs, developed folded wings, curled tail, swept horns, glossy round eyes, friendly expression\nwhite and gold palette with restrained radiant halo glow\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins\nSAME individual evolved, preserve eye color, facial markings and painted style; change body proportions to match the new age.",
+  "style_reference": "dragon_light_stage1.png",
+  "style_reference_sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c",
+  "ipadapter": {
+    "model": "ip-adapter-plus_sd15.safetensors",
+    "clip_vision": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+    "weight_type": "linear",
+    "weight": 0.65
+  },
+  "reference_sha256": "16ccf0667e4e194eef7d2930dec16b34c07f99562c73a1774c0afe09c6667492",
+  "sha256": "2ca3835d4fbf70c227ce498f046b0ebeccbca6182115eac4b96c44f5b5bf0c5e",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 32,
+    "cfg": 5.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.76
+  },
+  "seconds": 37.39
+}

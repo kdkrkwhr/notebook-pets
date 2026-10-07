@@ -1,0 +1,41 @@
+{
+  "request": {
+    "species": "machine",
+    "element": "fire",
+    "stage": 3,
+    "branch": null,
+    "key": "machine_fire_stage3",
+    "pet_id": "03412110a619073355d02bc49f3720b1",
+    "revision": "anchored-growth-v4",
+    "seed": 42103
+  },
+  "file": "machine_fire_stage3.png",
+  "seed": 42103,
+  "preview_seed": 42,
+  "seed_offset": 0,
+  "reference": "machine_fire_stage2.png",
+  "prompt": "(friendly armored robot:1.3), (broad chest and small round head:1.4), two round glowing LED eyes, bulky articulated arms, thick thighs and sturdy feet, standing upright, rounded shoulder guards, flame crest, whole body visible\n(red and orange body:1.3), small flames\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins\nSAME individual evolved, preserve eye color, facial markings and painted style; change body proportions to match the new age.",
+  "style_reference": "machine_fire_stage1.png",
+  "style_reference_sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3",
+  "ipadapter": {
+    "model": "ip-adapter-plus_sd15.safetensors",
+    "clip_vision": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+    "weight_type": "style transfer",
+    "weight": 0.7
+  },
+  "reference_sha256": "531f68aa0f39c7117a8fcdaef284ef0b8a63f6f8be1e65fe993de845d84d8733",
+  "sha256": "5c6155bdbb7ec3363c1cb46c5ad94925e22acbab5cd5a69e0e98403ba282aeaa",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 32,
+    "cfg": 5.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.87
+  },
+  "seconds": 15.45
+}

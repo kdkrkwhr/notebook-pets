@@ -27,8 +27,8 @@ class FakeProvider:
     name = "test-provider"
     def __init__(self):
         self.calls = []
-    def generate(self, spec, prompt, reference, job_path):
-        self.calls.append((spec.copy(), prompt, reference))
+    def generate(self, spec, prompt, reference, job_path, *, style_reference=None):
+        self.calls.append((spec.copy(), prompt, reference, style_reference))
         return fixture_png()
 
 
@@ -88,6 +88,7 @@ class ImageTests(unittest.TestCase):
         self.assertIsNone(provider.calls[0][2])
         for index, call in enumerate(provider.calls[1:], 1):
             self.assertIn(f"stage{index}", call[2].name)
+            self.assertIn("stage1", call[3].name)
         self.assertEqual(service.render("123", spec), first)
         self.assertEqual(len(provider.calls), 4)
 
@@ -104,7 +105,7 @@ class ImageTests(unittest.TestCase):
     def test_generation_does_not_hold_game_lock_or_overwrite_new_gameplay(self):
         self.seed()
         provider = FakeProvider()
-        def generate(*args):
+        def generate(*args, **kwargs):
             self.assertTrue(engine.execute("123", "snack")["ok"])
             return fixture_png()
         with patch.object(provider, "generate", side_effect=generate):
@@ -115,7 +116,7 @@ class ImageTests(unittest.TestCase):
     def test_reset_during_generation_discards_late_result(self):
         self.seed()
         provider = FakeProvider()
-        def generate(*args):
+        def generate(*args, **kwargs):
             engine.execute("999", "reset", ["123", "NewPet"])
             return fixture_png()
         with patch.object(provider, "generate", side_effect=generate):
@@ -145,7 +146,7 @@ class ImageTests(unittest.TestCase):
         service = self.service(FakeProvider())
         spec = engine.execute("123", "status")["image"]
         started, release = threading.Event(), threading.Event()
-        def generate(*args):
+        def generate(*args, **kwargs):
             started.set()
             if not release.wait(5):
                 raise RuntimeError("Worker timeout")
@@ -166,7 +167,7 @@ class ImageTests(unittest.TestCase):
         workflow = build_workflow("evolve", 42, reference_name="previous.png", stage=2)["prompt"]
         self.assertEqual(workflow["10"]["inputs"]["image"], "previous.png")
         self.assertEqual(workflow["3"]["inputs"]["latent_image"], ["12", 0])
-        self.assertEqual(workflow["3"]["inputs"]["denoise"], 0.56)
+        self.assertEqual(workflow["3"]["inputs"]["denoise"], art.render_settings(2, True)["denoise"])
         self.assertEqual(workflow["12"]["inputs"]["pixels"], ["15", 0])
         self.assertEqual(workflow["14"]["inputs"]["mask"], ["10", 1])
         self.assertEqual(workflow["15"]["inputs"]["mask"], ["14", 0])
@@ -196,7 +197,7 @@ class ImageTests(unittest.TestCase):
             capture_output=True, text=True, encoding="utf-8")
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         workflow = json.loads(result.stdout)["workflow"]["prompt"]
-        self.assertEqual(workflow["3"]["inputs"]["denoise"], art.render_settings(4, True)["denoise"])
+        self.assertEqual(workflow["3"]["inputs"]["denoise"], art.render_settings(4, True, "plant")["denoise"])
         self.assertEqual(workflow["13"]["inputs"]["width"], art.TEMPLATE["render"]["width"])
 
     def test_ghost_preserves_face_with_lower_strength_and_final_branches_keep_element_motifs(self):
@@ -224,6 +225,57 @@ class ImageTests(unittest.TestCase):
                 self.assertEqual(error.exception.code, "image_timeout")
         self.assertEqual(sum(c.args[0] == "/prompt" for c in http.call_args_list), 1)
         self.assertEqual(read_json(job)["prompt_id"], "queued-1")
+
+    def test_style_anchor_is_separate_from_previous_stage_latent(self):
+        wf = build_workflow("mature", 42, reference_name="stage2.png",
+                            style_reference_name="stage1.png", species="plant", stage=3)["prompt"]
+        self.assertEqual(wf["10"]["inputs"]["image"], "stage2.png")
+        self.assertEqual(wf["20"]["inputs"]["image"], "stage1.png")
+        self.assertEqual(wf["3"]["inputs"]["latent_image"], ["12", 0])
+        self.assertEqual(wf["3"]["inputs"]["model"], ["23", 0])
+        self.assertNotIn("23", build_workflow("starter", 42)["prompt"])
+
+    def test_generated_starter_uses_shared_style_then_its_own_original(self):
+        self.seed(species="dragon", element="light", level=31, stage=2)
+        provider = FakeProvider()
+        result = self.service(provider, curated=True).render("123", engine.execute("123", "status")["image"])
+        self.assertEqual(result["status"], "ready")
+        self.assertIsNone(provider.calls[0][2])
+        self.assertEqual(provider.calls[0][3].name, art.TEMPLATE["starter_style_reference"])
+        self.assertEqual(provider.calls[1][3].name, "dragon_light_stage1.png")
+
+    def test_cached_stages_keep_original_anchor_and_branches_share_parent(self):
+        self.seed(species="plant", element="nature", level=81, stage=4, evolution_branch="light")
+        provider = FakeProvider()
+        service = self.service(provider, curated=True)
+        service.render("123", engine.execute("123", "status")["image"])
+        first_final = provider.calls[-1]
+        st = engine.load_state("123")
+        st["evolution_branch"] = "dark"
+        engine.save_state(st)
+        result = service.render("123", engine.execute("123", "status")["image"])
+        self.assertEqual(result["status"], "ready")
+        self.assertEqual(len(provider.calls), 4)  # stages 2, 3, light, dark
+        self.assertEqual(first_final[2], provider.calls[-1][2])
+        self.assertEqual(first_final[3], provider.calls[-1][3])
+        self.assertIn("stage1", provider.calls[-1][3].name)
+
+    def test_changing_anchor_invalidates_pending_job(self):
+        provider = ComfyUIProvider(timeout=0.01, poll_interval=0)
+        spec = art.describe(base_state())
+        reference = self.root / "previous.png"
+        anchor = self.root / "original.png"
+        reference.write_bytes(fixture_png())
+        anchor.write_bytes(fixture_png())
+        def network(route, *args, **kwargs):
+            return {"prompt_id": "pending"} if route == "/prompt" else {}
+        with patch.object(provider, "upload", return_value="uploaded.png"), patch.object(provider, "_http", side_effect=network) as http:
+            for content in (fixture_png(), b"different reference bytes"):
+                anchor.write_bytes(content)
+                with self.assertRaises(GameError) as caught:
+                    provider.generate(spec, "prompt", reference, self.root / "anchor.job.json", style_reference=anchor)
+                self.assertEqual(caught.exception.code, "image_timeout")
+        self.assertEqual(sum(c.args[0] == "/prompt" for c in http.call_args_list), 2)
 
     def test_comfy_reads_only_save_node_and_downloads_png(self):
         provider = ComfyUIProvider()

@@ -150,7 +150,7 @@ python -X utf8 tools/prerender_all.py --stage 1
 
 첫 명령은 `assets/samples/demo_plant.png`에 저장합니다. 두 번째 명령은 기존 기본 이미지가 있으면 건너뜁니다. 봇과 CLI는 `data/image_prompts.json`의 공통 프롬프트를 사용하며 진화할 때 직전 이미지를 참조합니다. 생성한 이미지는 개체별로 저장하고 다시 사용합니다. 서버 점검은 `python tools/check_images.py`, 기존 펫 이미지 생성은 `python tools/render_pet.py <user_id>`로 실행합니다.
 
-식물·기계·유령·용의 성장 단계와 최종 빛·어둠 분기는 [진화 이미지 비교 갤러리](assets/evolution_review/index.html)에서 볼 수 있습니다. HTML을 로컬에서 열면 종족별 필터와 확대 보기를 사용할 수 있습니다.
+식물·기계·유령·용의 성장 단계와 최종 빛·어둠 분기는 [진화 이미지 비교 갤러리](assets/anchored_evolution/index.html)에서 볼 수 있습니다. 최초 모습의 그림체를 참조하면서 성숙기부터 체형이 성장하도록 생성합니다. HTML을 로컬에서 열면 종족별 필터와 확대 보기를 사용할 수 있습니다.
 
 ## 저장소 안내
 

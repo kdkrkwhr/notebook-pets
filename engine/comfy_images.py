@@ -12,7 +12,7 @@ from image_service import MAX_IMAGE_BYTES, validate_png
 from runtime import GameError, MISSING, atomic_write_json, read_json
 
 
-def build_workflow(prompt, seed, *, reference_name=None, checkpoint=None, denoise=None, stage=1, species=None):
+def build_workflow(prompt, seed, *, reference_name=None, style_reference_name=None, checkpoint=None, denoise=None, stage=1, species=None):
     settings = art.render_settings(stage, reference_name is not None, species)
     denoise = settings["denoise"] if denoise is None else denoise
     if not math.isfinite(denoise) or not 0 < denoise <= 1:
@@ -23,6 +23,8 @@ def build_workflow(prompt, seed, *, reference_name=None, checkpoint=None, denois
     wf["7"]["inputs"]["text"] = art.TEMPLATE["negative"]
     if species in art.TEMPLATE.get("species_negative", {}):
         wf["7"]["inputs"]["text"] += ", " + art.TEMPLATE["species_negative"][species]
+    if str(stage) in art.TEMPLATE.get("stage_negative", {}):
+        wf["7"]["inputs"]["text"] += ", " + art.TEMPLATE["stage_negative"][str(stage)]
     wf["3"]["inputs"]["seed"] = seed
     wf["3"]["inputs"].update(steps=settings["steps"], cfg=settings["cfg"],
                               sampler_name=settings["sampler"], scheduler=settings["scheduler"])
@@ -43,6 +45,16 @@ def build_workflow(prompt, seed, *, reference_name=None, checkpoint=None, denois
             "x": pad, "y": pad, "resize_source": False}}
         wf["12"] = {"class_type": "VAEEncode", "inputs": {"pixels": ["15", 0], "vae": ["4", 2]}}
         wf["3"]["inputs"].update({"latent_image": ["12", 0], "denoise": denoise})
+    if style_reference_name is not None:
+        profile = art.adapter_settings(stage, species)
+        wf["20"] = {"class_type": "LoadImage", "inputs": {"image": style_reference_name}}
+        wf["21"] = {"class_type": "CLIPVisionLoader", "inputs": {"clip_name": profile["clip_vision"]}}
+        wf["22"] = {"class_type": "IPAdapterModelLoader", "inputs": {"ipadapter_file": profile["model"]}}
+        wf["23"] = {"class_type": "IPAdapterAdvanced", "inputs": {
+            "model": ["4", 0], "ipadapter": ["22", 0], "image": ["20", 0], "clip_vision": ["21", 0],
+            "weight": profile["weight"], "weight_type": profile["weight_type"],
+            "combine_embeds": "concat", "start_at": 0.0, "end_at": 1.0, "embeds_scaling": "V only"}}
+        wf["3"]["inputs"]["model"] = ["23", 0]
     return {"prompt": wf}
 
 
@@ -92,14 +104,20 @@ class ComfyUIProvider:
             raise GameError("invalid_image_response", "업로드 폴더가 올바르지 않습니다.")
         return f"{subfolder}/{name}" if subfolder else name
 
-    def generate(self, spec, prompt, reference, job_path):
+    def generate(self, spec, prompt, reference, job_path, *, style_reference=None):
         seed = art.image_seed(spec)
+        # Callers evolving a pet should pass its original starter explicitly.
+        # Single-image CLI callers can use their sole reference for both roles.
+        style_reference = style_reference or reference
+        style_hash = hashlib.sha256(Path(style_reference).read_bytes()).hexdigest() if style_reference else None
         reference_hash = hashlib.sha256(Path(reference).read_bytes()).hexdigest() if reference else None
         workflow_template_hash = hashlib.sha256((art.ROOT / "tools/sd15_txt2img.json").read_bytes()).hexdigest()
         fingerprint = hashlib.sha256(json.dumps([spec, prompt, reference_hash, self.host,
-                                                self.checkpoint, self.denoise,
+                                                self.checkpoint, self.denoise, style_hash,
+                                                art.adapter_settings(spec["stage"], spec["species"]) if style_reference else None,
                                                 art.render_settings(spec["stage"], reference is not None, spec["species"]),
                                                 art.TEMPLATE["negative"], art.TEMPLATE.get("species_negative", {}).get(spec["species"]),
+                                                art.TEMPLATE.get("stage_negative", {}).get(str(spec["stage"])),
                                                 workflow_template_hash], sort_keys=True).encode()).hexdigest()
         job = read_json(job_path)
         if job is MISSING:
@@ -108,7 +126,9 @@ class ComfyUIProvider:
             raise GameError("invalid_image_job", "이미지 작업 기록을 확인해 주세요.")
         if job.get("fingerprint") != fingerprint or job.get("state") == "failed":
             reference_name = self.upload(reference) if reference else None
+            style_name = self.upload(style_reference) if style_reference else None
             workflow = build_workflow(prompt, seed, reference_name=reference_name,
+                                      style_reference_name=style_name,
                                       checkpoint=self.checkpoint, denoise=self.denoise, stage=spec["stage"], species=spec["species"])
             result = self._http("/prompt", json.dumps(workflow).encode(), "application/json")
             prompt_id = result.get("prompt_id") if isinstance(result, dict) else None

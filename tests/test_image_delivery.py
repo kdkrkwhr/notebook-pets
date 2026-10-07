@@ -68,7 +68,7 @@ class DeliveryTests(unittest.IsolatedAsyncioTestCase):
     async def test_reply_precedes_render_then_edits_same_message_with_attachment(self):
         message = FakeMessage()
         provider = FakeProvider()
-        def generate(*args):
+        def generate(*args, **kwargs):
             self.assertEqual(message.log[0][0], "reply")
             message.log.append(("render", {}))
             return fixture_png()

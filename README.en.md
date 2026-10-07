@@ -150,7 +150,7 @@ python -X utf8 tools/prerender_all.py --stage 1
 
 The first command writes `assets/samples/demo_plant.png`. The second skips starter images that already exist. The bot and CLI share `data/image_prompts.json`, and evolution uses the previous image as a reference. Artwork is cached per pet. Check the server with `python tools/check_images.py`; render an existing pet with `python tools/render_pet.py <user_id>`.
 
-Compare plant, machine, ghost and dragon growth and final light/dark branches in the [evolution gallery](assets/evolution_review/index.html). Open the HTML locally to filter by species and inspect full-size images.
+Compare plant, machine, ghost and dragon growth and final light/dark branches in the [evolution gallery](assets/anchored_evolution/index.html). Evolution references each pet's original appearance while changing body proportions at maturity. Open the HTML locally to filter by species and inspect full-size images.
 
 ## Repository layout
 

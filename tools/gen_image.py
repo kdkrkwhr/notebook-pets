@@ -21,11 +21,12 @@ STAGE_MAP = {"sprout": 1, "growth": 2, "mature": 3, "ultimate": 4,
              "1": 1, "2": 2, "3": 3, "4": 4}
 
 
-def build_prompt(species, element, stage, seed, *, branch=None, reference_name=None):
+def build_prompt(species, element, stage, seed, *, branch=None, reference_name=None, style_reference_name=None):
     sp, el = SPECIES_MAP.get(species, species), ELEMENT_MAP.get(element, element)
     number = STAGE_MAP.get(str(stage))
     prompt = art.build_prompt(sp, el, number, branch, reference_name is not None)
     return build_workflow(prompt, seed, reference_name=reference_name,
+                          style_reference_name=style_reference_name or reference_name or art.TEMPLATE["starter_style_reference"],
                           checkpoint=os.environ.get("NOTEBOOK_COMFY_CHECKPOINT"), stage=number, species=sp)
 
 
@@ -38,6 +39,7 @@ def main():
     parser.add_argument("seed", type=int, nargs="?")
     parser.add_argument("--branch", choices=("light", "dark"))
     parser.add_argument("--reference", type=Path)
+    parser.add_argument("--style-reference", type=Path, help="Original starter; --reference is the previous stage")
     parser.add_argument("--timeout", type=float, default=180)
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--overwrite", action="store_true")
@@ -52,6 +54,9 @@ def main():
             raise ValueError("Output must be a PNG inside assets/")
         if args.reference and not args.reference.is_file():
             raise ValueError("Reference image does not exist")
+        if args.style_reference and not args.style_reference.is_file():
+            raise ValueError("Style reference image does not exist")
+        style_reference = args.style_reference or args.reference or BASE / "assets/examples" / art.TEMPLATE["starter_style_reference"]
         spec = {"species": sp, "element": el, "stage": stage, "branch": args.branch,
                 "pet_id": hashlib.sha256(f"{sp}:{el}".encode()).hexdigest()[:32],
                 "key": key, "revision": art.TEMPLATE["revision"]}
@@ -62,11 +67,13 @@ def main():
             print(json.dumps({"ok": True, "prompt": prompt, "seed": art.image_seed(spec),
                               "workflow": build_workflow(prompt, art.image_seed(spec),
                                    reference_name=args.reference.name if args.reference else None,
+                                   style_reference_name=style_reference.name,
                                    checkpoint=os.environ.get("NOTEBOOK_COMFY_CHECKPOINT"), stage=stage, species=sp)}, ensure_ascii=False))
             return 0
         if output.exists() and not args.overwrite:
             raise ValueError("Output exists; use --overwrite explicitly")
-        data = ComfyUIProvider(timeout=args.timeout).generate(spec, prompt, args.reference, output.with_suffix(".job.json"))
+        data = ComfyUIProvider(timeout=args.timeout).generate(spec, prompt, args.reference, output.with_suffix(".job.json"),
+                                                            style_reference=style_reference)
         atomic_png(output, data)
         print(json.dumps({"ok": True, "saved": str(output), "seed": art.image_seed(spec)}, ensure_ascii=False))
         return 0

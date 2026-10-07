@@ -1,0 +1,41 @@
+{
+  "request": {
+    "species": "dragon",
+    "element": "light",
+    "stage": 1,
+    "branch": null,
+    "key": "dragon_light_stage1",
+    "pet_id": "70ffb52808c13d5cc06bf1b8e3aab8fe",
+    "revision": "anchored-growth-v4",
+    "seed": 42101
+  },
+  "file": "dragon_light_stage1.png",
+  "seed": 42101,
+  "preview_seed": 42,
+  "seed_offset": 0,
+  "reference": null,
+  "prompt": "(cute baby dragon creature:1.4), oversized round head, very short neck, tiny chubby body, tiny folded wings, four stubby paws, smooth scales, curled tail, big round eyes\nwhite and gold palette with restrained radiant halo glow\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins",
+  "style_reference": "plant_nature_stage1.png",
+  "style_reference_sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0",
+  "ipadapter": {
+    "model": "ip-adapter-plus_sd15.safetensors",
+    "clip_vision": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+    "weight_type": "style transfer",
+    "weight": 0.7
+  },
+  "reference_sha256": null,
+  "sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 32,
+    "cfg": 5.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 1.0
+  },
+  "seconds": 34.34
+}

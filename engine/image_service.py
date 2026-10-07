@@ -92,6 +92,7 @@ class ImageService:
     def _render_locked(self, actor_id, request):
         folder = self.root / actor_id / request["pet_id"] / request["revision"]
         previous = None
+        anchor = folder / (art.image_key(request["species"], request["element"], 1) + ".png")
         for stage in range(1, request["stage"] + 1):
             if not self.current(actor_id, request):
                 return {"status": "stale"}
@@ -109,6 +110,9 @@ class ImageService:
                     pass  # replace a corrupt cache only with a valid new image
             prompt = art.build_prompt(spec["species"], spec["element"], stage, spec["branch"], previous is not None)
             example = self.examples / (spec["key"] + ".png")
+            style_reference = anchor if stage > 1 else self.examples / art.TEMPLATE["starter_style_reference"]
+            if stage == 1 and not style_reference.is_file():
+                style_reference = None
             failure = "image_unavailable"
             for _ in range(self.attempts):
                 try:
@@ -117,7 +121,8 @@ class ImageService:
                         provider_name = "curated-example"
                     elif self.provider is not None:
                         folder.mkdir(parents=True, exist_ok=True)
-                        data = self.provider.generate(spec, prompt, previous, destination.with_suffix(".job.json"))
+                        data = self.provider.generate(spec, prompt, previous, destination.with_suffix(".job.json"),
+                                                      style_reference=style_reference)
                         provider_name = self.provider.name
                     else:
                         raise GameError("provider_not_configured", "이미지 생성기가 설정되지 않았습니다.")
@@ -128,6 +133,8 @@ class ImageService:
                     atomic_write_json(destination.with_suffix(".json"), {
                         "request": spec, "prompt": prompt, "seed": art.image_seed(spec),
                         "reference": previous.name if previous else None, "provider": provider_name,
+                        "style_reference": style_reference.name if style_reference and provider_name != "curated-example" else None,
+                        "ipadapter": art.adapter_settings(stage, spec["species"]) if style_reference and provider_name != "curated-example" else None,
                         "render": art.render_settings(stage, previous is not None, spec["species"]),
                     })
                     previous = destination

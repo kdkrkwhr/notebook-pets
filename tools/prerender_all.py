@@ -74,7 +74,10 @@ def main():
                 with open(LOG, "w", encoding="utf-8") as f:
                     json.dump(log, f, ensure_ascii=False, indent=1)
                 continue
-            cmd.extend(["--reference", reference])
+            anchor = os.path.join(OUT_DIR, filename(sp, el, 1, None))
+            if not os.path.isfile(anchor):
+                raise RuntimeError("Original starter image missing: " + anchor)
+            cmd.extend(["--reference", reference, "--style-reference", anchor])
         print(f"[render] {fname}", flush=True)
         r = subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", timeout=2400)
         if '"ok": true' in (r.stdout or ""):

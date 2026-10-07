@@ -1,5 +1,9 @@
 # Plant style reference experiment / 식물 펫 그림체 비교
 
+이 문서는 최초 그림체 실험 기록입니다. 이후 성숙기 체형을 수정하고 게임 생성기에 연결한 현재 결과는 [성장·진화 갤러리](../assets/anchored_evolution/index.html)와 [실행 안내](IMAGES.md)를 참고하세요. 아래 설정은 이전 실험의 값입니다.
+
+This is the initial experiment record. The current runtime-integrated growth profiles are documented in [IMAGES.md](IMAGES.md). Values below describe the earlier experiment.
+
 [Open the comparison / 비교 페이지](../assets/style_review/index.html)
 
 ## 결과
@@ -32,7 +36,7 @@ python -B -X utf8 tools/preview_style.py --mode sequence
 python -B -X utf8 tools/preview_style.py --mode compare
 ```
 
-The launcher enables only the named custom node when explicitly requested. Default launch behavior is unchanged. Do not launch a second server on an occupied port.
+The current launcher enables the named custom node by default because the runtime now uses it. Do not launch a second server on an occupied port.
 
 Generation writes to assets/style_review by default. Choose another assets/ subdirectory with `--output` to keep an existing run. Every generated PNG has a JSON sidecar containing the submitted workflow, seed, strengths, source/anchor hashes, and output hash. Interrupted jobs can be resumed by rerunning with the same parameters. GPU/library changes may affect exact pixels.
 

@@ -1,0 +1,41 @@
+{
+  "request": {
+    "species": "dragon",
+    "element": "light",
+    "stage": 4,
+    "branch": "dark",
+    "key": "dragon_light_stage4_dark",
+    "pet_id": "70ffb52808c13d5cc06bf1b8e3aab8fe",
+    "revision": "anchored-growth-v4",
+    "seed": 42105
+  },
+  "file": "dragon_light_stage4_dark.png",
+  "seed": 42105,
+  "preview_seed": 42,
+  "seed_offset": 0,
+  "reference": "dragon_light_stage3.png",
+  "prompt": "violet horn tips, purple accents along wing edges, small purple crown, soft violet glow\n(majestic friendly guardian dragon:1.3), small rounded head, broad chest, long neck, four powerful legs, large folded wings, elegant branching horns, long curled tail, glossy round eyes, whole body visible\nradiant light markings\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins\nSAME individual evolved, preserve eye color, facial markings and painted style; change body proportions to match the new age.",
+  "style_reference": "dragon_light_stage1.png",
+  "style_reference_sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c",
+  "ipadapter": {
+    "model": "ip-adapter-plus_sd15.safetensors",
+    "clip_vision": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+    "weight_type": "linear",
+    "weight": 0.65
+  },
+  "reference_sha256": "2ca3835d4fbf70c227ce498f046b0ebeccbca6182115eac4b96c44f5b5bf0c5e",
+  "sha256": "39565d8339fb71b2c0b04daee7508d85ad7d3869878eb5d6b0cf2fecb05a81c7",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 32,
+    "cfg": 5.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.8
+  },
+  "seconds": 28.3
+}

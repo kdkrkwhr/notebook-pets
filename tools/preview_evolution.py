@@ -20,6 +20,7 @@ def main():
     parser.add_argument("--output", default="assets/evolution_preview")
     parser.add_argument("--only", nargs="+", choices=CASES, default=list(CASES))
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--sample-seed", type=int, help="Explicit base seed for a reproducible visual comparison")
     parser.add_argument("--seed-offset", type=int, default=0, help="Try another sample seed for the selected stages")
     parser.add_argument("--from-stage", type=int, choices=(1, 2, 3, 4), default=1,
                         help="Keep earlier saved stages and regenerate from this stage")
@@ -38,6 +39,7 @@ def main():
     for species in args.only:
         element = CASES[species]
         previous = None
+        anchor = folder / (art.image_key(species, element, 1) + ".png")
         for stage, branch in ((1, None), (2, None), (3, None), (4, "light"), (4, "dark")):
             key = art.image_key(species, element, stage, branch)
             if stage < args.from_stage:
@@ -50,21 +52,28 @@ def main():
                     "revision": art.TEMPLATE["revision"]}
             if args.seed_offset:
                 spec["seed"] = art.image_seed(spec) + args.seed_offset
+            if args.sample_seed is not None:
+                spec["seed"] = args.sample_seed + stage + (1 if branch == "dark" else 0)
             prompt = art.build_prompt(species, element, stage, branch, previous is not None)
             destination = folder / (key + ".png")
             curated = art.ROOT / "assets/examples" / (key + ".png")
+            style_reference = anchor if stage > 1 else art.ROOT / "assets/examples" / art.TEMPLATE["starter_style_reference"]
             started = time.monotonic()
             if stage == 1 and curated.is_file():
                 data = curated.read_bytes()
                 source = "curated"
             else:
-                data = provider.generate(spec, prompt, previous, destination.with_suffix(".job.json"))
+                data = provider.generate(spec, prompt, previous, destination.with_suffix(".job.json"),
+                                         style_reference=style_reference)
                 source = provider.name
             atomic_png(destination, data)
             record = {"request": spec, "file": destination.name, "seed": art.image_seed(spec),
                       "preview_seed": args.seed,
                       "seed_offset": args.seed_offset,
                       "reference": previous.name if previous else None, "prompt": prompt,
+                      "style_reference": style_reference.name if source != "curated" else None,
+                      "style_reference_sha256": hashlib.sha256(style_reference.read_bytes()).hexdigest() if source != "curated" else None,
+                      "ipadapter": art.adapter_settings(stage, species) if source != "curated" else None,
                       "reference_sha256": hashlib.sha256(previous.read_bytes()).hexdigest() if previous else None,
                       "sha256": hashlib.sha256(data).hexdigest(),
                       "checkpoint": provider.checkpoint or json.loads((art.ROOT / "tools/sd15_txt2img.json").read_text())["4"]["inputs"]["ckpt_name"],

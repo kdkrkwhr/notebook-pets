@@ -67,3 +67,12 @@ def image_seed(request):
         return seed
     raw = f"{request['pet_id']}:{request['key']}:{request['revision']}"
     return int.from_bytes(hashlib.sha256(raw.encode()).digest()[:4], "big")
+
+
+def adapter_settings(stage, species=None):
+    profile = TEMPLATE["ipadapter"]
+    weights = profile.get("species_weights", {}).get(species, profile["weights"])
+    types = profile.get("species_weight_types", {}).get(species, profile.get("weight_types", {}))
+    return {"model": profile["model"], "clip_vision": profile["clip_vision"],
+            "weight_type": types.get(str(stage), profile.get("weight_types", {}).get(str(stage), "linear")),
+            "weight": weights.get(str(stage), 0.6)}

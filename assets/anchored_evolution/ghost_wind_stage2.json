@@ -1,0 +1,41 @@
+{
+  "request": {
+    "species": "ghost",
+    "element": "wind",
+    "stage": 2,
+    "branch": null,
+    "key": "ghost_wind_stage2",
+    "pet_id": "0603a0b75a28733949ae053d0aff1c8b",
+    "revision": "anchored-growth-v4",
+    "seed": 42102
+  },
+  "file": "ghost_wind_stage2.png",
+  "seed": 42102,
+  "preview_seed": 42,
+  "seed_offset": 0,
+  "reference": "ghost_wind_stage1.png",
+  "prompt": "friendly floating pear-shaped ghost, two glossy green eyes, small curled crest, two small wisp arms, curling vapor tail\npale mint green and white palette with restrained breeze curls\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins\nSAME individual evolved, preserve eye color, facial markings and painted style; change body proportions to match the new age.",
+  "style_reference": "ghost_wind_stage1.png",
+  "style_reference_sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2",
+  "ipadapter": {
+    "model": "ip-adapter-plus_sd15.safetensors",
+    "clip_vision": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+    "weight_type": "linear",
+    "weight": 0.6
+  },
+  "reference_sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2",
+  "sha256": "2e06e9e5cedce394475dfadf227535d7e405b01e590ea873667191b906359c59",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 32,
+    "cfg": 5.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.48
+  },
+  "seconds": 20.33
+}

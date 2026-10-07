@@ -1,0 +1,36 @@
+{
+  "request": {
+    "species": "machine",
+    "element": "fire",
+    "stage": 1,
+    "branch": null,
+    "key": "machine_fire_stage1",
+    "pet_id": "03412110a619073355d02bc49f3720b1",
+    "revision": "anchored-growth-v4",
+    "seed": 42101
+  },
+  "file": "machine_fire_stage1.png",
+  "seed": 42101,
+  "preview_seed": 42,
+  "seed_offset": 0,
+  "reference": null,
+  "prompt": "round baby robot, orange metal shell, two huge round glowing LED eyes, tiny mechanical arms and feet, small flame crest\n(red and orange body:1.3), small flames\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins",
+  "style_reference": null,
+  "style_reference_sha256": null,
+  "ipadapter": null,
+  "reference_sha256": null,
+  "sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "curated",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 32,
+    "cfg": 5.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 1.0
+  },
+  "seconds": 0.03
+}

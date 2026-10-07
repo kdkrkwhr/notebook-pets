@@ -1,0 +1,41 @@
+{
+  "request": {
+    "species": "ghost",
+    "element": "wind",
+    "stage": 4,
+    "branch": "light",
+    "key": "ghost_wind_stage4_light",
+    "pet_id": "0603a0b75a28733949ae053d0aff1c8b",
+    "revision": "anchored-growth-v4",
+    "seed": 42104
+  },
+  "file": "ghost_wind_stage4_light.png",
+  "seed": 42104,
+  "preview_seed": 42,
+  "seed_offset": 0,
+  "reference": "ghost_wind_stage3.png",
+  "prompt": "(golden vapor crest and gold edged wisps:1.4), white ghost body, green eyes\none friendly floating ghost, (broad elongated pear shaped body:1.3), two large glossy green oval eyes, one smiling mouth, single smooth continuous body, long curved tail, large curled tuft, two sweeping smooth fins\nwind spirals and breeze curls\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins\nSAME individual evolved, preserve eye color, facial markings and painted style; change body proportions to match the new age.",
+  "style_reference": "ghost_wind_stage1.png",
+  "style_reference_sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2",
+  "ipadapter": {
+    "model": "ip-adapter-plus_sd15.safetensors",
+    "clip_vision": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+    "weight_type": "linear",
+    "weight": 0.8
+  },
+  "reference_sha256": "ee3090fa979771066a2fd2461d1fcddfa964ecd5da6ee91cde07013d30fcfa44",
+  "sha256": "751b6c6d2f009df0b68c04ea950ad01b0e1cb243f9378684802a861d4c6c3d61",
+  "checkpoint": "DreamShaper_8_pruned.safetensors",
+  "source": "comfyui",
+  "render": {
+    "width": 640,
+    "height": 640,
+    "reference_size": 640,
+    "steps": 32,
+    "cfg": 5.5,
+    "sampler": "dpmpp_2m",
+    "scheduler": "karras",
+    "denoise": 0.57
+  },
+  "seconds": 15.27
+}

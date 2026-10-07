@@ -1,7 +1,7 @@
 param(
     [string]$ComfyPath = $env:NOTEBOOK_COMFY_PATH,
     [int]$Port = 8188,
-    [switch]$EnableIPAdapter
+    [switch]$EnableIPAdapter = $true
 )
 $ErrorActionPreference = 'Stop'
 if (-not $ComfyPath) { throw 'Specify -ComfyPath or NOTEBOOK_COMFY_PATH.' }
