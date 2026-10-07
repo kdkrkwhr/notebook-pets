@@ -214,6 +214,7 @@ tools/daily_decay.py      Inactivity decay batch
 tools/backup_store.py     Save snapshots, verification, and recovery to a new root
 tools/daily_backup.py     Verified backup job and retention policy
 tools/register_backup_task.ps1 Windows daily backup scheduling
+tools/doctor.py           Store, backup, and optional service preflight checks
 tools/upscale_images.py  Image upscaling tool
 tests/test_engine.py      Engine self-checks
 promo/index.html         Static promotional page
@@ -226,6 +227,8 @@ For scheduled execution, use `tools/daily_backup.py --destination backups`. It v
 
 ## Verification
 
+Run `python -X utf8 tools/doctor.py` to check the store. Add `--backup-root backups`, `--discord`, or `--comfy` to include those components; use `--json` for monitoring. See [preflight checks](docs/OPERATIONS.md) for the scope of each check.
+
 ```bash
 python -B -X utf8 tests/test_engine.py
 python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
@@ -233,9 +236,11 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, combat, image pipelines, and agent integration. Test data is stored in temporary files.
 
-Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **120 unittest cases and 8 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, event replay after restoration, retention, and interrupted-job recovery.
+Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **128 unittest cases and 8 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, event replay after restoration, retention, and interrupted-job recovery.
 
 ## Documentation
+
+- [Preflight checks](docs/OPERATIONS.md): store, backup, and connection configuration checks
 
 - [Backup and recovery](docs/BACKUP.md): save snapshots, validation, and restoration to a new data root
 

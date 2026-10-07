@@ -214,6 +214,7 @@ tools/daily_decay.py      방치 감소 배치
 tools/backup_store.py     세이브 백업·검증·새 데이터 루트 복구
 tools/daily_backup.py     자동 백업 실행·검증·보관 정책
 tools/register_backup_task.ps1 Windows 일일 백업 예약
+tools/doctor.py           세이브·백업·선택 연결 환경 점검
 tools/upscale_images.py  이미지 업스케일 도구
 tests/test_engine.py      엔진 self-check
 promo/index.html         정적 소개 페이지
@@ -226,6 +227,8 @@ docs/                    에이전트·이미지·운영 연결 안내
 
 ## 검증
 
+실행 환경은 `python -X utf8 tools/doctor.py`로 점검합니다. 자동 백업은 `--backup-root backups`, Discord 설정은 `--discord`, 이미지 서버는 `--comfy`로 선택하고, 모니터링에는 `--json`을 사용합니다. 항목별 점검 범위는 [실행 전 점검 안내](docs/OPERATIONS.md)에 있습니다.
+
 ```bash
 python -B -X utf8 tests/test_engine.py
 python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
@@ -233,9 +236,11 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 종족 보너스, 경험치·진화, 수면, 접근 제어, 저장 실패, 동시 실행, 메시지 재처리, 전투, 이미지 파이프라인과 에이전트 연결을 확인합니다. 테스트 데이터는 임시 파일에 저장합니다.
 
-`requirements-mcp.txt`를 설치하면 실제 stdio 클라이언트·서버 통신 테스트도 실행됩니다. 미설치 시 해당 테스트만 건너뜁니다. 현재 검증 결과는 **unittest 120개 + 엔진 self-check 8개 통과**이며, 외부 LLM 계정 없이 실행합니다. 백업·복구 검증에는 동시 저장 잠금, 파일 손상, 복구 후 중복 요청 재처리, 보관 정책과 작업 중단 후 재실행도 포함합니다.
+`requirements-mcp.txt`를 설치하면 실제 stdio 클라이언트·서버 통신 테스트도 실행됩니다. 미설치 시 해당 테스트만 건너뜁니다. 현재 검증 결과는 **unittest 128개 + 엔진 self-check 8개 통과**이며, 외부 LLM 계정 없이 실행합니다. 백업·복구 검증에는 동시 저장 잠금, 파일 손상, 복구 후 중복 요청 재처리, 보관 정책과 작업 중단 후 재실행도 포함합니다.
 
 ## 문서
+
+- [실행 전 점검](docs/OPERATIONS.md): 상태·백업·연결 설정 점검과 결과 해석
 
 - [백업·복구](docs/BACKUP.md): 세이브 스냅샷·검증·새 데이터 루트 복구
 
