@@ -124,7 +124,7 @@ class QuestTests(unittest.TestCase):
         self.completed()
         self.assertEqual(parse_command('!퀘스트'),('quests',[]))
         self.assertEqual(parse_command('!퀘스트보상'),('claimquest',[]))
-        self.assertIn('훈련 2/2',response_text(engine.execute('123','quests')))
+        self.assertIn('훈련 1/1',response_text(engine.execute('123','quests')))
         text=response_text(engine.execute('123','claimquest'))
         self.assertIn('맛있는 사료 +1',text)
         self.assertIn('보상 수령 완료',text)

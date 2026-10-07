@@ -1,8 +1,8 @@
 {
   "seed": 20261005,
   "trials_per_matchup": 50,
-  "rules_sha256": "12714fecc8925ea99f14aa97874227c58736a26e0689884c02e1c18d3d3a0ee6",
-  "engine_sha256": "0513c453e1341e3e35a1b1847c602739139987fd7b6d55420115d4aa39ead201",
+  "rules_sha256": "81a1417ee6f77bd7e5ca6621234c65ab5cf88d96ec699ce4261b5571793615ff",
+  "engine_sha256": "8caab5fda61422fbc363030468e52a577880f31c132465d2420f4db84c4a627d",
   "combat": [
     {
       "mode": "neutral",
@@ -945,658 +945,3175 @@
     {
       "species": "mammal",
       "seed": 20261005,
-      "days": 60,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 52,
       "level": 100,
+      "satiety": 70,
       "milestone_days": {
         "31": 6,
-        "51": 13,
-        "81": 36,
-        "100": 60
-      },
-      "food_remaining": 81,
-      "minimum_end_of_day_food": 5,
-      "training_bonus": {
-        "atk": 55,
-        "hp": 67,
-        "def": 58
-      },
-      "trained": 180,
-      "feeds_used": 140,
-      "lose": 7,
-      "win": 80,
-      "draw": 9
-    },
-    {
-      "species": "mammal",
-      "seed": 20261006,
-      "days": 63,
-      "level": 100,
-      "milestone_days": {
-        "31": 7,
-        "51": 13,
-        "81": 36,
-        "100": 63
-      },
-      "food_remaining": 81,
-      "minimum_end_of_day_food": 4,
-      "training_bonus": {
-        "def": 67,
-        "atk": 60,
-        "hp": 62
-      },
-      "trained": 189,
-      "feeds_used": 147,
-      "draw": 8,
-      "win": 76,
-      "lose": 8
-    },
-    {
-      "species": "mammal",
-      "seed": 20261007,
-      "days": 61,
-      "level": 100,
-      "milestone_days": {
-        "31": 7,
-        "51": 14,
-        "81": 34,
-        "100": 61
-      },
-      "food_remaining": 78,
-      "minimum_end_of_day_food": 4,
-      "training_bonus": {
-        "hp": 66,
-        "atk": 58,
-        "def": 59
-      },
-      "trained": 183,
-      "feeds_used": 142,
-      "lose": 7,
-      "win": 75,
-      "draw": 8
-    },
-    {
-      "species": "bird",
-      "seed": 20261005,
-      "days": 62,
-      "level": 100,
-      "milestone_days": {
-        "31": 7,
-        "51": 15,
-        "81": 36,
-        "100": 62
+        "51": 12,
+        "81": 30,
+        "100": 52
       },
       "food_remaining": 83,
       "minimum_end_of_day_food": 5,
       "training_bonus": {
-        "atk": 67,
-        "hp": 61,
-        "def": 58
+        "atk": 59,
+        "hp": 43,
+        "def": 54
       },
-      "trained": 186,
-      "feeds_used": 144,
+      "trained": 156,
+      "feeds_used": 121,
+      "lose": 5,
+      "win": 84,
+      "quest_claims": 52,
+      "quest_xp": 1830,
+      "draw": 11
+    },
+    {
+      "species": "mammal",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 56,
+      "level": 100,
+      "satiety": 60,
+      "milestone_days": {
+        "31": 6,
+        "51": 12,
+        "81": 33,
+        "100": 56
+      },
+      "food_remaining": 78,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 65,
+        "atk": 56,
+        "hp": 47
+      },
+      "trained": 168,
+      "feeds_used": 130,
+      "draw": 7,
+      "win": 73,
+      "quest_claims": 56,
+      "quest_xp": 1974,
+      "lose": 10
+    },
+    {
+      "species": "mammal",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 57,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 6,
+        "51": 13,
+        "81": 32,
+        "100": 57
+      },
+      "food_remaining": 68,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 66,
+        "atk": 55,
+        "def": 50
+      },
+      "trained": 171,
+      "feeds_used": 133,
+      "lose": 6,
+      "quest_claims": 57,
+      "quest_xp": 2010,
+      "win": 65,
+      "draw": 7
+    },
+    {
+      "species": "bird",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 56,
+      "level": 100,
+      "satiety": 60,
+      "milestone_days": {
+        "31": 6,
+        "51": 14,
+        "81": 33,
+        "100": 56
+      },
+      "food_remaining": 74,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 61,
+        "hp": 53,
+        "def": 54
+      },
+      "trained": 168,
+      "feeds_used": 130,
       "lose": 11,
-      "win": 75,
+      "win": 67,
+      "quest_claims": 56,
+      "quest_xp": 1974,
       "draw": 11
     },
     {
       "species": "bird",
       "seed": 20261006,
-      "days": 63,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 56,
       "level": 100,
+      "satiety": 60,
       "milestone_days": {
-        "31": 7,
-        "51": 15,
-        "81": 36,
-        "100": 63
+        "31": 6,
+        "51": 12,
+        "81": 33,
+        "100": 56
       },
-      "food_remaining": 83,
+      "food_remaining": 81,
       "minimum_end_of_day_food": 5,
       "training_bonus": {
-        "def": 73,
-        "atk": 62,
-        "hp": 54
+        "def": 55,
+        "atk": 60,
+        "hp": 53
       },
-      "trained": 189,
-      "feeds_used": 147,
+      "trained": 168,
+      "feeds_used": 130,
       "lose": 12,
-      "win": 76,
-      "draw": 8
+      "win": 69,
+      "quest_claims": 56,
+      "quest_xp": 1974,
+      "draw": 9
     },
     {
       "species": "bird",
       "seed": 20261007,
-      "days": 61,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 56,
       "level": 100,
+      "satiety": 60,
       "milestone_days": {
         "31": 6,
-        "51": 14,
-        "81": 33,
-        "100": 61
+        "51": 13,
+        "81": 31,
+        "100": 56
       },
       "food_remaining": 77,
       "minimum_end_of_day_food": 4,
       "training_bonus": {
-        "hp": 64,
-        "atk": 62,
-        "def": 57
+        "hp": 65,
+        "atk": 52,
+        "def": 51
       },
-      "trained": 183,
-      "feeds_used": 142,
+      "trained": 168,
+      "feeds_used": 130,
       "lose": 9,
-      "win": 77,
-      "draw": 9
+      "quest_claims": 56,
+      "quest_xp": 1974,
+      "win": 70,
+      "draw": 10
     },
     {
       "species": "reptile",
       "seed": 20261005,
-      "days": 57,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 54,
       "level": 100,
+      "satiety": 80,
       "milestone_days": {
         "31": 6,
-        "51": 13,
-        "81": 33,
-        "100": 57
+        "51": 11,
+        "81": 31,
+        "100": 54
       },
-      "food_remaining": 80,
+      "food_remaining": 79,
       "minimum_end_of_day_food": 4,
       "training_bonus": {
-        "atk": 60,
-        "hp": 62,
+        "atk": 50,
+        "hp": 63,
         "def": 49
       },
-      "trained": 171,
-      "feeds_used": 133,
-      "win": 90,
-      "lose": 4,
-      "draw": 5
+      "trained": 162,
+      "feeds_used": 126,
+      "win": 81,
+      "quest_claims": 54,
+      "quest_xp": 1902,
+      "draw": 5,
+      "lose": 3
     },
     {
       "species": "reptile",
       "seed": 20261006,
-      "days": 61,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 56,
       "level": 100,
+      "satiety": 60,
       "milestone_days": {
         "31": 6,
-        "51": 14,
-        "81": 35,
-        "100": 61
+        "51": 13,
+        "81": 32,
+        "100": 56
       },
-      "food_remaining": 80,
+      "food_remaining": 79,
       "minimum_end_of_day_food": 5,
       "training_bonus": {
-        "def": 63,
-        "atk": 53,
-        "hp": 67
+        "def": 65,
+        "atk": 46,
+        "hp": 57
       },
-      "trained": 183,
-      "feeds_used": 142,
-      "win": 76,
-      "lose": 8,
-      "draw": 5
+      "trained": 168,
+      "feeds_used": 130,
+      "win": 70,
+      "lose": 6,
+      "quest_claims": 56,
+      "quest_xp": 1974,
+      "draw": 7
     },
     {
       "species": "reptile",
       "seed": 20261007,
-      "days": 60,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 54,
       "level": 100,
+      "satiety": 80,
       "milestone_days": {
         "31": 5,
-        "51": 13,
-        "81": 34,
-        "100": 60
+        "51": 12,
+        "81": 30,
+        "100": 54
       },
-      "food_remaining": 78,
+      "food_remaining": 79,
       "minimum_end_of_day_food": 4,
       "training_bonus": {
-        "hp": 67,
-        "atk": 65,
-        "def": 48
+        "hp": 56,
+        "atk": 59,
+        "def": 47
       },
-      "trained": 180,
-      "feeds_used": 140,
-      "lose": 4,
-      "win": 79,
+      "trained": 162,
+      "feeds_used": 126,
+      "lose": 7,
+      "quest_claims": 54,
+      "quest_xp": 1902,
+      "win": 76,
       "draw": 4
     },
     {
       "species": "machine",
       "seed": 20261005,
-      "days": 57,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 53,
       "level": 100,
+      "satiety": 60,
       "milestone_days": {
         "31": 6,
         "51": 13,
-        "81": 33,
-        "100": 57
+        "81": 31,
+        "100": 53
       },
-      "food_remaining": 80,
+      "food_remaining": 78,
       "minimum_end_of_day_food": 4,
       "training_bonus": {
-        "atk": 60,
-        "hp": 62,
-        "def": 49
-      },
-      "trained": 171,
-      "feeds_used": 133,
-      "win": 90,
-      "lose": 4,
-      "draw": 5
-    },
-    {
-      "species": "machine",
-      "seed": 20261006,
-      "days": 61,
-      "level": 100,
-      "milestone_days": {
-        "31": 6,
-        "51": 14,
-        "81": 35,
-        "100": 61
-      },
-      "food_remaining": 80,
-      "minimum_end_of_day_food": 5,
-      "training_bonus": {
-        "def": 63,
-        "atk": 53,
-        "hp": 67
-      },
-      "trained": 183,
-      "feeds_used": 142,
-      "win": 76,
-      "lose": 8,
-      "draw": 5
-    },
-    {
-      "species": "machine",
-      "seed": 20261007,
-      "days": 60,
-      "level": 100,
-      "milestone_days": {
-        "31": 6,
-        "51": 14,
-        "81": 33,
-        "100": 60
-      },
-      "food_remaining": 83,
-      "minimum_end_of_day_food": 4,
-      "training_bonus": {
+        "atk": 49,
         "hp": 66,
-        "atk": 64,
-        "def": 50
+        "def": 44
       },
-      "trained": 180,
-      "feeds_used": 140,
-      "lose": 3,
-      "draw": 4,
-      "win": 81
+      "trained": 159,
+      "feeds_used": 123,
+      "win": 85,
+      "quest_claims": 53,
+      "quest_xp": 1866,
+      "lose": 4,
+      "draw": 9
     },
     {
-      "species": "fairy",
-      "seed": 20261005,
-      "days": 62,
-      "level": 100,
-      "milestone_days": {
-        "31": 7,
-        "51": 15,
-        "81": 35,
-        "100": 62
-      },
-      "food_remaining": 76,
-      "minimum_end_of_day_food": 5,
-      "training_bonus": {
-        "atk": 63,
-        "hp": 61,
-        "def": 62
-      },
-      "trained": 186,
-      "feeds_used": 144,
-      "lose": 11,
-      "win": 73,
-      "draw": 11
-    },
-    {
-      "species": "fairy",
+      "species": "machine",
       "seed": 20261006,
-      "days": 60,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 55,
       "level": 100,
-      "milestone_days": {
-        "31": 7,
-        "51": 15,
-        "81": 36,
-        "100": 60
-      },
-      "food_remaining": 81,
-      "minimum_end_of_day_food": 5,
-      "training_bonus": {
-        "def": 68,
-        "atk": 64,
-        "hp": 48
-      },
-      "trained": 180,
-      "feeds_used": 140,
-      "lose": 12,
-      "win": 81,
-      "draw": 7
-    },
-    {
-      "species": "fairy",
-      "seed": 20261007,
-      "days": 62,
-      "level": 100,
-      "milestone_days": {
-        "31": 6,
-        "51": 15,
-        "81": 35,
-        "100": 62
-      },
-      "food_remaining": 87,
-      "minimum_end_of_day_food": 4,
-      "training_bonus": {
-        "hp": 62,
-        "atk": 66,
-        "def": 58
-      },
-      "trained": 186,
-      "feeds_used": 144,
-      "lose": 13,
-      "win": 70,
-      "draw": 19
-    },
-    {
-      "species": "monster",
-      "seed": 20261005,
-      "days": 57,
-      "level": 100,
+      "satiety": 70,
       "milestone_days": {
         "31": 6,
         "51": 13,
         "81": 32,
-        "100": 57
+        "100": 55
       },
-      "food_remaining": 85,
-      "minimum_end_of_day_food": 4,
+      "food_remaining": 78,
+      "minimum_end_of_day_food": 5,
       "training_bonus": {
-        "atk": 53,
-        "hp": 61,
-        "def": 57
+        "def": 62,
+        "atk": 48,
+        "hp": 55
       },
-      "trained": 171,
-      "feeds_used": 133,
-      "win": 89,
+      "trained": 165,
+      "feeds_used": 128,
+      "win": 73,
       "lose": 5,
-      "draw": 1
+      "quest_claims": 55,
+      "quest_xp": 1938,
+      "draw": 4
     },
     {
-      "species": "monster",
-      "seed": 20261006,
-      "days": 59,
+      "species": "machine",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 55,
       "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 6,
+        "51": 12,
+        "81": 31,
+        "100": 55
+      },
+      "food_remaining": 77,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 62,
+        "atk": 60,
+        "def": 43
+      },
+      "trained": 165,
+      "feeds_used": 128,
+      "lose": 9,
+      "quest_claims": 55,
+      "quest_xp": 1938,
+      "draw": 6,
+      "win": 72
+    },
+    {
+      "species": "fairy",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 58,
+      "level": 100,
+      "satiety": 70,
       "milestone_days": {
         "31": 6,
         "51": 14,
         "81": 34,
-        "100": 59
+        "100": 58
       },
-      "food_remaining": 88,
-      "minimum_end_of_day_food": 6,
+      "food_remaining": 74,
+      "minimum_end_of_day_food": 5,
       "training_bonus": {
-        "def": 72,
-        "atk": 48,
-        "hp": 57
+        "atk": 60,
+        "hp": 59,
+        "def": 55
       },
-      "trained": 177,
-      "feeds_used": 137,
-      "win": 87,
-      "draw": 3,
-      "lose": 1
+      "trained": 174,
+      "feeds_used": 135,
+      "lose": 10,
+      "win": 66,
+      "quest_claims": 58,
+      "quest_xp": 2046,
+      "draw": 12
     },
     {
-      "species": "monster",
-      "seed": 20261007,
-      "days": 59,
+      "species": "fairy",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 56,
       "level": 100,
+      "satiety": 60,
       "milestone_days": {
         "31": 6,
         "51": 13,
         "81": 33,
-        "100": 59
+        "100": 56
+      },
+      "food_remaining": 79,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 67,
+        "atk": 60,
+        "hp": 41
+      },
+      "trained": 168,
+      "feeds_used": 130,
+      "lose": 13,
+      "win": 73,
+      "quest_claims": 56,
+      "quest_xp": 1974,
+      "draw": 9
+    },
+    {
+      "species": "fairy",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 57,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 6,
+        "51": 13,
+        "81": 31,
+        "100": 57
+      },
+      "food_remaining": 79,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 61,
+        "atk": 58,
+        "def": 52
+      },
+      "trained": 171,
+      "feeds_used": 133,
+      "lose": 11,
+      "quest_claims": 57,
+      "quest_xp": 2010,
+      "win": 66,
+      "draw": 18
+    },
+    {
+      "species": "monster",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 54,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 5,
+        "51": 12,
+        "81": 30,
+        "100": 54
       },
       "food_remaining": 82,
       "minimum_end_of_day_food": 4,
       "training_bonus": {
-        "hp": 63,
-        "atk": 59,
-        "def": 55
+        "atk": 60,
+        "hp": 53,
+        "def": 49
       },
-      "trained": 177,
-      "feeds_used": 137,
-      "lose": 6,
-      "win": 82,
-      "draw": 8
+      "trained": 162,
+      "feeds_used": 126,
+      "win": 76,
+      "quest_claims": 54,
+      "quest_xp": 1902,
+      "draw": 7,
+      "lose": 3
+    },
+    {
+      "species": "monster",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 55,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 6,
+        "51": 13,
+        "81": 33,
+        "100": 55
+      },
+      "food_remaining": 83,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {
+        "def": 67,
+        "atk": 46,
+        "hp": 52
+      },
+      "trained": 165,
+      "feeds_used": 128,
+      "win": 78,
+      "quest_claims": 55,
+      "quest_xp": 1938,
+      "draw": 4,
+      "lose": 2
+    },
+    {
+      "species": "monster",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 54,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 5,
+        "51": 12,
+        "81": 30,
+        "100": 54
+      },
+      "food_remaining": 75,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 56,
+        "atk": 55,
+        "def": 51
+      },
+      "trained": 162,
+      "feeds_used": 126,
+      "lose": 7,
+      "quest_claims": 54,
+      "quest_xp": 1902,
+      "win": 75,
+      "draw": 7
     },
     {
       "species": "dragon",
       "seed": 20261005,
-      "days": 58,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 53,
       "level": 100,
+      "satiety": 60,
       "milestone_days": {
-        "31": 6,
-        "51": 12,
-        "81": 33,
-        "100": 58
+        "31": 5,
+        "51": 11,
+        "81": 30,
+        "100": 53
       },
-      "food_remaining": 84,
+      "food_remaining": 79,
       "minimum_end_of_day_food": 4,
       "training_bonus": {
-        "atk": 53,
-        "hp": 62,
-        "def": 59
+        "atk": 48,
+        "hp": 56,
+        "def": 55
       },
-      "trained": 174,
-      "feeds_used": 135,
-      "win": 86,
-      "draw": 2,
-      "lose": 5
+      "trained": 159,
+      "feeds_used": 123,
+      "win": 81,
+      "quest_claims": 53,
+      "quest_xp": 1866,
+      "draw": 1,
+      "lose": 6
     },
     {
       "species": "dragon",
       "seed": 20261006,
-      "days": 57,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 52,
       "level": 100,
+      "satiety": 70,
       "milestone_days": {
-        "31": 6,
-        "51": 12,
-        "81": 32,
-        "100": 57
+        "31": 5,
+        "51": 11,
+        "81": 29,
+        "100": 52
       },
-      "food_remaining": 85,
+      "food_remaining": 77,
       "minimum_end_of_day_food": 6,
       "training_bonus": {
-        "def": 64,
-        "atk": 55,
-        "hp": 52
+        "def": 59,
+        "atk": 49,
+        "hp": 48
       },
-      "trained": 171,
-      "feeds_used": 133,
-      "win": 93,
+      "trained": 156,
+      "feeds_used": 121,
+      "win": 85,
+      "quest_claims": 52,
+      "quest_xp": 1830,
       "draw": 2,
       "lose": 1
     },
     {
       "species": "dragon",
       "seed": 20261007,
-      "days": 58,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 55,
       "level": 100,
+      "satiety": 70,
       "milestone_days": {
         "31": 5,
-        "51": 11,
-        "81": 31,
-        "100": 58
+        "51": 12,
+        "81": 30,
+        "100": 55
       },
-      "food_remaining": 83,
+      "food_remaining": 78,
       "minimum_end_of_day_food": 4,
       "training_bonus": {
-        "hp": 59,
-        "atk": 59,
-        "def": 56
+        "hp": 58,
+        "atk": 56,
+        "def": 51
       },
-      "trained": 174,
-      "feeds_used": 135,
-      "lose": 3,
-      "win": 86,
+      "trained": 165,
+      "feeds_used": 128,
+      "lose": 2,
+      "quest_claims": 55,
+      "quest_xp": 1938,
+      "win": 75,
       "draw": 5
     },
     {
       "species": "plant",
       "seed": 20261005,
-      "days": 60,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 55,
       "level": 100,
+      "satiety": 70,
       "milestone_days": {
         "31": 7,
-        "51": 14,
-        "81": 34,
-        "100": 60
+        "51": 12,
+        "81": 32,
+        "100": 55
       },
-      "food_remaining": 88,
+      "food_remaining": 80,
       "minimum_end_of_day_food": 4,
       "training_bonus": {
-        "atk": 45,
-        "hp": 70,
-        "def": 65
+        "atk": 40,
+        "hp": 68,
+        "def": 57
       },
-      "trained": 180,
-      "feeds_used": 140,
+      "trained": 165,
+      "feeds_used": 128,
       "draw": 3,
-      "win": 83,
+      "quest_claims": 55,
+      "quest_xp": 1938,
+      "win": 74,
       "lose": 6
     },
     {
       "species": "plant",
       "seed": 20261006,
-      "days": 63,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 56,
       "level": 100,
+      "satiety": 60,
       "milestone_days": {
-        "31": 7,
-        "51": 14,
-        "81": 35,
-        "100": 63
+        "31": 6,
+        "51": 13,
+        "81": 32,
+        "100": 56
       },
-      "food_remaining": 81,
+      "food_remaining": 75,
       "minimum_end_of_day_food": 5,
       "training_bonus": {
-        "def": 70,
-        "atk": 66,
-        "hp": 53
+        "def": 61,
+        "atk": 57,
+        "hp": 50
       },
-      "trained": 189,
-      "feeds_used": 147,
-      "win": 72,
-      "lose": 7,
-      "draw": 6
+      "trained": 168,
+      "feeds_used": 130,
+      "win": 66,
+      "lose": 11,
+      "quest_claims": 56,
+      "quest_xp": 1974,
+      "draw": 7
     },
     {
       "species": "plant",
       "seed": 20261007,
-      "days": 62,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 57,
       "level": 100,
+      "satiety": 80,
       "milestone_days": {
-        "31": 7,
-        "51": 14,
-        "81": 34,
-        "100": 62
+        "31": 6,
+        "51": 13,
+        "81": 32,
+        "100": 57
       },
-      "food_remaining": 83,
+      "food_remaining": 85,
       "minimum_end_of_day_food": 4,
       "training_bonus": {
-        "hp": 62,
-        "atk": 69,
+        "hp": 55,
+        "atk": 61,
         "def": 55
       },
-      "trained": 186,
-      "feeds_used": 144,
-      "lose": 13,
-      "win": 76,
-      "draw": 7
+      "trained": 171,
+      "feeds_used": 133,
+      "lose": 9,
+      "quest_claims": 57,
+      "quest_xp": 2010,
+      "win": 70,
+      "draw": 4
     },
     {
       "species": "ghost",
       "seed": 20261005,
-      "days": 60,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 56,
       "level": 100,
+      "satiety": 60,
       "milestone_days": {
-        "31": 7,
-        "51": 15,
-        "81": 34,
-        "100": 60
+        "31": 6,
+        "51": 14,
+        "81": 32,
+        "100": 56
       },
-      "food_remaining": 83,
+      "food_remaining": 75,
       "minimum_end_of_day_food": 5,
       "training_bonus": {
-        "atk": 63,
-        "hp": 60,
-        "def": 57
+        "atk": 58,
+        "hp": 54,
+        "def": 56
       },
-      "trained": 180,
-      "feeds_used": 140,
+      "trained": 168,
+      "feeds_used": 130,
       "lose": 11,
-      "win": 81,
-      "draw": 11
+      "win": 68,
+      "quest_claims": 56,
+      "quest_xp": 1974,
+      "draw": 13
     },
     {
       "species": "ghost",
       "seed": 20261006,
-      "days": 61,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 56,
       "level": 100,
+      "satiety": 60,
       "milestone_days": {
         "31": 6,
-        "51": 13,
-        "81": 35,
-        "100": 61
+        "51": 12,
+        "81": 31,
+        "100": 56
       },
-      "food_remaining": 86,
+      "food_remaining": 82,
       "minimum_end_of_day_food": 6,
       "training_bonus": {
-        "def": 73,
-        "atk": 54,
-        "hp": 56
+        "def": 64,
+        "atk": 53,
+        "hp": 51
       },
-      "trained": 183,
-      "feeds_used": 142,
-      "win": 79,
-      "draw": 6,
+      "trained": 168,
+      "feeds_used": 130,
+      "win": 73,
+      "quest_claims": 56,
+      "quest_xp": 1974,
+      "draw": 9,
       "lose": 9
     },
     {
       "species": "ghost",
       "seed": 20261007,
-      "days": 61,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 57,
       "level": 100,
+      "satiety": 80,
       "milestone_days": {
-        "31": 6,
-        "51": 14,
-        "81": 34,
-        "100": 61
+        "31": 5,
+        "51": 12,
+        "81": 32,
+        "100": 57
       },
-      "food_remaining": 89,
+      "food_remaining": 81,
       "minimum_end_of_day_food": 4,
       "training_bonus": {
-        "hp": 74,
-        "atk": 71,
-        "def": 38
+        "hp": 61,
+        "atk": 60,
+        "def": 50
       },
-      "trained": 183,
-      "feeds_used": 142,
-      "lose": 6,
-      "win": 78,
-      "draw": 19
+      "trained": 171,
+      "feeds_used": 133,
+      "lose": 9,
+      "quest_claims": 57,
+      "quest_xp": 2010,
+      "win": 69,
+      "draw": 13
+    }
+  ],
+  "routines_without_battles": [
+    {
+      "species": "mammal",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 77,
+        "hp": 81,
+        "def": 79
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "mammal",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 87,
+        "atk": 68,
+        "hp": 82
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "mammal",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 78,
+        "atk": 70,
+        "def": 89
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "bird",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 77,
+        "hp": 81,
+        "def": 79
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "bird",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 87,
+        "atk": 68,
+        "hp": 82
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "bird",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 78,
+        "atk": 70,
+        "def": 89
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "reptile",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 77,
+        "hp": 81,
+        "def": 79
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "reptile",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 87,
+        "atk": 68,
+        "hp": 82
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "reptile",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 78,
+        "atk": 70,
+        "def": 89
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "machine",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 77,
+        "hp": 81,
+        "def": 79
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "machine",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 87,
+        "atk": 68,
+        "hp": 82
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "machine",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 78,
+        "atk": 70,
+        "def": 89
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "fairy",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 77,
+        "hp": 81,
+        "def": 79
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "fairy",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 87,
+        "atk": 68,
+        "hp": 82
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "fairy",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 78,
+        "atk": 70,
+        "def": 89
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "monster",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 77,
+        "hp": 81,
+        "def": 79
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "monster",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 87,
+        "atk": 68,
+        "hp": 82
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "monster",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 78,
+        "atk": 70,
+        "def": 89
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "dragon",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 77,
+        "hp": 81,
+        "def": 79
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "dragon",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 87,
+        "atk": 68,
+        "hp": 82
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "dragon",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 78,
+        "atk": 70,
+        "def": 89
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "plant",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 77,
+        "hp": 81,
+        "def": 79
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "plant",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 87,
+        "atk": 68,
+        "hp": 82
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "plant",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 78,
+        "atk": 70,
+        "def": 89
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "ghost",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 77,
+        "hp": 81,
+        "def": 79
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "ghost",
+      "seed": 20261006,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "def": 87,
+        "atk": 68,
+        "hp": 82
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "ghost",
+      "seed": 20261007,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "hp": 78,
+        "atk": 70,
+        "def": 89
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    },
+    {
+      "species": "mammal",
+      "seed": 20261005,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 55,
+        "hp": 59,
+        "def": 54
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "mammal",
+      "seed": 20261006,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 58,
+        "hp": 63,
+        "atk": 47
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "mammal",
+      "seed": 20261007,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "hp": 67,
+        "atk": 44,
+        "def": 57
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "bird",
+      "seed": 20261005,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 55,
+        "hp": 59,
+        "def": 54
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "bird",
+      "seed": 20261006,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 58,
+        "hp": 63,
+        "atk": 47
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "bird",
+      "seed": 20261007,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "hp": 67,
+        "atk": 44,
+        "def": 57
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "reptile",
+      "seed": 20261005,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 55,
+        "hp": 59,
+        "def": 54
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "reptile",
+      "seed": 20261006,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 58,
+        "hp": 63,
+        "atk": 47
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "reptile",
+      "seed": 20261007,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "hp": 67,
+        "atk": 44,
+        "def": 57
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "machine",
+      "seed": 20261005,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 55,
+        "hp": 59,
+        "def": 54
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "machine",
+      "seed": 20261006,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 58,
+        "hp": 63,
+        "atk": 47
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "machine",
+      "seed": 20261007,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "hp": 67,
+        "atk": 44,
+        "def": 57
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "fairy",
+      "seed": 20261005,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 55,
+        "hp": 59,
+        "def": 54
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "fairy",
+      "seed": 20261006,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 58,
+        "hp": 63,
+        "atk": 47
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "fairy",
+      "seed": 20261007,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "hp": 67,
+        "atk": 44,
+        "def": 57
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "monster",
+      "seed": 20261005,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 55,
+        "hp": 59,
+        "def": 54
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "monster",
+      "seed": 20261006,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 58,
+        "hp": 63,
+        "atk": 47
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "monster",
+      "seed": 20261007,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "hp": 67,
+        "atk": 44,
+        "def": 57
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "dragon",
+      "seed": 20261005,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 55,
+        "hp": 59,
+        "def": 54
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "dragon",
+      "seed": 20261006,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 58,
+        "hp": 63,
+        "atk": 47
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "dragon",
+      "seed": 20261007,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "hp": 67,
+        "atk": 44,
+        "def": 57
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "plant",
+      "seed": 20261005,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 55,
+        "hp": 59,
+        "def": 54
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "plant",
+      "seed": 20261006,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 58,
+        "hp": 63,
+        "atk": 47
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "plant",
+      "seed": 20261007,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "hp": 67,
+        "atk": 44,
+        "def": 57
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "ghost",
+      "seed": 20261005,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "atk": 55,
+        "hp": 59,
+        "def": 54
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "ghost",
+      "seed": 20261006,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "def": 58,
+        "hp": 63,
+        "atk": 47
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "ghost",
+      "seed": 20261007,
+      "profile": "daily_quest",
+      "quests_enabled": true,
+      "days": 168,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 15,
+        "51": 35,
+        "81": 94,
+        "100": 168
+      },
+      "food_remaining": 339,
+      "minimum_end_of_day_food": 5,
+      "training_bonus": {
+        "hp": 67,
+        "atk": 44,
+        "def": 57
+      },
+      "feeds_used": 168,
+      "trained": 168,
+      "quest_claims": 168,
+      "quest_xp": 6042
+    },
+    {
+      "species": "mammal",
+      "seed": 20261005,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "mammal",
+      "seed": 20261006,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "mammal",
+      "seed": 20261007,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "bird",
+      "seed": 20261005,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "bird",
+      "seed": 20261006,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "bird",
+      "seed": 20261007,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "reptile",
+      "seed": 20261005,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "reptile",
+      "seed": 20261006,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "reptile",
+      "seed": 20261007,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "machine",
+      "seed": 20261005,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "machine",
+      "seed": 20261006,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "machine",
+      "seed": 20261007,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "fairy",
+      "seed": 20261005,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "fairy",
+      "seed": 20261006,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "fairy",
+      "seed": 20261007,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "monster",
+      "seed": 20261005,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "monster",
+      "seed": 20261006,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "monster",
+      "seed": 20261007,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "dragon",
+      "seed": 20261005,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "dragon",
+      "seed": 20261006,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "dragon",
+      "seed": 20261007,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "plant",
+      "seed": 20261005,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "plant",
+      "seed": 20261006,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "plant",
+      "seed": 20261007,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "ghost",
+      "seed": 20261005,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "ghost",
+      "seed": 20261006,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    },
+    {
+      "species": "ghost",
+      "seed": 20261007,
+      "profile": "relaxed",
+      "quests_enabled": true,
+      "days": 180,
+      "level": 81,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 29,
+        "51": 67,
+        "81": 180
+      },
+      "food_remaining": 483,
+      "minimum_end_of_day_food": 6,
+      "training_bonus": {},
+      "feeds_used": 60
+    }
+  ],
+  "quest_comparison": [
+    {
+      "species": "mammal",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": false,
+      "days": 90,
+      "level": 100,
+      "satiety": 80,
+      "milestone_days": {
+        "31": 9,
+        "51": 19,
+        "81": 50,
+        "100": 90
+      },
+      "food_remaining": 63,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 90,
+        "hp": 92,
+        "def": 88
+      },
+      "trained": 270,
+      "feeds_used": 210
+    },
+    {
+      "species": "mammal",
+      "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
+      "days": 79,
+      "level": 100,
+      "satiety": 70,
+      "milestone_days": {
+        "31": 8,
+        "51": 17,
+        "81": 44,
+        "100": 79
+      },
+      "food_remaining": 56,
+      "minimum_end_of_day_food": 4,
+      "training_bonus": {
+        "atk": 77,
+        "hp": 81,
+        "def": 79
+      },
+      "trained": 237,
+      "feeds_used": 184,
+      "quest_claims": 79,
+      "quest_xp": 2802
+    }
+  ],
+  "quest_target_comparison": [
+    {
+      "training_target": 2,
+      "runs": [
+        {
+          "species": "mammal",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 10,
+          "milestone_days": {
+            "31": 14
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 20,
+            "hp": 15,
+            "def": 13
+          },
+          "feeds_used": 30,
+          "trained": 48,
+          "quest_claims": 18,
+          "quest_xp": 642,
+          "training_refusals": 12
+        },
+        {
+          "species": "bird",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 10,
+          "milestone_days": {
+            "31": 14
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 20,
+            "hp": 15,
+            "def": 13
+          },
+          "feeds_used": 30,
+          "trained": 48,
+          "quest_claims": 18,
+          "quest_xp": 642,
+          "training_refusals": 12
+        },
+        {
+          "species": "reptile",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 10,
+          "milestone_days": {
+            "31": 14
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 20,
+            "hp": 15,
+            "def": 13
+          },
+          "feeds_used": 30,
+          "trained": 48,
+          "quest_claims": 18,
+          "quest_xp": 642,
+          "training_refusals": 12
+        },
+        {
+          "species": "machine",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 10,
+          "milestone_days": {
+            "31": 14
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 20,
+            "hp": 15,
+            "def": 13
+          },
+          "feeds_used": 30,
+          "trained": 48,
+          "quest_claims": 18,
+          "quest_xp": 642,
+          "training_refusals": 12
+        },
+        {
+          "species": "fairy",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 10,
+          "milestone_days": {
+            "31": 14
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 20,
+            "hp": 15,
+            "def": 13
+          },
+          "feeds_used": 30,
+          "trained": 48,
+          "quest_claims": 18,
+          "quest_xp": 642,
+          "training_refusals": 12
+        },
+        {
+          "species": "monster",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 10,
+          "milestone_days": {
+            "31": 14
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 20,
+            "hp": 15,
+            "def": 13
+          },
+          "feeds_used": 30,
+          "trained": 48,
+          "quest_claims": 18,
+          "quest_xp": 642,
+          "training_refusals": 12
+        },
+        {
+          "species": "dragon",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 10,
+          "milestone_days": {
+            "31": 14
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 20,
+            "hp": 15,
+            "def": 13
+          },
+          "feeds_used": 30,
+          "trained": 48,
+          "quest_claims": 18,
+          "quest_xp": 642,
+          "training_refusals": 12
+        },
+        {
+          "species": "plant",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 10,
+          "milestone_days": {
+            "31": 14
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 20,
+            "hp": 15,
+            "def": 13
+          },
+          "feeds_used": 30,
+          "trained": 48,
+          "quest_claims": 18,
+          "quest_xp": 642,
+          "training_refusals": 12
+        },
+        {
+          "species": "ghost",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 10,
+          "milestone_days": {
+            "31": 14
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 20,
+            "hp": 15,
+            "def": 13
+          },
+          "feeds_used": 30,
+          "trained": 48,
+          "quest_claims": 18,
+          "quest_xp": 642,
+          "training_refusals": 12
+        }
+      ]
+    },
+    {
+      "training_target": 1,
+      "runs": [
+        {
+          "species": "mammal",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 80,
+          "milestone_days": {
+            "31": 15
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 7,
+            "hp": 13,
+            "def": 10
+          },
+          "feeds_used": 30,
+          "trained": 30,
+          "quest_claims": 30,
+          "quest_xp": 1074
+        },
+        {
+          "species": "bird",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 80,
+          "milestone_days": {
+            "31": 15
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 7,
+            "hp": 13,
+            "def": 10
+          },
+          "feeds_used": 30,
+          "trained": 30,
+          "quest_claims": 30,
+          "quest_xp": 1074
+        },
+        {
+          "species": "reptile",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 80,
+          "milestone_days": {
+            "31": 15
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 7,
+            "hp": 13,
+            "def": 10
+          },
+          "feeds_used": 30,
+          "trained": 30,
+          "quest_claims": 30,
+          "quest_xp": 1074
+        },
+        {
+          "species": "machine",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 80,
+          "milestone_days": {
+            "31": 15
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 7,
+            "hp": 13,
+            "def": 10
+          },
+          "feeds_used": 30,
+          "trained": 30,
+          "quest_claims": 30,
+          "quest_xp": 1074
+        },
+        {
+          "species": "fairy",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 80,
+          "milestone_days": {
+            "31": 15
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 7,
+            "hp": 13,
+            "def": 10
+          },
+          "feeds_used": 30,
+          "trained": 30,
+          "quest_claims": 30,
+          "quest_xp": 1074
+        },
+        {
+          "species": "monster",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 80,
+          "milestone_days": {
+            "31": 15
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 7,
+            "hp": 13,
+            "def": 10
+          },
+          "feeds_used": 30,
+          "trained": 30,
+          "quest_claims": 30,
+          "quest_xp": 1074
+        },
+        {
+          "species": "dragon",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 80,
+          "milestone_days": {
+            "31": 15
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 7,
+            "hp": 13,
+            "def": 10
+          },
+          "feeds_used": 30,
+          "trained": 30,
+          "quest_claims": 30,
+          "quest_xp": 1074
+        },
+        {
+          "species": "plant",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 80,
+          "milestone_days": {
+            "31": 15
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 7,
+            "hp": 13,
+            "def": 10
+          },
+          "feeds_used": 30,
+          "trained": 30,
+          "quest_claims": 30,
+          "quest_xp": 1074
+        },
+        {
+          "species": "ghost",
+          "seed": 20261005,
+          "profile": "daily_quest",
+          "quests_enabled": true,
+          "days": 30,
+          "level": 46,
+          "satiety": 80,
+          "milestone_days": {
+            "31": 15
+          },
+          "food_remaining": 63,
+          "minimum_end_of_day_food": 5,
+          "training_bonus": {
+            "atk": 7,
+            "hp": 13,
+            "def": 10
+          },
+          "feeds_used": 30,
+          "trained": 30,
+          "quest_claims": 30,
+          "quest_xp": 1074
+        }
+      ]
     }
   ],
   "food_without_battle_rewards": {
     "without_attendance_supply": {
       "species": "mammal",
       "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
       "days": 30,
-      "level": 46,
+      "level": 47,
+      "satiety": 0,
       "milestone_days": {
         "31": 14
       },
@@ -1609,17 +4126,22 @@
       },
       "trained": 7,
       "feeds_used": 3,
+      "quest_claims": 2,
+      "quest_xp": 66,
       "feed_refusals": 86,
       "training_refusals": 83
     },
     "with_attendance_supply": {
       "species": "mammal",
       "seed": 20261005,
+      "profile": "active",
+      "quests_enabled": true,
       "days": 30,
-      "level": 61,
+      "level": 65,
+      "satiety": 80,
       "milestone_days": {
-        "31": 9,
-        "51": 19
+        "31": 8,
+        "51": 17
       },
       "food_remaining": 23,
       "minimum_end_of_day_food": 4,
@@ -1629,7 +4151,9 @@
         "def": 27
       },
       "trained": 90,
-      "feeds_used": 70
+      "feeds_used": 70,
+      "quest_claims": 30,
+      "quest_xp": 1074
     }
   }
 }

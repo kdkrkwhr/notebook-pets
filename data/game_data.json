@@ -55,7 +55,7 @@
   "daily_quest": {
     "requirements": [
       {"command": "feed", "label": "밥 주기", "target": 1},
-      {"command": "train", "label": "훈련", "target": 2},
+      {"command": "train", "label": "훈련", "target": 1},
       {"command": "walk", "label": "산책", "target": 1}
     ],
     "reward": {"xp": 30, "rare_feed": 1}

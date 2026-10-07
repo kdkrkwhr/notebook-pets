@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Seeded offline balance report using real rules; never reads/writes saves."""
 import argparse
+import copy
 from collections import Counter
 from datetime import date, timedelta
 import hashlib
@@ -46,8 +47,10 @@ def combat_report(trials, seed):
     return rows
 
 
-def progression(species, seed, max_days=180, supply=3, battles=True):
-    """Three sessions/day, real handlers, no filesystem and no real wall clock."""
+def progression(species, seed, max_days=180, supply=3, battles=True, *, profile='active', quests=True):
+    """Fixed daily routines, real handlers, no filesystem or real wall clock."""
+    if profile not in ('active', 'daily_quest', 'relaxed') or max_days < 1:
+        raise ValueError('Invalid profile or simulation duration')
     rng = random.Random(seed)
     current = date(2026, 1, 1)
     clock = 2_000_000_000.0
@@ -71,17 +74,22 @@ def progression(species, seed, max_days=180, supply=3, battles=True):
             clock = 2_000_000_000.0 + day * 86400
             engine.fresh_daily(st)
             engine.cmd_attendance(st)
-            for session in range(3):
+            sessions = 3 if profile == 'active' else 1
+            for session in range(sessions):
                 clock += 7200  # honors one-hour feeding/play cooldowns
-                if st["satiety"] <= 70:
+                if st["satiety"] <= 70 or profile == 'daily_quest':
                     fed = engine.cmd_care(st, "feed")
                     stats["feeds_used" if fed["ok"] else "feed_refusals"] += 1
-                trained = engine.cmd_train(st)
-                stats["trained" if trained["ok"] else "training_refusals"] += 1
-                if session == 0:
+                training_count = 1 if profile == 'active' else (
+                    next(item['target'] for item in engine.G['daily_quest']['requirements'] if item['command']=='train')
+                    if profile == 'daily_quest' else 0)
+                for _ in range(training_count):
+                    trained = engine.cmd_train(st)
+                    stats["trained" if trained["ok"] else "training_refusals"] += 1
+                if session == 0 and profile != 'daily_quest':
                     engine.cmd_care(st, "play")
                 engine.cmd_care(st, "snack")
-            for _ in range(5):
+            for _ in range(5 if profile == 'active' else 1):
                 walked = engine.cmd_walk(st)
                 if not walked["ok"]:
                     raise RuntimeError("Simulation left an unresolved encounter")
@@ -91,6 +99,12 @@ def progression(species, seed, max_days=180, supply=3, battles=True):
                         stats[result["outcome"]] += 1
                     else:
                         engine.cmd_flee(st)
+            if quests and engine.daily_quest(st)['ready']:
+                reward = engine.cmd_claimquest(st)
+                if not reward['ok']:
+                    raise RuntimeError('A ready quest could not be claimed')
+                stats['quest_claims'] += 1
+                stats['quest_xp'] += reward['xp_result']['gained']
             engine.cmd_care(st, "sleep")
             remaining = st["inventory"]["normal_feed"]
             minimum_food = remaining if minimum_food is None else min(minimum_food, remaining)
@@ -99,7 +113,8 @@ def progression(species, seed, max_days=180, supply=3, battles=True):
                     milestones.setdefault(str(target), day)
             if st["level"] == 100:
                 break
-    return {"species": species, "seed": seed, "days": day, "level": st["level"],
+    return {"species": species, "seed": seed, "profile": profile, "quests_enabled": quests,
+            "days": day, "level": st["level"], "satiety": st['satiety'],
             "milestone_days": milestones, "food_remaining": st["inventory"]["normal_feed"],
             "minimum_end_of_day_food": minimum_food, "training_bonus": st["training_bonus"], **stats}
 
@@ -109,10 +124,24 @@ def build_report(trials=50, seed=20261005):
     growth = [progression(sp, seed + run) for sp in engine.G["species"] for run in range(3)]
     no_supply = progression("mammal", seed, max_days=30, supply=0, battles=False)
     daily_supply = progression("mammal", seed, max_days=30, supply=3, battles=False)
+    routines = [progression(sp, seed+run, profile=profile, battles=False)
+                for profile in ('active', 'daily_quest', 'relaxed') for sp in engine.G['species'] for run in range(3)]
+    quest_comparison = [progression('mammal', seed, battles=False, quests=enabled) for enabled in (False, True)]
+    requirements = copy.deepcopy(engine.G['daily_quest']['requirements'])
+    adjustment = []
+    for target in (2, 1):
+        configured = copy.deepcopy(requirements)
+        next(item for item in configured if item['command']=='train')['target'] = target
+        with patch.dict(engine.G['daily_quest'], {'requirements': configured}):
+            runs = [progression(sp, seed, max_days=30, profile='daily_quest', battles=False)
+                    for sp in engine.G['species']]
+        adjustment.append({'training_target': target, 'runs': runs})
     return {"seed": seed, "trials_per_matchup": trials,
             "rules_sha256": hashlib.sha256(json.dumps(engine.G, sort_keys=True, ensure_ascii=False).encode("utf-8")).hexdigest(),
             "engine_sha256": hashlib.sha256((ROOT / "engine" / "engine.py").read_text(encoding="utf-8").encode("utf-8")).hexdigest(),
-            "combat": rows, "progression": growth,
+            "combat": rows, "progression": growth, 'routines_without_battles': routines,
+            'quest_comparison': quest_comparison,
+            'quest_target_comparison': adjustment,
             "food_without_battle_rewards": {"without_attendance_supply": no_supply, "with_attendance_supply": daily_supply}}
 
 
@@ -137,8 +166,8 @@ def markdown(report):
     lines += ["", "## 성장 속도", "",
               "종족별 3회, 하루 출석 1·훈련 3·놀이 1·간식 3·산책 5·수면 1회. "
               "하루 세 접속 시점은 2시간 간격이며 포만감 70 이하일 때 사료를 줍니다. 모든 조우는 전투로 해결합니다. "
-              "포획·방치·접속 누락은 포함하지 않으며 초과 플레이도 하지 않습니다. 속성은 불로 고정합니다. "
-              "훈련 보너스는 누적되지만 야생에는 훈련 보너스가 없습니다. 수면·쿨타임·출석 공급을 실제 명령 함수로 계산합니다.", "",
+              "방치·접속 누락은 포함하지 않으며 초과 플레이도 하지 않습니다. 속성은 불로 고정합니다. "
+              "훈련 보너스는 누적되지만 야생에는 훈련 보너스가 없습니다. 수면·쿨타임·출석 공급·퀘스트 수령을 실제 명령 함수로 계산합니다.", "",
               "| 종족 | Lv31 (일) | Lv51 (일) | Lv81 (일) | Lv100 (일) | 훈련 거절 횟수 |",
               "|---|---:|---:|---:|---:|---:|"]
     for sp in engine.G["species"]:
@@ -150,6 +179,42 @@ def markdown(report):
         lines.append("| " + " | ".join([engine.G["species"][sp]["name_kr"], *values,
                                         str(sum(r.get("training_refusals", 0) for r in runs))]) + " |")
     food = report["food_without_battle_rewards"]
+    lines += ['', '## 하루 한 번 접속하는 퀘스트 목표 조정', '',
+              '9종족·각 30일·전투 없음·퀘스트 중심 일정에서 훈련 목표만 2회와 1회로 비교합니다. '
+              '먹이 1회는 포만감 +30, 훈련 1회는 -20입니다. 목표 2회에서는 누적 소비가 공급을 초과합니다. '
+              '현재 기본 목표는 먹이 1회·훈련 1회·산책 1회이며 보상은 기존과 같습니다.', '',
+              '| 훈련 목표 | 총 진행일 | 퀘스트 완료 | 훈련 거절 | 마지막 포만감 범위 |',
+              '|---|---:|---:|---:|---:|']
+    for item in report['quest_target_comparison']:
+        runs = item['runs']
+        lines.append(f"| {item['training_target']}회 | {sum(r['days'] for r in runs)} | "
+                     f"{sum(r.get('quest_claims',0) for r in runs)} | {sum(r.get('training_refusals',0) for r in runs)} | "
+                     f"{min(r['satiety'] for r in runs)}–{max(r['satiety'] for r in runs)} |")
+    lines += ['', '## 한 파트너 돌보기: 전투 없는 일상', '',
+              '모든 조우에서 도망칩니다. 9종족 각각 3개 seed로 최대 180일을 진행합니다. 매일 출석·수면하며 결석은 없습니다.', '',
+              '- 적극 돌보기: 기존 3회 접속 일정, 달성한 퀘스트 수령.',
+              '- 퀘스트 중심: 하루 한 번 먹이 1회, 퀘스트에 필요한 훈련, 간식 1회, 산책 1회. 놀이 없음.',
+              '- 가벼운 돌보기: 하루 한 번 포만감 70 이하일 때 먹이, 놀이·간식·산책 각 1회. 훈련 없음.',
+              '- 간식은 보유한 맛있는 사료를 자동 소비합니다. 퀘스트 보상 사료는 다음 날부터 사용됩니다.', '',
+              '| 일상 | Lv31 | Lv51 | Lv81 | Lv100 | 훈련 거절 합계 | 퀘스트 달성/진행일 |',
+              '|---|---:|---:|---:|---:|---:|---:|']
+    for profile, label in [('active','적극 돌보기'), ('daily_quest','퀘스트 중심'), ('relaxed','가벼운 돌보기')]:
+        runs = [r for r in report['routines_without_battles'] if r['profile']==profile]
+        values = []
+        for target in (31,51,81,100):
+            days = [r['milestone_days'].get(str(target)) for r in runs]
+            reached = [value for value in days if value is not None]
+            values.append(f'{min(reached)}–{max(reached)}일' if len(reached)==len(days) else
+                          (f'{len(reached)}/{len(days)}회 도달' if reached else '180일 내 미도달'))
+        lines.append('| ' + ' | '.join([label, *values, str(sum(r.get('training_refusals',0) for r in runs)),
+            f"{sum(r.get('quest_claims',0) for r in runs)}/{sum(r['days'] for r in runs)}"]) + ' |')
+    lines += ['', '### 퀘스트 보상의 성장 영향', '',
+              '포유류·전투 없음·적극 돌보기 동일 일정에서 퀘스트 수령만 비교합니다.', '',
+              '| 퀘스트 수령 | Lv31 | Lv51 | Lv81 | Lv100 | 퀘스트 경험치 합계 |', '|---|---:|---:|---:|---:|---:|']
+    for run in report['quest_comparison']:
+        lines.append('| ' + ' | '.join(['있음' if run['quests_enabled'] else '없음',
+            *[str(run['milestone_days'].get(str(level),'미도달')) for level in (31,51,81,100)],
+            str(run.get('quest_xp',0))]) + ' |')
     lines += ["", "## 먹이 수급", "",
               "포유류·30일·모든 조우에서 도망, 전투 보상 0 조건으로 비교했습니다. 초기 사료는 3개입니다.", "",
               "| 출석 공급 | 훈련 성공 | 훈련 거절 | 사료 부족 거절 | 마지막 사료 |", "|---|---:|---:|---:|---:|"]

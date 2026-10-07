@@ -23,7 +23,7 @@ The repository is named `notebook-pets`; the service name is **Notebuddy (노트
 | --- | --- |
 | Monsters | 9 species × 8 elements: 72 starter combinations |
 | Care | Feeding, snacks, play, sleep, intimacy, and satiety |
-| Daily quest | Feed once, train twice, and walk once to claim a reward |
+| Daily quest | Feed once, train once, and walk once to claim a reward |
 | Activities | Persistent stat training, walks, HP-based automatic battles and fleeing |
 | Records | Partner evolution album, battle records, titles, and rankings |
 | Progression rules | Stage transitions at levels 31, 51, and 81; level cap of 100 |
@@ -124,7 +124,7 @@ Run `python -X utf8 tools/export_album.py <user_id> --output albums/buddy.html` 
 
 ### Daily quest
 
-Use `quests` to check progress. Feed once, train twice, and walk once, then use `claimquest` to receive **30 base XP and one rare feed**. Discord aliases are `!퀘스트` and `!퀘스트보상`. Status and successful objective actions also include progress.
+Use `quests` to check progress. Feed once, train once, and walk once, then use `claimquest` to receive **30 base XP and one rare feed**. Discord aliases are `!퀘스트` and `!퀘스트보상`. Status and successful objective actions also include progress.
 
 Only successful actions count; rewards can be claimed once per day. Progress and claim eligibility reset at midnight KST; unclaimed rewards do not carry over. Existing sleep bonuses, level caps, and evolution rules apply to XP rewards. Configure objectives and rewards in `data/game_data.json` under `daily_quest`.
 
@@ -243,7 +243,7 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, combat, image pipelines, and agent integration. Test data is stored in temporary files.
 
-Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **137 unittest cases and 6 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, event replay after restoration, retention, and interrupted-job recovery.
+Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **139 unittest cases and 6 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, event replay after restoration, retention, and interrupted-job recovery.
 
 ## Documentation
 

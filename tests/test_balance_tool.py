@@ -8,6 +8,22 @@ import simulate_balance
 
 
 class BalanceToolTests(unittest.TestCase):
+    def test_one_visit_quest_is_sustainable_without_battle_rewards(self):
+        for species in engine.G['species']:
+            result = simulate_balance.progression(species, 123, max_days=30, battles=False, profile='daily_quest')
+            self.assertEqual(result['quest_claims'], 30, species)
+            self.assertEqual(result.get('training_refusals', 0), 0, species)
+            self.assertEqual(result.get('feed_refusals', 0), 0, species)
+
+    def test_quest_reward_changes_progression_and_relaxed_care_remains_viable(self):
+        baseline = simulate_balance.progression('mammal', 123, max_days=30, battles=False, quests=False)
+        rewarded = simulate_balance.progression('mammal', 123, max_days=30, battles=False, quests=True)
+        self.assertGreater(rewarded['level'], baseline['level'])
+        relaxed = simulate_balance.progression('mammal', 123, max_days=30, battles=False, profile='relaxed')
+        self.assertGreater(relaxed['level'], 1)
+        self.assertEqual(relaxed.get('training_refusals', 0), 0)
+        self.assertEqual(relaxed.get('quest_claims', 0), 0)
+
     def test_growth_is_repeatable_without_file_access_and_restores_engine(self):
         rules = copy.deepcopy(engine.G)
         save, load, rng, clock = engine.save_state, engine.load_state, engine.random, engine.time.time
