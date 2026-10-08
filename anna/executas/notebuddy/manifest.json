@@ -1,0 +1,59 @@
+{
+  "name": "tool-dev-notebuddy",
+  "display_name": "Notebuddy Game",
+  "version": "0.1.1",
+  "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
+  "host_capabilities": [],
+  "storage": {
+    "kv": true,
+    "files": true,
+    "scopes": {
+      "tool": "rw"
+    }
+  },
+  "tools": [
+    {
+      "name": "game",
+      "description": "Read or care for your pet. Never choose a user or provide game state. Reuse request_id when retrying one action.",
+      "timeout": 60,
+      "parameters": [
+        {
+          "name": "command",
+          "type": "string",
+          "required": true,
+          "enum": [
+            "album",
+            "attendance",
+            "battle",
+            "claimquest",
+            "feed",
+            "flee",
+            "help",
+            "play",
+            "quests",
+            "sleep",
+            "snack",
+            "start",
+            "status",
+            "titles",
+            "train",
+            "walk"
+          ],
+          "description": "One game action. status reads current progress; start creates your first partner."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "description": "Pet name, only for start. Up to 24 characters."
+        },
+        {
+          "name": "request_id",
+          "type": "string",
+          "required": false,
+          "description": "Stable ID for one action, reused on transport retries. Omit to use the host invoke ID."
+        }
+      ]
+    }
+  ]
+}

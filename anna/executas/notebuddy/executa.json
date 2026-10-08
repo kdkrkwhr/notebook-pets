@@ -1,0 +1,25 @@
+{
+  "slug": "notebuddy-game",
+  "name": "Notebuddy Game",
+  "version": "0.1.1",
+  "executa_type": "tool",
+  "description": "Authoritative Notebook Pets rules and private, persistent pet progress.",
+  "tool_id": "tool-dev-notebuddy",
+  "type": "python",
+  "enabled": true,
+  "distribution": {
+    "active": "binary",
+    "profiles": {
+      "local": {"type": "local", "supports_protocol": true},
+      "binary": {
+        "type": "binary",
+        "executable_name": "notebuddy-game",
+        "supports_protocol": true,
+        "binary_artifacts": {
+          "linux-x86_64": {"path": "dist/notebuddy-game-{version}-linux-x86_64.tar.gz", "format": "tar.gz", "entrypoint": "notebuddy-game"},
+          "windows-x86_64": {"path": "dist/notebuddy-game-{version}-windows-x86_64.tar.gz", "format": "tar.gz", "entrypoint": "notebuddy-game.exe"}
+        }
+      }
+    }
+  }
+}

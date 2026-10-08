@@ -1,0 +1,17 @@
+{
+  "name": "notebuddy-anna",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Notebook Pets on Anna: one lifelong AI companion.",
+  "scripts": {
+    "dev": "anna-app dev --port 5180",
+    "dev:live": "anna-app dev --port 5180 --slug notebuddy-dev --storage aps --llm-account https://anna.partners",
+    "validate": "anna-app validate --strict",
+    "test": "node --test tests/*.test.mjs",
+    "prepare:assets": "python -B -X utf8 scripts/prepare_assets.py",
+    "test:plugin": "uv run --project executas/notebuddy python -B -X utf8 -m unittest discover -s tests -p test_anna.py -v"
+  },
+  "devDependencies": {
+    "@anna-ai/cli": "0.1.57"
+  }
+}

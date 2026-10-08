@@ -1,0 +1,19 @@
+version = 1
+revision = 3
+requires-python = ">=3.11"
+
+[[package]]
+name = "executa-sdk"
+version = "0.1.0"
+source = { git = "https://github.com/whtcjdtc2007/anna-executa-examples.git?subdirectory=sdk%2Fpython&rev=49749905d443a7e8e7479a8faab39c03c7f16c16#49749905d443a7e8e7479a8faab39c03c7f16c16" }
+
+[[package]]
+name = "notebuddy-executa"
+version = "0.1.1"
+source = { editable = "." }
+dependencies = [
+    { name = "executa-sdk" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "executa-sdk", git = "https://github.com/whtcjdtc2007/anna-executa-examples.git?subdirectory=sdk%2Fpython&rev=49749905d443a7e8e7479a8faab39c03c7f16c16" }]

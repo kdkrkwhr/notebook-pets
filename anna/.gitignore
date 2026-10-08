@@ -1,0 +1,9 @@
+bundle/assets/
+bundle/anna-tool-ids.js
+executas/notebuddy/game_core/
+executas/notebuddy/.venv/
+executas/notebuddy/.venv-linux/
+executas/notebuddy/.anna/
+executas/notebuddy/build/
+executas/notebuddy/dist/
+executas/notebuddy/*.spec

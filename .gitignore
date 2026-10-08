@@ -28,6 +28,14 @@ venv/
 .env
 .env.*
 notebook.local.json
+.local/
+debug.log
+
+# Anna app build and local development
+anna/node_modules/
+anna/.anna/
+anna/.venv/
+anna/dist/
 
 # OS
 .DS_Store

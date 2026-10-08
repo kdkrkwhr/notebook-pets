@@ -1,0 +1,13 @@
+{
+  "slug": "notebuddy",
+  "name": "Notebuddy · 노트버디",
+  "version": "0.1.0",
+  "tagline": "공책에서 태어난 단 한 마리의 AI 친구",
+  "description": "Meet one lifelong AI companion. Feed, play, train and walk together, talk about your day, and keep an illustrated evolution album. Your companion responds with AI dialogue grounded in its actual game state. Progress is saved to Anna Persistent Storage.\n\n처음 만난 너와, 오래오래. 9종족과 8속성 중 태어난 파트너를 돌보며 함께 성장하세요. AI 대화, 일일 퀘스트, 훈련, 산책, 전투와 진화 앨범을 제공합니다. 대화와 새 그림 생성은 Anna 계정의 AI 사용량을 이용합니다.\n\nThis is an Anna adaptation of Notebook Pets. Game rules are evaluated by the original Python engine; AI never awards or changes rewards. Korean interface and dialogue. No external API key or ComfyUI installation is required for the Anna edition.",
+  "category": "entertainment",
+  "homepage_url": "https://github.com/kdkrkwhr/notebook-pets",
+  "support_url": "https://github.com/kdkrkwhr/notebook-pets/issues",
+  "bundled_executas": {
+    "notebuddy": {"path": "./executas/notebuddy"}
+  }
+}
