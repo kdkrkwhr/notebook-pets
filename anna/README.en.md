@@ -2,7 +2,7 @@
 
 [한국어](README.md) · **English**
 
-One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. Source candidate: app **0.2.0**, game tool **0.1.9**. The installed private version remains **0.1.11 / 0.1.8** because Anna’s WAF blocked the new UI upload. See [deployment status](HANDOFF.md).
+One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. Installed private version: app **0.2.1**, game tool **0.1.9**. Startup recovery and the new growth milestones have been verified in the installed app. See [deployment status](HANDOFF.md).
 
 ## Languages and saved progress
 

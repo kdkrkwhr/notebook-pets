@@ -1,10 +1,12 @@
-# Companion interactions — Anna 0.2.0 / tool 0.1.9
+# Companion interactions — Anna 0.2.1 / tool 0.1.9
 
 ## Behavior
 
 - Care results use the existing result panel. Automatic AI care reactions have been removed from this candidate; normal user-initiated chat is unchanged.
 - Battles expose the opponent and at most 20 authoritative turns. The UI replays these locally; skipping, closing or reduced-motion mode never changes rewards. Opponents use bundled species/element artwork without image generation. No capturing or extra companions.
 - Stage thresholds are level 1/10/30/50; max level stays 100. XP costs remain 100 at levels 1–30, 200 at 31–50, 400 at 51–80 and 800 at 81–99. Image generation remains explicit.
+
+The app pins and requires game tool 0.1.9. Install the fixed private version for stable testing: a working-draft upload may expose partially uploaded files to already-installed draft sessions. A small bootstrap reports module-load failures and offers Refresh rather than leaving Connecting indefinitely.
 
 ## Save compatibility
 

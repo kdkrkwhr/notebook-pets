@@ -6,7 +6,7 @@ Notebook Pets의 원본 Python 규칙을 사용하는 Anna 앱입니다. 기존 
 
 - 앱: `@kdkrkwhr/notebuddy` (ID 450)
 - [개발자 콘솔](https://anna.partners/developer?app=450)
-- 소스 후보: 앱 0.2.0 / 게임 도구 0.1.9. 설치된 비공개 버전은 0.1.11 / 0.1.8이며 새 UI 업로드가 Anna WAF에 차단되어 적용 대기 중입니다. [배포 상태](HANDOFF.md)
+- 설치된 비공개 버전: 앱 **0.2.1** / 게임 도구 **0.1.9**. 화면 복구와 새 성장 기준 적용을 확인했습니다. [배포 기록](HANDOFF.md)
 - 상태: 비공개 초안. 서버 등록 및 검증 기록은 HANDOFF.md를 참고하세요. 심사 제출과 스토어 공개는 별도 작업입니다.
 - 다음 작업은 [HANDOFF.md](HANDOFF.md)에 기록했습니다.
 
@@ -77,7 +77,7 @@ npm test
 npm run test:plugin
 ```
 
-2026-10-09 기능 검증: Anna 도구 47개, UI 상태·반응 35개, 격리 브라우저 19개와 strict 검사를 통과했습니다. 전투·반응 자동 테스트는 실제 계정이나 유료 AI를 호출하지 않습니다. 이전 실제 계정 검증과 최신 배포 결과는 [HANDOFF.md](HANDOFF.md), 저장 전환과 성장 시뮬레이션은 [INTERACTIONS.md](INTERACTIONS.md)를 참고하세요.
+2026-10-09 기능 검증: Anna 도구 47개, UI 상태 31개, 격리 브라우저 18개와 strict 검사를 통과했습니다. 전투·반응 자동 테스트는 실제 계정이나 유료 AI를 호출하지 않습니다. 이전 실제 계정 검증과 최신 배포 결과는 [HANDOFF.md](HANDOFF.md), 저장 전환과 성장 시뮬레이션은 [INTERACTIONS.md](INTERACTIONS.md)를 참고하세요.
 
 ## 패키징 및 초안 갱신
 

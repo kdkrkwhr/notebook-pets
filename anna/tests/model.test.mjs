@@ -26,3 +26,12 @@ test('production storage authorization and runner failures are actionable',()=>{
   assert.match(errorText(new Error("invoke error: {'code': -32021}")),/storage/);
   assert.match(errorText({code:'agent_waking'}),/runner/);
 });
+
+
+test('installed apps require the current game tool instead of accepting a stale runner',async()=>{
+ const {readFile}=await import('node:fs/promises');
+ const manifest=JSON.parse(await readFile(new URL('../manifest.json',import.meta.url),'utf8'));
+ const tool=JSON.parse(await readFile(new URL('../executas/notebuddy/executa.json',import.meta.url),'utf8'));
+ const required=manifest.required_executas.find(x=>x.tool_id==='bundled:notebuddy');
+ assert.equal(required.min_version,tool.version);assert.equal(required.version,tool.version);
+});
