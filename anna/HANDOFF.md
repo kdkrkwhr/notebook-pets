@@ -4,16 +4,18 @@
 
 - 앱 `@kdkrkwhr/notebuddy`, ID **450**, 상태 **draft** (비공개)
 - [개발자 콘솔](https://anna.partners/developer?app=450&tab=versions)
-- 고정된 앱 버전 **0.1.2**, version ID **1176**
+- 고정된 앱 버전 **0.1.3**, version ID **1177**
 - 게임 도구 `tool-kdkrkwhr-notebuddy-game-hc8mw4gu`, Executa ID **1193**
-- 고정된 도구 버전 **0.1.3**, Executa version ID **667**
-- 작업 초안 revision **4**, UI 95개 파일. 본인 계정에는 **0.0.0-draft** 설치
+- 고정된 도구 버전 **0.1.4**, Executa version ID **668**
+- 작업 초안 revision **5**, UI 95개 파일. 본인 계정에는 **0.0.0-draft** 설치
 - Windows/Linux x86_64 패키지를 CI에서 빌드·검사한 뒤 Anna CDN에 업로드
 - 심사 제출·스토어 공개는 하지 않았습니다. 콘솔은 심사 승인 즉시 공개된다고 안내합니다.
 
-## 최초 생성 보호 보강 · 배포 전
+## 최초 생성 보호 보강 · 비공개 배포 확인
 
-소스는 앱 0.1.3 / 도구 0.1.4입니다. 최초 생성 계산 후 재확인, 독립 서비스 경합 회귀 테스트, 운영 계약에 맞춘 테스트 저장소, 미해결 경합 재현 도구를 추가했습니다. 로컬 Anna Python 24개·UI 10개·strict 검사를 통과했습니다. 현재 서버 배포는 위의 기존 버전이며, CI 및 비공개 초안 배포 확인 후 이 절을 갱신합니다.
+앱 0.1.3 / 도구 0.1.4를 비공개 초안에 배포했습니다. 최초 생성 계산 후 재확인, 독립 서비스 경합 회귀 테스트, 운영 계약에 맞춘 테스트 저장소, 미해결 경합 재현 도구를 추가했습니다. Anna Python 24개·UI 10개·strict 검사와 Windows/Linux CI 및 패키지 빌드를 통과했습니다. Install draft 후 앱 창을 닫고 다시 열어 정상 연결, 모찌(기계족/물), 10 XP, 기존 대화 2개, AI 초상화 복원을 확인했습니다. 기존 파트너를 새로 생성하거나 게임 행동·유료 AI 호출을 실행하지 않았습니다.
+
+첫 생성 경합은 실제 사용자 저장에서 파괴적으로 재현하지 않았습니다. 오프라인 APS 계약 모델의 재현은 여전히 종료 코드 1이며, 이 릴리스는 위험을 줄이는 보호 조치입니다. 분산 최초 생성 문제를 해결 완료로 표시하면 안 됩니다.
 
 ## 영어 기본·한국어 선택 적용
 
@@ -46,10 +48,10 @@ Orca 브라우저의 Anna 대시보드 → Apps → Notebuddy에서 검증했습
 
 ## 자동 검증
 
-- Anna Python 테스트 **17개**, UI 상태·다국어 테스트 **10개**, `validate --strict` 통과
+- Anna Python 테스트 **24개**, UI 상태·다국어 테스트 **10개**, `validate --strict` 통과
 - 기존 엔진 테스트 **145개 + 자체 검사 6개** Windows/Linux CI 통과
-- [Anna CI / 패키지 빌드](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37896042465)
-- [기존 엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37896042604)
+- [Anna CI / 패키지 빌드](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37897781850)
+- [기존 엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37897781848)
 - `.github/workflows/anna.yml`에서 두 OS의 독립 실행 파일 생성 후 initialize/describe/생성/밥 주기 검사까지 실행합니다. 결과물은 7일 보관합니다.
 - 실제 UI 검증은 연결된 Anna 실행기에서 했습니다. 두 운영체제 각각의 실제 Anna 설치 실행을 검증했다는 뜻은 아닙니다.
 
