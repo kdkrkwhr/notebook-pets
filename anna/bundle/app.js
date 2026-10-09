@@ -169,7 +169,7 @@ async function generate(){
   try{
     if(!pendingImage){
       const snapshot=await assertActive();
-      const generated=await anna.image.generate({prompt:`${snapshot.image_prompt}. One single friendly virtual pet on a warm ivory notebook page, full body, delicate colored pencil and watercolor accents, no words, no lettering.`,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
+      const generated=await anna.image.generate({prompt:`${snapshot.image_prompt}. One single friendly virtual pet, full body centered with generous margins, plain white background, soft painted game character illustration, smooth warm shading, delicate warm outlines, pastel colors. No text, lettering, notebook, desk, scenery, panels, photorealism or 3D rendering.`,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
       const url=generated.images?.[0]?.url;if(!url)throw new Error('no image');
       pendingImage={key:imageKey(snapshot),url,path:`portraits/${snapshot.pet_id}/${crypto.randomUUID()}.png`};
     }

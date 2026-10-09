@@ -1,0 +1,23 @@
+{
+  "file": "mammal_fire_stage1.png",
+  "source": "built-in-imagegen",
+  "request": {
+    "species": "mammal",
+    "element": "fire",
+    "stage": 1,
+    "key": "mammal_fire_stage1",
+    "revision": "starter-v1"
+  },
+  "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby bear cub, soft fluffy fur, two rounded bear ears, four stubby paws, tiny short tail. Not a cat. Element: coral red and orange palette, tiny flame crest or flame marking. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: mammal_fire_stage1.",
+  "references": [
+    {
+      "file": "assets/anchored_evolution/plant_nature_stage1.png",
+      "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+    }
+  ],
+  "sha256": "108b1fdecf2d61a4ccbb674a4964d122c0298c17f6035791387fa58fed3d9dcc",
+  "dimensions": [
+    1254,
+    1254
+  ]
+}

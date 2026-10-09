@@ -35,7 +35,7 @@ Notebook Pets는 **게임 규칙은 Python이 처리하고, 캐릭터의 말투�
 | 이미지 | 로컬 ComfyUI·IP-Adapter 기반 개체별 이미지와 단계별 진화 |
 | 에이전트 연결 | 공통 Python 도구 호출, stdio MCP, Discord 게이트웨이 |
 
-대표 캐릭터는 [예시 이미지](assets/examples/README.md), 식물·기계·유령·용의 성장과 빛·어둠 분기는 [진화 갤러리](assets/anchored_evolution/index.html)에서 살펴볼 수 있습니다. `assets/samples/`에는 기존 72조합 이미지가 보관되어 있습니다.
+대표 캐릭터는 [예시 이미지](assets/examples/README.md), 식물·기계·유령·용의 성장과 빛·어둠 분기는 [진화 갤러리](assets/anchored_evolution/index.html)에서 살펴볼 수 있습니다. Anna에서 사용하는 종족·속성 72조합은 [기본 이미지 갤러리](assets/starters-v1/index.html)에서 볼 수 있습니다.
 
 ## 구조와 설계 원칙
 

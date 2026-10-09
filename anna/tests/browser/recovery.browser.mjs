@@ -88,7 +88,12 @@ test('chat failure restores draft, failed save warns, saved exchange survives re
 test('portrait upload retry does not generate twice and survives reopen',async t=>{
  const p=await setup(t);await start(p);await fault(p,{upload:true});await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
  assert.match(await p.locator('#draw').innerText(),/Retry saving/);assert.equal(await p.locator('#clean-portraits').isDisabled(),true);await p.locator('#draw').click();await idle(p);
- assert.equal((await calls(p,'image')).length,1);assert.match(await p.locator('#notice').innerText(),/safe in your album/);
+ assert.equal((await calls(p,'image')).length,1);
+ const generated=(await calls(p,'image'))[0].options;
+ assert.match(generated.prompt,/plain white background/);
+ assert.match(generated.prompt,/soft painted game character illustration/);
+ assert.doesNotMatch(generated.prompt,/on a warm ivory notebook page|colored pencil/);
+ assert.match(await p.locator('#notice').innerText(),/safe in your album/);
  await p.reload();await idle(p);assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
  assert.equal(await p.locator('#pet-image').evaluate(e=>e.complete&&e.naturalWidth>0),true);
 });
@@ -154,4 +159,15 @@ test('lost finish response is recovered without clearing the new game again',asy
  await p.evaluate(()=>{window.hostTest.state.save.status.xp=20;});
  await p.locator('#resume-reset').click();await idle(p);
  assert.equal(await p.locator('#xp-label').innerText(),'20 / 100 XP');assert.equal(await p.locator('#name').innerText(),'Fresh buddy');
+});
+
+test('fresh companion and album load revised starter art without paid image calls',async t=>{
+ const p=await setup(t);
+ await p.locator('#welcome > img').evaluate(img=>img.decode());
+ assert.match(await p.locator('#welcome > img').getAttribute('src'),/assets\/starters-v1\//);
+ await start(p);
+ await p.locator('#pet-image').evaluate(img=>img.decode());
+ assert.match(await p.locator('#pet-image').getAttribute('src'),/assets\/starters-v1\/fairy_nature_stage1\.png$/);
+ assert.ok(await p.locator('#pet-image').evaluate(img=>img.naturalWidth>=640));
+ assert.equal((await calls(p,'image')).length,0);
 });

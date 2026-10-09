@@ -1,0 +1,1719 @@
+[
+  {
+    "file": "bird_dark_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "bird",
+      "element": "dark",
+      "stage": 1,
+      "key": "bird_dark_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby bird chick, soft feathers, short beak, two folded small wings, two tiny feet. Element: lavender and deep purple palette, tiny starry shadow markings; friendly and cute. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: bird_dark_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "1d4f6d231e033c5acb123f7e465c117c7bac7fcc403a4c57a29329adce5a3f48",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "bird_earth_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "bird",
+      "element": "earth",
+      "stage": 1,
+      "key": "bird_earth_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby bird chick, soft feathers, short beak, two folded small wings, two tiny feet. Element: warm brown and ochre palette, tiny amber crystal accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: bird_earth_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "d2da6d5f74165910bc0f87e9257a9cbd61f3a8fbcddb885d652fd79d1392108e",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "bird_fire_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "bird",
+      "element": "fire",
+      "stage": 1,
+      "key": "bird_fire_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby bird chick, soft feathers, short beak, two folded small wings, two tiny feet. Element: coral red and orange palette, tiny flame crest or flame marking. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: bird_fire_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "747818fda28c72dad9ea1a42f159ec19b31e3be030d2f9c72bb36d1df8f36ba6",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "bird_light_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "bird",
+      "element": "light",
+      "stage": 1,
+      "key": "bird_light_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby bird chick, soft feathers, short beak, two folded small wings, two tiny feet. Element: ivory white and gold palette, gentle golden glow accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: bird_light_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "470efaa6a791298fb83a35f86fb929e96359a38470d6a70a6b1169e2bb0d1651",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "bird_nature_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "bird",
+      "element": "nature",
+      "stage": 1,
+      "key": "bird_nature_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby bird chick, soft feathers, short beak, two folded small wings, two tiny feet. Element: fresh green palette, small leaf markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: bird_nature_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "0c13fe0de538b231ae290c370fe178786fa55f2fed4c31c6e72dba67294b1271",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "bird_thunder_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "bird",
+      "element": "thunder",
+      "stage": 1,
+      "key": "bird_thunder_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby bird chick, soft feathers, short beak, two folded small wings, two tiny feet. Element: soft golden yellow palette, tiny lightning bolt markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: bird_thunder_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "ac63934d4c579983808215eac9b551b8d4d63148fb3af047be25ee46cf40f031",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "bird_water_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "bird",
+      "element": "water",
+      "stage": 1,
+      "key": "bird_water_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby bird chick, soft feathers, short beak, two folded small wings, two tiny feet. Element: aqua and sky blue palette, water droplet markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: bird_water_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "52172107f3ec5017ef9a97f2f6060ac62f179d08bbf6b23a276b47663bbe9de7",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "bird_wind_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "bird",
+      "element": "wind",
+      "stage": 1,
+      "key": "bird_wind_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby bird chick, soft feathers, short beak, two folded small wings, two tiny feet. Element: pale mint and ivory palette, subtle breeze swirl markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: bird_wind_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "628fe8ab17cff693797cbf1729223712e5f54b43fa229996430d4e0df87cf7ca",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "dragon_dark_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "dragon",
+      "element": "dark",
+      "stage": 1,
+      "key": "dragon_dark_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: cute baby dragon, big round head, short neck, four stubby paws, curled tail, tiny horns, small folded leathery wings, soft scales. Element: lavender and deep purple palette, tiny starry shadow markings; friendly and cute. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: dragon_dark_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/dragon_light_stage1.png",
+        "sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c"
+      }
+    ],
+    "sha256": "0dbea3cfdfee215d6c4d1b7f533c5c4ea65aa4e53be79974e449e45766d6e33c",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "dragon_earth_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "dragon",
+      "element": "earth",
+      "stage": 1,
+      "key": "dragon_earth_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: cute baby dragon, big round head, short neck, four stubby paws, curled tail, tiny horns, small folded leathery wings, soft scales. Element: warm brown and ochre palette, tiny amber crystal accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: dragon_earth_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/dragon_light_stage1.png",
+        "sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c"
+      }
+    ],
+    "sha256": "1bf61218653deb082807763486e97adbadfb14a10a731bfc9ea3b107d638e846",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "dragon_fire_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "dragon",
+      "element": "fire",
+      "stage": 1,
+      "key": "dragon_fire_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: cute baby dragon, big round head, short neck, four stubby paws, curled tail, tiny horns, small folded leathery wings, soft scales. Element: coral red and orange palette, tiny flame crest or flame marking. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: dragon_fire_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/dragon_light_stage1.png",
+        "sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c"
+      }
+    ],
+    "sha256": "89acb6122f335e72b5ba1078a0c7169077b41d67b0cdb74d9df3e9ffa3049afc",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "request": {
+      "species": "dragon",
+      "element": "light",
+      "stage": 1,
+      "branch": null,
+      "key": "dragon_light_stage1",
+      "pet_id": "70ffb52808c13d5cc06bf1b8e3aab8fe",
+      "revision": "anchored-growth-v4",
+      "seed": 42101
+    },
+    "file": "dragon_light_stage1.png",
+    "seed": 42101,
+    "preview_seed": 42,
+    "seed_offset": 0,
+    "reference": null,
+    "prompt": "(cute baby dragon creature:1.4), oversized round head, very short neck, tiny chubby body, tiny folded wings, four stubby paws, smooth scales, curled tail, big round eyes\nwhite and gold palette with restrained radiant halo glow\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins",
+    "style_reference": "plant_nature_stage1.png",
+    "style_reference_sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0",
+    "ipadapter": {
+      "model": "ip-adapter-plus_sd15.safetensors",
+      "clip_vision": "CLIP-ViT-H-14-laion2B-s32B-b79K.safetensors",
+      "weight_type": "style transfer",
+      "weight": 0.7
+    },
+    "reference_sha256": null,
+    "sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c",
+    "checkpoint": "DreamShaper_8_pruned.safetensors",
+    "source": "approved-anchor",
+    "render": {
+      "width": 640,
+      "height": 640,
+      "reference_size": 640,
+      "steps": 32,
+      "cfg": 5.5,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    },
+    "seconds": 34.34,
+    "copied_from": "assets/anchored_evolution/dragon_light_stage1.png"
+  },
+  {
+    "file": "dragon_nature_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "dragon",
+      "element": "nature",
+      "stage": 1,
+      "key": "dragon_nature_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: cute baby dragon, big round head, short neck, four stubby paws, curled tail, tiny horns, small folded leathery wings, soft scales. Element: fresh green palette, small leaf markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: dragon_nature_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/dragon_light_stage1.png",
+        "sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c"
+      }
+    ],
+    "sha256": "dc4d60540fe663e9257222adf38bacd66ae258904d52416f1a3bf031aeaba995",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "dragon_thunder_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "dragon",
+      "element": "thunder",
+      "stage": 1,
+      "key": "dragon_thunder_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: cute baby dragon, big round head, short neck, four stubby paws, curled tail, tiny horns, small folded leathery wings, soft scales. Element: soft golden yellow palette, tiny lightning bolt markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: dragon_thunder_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/dragon_light_stage1.png",
+        "sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c"
+      }
+    ],
+    "sha256": "97b28e11bb75459d2b672775eddfd8537029a75d3917bcba6185038a9a5496fb",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "dragon_water_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "dragon",
+      "element": "water",
+      "stage": 1,
+      "key": "dragon_water_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: cute baby dragon, big round head, short neck, four stubby paws, curled tail, tiny horns, small folded leathery wings, soft scales. Element: aqua and sky blue palette, water droplet markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: dragon_water_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/dragon_light_stage1.png",
+        "sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c"
+      }
+    ],
+    "sha256": "a1ab2d440dcecd2914bbde30d715237d875a2f450d039efecdd6beaf1103a84a",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "dragon_wind_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "dragon",
+      "element": "wind",
+      "stage": 1,
+      "key": "dragon_wind_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: cute baby dragon, big round head, short neck, four stubby paws, curled tail, tiny horns, small folded leathery wings, soft scales. Element: pale mint and ivory palette, subtle breeze swirl markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: dragon_wind_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/dragon_light_stage1.png",
+        "sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c"
+      }
+    ],
+    "sha256": "1202d1e44dc8897bdc6d46528b077919ef07c509431b0096c57ac5aecc81ab27",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "fairy_dark_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "fairy",
+      "element": "dark",
+      "stage": 1,
+      "key": "fairy_dark_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: NONHUMAN tiny round fairy creature with two small translucent wings, large glossy eyes, tiny rounded paws, chubby body; no human face, skin or humanoid anatomy. Element: lavender and deep purple palette, tiny starry shadow markings; friendly and cute. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: fairy_dark_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "c3bbf15971b0a15a3a449e58489973a9cec9dd4b3247b4b3e0824a106705744b",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "fairy_earth_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "fairy",
+      "element": "earth",
+      "stage": 1,
+      "key": "fairy_earth_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: NONHUMAN tiny round fairy creature with two small translucent wings, large glossy eyes, tiny rounded paws, chubby body; no human face, skin or humanoid anatomy. Element: warm brown and ochre palette, tiny amber crystal accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: fairy_earth_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "39b23620be0c5de5d1c81dee31c6206638ae13da666a742dd550671c293687a3",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "fairy_fire_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "fairy",
+      "element": "fire",
+      "stage": 1,
+      "key": "fairy_fire_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: NONHUMAN tiny round fairy creature with two small translucent wings, large glossy eyes, tiny rounded paws, chubby body; no human face, skin or humanoid anatomy. Element: coral red and orange palette, tiny flame crest or flame marking. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: fairy_fire_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "05991994ab35e78c99e029576c1ba3f92e49e9916e1572eece362524769403cd",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "fairy_light_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "fairy",
+      "element": "light",
+      "stage": 1,
+      "key": "fairy_light_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: NONHUMAN tiny round fairy creature with two small translucent wings, large glossy eyes, tiny rounded paws, chubby body; no human face, skin or humanoid anatomy. Element: ivory white and gold palette, gentle golden glow accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: fairy_light_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "0eb5ce3dd636b2d03e42efa3aad81cbb8ecd446fa85628ba8e24df7056003a41",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "fairy_nature_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "fairy",
+      "element": "nature",
+      "stage": 1,
+      "key": "fairy_nature_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: NONHUMAN tiny round fairy creature with two small translucent wings, large glossy eyes, tiny rounded paws, chubby body; no human face, skin or humanoid anatomy. Element: fresh green palette, small leaf markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: fairy_nature_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "9c7849ed63260a47dd9bdabdfb6b6b3f33deb00b278ad06f198167dc63022e0a",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "fairy_thunder_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "fairy",
+      "element": "thunder",
+      "stage": 1,
+      "key": "fairy_thunder_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: NONHUMAN tiny round fairy creature with two small translucent wings, large glossy eyes, tiny rounded paws, chubby body; no human face, skin or humanoid anatomy. Element: soft golden yellow palette, tiny lightning bolt markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: fairy_thunder_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "44d0ecc975563f8ee4588ae2239e10d6535b3ab3a967ad4e25ed2a58b10d22d7",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "fairy_water_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "fairy",
+      "element": "water",
+      "stage": 1,
+      "key": "fairy_water_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: NONHUMAN tiny round fairy creature with two small translucent wings, large glossy eyes, tiny rounded paws, chubby body; no human face, skin or humanoid anatomy. Element: aqua and sky blue palette, water droplet markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: fairy_water_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "d3ef5deb6bde51b1573c21fefd81e11021dde85f6c43c8e7d207455334b93ac0",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "fairy_wind_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "fairy",
+      "element": "wind",
+      "stage": 1,
+      "key": "fairy_wind_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: NONHUMAN tiny round fairy creature with two small translucent wings, large glossy eyes, tiny rounded paws, chubby body; no human face, skin or humanoid anatomy. Element: pale mint and ivory palette, subtle breeze swirl markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: fairy_wind_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "dda4e212cd091646f44f6c56660231c0c8f57db7c87a3d5aab8e3cf6dcaddbeb",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "ghost_dark_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "ghost",
+      "element": "dark",
+      "stage": 1,
+      "key": "ghost_dark_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: one friendly round floating baby ghost blob, two huge glossy eyes, smiling mouth, two tiny wisp arms, curled vapor tail; no human anatomy. Element: lavender and deep purple palette, tiny starry shadow markings; friendly and cute. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: ghost_dark_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/ghost_wind_stage1.png",
+        "sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2"
+      }
+    ],
+    "sha256": "28c6893e77ad286126e4b7accd1e8fccabca89070494a2510c60d987a6fd3170",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "ghost_earth_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "ghost",
+      "element": "earth",
+      "stage": 1,
+      "key": "ghost_earth_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: one friendly round floating baby ghost blob, two huge glossy eyes, smiling mouth, two tiny wisp arms, curled vapor tail; no human anatomy. Element: warm brown and ochre palette, tiny amber crystal accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: ghost_earth_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/ghost_wind_stage1.png",
+        "sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2"
+      }
+    ],
+    "sha256": "70ba4fcee25192c41ab4bae5192845603d46ec9e77c737dc1dbcfda362a3d8ee",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "ghost_fire_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "ghost",
+      "element": "fire",
+      "stage": 1,
+      "key": "ghost_fire_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: one friendly round floating baby ghost blob, two huge glossy eyes, smiling mouth, two tiny wisp arms, curled vapor tail; no human anatomy. Element: coral red and orange palette, tiny flame crest or flame marking. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: ghost_fire_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/ghost_wind_stage1.png",
+        "sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2"
+      }
+    ],
+    "sha256": "ccbaa1795ce8e80345012d382fcce300c04df17de15ada946ee1e57a4a727b0d",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "ghost_light_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "ghost",
+      "element": "light",
+      "stage": 1,
+      "key": "ghost_light_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: one friendly round floating baby ghost blob, two huge glossy eyes, smiling mouth, two tiny wisp arms, curled vapor tail; no human anatomy. Element: ivory white and gold palette, gentle golden glow accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: ghost_light_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/ghost_wind_stage1.png",
+        "sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2"
+      }
+    ],
+    "sha256": "f3c73931c668058eca6d997ca9be22ecb35fb8783e554369e13195cc0d323a13",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "ghost_nature_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "ghost",
+      "element": "nature",
+      "stage": 1,
+      "key": "ghost_nature_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: one friendly round floating baby ghost blob, two huge glossy eyes, smiling mouth, two tiny wisp arms, curled vapor tail; no human anatomy. Element: fresh green palette, small leaf markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: ghost_nature_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/ghost_wind_stage1.png",
+        "sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2"
+      }
+    ],
+    "sha256": "31edc1d1213b4991447b41e59e7fa11f9590212c157135f02731a10038f444be",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "ghost_thunder_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "ghost",
+      "element": "thunder",
+      "stage": 1,
+      "key": "ghost_thunder_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: one friendly round floating baby ghost blob, two huge glossy eyes, smiling mouth, two tiny wisp arms, curled vapor tail; no human anatomy. Element: soft golden yellow palette, tiny lightning bolt markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: ghost_thunder_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/ghost_wind_stage1.png",
+        "sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2"
+      }
+    ],
+    "sha256": "34eb8cc5d1ee1a15da8a2495d462a3be7af0ece62fd6faf71ccccfed3f22875c",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "ghost_water_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "ghost",
+      "element": "water",
+      "stage": 1,
+      "key": "ghost_water_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: one friendly round floating baby ghost blob, two huge glossy eyes, smiling mouth, two tiny wisp arms, curled vapor tail; no human anatomy. Element: aqua and sky blue palette, water droplet markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: ghost_water_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/ghost_wind_stage1.png",
+        "sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2"
+      }
+    ],
+    "sha256": "0fc28fb0f26cf6d4233c1b69ef42ceb756a079260c46ea43ee32c3df0b6b2f22",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "request": {
+      "species": "ghost",
+      "element": "wind",
+      "stage": 1,
+      "branch": null,
+      "key": "ghost_wind_stage1",
+      "pet_id": "0603a0b75a28733949ae053d0aff1c8b",
+      "revision": "anchored-growth-v4",
+      "seed": 42101
+    },
+    "file": "ghost_wind_stage1.png",
+    "seed": 42101,
+    "preview_seed": 42,
+    "seed_offset": 0,
+    "reference": null,
+    "prompt": "round baby ghost blob, two huge glossy green eyes, tiny wisp arms, curled smoke tail, smiling face\npale mint green and white palette with restrained breeze curls\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins",
+    "style_reference": null,
+    "style_reference_sha256": null,
+    "ipadapter": null,
+    "reference_sha256": null,
+    "sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2",
+    "checkpoint": "DreamShaper_8_pruned.safetensors",
+    "source": "approved-anchor",
+    "render": {
+      "width": 640,
+      "height": 640,
+      "reference_size": 640,
+      "steps": 32,
+      "cfg": 5.5,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    },
+    "seconds": 0.02,
+    "copied_from": "assets/anchored_evolution/ghost_wind_stage1.png"
+  },
+  {
+    "file": "machine_dark_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "machine",
+      "element": "dark",
+      "stage": 1,
+      "key": "machine_dark_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby robot with riveted metallic shell, two huge round LED eyes, tiny mechanical arms and feet. Element: lavender and deep purple palette, tiny starry shadow markings; friendly and cute. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: machine_dark_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/machine_fire_stage1.png",
+        "sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3"
+      }
+    ],
+    "sha256": "feefbebf65cbf1a7be51412b4d8620dd28ca4301d55ef2a37138df93a26b0ab4",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "machine_earth_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "machine",
+      "element": "earth",
+      "stage": 1,
+      "key": "machine_earth_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby robot with riveted metallic shell, two huge round LED eyes, tiny mechanical arms and feet. Element: warm brown and ochre palette, tiny amber crystal accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: machine_earth_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/machine_fire_stage1.png",
+        "sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3"
+      }
+    ],
+    "sha256": "d316690bd1a9c195a97b2727d42c5d9068b28d70af7cdfaa42c349b0922aa5a2",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "request": {
+      "species": "machine",
+      "element": "fire",
+      "stage": 1,
+      "branch": null,
+      "key": "machine_fire_stage1",
+      "pet_id": "03412110a619073355d02bc49f3720b1",
+      "revision": "anchored-growth-v4",
+      "seed": 42101
+    },
+    "file": "machine_fire_stage1.png",
+    "seed": 42101,
+    "preview_seed": 42,
+    "seed_offset": 0,
+    "reference": null,
+    "prompt": "round baby robot, orange metal shell, two huge round glowing LED eyes, tiny mechanical arms and feet, small flame crest\n(red and orange body:1.3), small flames\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins",
+    "style_reference": null,
+    "style_reference_sha256": null,
+    "ipadapter": null,
+    "reference_sha256": null,
+    "sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3",
+    "checkpoint": "DreamShaper_8_pruned.safetensors",
+    "source": "approved-anchor",
+    "render": {
+      "width": 640,
+      "height": 640,
+      "reference_size": 640,
+      "steps": 32,
+      "cfg": 5.5,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    },
+    "seconds": 0.03,
+    "copied_from": "assets/anchored_evolution/machine_fire_stage1.png"
+  },
+  {
+    "file": "machine_light_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "machine",
+      "element": "light",
+      "stage": 1,
+      "key": "machine_light_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby robot with riveted metallic shell, two huge round LED eyes, tiny mechanical arms and feet. Element: ivory white and gold palette, gentle golden glow accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: machine_light_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/machine_fire_stage1.png",
+        "sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3"
+      }
+    ],
+    "sha256": "5af78552f203dc5a1743d218683232ddc6aebeefb8cc841e75056a702f57706b",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "machine_nature_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "machine",
+      "element": "nature",
+      "stage": 1,
+      "key": "machine_nature_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby robot with riveted metallic shell, two huge round LED eyes, tiny mechanical arms and feet. Element: fresh green palette, small leaf markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: machine_nature_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/machine_fire_stage1.png",
+        "sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3"
+      }
+    ],
+    "sha256": "ffe3fd310a69ef83bda8a574585939fedba0c6ddb6c35ca2accb903f102aff69",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "machine_thunder_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "machine",
+      "element": "thunder",
+      "stage": 1,
+      "key": "machine_thunder_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby robot with riveted metallic shell, two huge round LED eyes, tiny mechanical arms and feet. Element: soft golden yellow palette, tiny lightning bolt markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: machine_thunder_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/machine_fire_stage1.png",
+        "sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3"
+      }
+    ],
+    "sha256": "dbae1546ef542b53768c361089733c1098c1dbbe3b766f1096ca49a3f6320510",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "machine_water_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "machine",
+      "element": "water",
+      "stage": 1,
+      "key": "machine_water_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby robot with riveted metallic shell, two huge round LED eyes, tiny mechanical arms and feet. Element: aqua and sky blue palette, water droplet markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: machine_water_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/machine_fire_stage1.png",
+        "sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3"
+      }
+    ],
+    "sha256": "5524e8c37e11962559972e15e55f076c338b6e8b551f6b4d9849c083ff211867",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "machine_wind_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "machine",
+      "element": "wind",
+      "stage": 1,
+      "key": "machine_wind_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby robot with riveted metallic shell, two huge round LED eyes, tiny mechanical arms and feet. Element: pale mint and ivory palette, subtle breeze swirl markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: machine_wind_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/machine_fire_stage1.png",
+        "sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3"
+      }
+    ],
+    "sha256": "4f0e17336e6ed8eb1c9c5b3ee343c6c7e412b556ba51544933aaed2d300fc8b4",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "mammal_dark_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "mammal",
+      "element": "dark",
+      "stage": 1,
+      "key": "mammal_dark_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby bear cub, soft fluffy fur, two rounded bear ears, four stubby paws, tiny short tail. Not a cat. Element: lavender and deep purple palette, tiny starry shadow markings; friendly and cute. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: mammal_dark_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "b9c4985733b318d35fa9acae3cbc9a9ed58de7acbaab3a37997d5e540507194c",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "mammal_earth_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "mammal",
+      "element": "earth",
+      "stage": 1,
+      "key": "mammal_earth_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration matching the reference image's exact soft painted illustration style, delicate warm outlines, large glossy expressive eyes, brush textures, proportions and quality. Reference is STYLE ONLY, NOT the plant species. Subject: a cute baby earth-element mammal, small brown and ochre bear cub with tiny amber crystal accents, two round ears, four short paws, a tiny tail. Full body centered with generous white margins; plain white background and a soft contact shadow. Keep the whole creature unobstructed, no egg, orb, circle, frame, foliage, tree, scenery, lettering, 3D rendering or other character. This is the mammal_earth starter asset for Notebuddy.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "178a35eab63d175116488a238b197d61875612d8222e41b4053a2808644da544",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "mammal_fire_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "mammal",
+      "element": "fire",
+      "stage": 1,
+      "key": "mammal_fire_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby bear cub, soft fluffy fur, two rounded bear ears, four stubby paws, tiny short tail. Not a cat. Element: coral red and orange palette, tiny flame crest or flame marking. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: mammal_fire_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "108b1fdecf2d61a4ccbb674a4964d122c0298c17f6035791387fa58fed3d9dcc",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "mammal_light_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "mammal",
+      "element": "light",
+      "stage": 1,
+      "key": "mammal_light_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby bear cub, soft fluffy fur, two rounded bear ears, four stubby paws, tiny short tail. Not a cat. Element: ivory white and gold palette, gentle golden glow accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: mammal_light_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "cee2fb4acb45699122b3abb6733f90d9de0f927da5971eed531a03014796ab91",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "mammal_nature_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "mammal",
+      "element": "nature",
+      "stage": 1,
+      "key": "mammal_nature_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby bear cub, soft fluffy fur, two rounded bear ears, four stubby paws, tiny short tail. Not a cat. Element: fresh green palette, small leaf markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: mammal_nature_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "35e83fa50ff7b282068501b6aff5580c552aacfd284cf033e1e581887b69db9d",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "mammal_thunder_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "mammal",
+      "element": "thunder",
+      "stage": 1,
+      "key": "mammal_thunder_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby bear cub, soft fluffy fur, two rounded bear ears, four stubby paws, tiny short tail. Not a cat. Element: soft golden yellow palette, tiny lightning bolt markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: mammal_thunder_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "426f784a96932b77fdccf3e6a42baae2b32444fc1f46fb31ad6ed9c384822b8f",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "mammal_water_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "mammal",
+      "element": "water",
+      "stage": 1,
+      "key": "mammal_water_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby bear cub, soft fluffy fur, two rounded bear ears, four stubby paws, tiny short tail. Not a cat. Element: aqua and sky blue palette, water droplet markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: mammal_water_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "6f6a53ee8843682fdbd981c6650da07032ed6109b4c2b7b7acdbc6564fd22e92",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "mammal_wind_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "mammal",
+      "element": "wind",
+      "stage": 1,
+      "key": "mammal_wind_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby bear cub, soft fluffy fur, two rounded bear ears, four stubby paws, tiny short tail. Not a cat. Element: pale mint and ivory palette, subtle breeze swirl markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: mammal_wind_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "6619ada26af3c70738494c80091185007b6a63931fa7d88c9b798c8a5d730b4f",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "monster_dark_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "monster",
+      "element": "dark",
+      "stage": 1,
+      "key": "monster_dark_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: friendly baby kaiju monster, tiny horns, chubby rounded body, two stubby arms and two short feet, small curved tail. Element: lavender and deep purple palette, tiny starry shadow markings; friendly and cute. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: monster_dark_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "62d7b4d537aa37e17387a76929cc5ffc726b966617c98f336217281506bed791",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "monster_earth_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "monster",
+      "element": "earth",
+      "stage": 1,
+      "key": "monster_earth_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: friendly baby kaiju monster, tiny horns, chubby rounded body, two stubby arms and two short feet, small curved tail. Element: warm brown and ochre palette, tiny amber crystal accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: monster_earth_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "b7a6773894f428d6adad5977b7164daea13f52094e33b6e901b362c27bfe1d14",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "monster_fire_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "monster",
+      "element": "fire",
+      "stage": 1,
+      "key": "monster_fire_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: friendly baby kaiju monster, tiny horns, chubby rounded body, two stubby arms and two short feet, small curved tail. Element: coral red and orange palette, tiny flame crest or flame marking. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: monster_fire_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "69f6b9d40c9e23568008ed3b76e6d6b109606b61067e4f06972001445072ea7f",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "monster_light_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "monster",
+      "element": "light",
+      "stage": 1,
+      "key": "monster_light_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: friendly baby kaiju monster, tiny horns, chubby rounded body, two stubby arms and two short feet, small curved tail. Element: ivory white and gold palette, gentle golden glow accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: monster_light_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "091544f89e93e40a5cebe8a803fe81ae7caa2a889c14b0398ab9173caf66fe00",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "monster_nature_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "monster",
+      "element": "nature",
+      "stage": 1,
+      "key": "monster_nature_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: friendly baby kaiju monster, tiny horns, chubby rounded body, two stubby arms and two short feet, small curved tail. Element: fresh green palette, small leaf markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: monster_nature_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "930f44957025e5238d13789c8d2caffe15e445a8a4a9dc1fc178aa3d959527e2",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "monster_thunder_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "monster",
+      "element": "thunder",
+      "stage": 1,
+      "key": "monster_thunder_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: friendly baby kaiju monster, tiny horns, chubby rounded body, two stubby arms and two short feet, small curved tail. Element: soft golden yellow palette, tiny lightning bolt markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: monster_thunder_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "c54fe67c8a9c9bb2d8be0210151a322a9c00b05200afeffb5cd63b97319c893c",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "monster_water_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "monster",
+      "element": "water",
+      "stage": 1,
+      "key": "monster_water_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: friendly baby kaiju monster, tiny horns, chubby rounded body, two stubby arms and two short feet, small curved tail. Element: aqua and sky blue palette, water droplet markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: monster_water_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "d8a89735c4bd0e6c74f25e023a4efe718985b88f86ae3c1df787dd97c185663c",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "monster_wind_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "monster",
+      "element": "wind",
+      "stage": 1,
+      "key": "monster_wind_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: friendly baby kaiju monster, tiny horns, chubby rounded body, two stubby arms and two short feet, small curved tail. Element: pale mint and ivory palette, subtle breeze swirl markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: monster_wind_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "65630502453579f1082d9c1563b1b921d2eb1bdbd68518766e0c7b2a1048f96f",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "plant_dark_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "plant",
+      "element": "dark",
+      "stage": 1,
+      "key": "plant_dark_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby leaf kitten, four tiny paws, leaf sprout crown, curled vine tail, cream muzzle. Element: lavender and deep purple palette, tiny starry shadow markings; friendly and cute. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: plant_dark_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "fbf5e701bc35093baf85ad18cbc3cb4fe9cd35f2a12687b4e09e2ec85df07710",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "plant_earth_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "plant",
+      "element": "earth",
+      "stage": 1,
+      "key": "plant_earth_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby leaf kitten, four tiny paws, leaf sprout crown, curled vine tail, cream muzzle. Element: warm brown and ochre palette, tiny amber crystal accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: plant_earth_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "50c4807ed45553ef618d64b6ded0a95ffb69900c26acc786fc00cd5716935a19",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "plant_fire_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "plant",
+      "element": "fire",
+      "stage": 1,
+      "key": "plant_fire_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby leaf kitten, four tiny paws, leaf sprout crown, curled vine tail, cream muzzle. Element: coral red and orange palette, tiny flame crest or flame marking. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: plant_fire_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "14a267a59850a4a8023c3cdd1f33bf3061156a92643e49905bf53c871e3c12bc",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "plant_light_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "plant",
+      "element": "light",
+      "stage": 1,
+      "key": "plant_light_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby leaf kitten, four tiny paws, leaf sprout crown, curled vine tail, cream muzzle. Element: ivory white and gold palette, gentle golden glow accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: plant_light_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "09306b51b2b62cfd841c16e16bf790486cbc22702fec7720b5c5a6d08923956d",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "request": {
+      "species": "plant",
+      "element": "nature",
+      "stage": 1,
+      "branch": null,
+      "key": "plant_nature_stage1",
+      "pet_id": "bda735ab51687c81e8d35bd64035c461",
+      "revision": "anchored-growth-v4",
+      "seed": 42101
+    },
+    "file": "plant_nature_stage1.png",
+    "seed": 42101,
+    "preview_seed": 42,
+    "seed_offset": 0,
+    "reference": null,
+    "prompt": "round baby leaf kitten, oversized head, four little paws, curled vine tail, leaf sprout crown, glossy green eyes, cream muzzle\n(green body and pale green leaves:1.3), soft green palette\n(one creature alone:1.3), (full body:1.2), (plain white background:1.3), (soft painted game character illustration:1.2), smooth warm shading, delicate warm outlines, pastel colors, generous empty margins",
+    "style_reference": null,
+    "style_reference_sha256": null,
+    "ipadapter": null,
+    "reference_sha256": null,
+    "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0",
+    "checkpoint": "DreamShaper_8_pruned.safetensors",
+    "source": "approved-anchor",
+    "render": {
+      "width": 640,
+      "height": 640,
+      "reference_size": 640,
+      "steps": 32,
+      "cfg": 5.5,
+      "sampler": "dpmpp_2m",
+      "scheduler": "karras",
+      "denoise": 1.0
+    },
+    "seconds": 0.03,
+    "copied_from": "assets/anchored_evolution/plant_nature_stage1.png"
+  },
+  {
+    "file": "plant_thunder_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "plant",
+      "element": "thunder",
+      "stage": 1,
+      "key": "plant_thunder_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby leaf kitten, four tiny paws, leaf sprout crown, curled vine tail, cream muzzle. Element: soft golden yellow palette, tiny lightning bolt markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: plant_thunder_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "fab6bb21df59d510358f056073b420474c671f7aa38fa8268831b676041e6e67",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "plant_water_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "plant",
+      "element": "water",
+      "stage": 1,
+      "key": "plant_water_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby leaf kitten, four tiny paws, leaf sprout crown, curled vine tail, cream muzzle. Element: aqua and sky blue palette, water droplet markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: plant_water_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "dc40f1f37de160310ff49046c2e5c4ea87ab56b2d293c1bff1ef0e6d6e95591e",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "plant_wind_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "plant",
+      "element": "wind",
+      "stage": 1,
+      "key": "plant_wind_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby leaf kitten, four tiny paws, leaf sprout crown, curled vine tail, cream muzzle. Element: pale mint and ivory palette, subtle breeze swirl markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: plant_wind_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "857d5a81cdcf10f2035d9a31f49244797e4e60433d259c4cb916ab295d18e90b",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "reptile_dark_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "reptile",
+      "element": "dark",
+      "stage": 1,
+      "key": "reptile_dark_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby lizard, smooth scales, four short legs and a curled tail, big friendly eyes. Element: lavender and deep purple palette, tiny starry shadow markings; friendly and cute. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: reptile_dark_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "297a7056ac7169ec824eb6a2f8eca52af34ba6440a89f33fa42672a933d6a2dd",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "reptile_earth_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "reptile",
+      "element": "earth",
+      "stage": 1,
+      "key": "reptile_earth_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby lizard, smooth scales, four short legs and a curled tail, big friendly eyes. Element: warm brown and ochre palette, tiny amber crystal accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: reptile_earth_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "49e084e91b79a4082f2e417eaac188c3490437ddebcd60c2f834b3bd6f35de0b",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "reptile_fire_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "reptile",
+      "element": "fire",
+      "stage": 1,
+      "key": "reptile_fire_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby lizard, smooth scales, four short legs and a curled tail, big friendly eyes. Element: coral red and orange palette, tiny flame crest or flame marking. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: reptile_fire_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "8afa18c9cb933a2280d998b207ba84d919527c530ffd8054f2f444d4fd7a97c1",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "reptile_light_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "reptile",
+      "element": "light",
+      "stage": 1,
+      "key": "reptile_light_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby lizard, smooth scales, four short legs and a curled tail, big friendly eyes. Element: ivory white and gold palette, gentle golden glow accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: reptile_light_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "30f1ef322e99becef975f87e91cfe65e4844886fec168a1024aa6ee2d5987faf",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "reptile_nature_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "reptile",
+      "element": "nature",
+      "stage": 1,
+      "key": "reptile_nature_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby lizard, smooth scales, four short legs and a curled tail, big friendly eyes. Element: fresh green palette, small leaf markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: reptile_nature_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "e6a6960d660825b05f8f535f76b114e437fe016f25deb7bd6eb24a94f86e3fa5",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "reptile_thunder_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "reptile",
+      "element": "thunder",
+      "stage": 1,
+      "key": "reptile_thunder_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby lizard, smooth scales, four short legs and a curled tail, big friendly eyes. Element: soft golden yellow palette, tiny lightning bolt markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: reptile_thunder_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "c4b5cb8ed4a0277b8cb47951af6f19651386a2237aa18c16aa6eece7d22fdc06",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "reptile_water_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "reptile",
+      "element": "water",
+      "stage": 1,
+      "key": "reptile_water_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby lizard, smooth scales, four short legs and a curled tail, big friendly eyes. Element: aqua and sky blue palette, water droplet markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: reptile_water_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "a15216005449b23182b8b7e268f6d0232e55032a5fedf9ff48f79ccf75575bf9",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  },
+  {
+    "file": "reptile_wind_stage1.png",
+    "source": "built-in-imagegen",
+    "request": {
+      "species": "reptile",
+      "element": "wind",
+      "stage": 1,
+      "key": "reptile_wind_stage1",
+      "revision": "starter-v1"
+    },
+    "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: baby lizard, smooth scales, four short legs and a curled tail, big friendly eyes. Element: pale mint and ivory palette, subtle breeze swirl markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: reptile_wind_stage1.",
+    "references": [
+      {
+        "file": "assets/anchored_evolution/plant_nature_stage1.png",
+        "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+      }
+    ],
+    "sha256": "27f254a72a224628923d1dd5fcc3515a635a3c7e99d6882c0dffa96bb713f432",
+    "dimensions": [
+      1254,
+      1254
+    ]
+  }
+]

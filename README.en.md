@@ -35,7 +35,7 @@ The repository is named `notebook-pets`; the service name is **Notebuddy (노트
 | Artwork | Per-pet artwork and evolution with local ComfyUI and IP-Adapter |
 | Agent integration | Shared Python tools, stdio MCP, and a Discord gateway |
 
-Browse the [character showcase](assets/examples/README.md) and the [evolution gallery](assets/anchored_evolution/index.html) for plant, machine, ghost, and dragon growth, including light/dark branches. Earlier artwork for all 72 starter combinations is preserved in `assets/samples/`.
+Browse the [character showcase](assets/examples/README.md) and the [evolution gallery](assets/anchored_evolution/index.html) for plant, machine, ghost, and dragon growth, including light/dark branches. Browse all 72 species/element combinations used by Anna in the [starter gallery](assets/starters-v1/index.html).
 
 ## Architecture and principles
 

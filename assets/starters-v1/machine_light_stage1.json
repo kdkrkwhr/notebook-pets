@@ -1,0 +1,23 @@
+{
+  "file": "machine_light_stage1.png",
+  "source": "built-in-imagegen",
+  "request": {
+    "species": "machine",
+    "element": "light",
+    "stage": 1,
+    "key": "machine_light_stage1",
+    "revision": "starter-v1"
+  },
+  "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: round baby robot with riveted metallic shell, two huge round LED eyes, tiny mechanical arms and feet. Element: ivory white and gold palette, gentle golden glow accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: machine_light_stage1.",
+  "references": [
+    {
+      "file": "assets/anchored_evolution/machine_fire_stage1.png",
+      "sha256": "fabf3149de0c322d89493d6f14a58309a9715ab2ee61f3add44aaafdf9674ac3"
+    }
+  ],
+  "sha256": "5af78552f203dc5a1743d218683232ddc6aebeefb8cc841e75056a702f57706b",
+  "dimensions": [
+    1254,
+    1254
+  ]
+}

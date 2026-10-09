@@ -1,0 +1,23 @@
+{
+  "file": "ghost_thunder_stage1.png",
+  "source": "built-in-imagegen",
+  "request": {
+    "species": "ghost",
+    "element": "thunder",
+    "stage": 1,
+    "key": "ghost_thunder_stage1",
+    "revision": "starter-v1"
+  },
+  "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: one friendly round floating baby ghost blob, two huge glossy eyes, smiling mouth, two tiny wisp arms, curled vapor tail; no human anatomy. Element: soft golden yellow palette, tiny lightning bolt markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: ghost_thunder_stage1.",
+  "references": [
+    {
+      "file": "assets/anchored_evolution/ghost_wind_stage1.png",
+      "sha256": "8022fde7fbd5bd68987601d0bbf3e29e788c5c2204d45c1efceb6144fd164ea2"
+    }
+  ],
+  "sha256": "34eb8cc5d1ee1a15da8a2495d462a3be7af0ece62fd6faf71ccccfed3f22875c",
+  "dimensions": [
+    1254,
+    1254
+  ]
+}

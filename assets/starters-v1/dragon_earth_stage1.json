@@ -1,0 +1,23 @@
+{
+  "file": "dragon_earth_stage1.png",
+  "source": "built-in-imagegen",
+  "request": {
+    "species": "dragon",
+    "element": "earth",
+    "stage": 1,
+    "key": "dragon_earth_stage1",
+    "revision": "starter-v1"
+  },
+  "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: cute baby dragon, big round head, short neck, four stubby paws, curled tail, tiny horns, small folded leathery wings, soft scales. Element: warm brown and ochre palette, tiny amber crystal accents. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: dragon_earth_stage1.",
+  "references": [
+    {
+      "file": "assets/anchored_evolution/dragon_light_stage1.png",
+      "sha256": "30dda7058035ee1fe20daf110bf75beb4db11d38865b791a3065c4c15dddf48c"
+    }
+  ],
+  "sha256": "1bf61218653deb082807763486e97adbadfb14a10a731bfc9ea3b107d638e846",
+  "dimensions": [
+    1254,
+    1254
+  ]
+}

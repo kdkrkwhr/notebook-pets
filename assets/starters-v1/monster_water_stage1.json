@@ -1,0 +1,23 @@
+{
+  "file": "monster_water_stage1.png",
+  "source": "built-in-imagegen",
+  "request": {
+    "species": "monster",
+    "element": "water",
+    "stage": 1,
+    "key": "monster_water_stage1",
+    "revision": "starter-v1"
+  },
+  "prompt": "Create ONE square game pet illustration for Notebuddy. Match the reference's soft painted character illustration style, warm delicate outlines, subtle painted textures and large expressive glossy eyes. Reference is STYLE ONLY; draw the following different species/element. Subject: friendly baby kaiju monster, tiny horns, chubby rounded body, two stubby arms and two short feet, small curved tail. Element: aqua and sky blue palette, water droplet markings. Baby proportions, oversized head, tiny body, cheerful lovable expression. Entire single character centered, all ears, paws, tail and wings within frame, generous empty margins. Plain white background with only a soft contact shadow. No text, letters, watermark, notebook, desk, scenery, egg, orb, decorative circle or border, background foliage, extra limbs or extra faces, 3D render or photorealism. Keep the requested element palette; don't borrow unrelated green leaves or fire ornaments from the reference. Asset: monster_water_stage1.",
+  "references": [
+    {
+      "file": "assets/anchored_evolution/plant_nature_stage1.png",
+      "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+    }
+  ],
+  "sha256": "d8a89735c4bd0e6c74f25e023a4efe718985b88f86ae3c1df787dd97c185663c",
+  "dimensions": [
+    1254,
+    1254
+  ]
+}

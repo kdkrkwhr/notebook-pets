@@ -1,0 +1,23 @@
+{
+  "file": "mammal_earth_stage1.png",
+  "source": "built-in-imagegen",
+  "request": {
+    "species": "mammal",
+    "element": "earth",
+    "stage": 1,
+    "key": "mammal_earth_stage1",
+    "revision": "starter-v1"
+  },
+  "prompt": "Create ONE square game pet illustration matching the reference image's exact soft painted illustration style, delicate warm outlines, large glossy expressive eyes, brush textures, proportions and quality. Reference is STYLE ONLY, NOT the plant species. Subject: a cute baby earth-element mammal, small brown and ochre bear cub with tiny amber crystal accents, two round ears, four short paws, a tiny tail. Full body centered with generous white margins; plain white background and a soft contact shadow. Keep the whole creature unobstructed, no egg, orb, circle, frame, foliage, tree, scenery, lettering, 3D rendering or other character. This is the mammal_earth starter asset for Notebuddy.",
+  "references": [
+    {
+      "file": "assets/anchored_evolution/plant_nature_stage1.png",
+      "sha256": "8a04418d9884af5155d937daa0966efb039a3ed73d1604f018d583d82b7308a0"
+    }
+  ],
+  "sha256": "178a35eab63d175116488a238b197d61875612d8222e41b4053a2808644da544",
+  "dimensions": [
+    1254,
+    1254
+  ]
+}
