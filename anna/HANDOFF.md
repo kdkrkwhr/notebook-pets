@@ -4,12 +4,22 @@
 
 - 앱 `@kdkrkwhr/notebuddy`, ID **450**, 상태 **draft** (비공개)
 - [개발자 콘솔](https://anna.partners/developer?app=450&tab=versions)
-- 고정된 앱 버전 **0.1.4**, version ID **1180**
+- 고정된 앱 버전 **0.1.5**, version ID **1192**
 - 게임 도구 `tool-kdkrkwhr-notebuddy-game-hc8mw4gu`, Executa ID **1193**
 - 고정된 도구 버전 **0.1.5**, Executa version ID **671**
-- 작업 초안 revision **6**, UI 95개 파일. 본인 계정에는 **0.0.0-draft** 설치
+- 작업 초안 revision **7**, UI 95개 파일. 본인 계정에는 **0.0.0-draft** 설치
 - Windows/Linux x86_64 패키지를 CI에서 빌드·검사한 뒤 Anna CDN에 업로드
 - 심사 제출·스토어 공개는 하지 않았습니다. 콘솔은 심사 승인 즉시 공개된다고 안내합니다.
+
+## 개인정보 안내·스토어 자료 · 0.1.5
+
+영문 [데이터 처리 안내](PRIVACY.md), 앱 내 한·영 Privacy & data 안내창과 실제 UI 스크린샷 3장을 추가했습니다. `apps sync-meta`로 Privacy URL과 세 장의 스크린샷을 비공개 Listing에 등록했습니다. 스크린샷 촬영 범위와 로컬 legacy 저장소의 검증 한계는 [store/README.md](store/README.md)에 기록했습니다. 전체 데이터 삭제는 구현·검증 완료가 아니며, 공개 GitHub 이슈를 비공개 접수 창구로 설명하지 않습니다.
+
+UI 13개 테스트와 strict 검사, [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37918379218), [기존 엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37918379199)가 통과했습니다. 두 워크플로 ID의 정확한 이름은 링크에서 확인할 수 있습니다. 도구 소스/버전은 변경하지 않았고 검증된 0.1.5 바이너리(Executa version 671)를 재사용했습니다.
+
+비공개 초안 설치 후 앱 창을 닫고 다시 열어 영어·정상 연결, 기존 모찌 10 XP, 대화 2개, AI 초상화 로딩, 새 개인정보 안내창 열기/닫기를 확인했습니다. 게임 행동이나 유료 AI 호출은 실행하지 않았습니다. 별도 로컬 브라우저에서 영어/한국어 안내창과 360px 폭의 가로 넘침 없음도 검증했습니다.
+
+전체 삭제 경로와 Anna 원자적 최초 생성 지원 확인, 최종 후보 검증은 남아 있습니다. 심사 제출·공개를 실행하지 않았습니다.
 
 ## 저장 정책 변경 · 비공개 배포·이행 확인
 
@@ -17,7 +27,7 @@
 
 Install draft 후 실제 앱에서 기존 모찌의 `request_id_prefix=nb2:0:`을 확인했습니다. 이미 존재하는 파트너에 대한 start 요청을 한 번 보내 `already_started` 거절 결과와 함께 새 저장 형식으로 이행했습니다. XP나 게임 보상을 변경하지 않았습니다. 창을 닫고 다시 열어 `nb2:1:`, 모찌 10 XP, 대화 2개, AI 초상화의 정상 로딩을 확인했습니다. 새 파트너·유료 AI 대화·이미지를 생성하지 않았습니다. 이 계정의 게임 저장은 이제 새 envelope 형식이므로 도구 0.1.4 이하로 되돌리지 마세요.
 
-실제 Listing에서 스크린샷·cover·privacy URL이 비어 있음을 확인했습니다. [REVIEW_READINESS.md](REVIEW_READINESS.md)에 플랫폼 필수 조건과 프로젝트 출시 차단 항목을 구분했습니다. 심사 승인과 동시에 공개될 수 있으므로 아직 제출하지 않습니다.
+0.1.4 점검 당시 Listing에서 스크린샷·cover·privacy URL이 비어 있었습니다. 0.1.5에서 스크린샷과 privacy URL을 등록했고 cover는 비워 두었습니다. [REVIEW_READINESS.md](REVIEW_READINESS.md)에 플랫폼 필수 조건과 프로젝트 출시 차단 항목을 구분했습니다. 심사 승인과 동시에 공개될 수 있으므로 아직 제출하지 않습니다.
 
 ## 최초 생성 보호 보강 · 비공개 배포 확인
 
