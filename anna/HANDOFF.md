@@ -7,9 +7,21 @@
 - 고정된 앱 버전 **0.1.11**, version ID **1215**
 - 게임 도구 `tool-kdkrkwhr-notebuddy-game-hc8mw4gu`, Executa ID **1193**
 - 고정된 도구 버전 **0.1.8**, Executa version ID **686**
-- 작업 초안 revision **13**, UI 98개 파일. 본인 계정에는 **0.0.0-draft** 설치
+- 설치된 초안은 기존 UI 98개 파일입니다. 새 작업 초안은 revision **14**, UI 100개 파일 업로드가 WAF 차단으로 `initializing` 상태입니다. 현재 작업 초안을 설치하거나 cut하지 마세요.
 - Windows/Linux x86_64 패키지를 CI에서 빌드·검사한 뒤 Anna CDN에 업로드
 - 심사 제출·스토어 공개는 하지 않았습니다. 콘솔은 심사 승인 즉시 공개된다고 안내합니다.
+
+## 돌봄 반응·전투 화면·진화 기준 변경 — 구현 완료, Anna 업로드 차단
+
+소스 후보 앱 **0.2.0** / 도구 **0.1.9**입니다. 기능 커밋 `c82e4b2`의 [Anna Windows/Linux CI 및 패키지 빌드](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37942861272), [엔진 Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37942861242)가 성공했습니다. 엔진 149개와 자체 검사 6개, Anna 도구 47개, UI 35개, 브라우저 19개를 검증했습니다. 로컬 엔진 검사에서 빠진 MCP 의존성 테스트도 CI에서는 실행됩니다. [기능·저장 전환·성장 시뮬레이션](INTERACTIONS.md)을 참고하세요.
+
+밥·놀이 등 성공한 행동을 채팅 활동과 반응으로 표시합니다. 선택형 AI 반응은 기본 꺼짐이며 Anna 사용량을 소모합니다. 게임 저장 후 처리하고 실패 시 기본 반응을 유지하며, 영수증 재전송/반응 저장 재시도로 AI를 중복 호출하지 않습니다. 산책 상대 이미지와 서버 결과를 재생하는 2D 전투 화면을 추가했습니다. 모바일 360px, 건너뛰기, 동작 줄이기를 검증했습니다. 성장 단계는 1/10/30/50레벨이며 필요 경험치·기존 펫·XP·그림은 유지합니다.
+
+성공한 CI의 도구 0.1.9 Windows/Linux 패키지는 로컬 `executas/notebuddy/dist/`에 내려받았습니다. `apps push`가 manifest를 작업 revision 14에 반영했으나 `POST /api/v1/developer/apps/450/working/bundle/file`이 **403 WAF 차단**으로 실패했습니다. 일반 재시도와 동일 공식 API를 통한 단일 파일 진단에서도 확인됐습니다. 응답은 사이트 관리자에게 문의하라고 명시하며, 진단 Request ID는 `a47e086c59b0afd4-NRT`입니다. 인증 정보·계정 토큰·IP는 이 문서에 기록하지 않습니다.
+
+Anna 측 업로드 차단이 해제될 때까지 **0.2.0 cut·Install draft·심사 제출·공개를 실행하지 않았습니다.** 현재 최신 고정 버전은 0.1.11 / 도구 0.1.8입니다. 실패 뒤 기존 설치 화면에서 동동이 20 XP와 개인 그림 로딩, 새 기능 컨트롤 미적용을 읽기 전용으로 확인했습니다. 실제 게임 행동·삭제·초기화·유료 AI 요청은 실행하지 않았습니다.
+
+재개 시 현재 working revision을 조회하고, 최신 성공 CI의 패키지를 확보한 뒤 `apps push --no-install-local --profile binary --if-match <현재 revision>`을 완료하세요. 업로드와 finalize가 모두 성공한 뒤에만 `apps cut 0.2.0`, 메타데이터 동기화, 비공개 설치 검증을 진행합니다. `apps status notebuddy`는 고정 버전만 보여 주므로 작업 revision과 혼동하지 마세요. 외부 문의는 전송하지 않았습니다.
 
 ## 기본 이미지 통일 · 앱 0.1.11 / 도구 0.1.8 유지
 

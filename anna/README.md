@@ -6,7 +6,7 @@ Notebook Pets의 원본 Python 규칙을 사용하는 Anna 앱입니다. 기존 
 
 - 앱: `@kdkrkwhr/notebuddy` (ID 450)
 - [개발자 콘솔](https://anna.partners/developer?app=450)
-- 앱 버전: 0.2.0 / 게임 도구 버전: 0.1.9
+- 소스 후보: 앱 0.2.0 / 게임 도구 0.1.9. 설치된 비공개 버전은 0.1.11 / 0.1.8이며 새 UI 업로드가 Anna WAF에 차단되어 적용 대기 중입니다. [배포 상태](HANDOFF.md)
 - 상태: 비공개 초안. 서버 등록 및 검증 기록은 HANDOFF.md를 참고하세요. 심사 제출과 스토어 공개는 별도 작업입니다.
 - 다음 작업은 [HANDOFF.md](HANDOFF.md)에 기록했습니다.
 
@@ -77,7 +77,7 @@ npm test
 npm run test:plugin
 ```
 
-2026-10-09 확인: 어댑터·프로토콜·다국어·경합·저장 정책 36개, UI 상태·다국어·요청 13개 통과. 실제 계정에서 친구 생성, 밥 주기, AI 대화 1회, 이미지 생성 1회, APS 이미지 업로드, 새로고침 후 세 종류의 저장 복원을 확인했습니다. 1105px/375px 화면에서 가로 넘침이 없었습니다. Windows/Linux 패키지 모두 초기화·도구 설명·친구 생성·밥 주기 검사를 수행합니다.
+2026-10-09 기능 검증: Anna 도구 47개, UI 상태·반응 35개, 격리 브라우저 19개와 strict 검사를 통과했습니다. 전투·반응 자동 테스트는 실제 계정이나 유료 AI를 호출하지 않습니다. 이전 실제 계정 검증과 최신 배포 결과는 [HANDOFF.md](HANDOFF.md), 저장 전환과 성장 시뮬레이션은 [INTERACTIONS.md](INTERACTIONS.md)를 참고하세요.
 
 ## 패키징 및 초안 갱신
 
@@ -89,7 +89,7 @@ npx anna-app apps push --no-install-local --profile binary
 npx anna-app apps cut <새-버전>
 ```
 
-플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 최초로 등록했던 local 프로필 0.1.0과 구분하기 위해 현재 도구 버전은 0.1.5입니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드해야 합니다.
+플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 최초로 등록했던 local 프로필 0.1.0과 구분하기 위해 현재 도구 버전은 0.1.9입니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드해야 합니다.
 
 `cut`은 검토할 비공개 버전을 만듭니다. `submit-review`는 심사 제출, `release`는 공개이므로 자동 실행하지 않습니다. 심사 전 실제 Anna Agent/Cloud 설치 실행, 소개 이미지·지원 정보, 장기간 저장 크기 및 여러 실행기의 동시 사용을 확인해야 합니다. 실제 설치 초안을 Anna 대시보드에서 실행하여 생성·밥 주기·대화·그림 저장과 재접속 복원까지 확인했습니다. 세부 결과는 HANDOFF.md를 참고하세요.
 
