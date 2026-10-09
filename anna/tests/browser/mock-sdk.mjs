@@ -18,7 +18,7 @@ const runtime={
    if(a.action==='erase')throw Error('offline before removal');
    return {ok:true,exists:!!state.save,etag:'game-etag',erased:false};
   }
-  if(a.command==='status'){if(faults.status)throw Error('offline');return view();}
+  if(a.command==='status'){if(faults.erased)return {ok:false,erased:true,code:'data_erased'};if(faults.status)throw Error('offline');return view();}
   if(faults.delay)await new Promise(r=>setTimeout(r,faults.delay));
   if(receipts.has(a.request_id))return clone(receipts.get(a.request_id));
   if(a.command==='start')state.save=create(a.name);
@@ -27,9 +27,9 @@ const runtime={
   if(faults.lost){faults.lost=false;throw Error('timed out after commit');}
   return response;
  }},
- storage:{get:async({key})=>{if(faults.extras)throw Error('storage unavailable');return {value:clone(state.kv[key]),etag:state.kv[key]?'etag':undefined};},set:async({key,value})=>{if(faults.save)throw Error('storage unavailable');state.kv[key]=clone(value);write(state);return {}; }},
+ storage:{get:async({key})=>{if(faults.extras)throw Error('storage unavailable');return {value:clone(state.kv[key]),etag:state.kv[key]?'etag':undefined};},set:async({key,value})=>{if(faults.save)throw Error('storage unavailable');state.kv[key]=clone(value);write(state);if(faults.lostSave){faults.lostSave=false;throw Error('saved reply lost');}return {}; }},
  llm:{complete:async()=>{calls.push({method:'llm'});if(faults.llm)throw Error('insufficient credit');return {content:{text:'I am happy to see you!'}};}},
  image:{generate:async()=>{calls.push({method:'image'});return {images:[{url:portrait}]};}},
- files:{upload_init:async()=>({put_url:'/fixture-upload',headers:{}}),upload_finalize:async()=>{calls.push({method:'finalize'});if(faults.upload){faults.upload=false;throw Error('upload unavailable');}return {};},download_url:async()=>({get_url:portrait})}
+ files:{list:async()=>({items:Object.entries(state.files||{}).map(([path,etag])=>({path,etag}))}),delete:async({path,if_match})=>{if(faults.delete)throw Error('delete unavailable');if(state.files[path]!==if_match)throw Error('conflict');delete state.files[path];calls.push({method:'delete',path});write(state);},upload_init:async()=>({put_url:'/fixture-upload',headers:{}}),upload_finalize:async()=>{calls.push({method:'finalize'});if(faults.upload){faults.upload=false;throw Error('upload unavailable');}return {};},download_url:async()=>({get_url:portrait})}
 };
 export const AnnaAppRuntime={connect:async()=>{calls.push({method:'connect'});if(faults.connect){faults.connect=false;throw Error('connect timed out');}return runtime;}};

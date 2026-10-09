@@ -1,15 +1,17 @@
 import { AnnaAppRuntime } from '/static/anna-apps/_sdk/latest/index.js';
-import {unwrap,starter,imageKey,normalHistory,mergeHistory,errorText,newAction} from './model.mjs';
+import {unwrap,starter,imageKey,mergeHistory,errorText,newAction} from './model.mjs';
 import {t,loadLanguage,saveLanguage,translateDocument,chatPrompt} from './i18n.mjs';
+
+import {cleanUnusedPortraits} from './portraits.mjs';
 
 const $=selector=>document.querySelector(selector);
 const TOOL=window.__ANNA_TOOL_IDS__?.notebuddy||'tool-dev-notebuddy';
-import {CHAT,ART,erased,ErasedError,mergeSaved,removeAppData} from './data.mjs';
+import {CHAT,ART,ErasedError,mergeSaved,removeAppData} from './data.mjs';
 // Accessing localStorage itself can throw in a restricted iframe.
 let preferences;
 try{preferences=window.localStorage;}catch{preferences=null;}
 let language=loadLanguage(preferences);
-let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingImage=null;
+let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingImage=null,pendingChat=null;
 let removalPreview=null,pendingRemoval=false;
 const tr=(key,values)=>t(language,key,values);
 const problem=error=>errorText(error,language);
@@ -18,6 +20,10 @@ function controls(value){
   busy=value;
   document.querySelectorAll('button,input,select').forEach(e=>e.disabled=value);
   if(!value&&(!anna||pendingRemoval||pendingAction))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
+  $('#retry-chat').hidden=!pendingChat;
+  if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
+  if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage))$('#clean-portraits').disabled=true;
+  if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
   if(!value&&anna&&!pendingRemoval&&!pendingAction&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
 }
 function text(id,value){$(id).textContent=String(value??'');}
@@ -72,20 +78,20 @@ function render(){
   drawChat();
 }
 function forgetCachedData(){
-  history=[];art={};urls={};pendingAction=null;pendingImage=null;
+  history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
   $('#messages').replaceChildren();$('#album').replaceChildren();$('#quests').replaceChildren();
   for(const id of ['name','pet-type','title','action-result','pet-name','chat-input','mood','level','stage-label','xp-label','satiety','intimacy','stats','inventory','image-caption','quest-date','encounter-text']){const e=$(`#${id}`);if('value' in e)e.value='';else e.textContent='';}
   for(const e of document.querySelectorAll('#game progress'))e.value=0;
   $('#encounter').hidden=true;
   $('#pet-image').onerror=null;$('#pet-image').src='icon.svg';$('#pet-image').alt='';
-  $('#retry-action').hidden=true;
+  $('#retry-action').hidden=true;$('#retry-chat').hidden=true;
 }
 async function assertActive(){const status=await invoke('status');if(status.erased){view=status;render();throw new ErasedError();}if(!status.status)throw new Error('No active game');return status;}
 async function readExtras(){
   if(view?.erased){forgetCachedData();return;}
 
   const results=await Promise.allSettled([anna.storage.get({key:CHAT}),anna.storage.get({key:ART})]);
-  if(results[0].status==='fulfilled')history=normalHistory(results[0].value.value);
+  if(results[0].status==='fulfilled')history=mergeHistory(results[0].value.value,pendingChat||[]);
   if(results[1].status==='fulfilled')art=results[1].value.value||{};
   if(results.some(r=>r.status==='rejected'))notice(tr('extrasError'));
   urls={};await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)).map(async([key,entry])=>{try{urls[key]=(await anna.files.download_url({path:entry.path})).get_url;}catch{/* Keep the bundled portrait visible. */}}));
@@ -116,7 +122,7 @@ async function act(command,extra={},retry=false){
 }
 async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
 async function chat(event){
-  event.preventDefault();if(busy||!view?.status)return;
+  event.preventDefault();if(busy||pendingChat||pendingAction||pendingRemoval||!view?.status)return;
   const input=$('#chat-input'),message=input.value.trim();if(!message)return;
   controls(true);notice();const additions=[{id:crypto.randomUUID(),role:'user',text:message,at:Date.now()}];
   history=mergeHistory(history,additions);drawChat();input.value='';
@@ -124,11 +130,35 @@ async function chat(event){
     view=await assertActive();render();
     const response=await anna.llm.complete({messages:history.slice(-12).map(m=>({role:m.role,content:{type:'text',text:m.text}})),systemPrompt:chatPrompt(language,view.status),maxTokens:280,temperature:.7,modelPreferences:{costPriority:1,speedPriority:.8}});
     if(typeof response.content?.text!=='string'||!response.content.text.trim())throw new Error('empty response');
-    await assertActive();
     additions.push({id:crypto.randomUUID(),role:'assistant',text:response.content.text,at:Date.now()});history=mergeHistory(history,additions);drawChat();
-    try{history=await saveMerged(CHAT,old=>mergeHistory(old,additions));}catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else notice(tr('chatUnsaved'));}
+    pendingChat=additions;await persistChat();
   }catch(error){if(error instanceof ErasedError){notice(tr('removedHeading'));forgetCachedData();}else{notice(tr('chatFailed',{error:problem(error)}));input.value=message;history=history.filter(m=>m.id!==additions[0].id);drawChat();}}
   finally{controls(false);input.focus();}
+}
+async function persistChat(){
+  try{
+    history=await saveMerged(CHAT,old=>mergeHistory(old,pendingChat));
+    pendingChat=null;drawChat();notice(tr('chatSaved'));
+  }catch(error){
+    if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}
+    else notice(tr('chatUnsaved'));
+  }
+}
+async function retryChat(){
+  if(busy||pendingAction||pendingRemoval||!pendingChat)return;
+  controls(true);notice();try{await persistChat();}finally{controls(false);}
+}
+async function cleanupPortraits(){
+  if(busy||pendingAction||pendingRemoval||pendingImage)return;
+  if(!$('#portraits-quiescent').checked){text('#portraits-error',tr('portraitsConfirm'));return;}
+  $('#portraits-dialog').close();controls(true);notice();
+  try{
+    const result=await cleanUnusedPortraits(anna,assertActive);
+    notice(tr('portraitsCleaned',result));
+  }catch(error){
+    if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}
+    else notice(tr('portraitsFailed'));
+  }finally{controls(false);}
 }
 async function generate(){
   if(busy)return;$('#draw-dialog').close();controls(true);notice();text('#draw',tr('drawing'));
@@ -192,6 +222,9 @@ $('#start-form').addEventListener('submit',e=>{e.preventDefault();act('start',{n
 document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>act(button.dataset.action)));
 $('#retry-action').addEventListener('click',()=>pendingAction&&act(pendingAction.command,{},true));
 $('#chat-form').addEventListener('submit',chat);
+$('#retry-chat').addEventListener('click',retryChat);
+$('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval)return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
+$('#confirm-clean-portraits').addEventListener('click',cleanupPortraits);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
 $('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
 translate();

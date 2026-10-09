@@ -77,12 +77,17 @@ test('chat failure restores draft, failed save warns, saved exchange survives re
  await p.locator('#chat-input').fill('Hello');await p.locator('#chat-form button').click();await idle(p);
  assert.equal(await p.locator('#chat-input').inputValue(),'Hello');assert.equal(await p.locator('#messages .user').count(),0);
  await fault(p,{llm:false,save:true});await p.locator('#chat-form button').click();await idle(p);assert.match(await p.locator('#notice').innerText(),/could not be saved/);
- await fault(p,{save:false});await p.locator('#chat-input').fill('Saved hello');await p.locator('#chat-form button').click();await idle(p);
- await p.reload();await idle(p);assert.equal(await p.locator('#messages .message').count(),2);assert.match(await p.locator('#messages').innerText(),/Saved hello/);
+ assert.equal(await p.locator('#chat-form button').isDisabled(),true);
+ await p.locator('#refresh').click();await idle(p);assert.match(await p.locator('#messages').innerText(),/happy to see/);
+ await p.locator('#language').selectOption('ko');await idle(p);assert.equal(await p.locator('#retry-chat').isVisible(),true);
+ await fault(p,{save:false,lostSave:true});await p.locator('#retry-chat').click();await idle(p);assert.equal(await p.locator('#retry-chat').isVisible(),true);
+ await p.locator('#retry-chat').evaluate(e=>{e.click();e.click();});await idle(p);assert.equal(await p.locator('#retry-chat').isVisible(),false);
+ assert.equal((await calls(p,'llm')).length,2,'Only initial failed AI call and successful AI reply; save retries never call AI');
+ await p.reload();await idle(p);assert.equal(await p.locator('#messages .message').count(),2);assert.match(await p.locator('#messages').innerText(),/Hello/);
 });
 test('portrait upload retry does not generate twice and survives reopen',async t=>{
  const p=await setup(t);await start(p);await fault(p,{upload:true});await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.match(await p.locator('#draw').innerText(),/Retry saving/);await p.locator('#draw').click();await idle(p);
+ assert.match(await p.locator('#draw').innerText(),/Retry saving/);assert.equal(await p.locator('#clean-portraits').isDisabled(),true);await p.locator('#draw').click();await idle(p);
  assert.equal((await calls(p,'image')).length,1);assert.match(await p.locator('#notice').innerText(),/safe in your album/);
  await p.reload();await idle(p);assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
  assert.equal(await p.locator('#pet-image').evaluate(e=>e.complete&&e.naturalWidth>0),true);
@@ -105,3 +110,24 @@ test('unconfirmed removal blocks play until refresh verifies the game is active'
  assert.equal(await p.locator('[data-action="feed"]').isDisabled(),false);
 });
 
+
+test('pending chat is discarded when the game is removed before retry',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{save:true});await p.locator('#chat-input').fill('Temporary');await p.locator('#chat-form button').click();await idle(p);
+ await fault(p,{save:false,erased:true});await p.locator('#retry-chat').click();await idle(p);
+ assert.equal(await p.locator('#removed').isVisible(),true);assert.equal(await p.locator('#retry-chat').isVisible(),false);
+ assert.equal(await p.locator('#messages').innerText(),'');assert.equal((await calls(p,'llm')).length,1);
+ assert.equal(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']),undefined);
+});
+test('portrait cleanup confirms intent, retries failures and preserves current and earlier stages',async t=>{
+ const p=await setup(t);await start(p);
+ await p.evaluate(()=>{
+  const s=window.hostTest.state;s.kv['notebuddy/art-v1']={'isolated-fixture/stage-1':{path:'portraits/pet/baby.png'},'isolated-fixture/stage-2':{path:'portraits/pet/current.png'}};
+  s.files={'portraits/pet/baby.png':'a','portraits/pet/current.png':'b','portraits/pet/old.png':'c'};
+ });
+ await p.locator('#clean-portraits').click();await p.locator('#confirm-clean-portraits').click();assert.match(await p.locator('#portraits-error').innerText(),/check the box/);assert.equal((await calls(p,'delete')).length,0);
+ await p.locator('#portraits-dialog button').first().click();assert.equal((await calls(p,'delete')).length,0);
+ await fault(p,{delete:true});await p.locator('#clean-portraits').click();await p.locator('#portraits-quiescent').check();await p.locator('#confirm-clean-portraits').click();await idle(p);assert.match(await p.locator('#notice').innerText(),/could not finish/);
+ await fault(p,{delete:false});await p.locator('#clean-portraits').click();await p.locator('#portraits-quiescent').check();await p.locator('#confirm-clean-portraits').click();await idle(p);
+ assert.match(await p.locator('#notice').innerText(),/Removed 1/);assert.equal(await p.locator('#name').innerText(),'Recovery buddy');
+ assert.deepEqual((await calls(p,'delete')).map(c=>c.path),['portraits/pet/old.png']);assert.equal((await calls(p,'image')).length,0);
+});

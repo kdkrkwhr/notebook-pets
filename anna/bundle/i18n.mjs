@@ -1,6 +1,15 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  retryChat: ['Retry saving conversation', '대화 저장 재시도'],
+  chatSaved: ['Conversation saved.', '대화를 저장했어요.'],
+  cleanPortraits: ['Clean unused portraits…', '사용하지 않는 그림 정리…'],
+  portraitsDescription: ['Permanently remove portrait files that are no longer used by your saved album. Saved portraits from every growth stage stay. This does not change your companion or generate a new image. If cleanup stops, run it again.', '저장된 앨범에서 사용하지 않는 그림 파일을 삭제합니다. 모든 성장 단계의 저장된 그림은 보존하며, 친구를 변경하거나 새 그림을 생성하지 않습니다. 정리가 중단되면 다시 실행해 주세요.'],
+  portraitsQuiescent: ['I closed other Notebuddy windows on all devices and stopped pending image requests and uploads.', '모든 기기의 다른 Notebuddy 창을 닫고 진행 중인 그림 요청과 업로드를 종료했습니다.'],
+  portraitsConfirm: ['Close other windows and stop uploads, then check the box.', '다른 창과 업로드를 종료한 뒤 확인란을 선택해 주세요.'],
+  confirmCleanPortraits: ['Clean unused files', '사용하지 않는 파일 정리'],
+  portraitsCleaned: ['Removed {deleted} unused portrait files. Saved album portraits were kept.', '사용하지 않는 그림 파일 {deleted}개를 정리했어요. 저장된 앨범 그림은 보존했어요.'],
+  portraitsFailed: ['Cleanup could not finish. Some unused files may already be removed. Check your connection, close other windows and uploads, then try again. An existing saved album is required.', '정리를 마치지 못했어요. 일부 미사용 파일은 이미 삭제됐을 수 있어요. 연결을 확인하고 다른 창과 업로드를 종료한 뒤 다시 시도해 주세요. 기존에 저장된 앨범이 필요합니다.'],
   privacyDeletion: ["Use “Remove my saved data” to permanently end an existing game and clean up this app’s recent chat and portraits. Close other Notebuddy windows and stop pending requests first. A minimal removal marker remains to block restarting. Anna and AI-provider retention are separate.", "기존 게임을 영구 종료하고 최근 대화와 초상화를 정리하려면 「저장 데이터 삭제」를 이용하세요. 먼저 다른 Notebuddy 창과 진행 중인 요청을 종료하세요. 재시작 방지를 위한 최소 삭제 표식은 남습니다. Anna와 AI 제공자의 보관 정책은 별도입니다."],
   eraseData: ["Remove my saved data…", "저장 데이터 삭제…"],
   eraseHeading: ["Permanently end this game?", "이 게임을 영구 종료할까요?"],
@@ -20,7 +29,7 @@ export const messages = {
   removalUncertain: ["The removal result could not be confirmed. Refresh to check whether the game ended; if it did, retry cleanup. Do not start another action.", "삭제 결과를 확인하지 못했습니다. 새로고침해 게임 종료 여부를 확인하고, 종료됐다면 정리를 재시도하세요. 다른 게임 행동은 실행하지 마세요."],
   privacy: ["Privacy & data", "개인정보 및 데이터"],
   privacyStoredHeading: ["What is saved", "저장하는 정보"],
-  privacyStored: ["Anna stores your companion’s name and progress, recent chat (up to 24 messages), and saved portraits. Your language preference stays in this browser. Older portrait files may remain after you draw a replacement.", "Anna에 친구의 이름과 성장 기록, 최근 대화(최대 24개 메시지), 저장한 초상화를 보관합니다. 언어 설정은 이 브라우저에 저장합니다. 그림을 교체해도 이전 그림 파일이 남아 있을 수 있습니다."],
+  privacyStored: ["Anna stores your companion’s name and progress, recent chat (up to 24 messages), and saved portraits. Your language preference stays in this browser. Older portrait files may remain after you draw a replacement. Use “Clean unused portraits” in the album to remove files no longer referenced by saved portraits.", "Anna에 친구의 이름과 성장 기록, 최근 대화(최대 24개 메시지), 저장한 초상화를 보관합니다. 언어 설정은 이 브라우저에 저장합니다. 그림을 교체해도 이전 그림 파일이 남아 있을 수 있습니다. 앨범의 「사용하지 않는 그림 정리」에서 저장된 그림이 참조하지 않는 파일을 지울 수 있습니다."],
   privacyAIHeading: ["When AI is used", "AI에 보내는 정보"],
   privacyAI: ["Sending a message shares up to 12 recent messages and your companion’s current status with Anna’s AI service. Drawing a portrait sends a description of your companion. Both use your Anna allowance. Avoid sharing sensitive personal information.", "메시지를 보내면 최근 최대 12개 메시지와 친구의 현재 상태를 Anna AI 서비스에 전송합니다. 그림을 요청하면 친구의 외형 설명을 전송합니다. 모두 Anna 사용량을 이용합니다. 민감한 개인정보는 입력하지 마세요."],
   privacyDeletionHeading: ["Data removal", "데이터 삭제"],
@@ -69,7 +78,7 @@ export const messages = {
   loot: ['Food +{food}, special treats +{rare}', '사료 +{food}, 간식 +{rare}'],
   uncertain: ['This action may already be saved. Use “Check the same action again” to confirm.', '결과가 저장되었을 수 있으니 같은 행동 다시 확인하기를 눌러 주세요.'],
   unknownResult: ['Could not confirm the result.', '결과를 확인하지 못했어요.'],
-  chatUnsaved: ['The reply arrived, but the conversation could not be saved. This exchange may be lost when you close the window.', '대화는 도착했지만 기억을 저장하지 못했어요. 이 창을 닫으면 이번 대화가 사라질 수 있어요.'],
+  chatUnsaved: ['The reply arrived, but the conversation could not be saved. Choose “Retry saving conversation” to save this reply without another AI call. Keep this window open until it is saved.', '대화는 도착했지만 기억을 저장하지 못했어요. 「대화 저장 재시도」로 AI를 다시 호출하지 않고 저장할 수 있어요. 저장될 때까지 이 창을 열어 두세요.'],
   chatFailed: ['Could not get a reply. {error}', '친구의 답장을 받지 못했어요. {error}'],
   drawing: ['Preparing your portrait…', '그림을 준비하는 중…'], imageSaved: ['A new memory is safe in your album.', '새로운 모습을 앨범에 간직했어요.'],
   imagePending: ['Your portrait was generated, but saving is unfinished. “Retry saving portrait” retries storage without generating another image.', '그림은 생성됐지만 앨범 저장이 끝나지 않았어요. 「그림 저장 재시도」를 누르면 새 생성 없이 저장만 다시 시도합니다.'],

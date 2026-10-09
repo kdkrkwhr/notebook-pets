@@ -27,6 +27,18 @@ The app contains no separate advertising or analytics service. Anna still handle
 
 Game records and portraits have no automatic expiry configured by Notebuddy. The recent-chat window is replaced as new messages are saved. Closing the window or changing language does not erase saved data. Uninstalling the app has **not** been verified to erase its app and tool storage.
 
+### Retry saving a conversation
+
+If an AI reply arrives but saving fails, choose **Retry saving conversation**. This retries storage with the same message IDs without another AI call. The app keeps this unsaved exchange in the current window and pauses new chat messages until it is saved. App Refresh and language changes keep the pending exchange; closing or reloading the entire window loses unsaved retry information. No conversation is added to browser local storage for this feature. A confirmed game removal clears pending chat and prevents this client from saving it again.
+
+### Clean unused portraits without ending the game
+
+In the growth album, choose **Clean unused portraits**. Close other Notebuddy windows on every device and stop pending image requests/uploads, then confirm. The app preserves all files referenced by the saved portrait index, including earlier growth stages, and conditionally deletes only unreferenced files within this app’s `portraits/` prefix. It does not change your companion, edit the album index or call AI. Cleanup is unavailable while this window has an unfinished portrait save.
+
+A readable existing album index is required; a missing index is not treated as an empty album. Cleanup stops if the index changes, a file revision conflicts, or storage cannot be checked. Some unused files may already have been removed before an error; rerun after resolving it. Each run reads at most 20 pages of 100 files and refuses deletion if that scan is incomplete. This is a manual maintenance operation, not automatic expiry or a quota guarantee.
+
+There is no atomic transaction between the album index and file deletion. The close-other-windows requirement is necessary: another client or delayed upload can change references after the last check. File ETags do not lock the index. Existing download URLs and platform retention remain separate from app-visible deletion.
+
 ### Remove an existing saved game
 
 In Notebuddy, open **Privacy & data → Remove my saved data**. Read the confirmation, close other Notebuddy windows on every device and stop pending game/chat/image requests, check the box, and type **DELETE NOTEBUDDY**. Then choose **Remove saved data**. Cancel leaves your data unchanged.
