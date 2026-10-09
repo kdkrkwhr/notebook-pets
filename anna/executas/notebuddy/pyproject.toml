@@ -1,6 +1,6 @@
 [project]
 name = "notebuddy-executa"
-version = "0.1.2"
+version = "0.1.3"
 description = "Anna bridge for the existing Notebook Pets Python engine"
 requires-python = ">=3.11"
 dependencies = ["executa-sdk"]
@@ -17,4 +17,4 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["."]
-only-include = ["notebuddy_plugin.py", "game_worker.py", "game_core"]
+only-include = ["notebuddy_plugin.py", "game_worker.py", "localization.py", "game_core"]

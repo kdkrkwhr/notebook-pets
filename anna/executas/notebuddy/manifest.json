@@ -1,7 +1,7 @@
 {
   "name": "tool-dev-notebuddy",
   "display_name": "Notebuddy Game",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
   "host_capabilities": [
     "aps.kv"
@@ -48,6 +48,16 @@
           "type": "string",
           "required": false,
           "description": "Pet name, only for start. Up to 24 characters."
+        },
+        {
+          "name": "language",
+          "type": "string",
+          "required": false,
+          "enum": [
+            "en",
+            "ko"
+          ],
+          "description": "Response language. Defaults to English. Presentation only; reuse request_id when switching language on a retry."
         },
         {
           "name": "request_id",

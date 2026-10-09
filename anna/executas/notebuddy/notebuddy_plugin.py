@@ -11,8 +11,9 @@ import threading
 from executa_sdk import StorageClient, StorageError, bind_invoke
 from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
 from game_worker import ALLOWED
+from localization import localize
 
-VERSION = '0.1.2'
+VERSION = '0.1.3'
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
@@ -27,6 +28,8 @@ MANIFEST = {
             {'name': 'command', 'type': 'string', 'required': True, 'enum': sorted(ALLOWED),
              'description': 'One game action. status reads current progress; start creates your first partner.'},
             {'name': 'name', 'type': 'string', 'required': False, 'description': 'Pet name, only for start. Up to 24 characters.'},
+            {'name': 'language', 'type': 'string', 'required': False, 'enum': ['en', 'ko'],
+             'description': 'Response language. Defaults to English. Presentation only; reuse request_id when switching language on a retry.'},
             {'name': 'request_id', 'type': 'string', 'required': False,
              'description': 'Stable ID for one action, reused on transport retries. Omit to use the host invoke ID.'},
         ]
@@ -50,8 +53,11 @@ class GameService:
         self.lock = asyncio.Lock()
 
     async def invoke(self, args, context=None):
-        if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id'}:
+        if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language'}:
             raise ValueError('Invalid game arguments.')
+        language = args.get('language', 'en')
+        if language not in ('en', 'ko'):
+            raise ValueError('Language must be en or ko.')
         command = args.get('command')
         if not isinstance(command, str) or command not in ALLOWED:
             raise ValueError('Unsupported game command.')
@@ -91,7 +97,7 @@ class GameService:
                             continue
                         raise
                 # Only return progress once the authoritative write succeeded.
-                return {**computed['result'], **computed.get('view', {})}
+                return localize({**computed['result'], **computed.get('view', {})}, command, language)
         raise RuntimeError('The game is busy. Please try again.')
 
 
@@ -139,10 +145,10 @@ async def serve():
             diagnostic = re.sub(r'https?://\S+|eyJ[A-Za-z0-9_.-]+', '[redacted]', exc.message)
             sys.stderr.write(f'APS error {exc.code}: {diagnostic[:500]}\n')
             write({'jsonrpc': '2.0', 'id': request_id, 'error': {'code': exc.code,
-                   'message': 'Anna 저장소를 사용할 수 없습니다. 저장 권한과 연결을 확인해 주세요.'}})
+                   'message': ('Anna 저장소를 사용할 수 없습니다. 저장 권한과 연결을 확인해 주세요.' if (params.get('arguments') or {}).get('language') == 'ko' else 'Anna storage is unavailable. Check storage permissions and connection.')}})
         except Exception:
             write({'jsonrpc': '2.0', 'id': request_id, 'error': {'code': -32603,
-                   'message': '요청을 완료하지 못했습니다. 같은 행동으로 다시 시도해 주세요.'}})
+                   'message': ('요청을 완료하지 못했습니다. 같은 행동으로 다시 시도해 주세요.' if isinstance(params.get('arguments'), dict) and params['arguments'].get('language') == 'ko' else 'Could not complete the request. Retry the same action with the same request ID.')}})
 
     def schedule(frame):
         task = asyncio.create_task(handle(frame))

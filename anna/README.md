@@ -1,12 +1,22 @@
 # Notebuddy · Anna edition
 
+**한국어** · [English](README.en.md)
+
 Notebook Pets의 원본 Python 규칙을 사용하는 Anna 앱입니다. 기존 Discord 프로젝트와 세이브는 변경하지 않습니다.
 
 - 앱: `@kdkrkwhr/notebuddy` (ID 450)
 - [개발자 콘솔](https://anna.partners/developer?app=450)
-- 앱 버전: 0.1.1 / 게임 도구 버전: 0.1.2
-- 상태: 비공개 초안, 0.1.1 버전 생성 완료 (version ID 1175). 심사 제출과 스토어 공개는 별도 작업입니다.
+- 앱 버전: 0.1.2 / 게임 도구 버전: 0.1.3
+- 상태: 비공개 초안. 서버 등록 및 검증 기록은 HANDOFF.md를 참고하세요. 심사 제출과 스토어 공개는 별도 작업입니다.
 - 다음 작업은 [HANDOFF.md](HANDOFF.md)에 기록했습니다.
+
+## 언어
+
+처음 열면 영어로 표시됩니다. 상단의 English / 한국어 선택으로 화면·게임 결과·퀘스트·앨범·오류 안내와 새 AI 답변의 언어를 바꿀 수 있습니다. 선택은 해당 브라우저에 저장됩니다. 브라우저 저장을 사용할 수 없으면 현재 창에만 적용되고, 새로 열 때는 영어로 시작합니다.
+
+파트너 이름과 기존 대화는 번역하거나 바꾸지 않습니다. 일일 퀘스트 초기화는 언어와 무관하게 한국 시간 자정(UTC+9)입니다. 언어 변경은 상태 조회만 실행하며, 행동 재시도의 요청 ID와 저장 영수증을 유지합니다.
+
+UI 문구는 `bundle/i18n.mjs`, 엔진 응답의 표현은 `executas/notebuddy/localization.py`에서 관리합니다. Anna 도구는 선택 인자 `language: "en" | "ko"`를 받으며 기본은 `en`입니다. 게임 규칙·기존 세이브·Discord 응답은 변경하지 않습니다.
 
 ## 실행
 
@@ -33,7 +43,7 @@ CLI 0.1.57 앱 테스트 도구는 도구 저장소 소유자를 `dev-<app-slug>
 | 경로 | 역할 |
 | --- | --- |
 | `app.json`, `manifest.json` | 등록 정보, UI와 도구 권한 |
-| `bundle/` | 한국어 반응형 화면, AI 대화, 돌봄, 퀘스트, 앨범 |
+| `bundle/` | 영어 기본·한국어 선택 반응형 화면, AI 대화, 돌봄, 퀘스트, 앨범 |
 | `executas/notebuddy/notebuddy_plugin.py` | Executa v2 JSON-RPC와 사용자별 APS 연결 |
 | `executas/notebuddy/game_worker.py` | 격리된 임시 세이브에서 기존 Python 엔진 실행 |
 | `scripts/prepare_assets.py` | 원본 규칙·데이터 및 캐릭터 그림 복사 |
@@ -55,7 +65,7 @@ npm test
 npm run test:plugin
 ```
 
-2026-10-09 확인: 어댑터·프로토콜 10개, UI 상태 처리 5개 통과. 실제 계정에서 친구 생성, 밥 주기, AI 대화 1회, 이미지 생성 1회, APS 이미지 업로드, 새로고침 후 세 종류의 저장 복원을 확인했습니다. 1105px/375px 화면에서 가로 넘침이 없었습니다. Windows/Linux 패키지 모두 초기화·도구 설명·친구 생성·밥 주기 검사를 수행합니다.
+2026-10-09 확인: 어댑터·프로토콜·다국어 17개, UI 상태·다국어 10개 통과. 실제 계정에서 친구 생성, 밥 주기, AI 대화 1회, 이미지 생성 1회, APS 이미지 업로드, 새로고침 후 세 종류의 저장 복원을 확인했습니다. 1105px/375px 화면에서 가로 넘침이 없었습니다. Windows/Linux 패키지 모두 초기화·도구 설명·친구 생성·밥 주기 검사를 수행합니다.
 
 ## 패키징 및 초안 갱신
 
@@ -67,7 +77,7 @@ npx anna-app apps push --no-install-local --profile binary
 npx anna-app apps cut <새-버전>
 ```
 
-플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 최초로 등록했던 local 프로필 0.1.0과 구분하기 위해 현재 배포 도구는 0.1.2를 사용합니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드해야 합니다.
+플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 최초로 등록했던 local 프로필 0.1.0과 구분하기 위해 현재 배포 도구는 0.1.3을 사용합니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드해야 합니다.
 
 `cut`은 검토할 비공개 버전을 만듭니다. `submit-review`는 심사 제출, `release`는 공개이므로 자동 실행하지 않습니다. 심사 전 실제 Anna Agent/Cloud 설치 실행, 소개 이미지·지원 정보, 장기간 저장 크기 및 여러 실행기의 동시 사용을 확인해야 합니다. 실제 설치 초안을 Anna 대시보드에서 실행하여 생성·밥 주기·대화·그림 저장과 재접속 복원까지 확인했습니다. 세부 결과는 HANDOFF.md를 참고하세요.
 

@@ -1,4 +1,4 @@
-export const actions = {feed:'밥 주기',snack:'간식',play:'놀아 주기',sleep:'재우기',train:'훈련',walk:'산책',battle:'배틀',flee:'지나가기',attendance:'출석 선물',claimquest:'퀘스트 보상',start:'처음 만나기'};
+import {t} from './i18n.mjs';
 export function unwrap(value) {
   let result=value;
   for(let i=0;i<3;i++) {
@@ -6,20 +6,20 @@ export function unwrap(value) {
     else if(result?.result && typeof result.result==='object' && !('ok' in result)) result=result.result;
     else break;
   }
-  if(!result || typeof result.ok!=='boolean') throw new Error('친구의 상태를 읽지 못했어요. 잠시 후 다시 확인해 주세요.');
+  if(!result || typeof result.ok!=='boolean') throw new Error('Invalid game response');
   return result;
 }
 export function starter(view){return `assets/${view.species_key}_${view.element_key}_stage1.png`;}
 export function imageKey(view, stage=view.stage){return `${view.pet_id}/stage-${stage}`;}
 export function normalHistory(value){return Array.isArray(value)?value.filter(x=>['user','assistant'].includes(x?.role)&&typeof x.text==='string').slice(-24).map(x=>({...x,text:x.text.slice(0,3000)})):[];}
 export function mergeHistory(existing, additional){return [...new Map([...normalHistory(existing),...normalHistory(additional)].map(x=>[x.id||`${x.role}:${x.text}`,x])).values()].sort((a,b)=>(a.at||0)-(b.at||0)).slice(-24);}
-export function errorText(error){
+export function errorText(error,language='en'){
   const code=error?.details?.jsonrpc_code ?? error?.code;
-  if(Number(code)===-32021 || /-32021|storage_token missing/.test(String(error?.message||''))) return '게임 저장 권한을 확인하지 못했어요. Anna의 설치된 앱 → 노트버디 → 권한을 확인해 주세요. 이미 허용했다면 앱 업데이트 후 다시 열어 주세요.';
-  if(['agent_waking','executa_not_deployed','agent_offline'].includes(code)) return 'Anna 실행기를 준비하고 있어요. 잠시 후 새로고침해 주세요.';
+  if(Number(code)===-32021 || /-32021|storage_token missing/.test(String(error?.message||''))) return t(language,'storageError');
+  if(['agent_waking','executa_not_deployed','agent_offline'].includes(code)) return t(language,'runnerError');
   const s=String(error?.message||error);
-  if(/quota|balance|credit|insufficient/i.test(s)) return 'Anna AI 사용량이 부족해요. 계정의 사용량을 확인한 뒤 다시 시도해 주세요.';
-  if(/grant|permission|forbidden|not.granted/i.test(s)) return 'Anna에서 앱 실행·저장·AI 권한을 확인해 주세요.';
-  if(/timeout|timed out/i.test(s)) return '응답을 기다리다 연결이 끊겼어요. 잠시 후 다시 확인해 주세요.';
-  return '요청을 완료하지 못했어요. 연결을 확인하고 다시 시도해 주세요.';
+  if(/quota|balance|credit|insufficient/i.test(s)) return t(language,'quotaError');
+  if(/grant|permission|forbidden|not.granted/i.test(s)) return t(language,'permissionError');
+  if(/timeout|timed out/i.test(s)) return t(language,'timeoutError');
+  return t(language,'genericError');
 }

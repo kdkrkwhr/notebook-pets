@@ -1,6 +1,6 @@
 {
   "name": "notebuddy-anna",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "description": "Notebook Pets on Anna: one lifelong AI companion.",
   "scripts": {
@@ -9,7 +9,7 @@
     "validate": "anna-app validate --strict",
     "test": "node --test tests/*.test.mjs",
     "prepare:assets": "python -B -X utf8 scripts/prepare_assets.py",
-    "test:plugin": "uv run --project executas/notebuddy python -B -X utf8 -m unittest discover -s tests -p test_anna.py -v"
+    "test:plugin": "uv run --project executas/notebuddy python -B -X utf8 -m unittest discover -s tests -p test_*.py -v"
   },
   "devDependencies": {
     "@anna-ai/cli": "0.1.57"

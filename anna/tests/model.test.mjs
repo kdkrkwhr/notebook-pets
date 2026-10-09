@@ -17,12 +17,12 @@ test('portrait belongs to a specific pet and growth stage',()=>{
   assert.notEqual(imageKey({pet_id:'first',stage:2}),imageKey({pet_id:'second',stage:2}));
 });
 test('errors do not leak upstream tokens or URLs to the screen',()=>{
-  assert.match(errorText(new Error('APP_QUOTA_EXCEEDED')),/사용량/);
+  assert.match(errorText(new Error('APP_QUOTA_EXCEEDED')),/allowance/);
   assert.ok(!errorText(new Error('https://secret.example/token=abc')).includes('abc'));
 });
 
 test('production storage authorization and runner failures are actionable',()=>{
-  assert.match(errorText({code:'tool_failed',details:{jsonrpc_code:-32021}}),/저장 권한/);
-  assert.match(errorText(new Error("invoke error: {'code': -32021}")),/저장 권한/);
-  assert.match(errorText({code:'agent_waking'}),/실행기/);
+  assert.match(errorText({code:'tool_failed',details:{jsonrpc_code:-32021}}),/storage/);
+  assert.match(errorText(new Error("invoke error: {'code': -32021}")),/storage/);
+  assert.match(errorText({code:'agent_waking'}),/runner/);
 });
