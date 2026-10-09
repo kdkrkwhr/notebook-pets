@@ -2,12 +2,14 @@
 
 ## 현재 배포
 
-- 앱 `@kdkrkwhr/notebuddy`, ID **450**, **draft** (비공개, 미제출)
+- 앱 `@kdkrkwhr/notebuddy`, ID **450**, **pending_review** (심사 대기, 2026-10-09 제출)
 - 고정 앱 **0.2.1**, version ID **1219**. 본인 계정에도 이 고정 버전으로 설치했습니다.
 - 게임 도구 `tool-kdkrkwhr-notebuddy-game-hc8mw4gu`, Executa ID **1193**
 - 고정 도구 **0.1.9**, Executa version ID **694**. Cloud 실행기 실제 버전도 **0.1.9** 확인.
 - 작업 초안 revision **17**, UI **100개 파일**, **ready**
-- 심사 제출·공개는 하지 않았습니다. 최초 생성 원자성 등 기존 출시 과제는 별도입니다.
+- 공식 CLI `apps submit-review notebuddy --json` 제출 성공. 서버 응답은 `pending_review`, `review_candidate_version: 0.2.1`이며 재조회에서도 확인했습니다. 별도 공개 명령은 실행하지 않았습니다.
+- 사용자 승인에 따라 미문서화된 플랫폼 지원 확인은 기다리지 않고 제출했습니다. 최초 생성 원자성·동시 삭제 제한은 해결된 것이 아니며 [제출 범위](REVIEW_READINESS.md)에 기록했습니다.
+- 현재 UI 스크린샷 3장을 다시 촬영·등록하고 영문 소개/지원/개인정보 URL, strict manifest 검증을 확인했습니다. 자료 커밋은 `44c6e19`입니다. 심사 승인 여부와 일정은 Anna의 결정입니다.
 
 ## 화면 복구 · 자동 돌봄 반응 제외
 

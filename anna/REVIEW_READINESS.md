@@ -19,6 +19,6 @@
 
 ## 공식 제출 절차
 
-[Publishing an App](https://anna.partners/developers/apps/app-publish.md)의 manifest 검증·고정 버전·Executa 의존성·UI bundle readiness 및 설치 사용 요건을 기준으로 확인합니다. 제출 API의 서버 사전 검사를 통과해야 심사 대기가 됩니다. 실제 제출 결과는 [HANDOFF.md](HANDOFF.md)에 기록합니다.
+[Publishing an App](https://anna.partners/developers/apps/app-publish.md)의 manifest 검증·고정 버전·Executa 의존성·UI bundle readiness 및 설치 사용 요건을 기준으로 확인합니다. 제출 API의 서버 사전 검사를 통과해야 심사 대기가 됩니다. 공식 제출 API가 성공하여 **pending_review**, 심사 후보 **0.2.1**을 반환했고 서버 재조회로 확인했습니다. [접수 기록](HANDOFF.md)을 참고하세요.
 
 심사 승인은 Anna의 결정입니다. 관리자가 승인과 공개를 함께 수행할 수 있으며 제출은 통과나 공개 완료를 뜻하지 않습니다. 이번 작업에서는 별도 release 명령을 실행하지 않습니다.

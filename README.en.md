@@ -10,7 +10,7 @@ Version **0.2.0**
 
 Notebook Pets is a virtual-pet project where **Python handles the game rules and an AI agent gives the character its voice and story**. Raise **the single partner you first meet** through feeding, play, and walks in a Tamagotchi-style game. Connect Hermes or another AI agent through shared Python tools or MCP, or use the standalone Discord gateway.
 
-The **[Anna edition](anna/README.md)** connects the same game engine to an English-first UI with a Korean option, Anna storage, AI chat, and image generation. It is currently a private draft.
+The **[Anna edition](anna/README.md)** connects the same game engine to an English-first UI with a Korean option, Anna storage, AI chat, and image generation. App version 0.2.1 has been submitted to Anna and is pending review.
 
 The repository is named `notebook-pets`; the service name is **Notebuddy (노트버디)**.
 
