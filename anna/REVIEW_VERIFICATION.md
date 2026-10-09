@@ -42,3 +42,11 @@ Windows는 설치된 Edge를 기본 사용합니다. 다른 환경은 `npx playw
 | 심사 제출·공개 | 실행하지 않음 |
 
 불확실한 행동/그림의 재시도 정보는 현재 창 메모리에만 있습니다. 창을 닫으면 같은 요청 확인/생성 그림 저장 재시도를 이어갈 수 없습니다. 다시 열어 저장된 상태를 먼저 확인해야 하며, 새 행동이나 새 그림을 자동으로 실행하지 않습니다. 다른 실행기·구버전 클라이언트까지 잠그는 전역 실행 장벽은 아닙니다.
+
+## 실제 비공개 업데이트 확인
+
+0.1.7(version ID 1202)을 비공개로 고정하고 초안 revision 9를 기존 계정에 설치했습니다. Executa는 기존 0.1.6(version ID 680)을 재사용합니다. UI 96개 파일 중 변경 3개가 업로드됐습니다. 설치 알림에 `Tools NOT deployed (already_satisfied)`가 있었으나, 앱을 닫고 다시 열었을 때 실제 도구 status와 Refresh가 모두 성공했습니다. 이는 도구의 신규 계정 배포 검증을 뜻하지 않습니다.
+
+업데이트 직전과 직후 모두 모찌, 10 / 100 XP, 대화 4개, 로딩된 초상화를 확인했습니다. 새 전역 재시도 버튼의 DOM 위치도 확인했고, 추가 새로고침 후에도 동일했습니다. 본 계정에서 게임 행동·대화·이미지 생성·삭제는 실행하지 않았습니다.
+
+최종 코드 `8b92ed6`의 [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37927292508)와 [엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37927292421)를 확인했습니다. 로컬 Edge 9개와 Node 19개, Python 41개, strict 검사가 성공했습니다.
