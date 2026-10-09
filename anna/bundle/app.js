@@ -17,8 +17,8 @@ function notice(message=''){ $('#notice').textContent=message;$('#notice').hidde
 function controls(value){
   busy=value;
   document.querySelectorAll('button,input,select').forEach(e=>e.disabled=value);
-  if(!value&&pendingRemoval)document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
-  if(!value&&!pendingRemoval&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
+  if(!value&&(!anna||pendingRemoval||pendingAction))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
+  if(!value&&anna&&!pendingRemoval&&!pendingAction&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
 }
 function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
@@ -94,14 +94,15 @@ async function invoke(command,extra={}){return unwrap(await anna.tools.invoke({t
 async function refresh(){
   if(busy)return;controls(true);notice();
   try{
+    anna??=await AnnaAppRuntime.connect();
     view=await invoke('status');if(!view.ok&&view.code!=='not_started')notice(view.msg);
-    if(view.erased)pendingRemoval=false;await readExtras();render();text('#connection',tr('connected'));
+    if(view.erased||view.status||view.code==='not_started')pendingRemoval=false;await readExtras();render();text('#connection',tr('connected'));
     if(pendingAction)notice(tr('uncertain'));
   }catch(error){notice(problem(error));text('#connection',tr('disconnected'));}
   finally{controls(false);}
 }
 async function act(command,extra={},retry=false){
-  if(busy)return;controls(true);notice();
+  if(busy||pendingRemoval||(!retry&&pendingAction))return;controls(true);notice();
   if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
@@ -194,5 +195,4 @@ $('#chat-form').addEventListener('submit',chat);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
 $('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
 translate();
-try{anna=await AnnaAppRuntime.connect();await refresh();}
-catch(error){notice(tr('openAnna',{error:problem(error)}));text('#connection',tr('disconnected'));controls(true);$('#refresh').disabled=false;$('#language').disabled=false;$('#privacy').disabled=false;}
+await refresh();

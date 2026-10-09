@@ -47,6 +47,12 @@ jobs:
         run: npm run validate
       - name: UI state tests
         run: npm test
+      - name: Install browser for UI recovery tests
+        run: npx playwright-core install chromium
+      - name: Browser recovery tests
+        env:
+          ANNA_BROWSER_CHANNEL: chromium
+        run: npm run test:browser
       - name: Storage and protocol tests
         run: npm run test:plugin
       - name: Build and smoke-test standalone Executa
