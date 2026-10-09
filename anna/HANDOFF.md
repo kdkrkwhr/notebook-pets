@@ -4,12 +4,23 @@
 
 - 앱 `@kdkrkwhr/notebuddy`, ID **450**, 상태 **draft** (비공개)
 - [개발자 콘솔](https://anna.partners/developer?app=450&tab=versions)
-- 고정된 앱 버전 **0.1.1**, version ID **1175**
+- 고정된 앱 버전 **0.1.2**, version ID **1176**
 - 게임 도구 `tool-kdkrkwhr-notebuddy-game-hc8mw4gu`, Executa ID **1193**
-- 고정된 도구 버전 **0.1.2**, Executa version ID **665**
-- 작업 초안 revision **3**, UI 94개 파일. 본인 계정에는 **0.0.0-draft** 설치
+- 고정된 도구 버전 **0.1.3**, Executa version ID **667**
+- 작업 초안 revision **4**, UI 95개 파일. 본인 계정에는 **0.0.0-draft** 설치
 - Windows/Linux x86_64 패키지를 CI에서 빌드·검사한 뒤 Anna CDN에 업로드
 - 심사 제출·스토어 공개는 하지 않았습니다. 콘솔은 심사 승인 즉시 공개된다고 안내합니다.
+
+## 영어 기본·한국어 선택 적용
+
+- Anna 화면·게임 결과·오류 안내는 영어가 기본이며, 헤더에서 한국어로 전환합니다. AI 대화 프롬프트도 선택 언어를 명시합니다.
+- 언어는 브라우저 `localStorage`의 `notebuddy/language-v1`에 저장됩니다. 계정 전체나 다른 기기와 동기화되는 설정은 아닙니다. 저장이 차단되면 현재 창에서만 적용하며 안내합니다.
+- 엔진 상태와 요청 영수증은 기존 형식 그대로 저장하고 응답만 번역합니다. 언어를 바꿔 같은 요청을 재시도해도 중복 지급되지 않는 테스트를 추가했습니다.
+- 사용자 이름과 과거 대화는 원문을 유지합니다. 기존 파트너를 다시 생성하거나 저장 형식을 마이그레이션하지 않습니다.
+- 실제 설치 앱에서 영어 기본 화면, 한국어 전환, 창을 닫고 다시 연 뒤 한국어 설정 유지, 영어 복귀를 확인했습니다. 모찌(기계족/물), 10 XP, 기존 대화와 AI 초상화가 유지됐습니다.
+- 초안 적용 직후 첫 창은 연결 대기에 머물렀으나 iframe 새로고침 후 정상 연결됐고, 이후 앱 창 재실행도 정상 동작했습니다. 원인을 확정한 것은 아닙니다.
+- 모바일 폭의 영어·한국어 가로 넘침은 로컬 브라우저에서 확인했습니다. AI 답변의 언어 지시는 자동 테스트로 검증했고, 이번 언어 변경 검증에서 유료 AI 대화·그림은 새로 생성하지 않았습니다.
+- README 한·영 안내와 Anna 영문 개발 문서를 갱신했습니다. 루트 게임 버전은 0.2.0을 유지하고 Anna 앱/도구 버전만 올렸습니다.
 
 ## 이번에 해결한 실제 설치 오류
 
@@ -31,10 +42,10 @@ Orca 브라우저의 Anna 대시보드 → Apps → Notebuddy에서 검증했습
 
 ## 자동 검증
 
-- Anna Python 테스트 **10개**, UI 상태 테스트 **5개**, `validate --strict` 통과
+- Anna Python 테스트 **17개**, UI 상태·다국어 테스트 **10개**, `validate --strict` 통과
 - 기존 엔진 테스트 **145개 + 자체 검사 6개** Windows/Linux CI 통과
-- [Anna CI / 패키지 빌드](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37893476854)
-- [기존 엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37893476817)
+- [Anna CI / 패키지 빌드](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37896042465)
+- [기존 엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37896042604)
 - `.github/workflows/anna.yml`에서 두 OS의 독립 실행 파일 생성 후 initialize/describe/생성/밥 주기 검사까지 실행합니다. 결과물은 7일 보관합니다.
 - 실제 UI 검증은 연결된 Anna 실행기에서 했습니다. 두 운영체제 각각의 실제 Anna 설치 실행을 검증했다는 뜻은 아닙니다.
 
