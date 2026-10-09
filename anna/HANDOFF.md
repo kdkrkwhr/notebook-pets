@@ -4,12 +4,24 @@
 
 - 앱 `@kdkrkwhr/notebuddy`, ID **450**, 상태 **draft** (비공개)
 - [개발자 콘솔](https://anna.partners/developer?app=450&tab=versions)
-- 고정된 앱 버전 **0.1.5**, version ID **1192**
+- 고정된 앱 버전 **0.1.6**, version ID **1195**
 - 게임 도구 `tool-kdkrkwhr-notebuddy-game-hc8mw4gu`, Executa ID **1193**
-- 고정된 도구 버전 **0.1.5**, Executa version ID **671**
-- 작업 초안 revision **7**, UI 95개 파일. 본인 계정에는 **0.0.0-draft** 설치
+- 고정된 도구 버전 **0.1.6**, Executa version ID **680**
+- 작업 초안 revision **8**, UI 96개 파일. 본인 계정에는 **0.0.0-draft** 설치
 - Windows/Linux x86_64 패키지를 CI에서 빌드·검사한 뒤 Anna CDN에 업로드
 - 심사 제출·스토어 공개는 하지 않았습니다. 콘솔은 심사 승인 즉시 공개된다고 안내합니다.
+
+## 기존 게임 데이터 삭제 · 0.1.6
+
+앱 내 Privacy & data에서 문구 직접 입력과 다른 창/요청 종료 확인 후 기존 게임을 영구 종료할 수 있습니다. 게임·대화·초상화 참조는 최소 삭제 표식으로 대체하고, 앱의 `portraits/` 파일은 조건부 삭제합니다. 삭제 결과를 확인하지 못하면 성공으로 표시하지 않으며 정리 재시도를 제공합니다. 게임 재시작/재뽑기를 지원하지 않습니다. [계약과 동시성 제한](DATA_REMOVAL.md), [사용자 데이터 안내](PRIVACY.md)를 갱신했습니다.
+
+Python 41개(실제 JSON-RPC privacy 호출 포함), UI/데이터 정리 19개와 strict 검사가 통과했습니다. 최종 소스 `cc8e969`의 [CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37921673011)와 [CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37921672965)가 모두 성공했습니다. 새 도구 바이너리는 도구 소스가 같은 `e98ff69`의 성공한 [Windows/Linux 빌드](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37920264288) 산출물이며, 두 플랫폼을 업로드해 버전 680으로 고정했습니다.
+
+실제 APS 검증에는 별도 앱 `notebuddy-erasure-check`와 도구 `tool-kdkrkwhr-notebuddy-removal-check-4jjcjsab`를 사용했습니다. 테스트 이름 확인 후 게임·대화·초상화 파일 2개를 생성하고, 미확인 요청 거부/취소 시 보존/확인 후 삭제/파일 목록 0개/재생성 차단/정리 재시도/새로고침을 검증했습니다. 개발 CLI의 도구 ID 누락과 localhost 파일 PUT 제약을 보정한 정확한 검증 범위는 DATA_REMOVAL 문서에 기록했습니다. 테스트 데이터의 최소 표식은 남아 있으며 이 작업은 플랫폼 물리 삭제를 증명하지 않습니다.
+
+본 앱 450에는 비공개 초안 8을 설치했습니다. 창을 닫고 다시 열어 영어 정상 연결, 모찌 10 XP, 대화 2개, AI 초상화 로딩을 확인했습니다. 새 삭제 미리보기(`privacy/inspect`)를 열고 **취소만** 눌렀으며 모찌가 보존됐습니다. 본 앱에서 삭제·게임 행동·유료 AI 호출은 실행하지 않았습니다. 심사 제출과 공개도 하지 않았습니다.
+
+기존 게임에 대한 삭제 경로는 검증했지만, Anna 원자적 최초 저장 부재/구버전 창과 진행 중 업로드의 재생성/없는 게임 기록/최소 표식까지 포함하는 계정 삭제/플랫폼 보관/비공개 지원 접수는 출시 전 확인 과제로 남습니다. 삭제 보장을 모든 실행기에 확대해 표현하지 마세요.
 
 ## 개인정보 안내·스토어 자료 · 0.1.5
 
