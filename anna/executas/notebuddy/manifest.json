@@ -1,7 +1,7 @@
 {
   "name": "tool-dev-notebuddy",
   "display_name": "Notebuddy Game",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
   "host_capabilities": [
     "aps.kv"
@@ -104,6 +104,7 @@
         {
           "name": "action",
           "type": "string",
+          "description": "inspect previews the save; begin stages one new pet; finish follows verified UI chat/file cleanup.",
           "required": true,
           "enum": [
             "inspect",
@@ -114,21 +115,25 @@
         {
           "name": "confirmation",
           "type": "string",
+          "description": "For begin only: exact user-confirmed phrase RESET NOTEBUDDY.",
           "required": false
         },
         {
           "name": "expected_etag",
           "type": "string",
+          "description": "For begin only: ETag from the preview the user confirmed; never refresh it automatically.",
           "required": false
         },
         {
           "name": "reset_id",
           "type": "string",
+          "description": "Stable UUID for this confirmed reset. Reuse on begin and finish retries.",
           "required": false
         },
         {
           "name": "name",
           "type": "string",
+          "description": "For begin only: new companion name, 1–24 characters.",
           "required": false
         }
       ]

@@ -15,7 +15,7 @@ from reset import reset, pending
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.1.7'
+VERSION = '0.1.8'
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
@@ -42,11 +42,11 @@ MANIFEST['tools'].append({'name': 'privacy', 'description': 'Inspect or irrevers
 
 
 MANIFEST['tools'].append({'name':'reset','description':'Explicitly replace an existing companion with a new random companion. Requires user confirmation RESET NOTEBUDDY and a fresh inspect ETag. UI must clean chat and all portraits before finish. Resume a pending reset; never automatically begin a new reset on conflicts. Permanent privacy removal cannot be reset.','timeout':60,'parameters':[
- {'name':'action','type':'string','required':True,'enum':['inspect','begin','finish']},
- {'name':'confirmation','type':'string','required':False},
- {'name':'expected_etag','type':'string','required':False},
- {'name':'reset_id','type':'string','required':False},
- {'name':'name','type':'string','required':False}]})
+ {'name':'action','type':'string','description':'inspect previews the save; begin stages one new pet; finish follows verified UI chat/file cleanup.','required':True,'enum':['inspect','begin','finish']},
+ {'name':'confirmation','type':'string','description':'For begin only: exact user-confirmed phrase RESET NOTEBUDDY.','required':False},
+ {'name':'expected_etag','type':'string','description':'For begin only: ETag from the preview the user confirmed; never refresh it automatically.','required':False},
+ {'name':'reset_id','type':'string','description':'Stable UUID for this confirmed reset. Reuse on begin and finish retries.','required':False},
+ {'name':'name','type':'string','description':'For begin only: new companion name, 1–24 characters.','required':False}]})
 
 def evaluate(payload):
     argv = ([sys.executable, '--engine-worker'] if getattr(sys, 'frozen', False) else

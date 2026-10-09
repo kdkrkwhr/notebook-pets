@@ -168,6 +168,11 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(distribution['version'], VERSION)
         self.assertIn('aps.kv', manifest['host_capabilities'])
         self.assertEqual(manifest['storage']['scopes'], {'tool': 'rw'})
+        # Anna runner indexes description directly, even when schema validation permits omission.
+        for tool in manifest['tools']:
+            self.assertTrue(tool['description'])
+            for parameter in tool['parameters']:
+                self.assertTrue(parameter['description'].strip())
 
     def test_reverse_rpc_and_invocation_context(self):
         process = subprocess.Popen([sys.executable, '-B', '-X', 'utf8', str(PLUGIN / 'notebuddy_plugin.py')],

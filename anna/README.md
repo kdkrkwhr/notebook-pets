@@ -6,7 +6,7 @@ Notebook Pets의 원본 Python 규칙을 사용하는 Anna 앱입니다. 기존 
 
 - 앱: `@kdkrkwhr/notebuddy` (ID 450)
 - [개발자 콘솔](https://anna.partners/developer?app=450)
-- 앱 버전: 0.1.9 / 게임 도구 버전: 0.1.7
+- 앱 버전: 0.1.10 / 게임 도구 버전: 0.1.8
 - 상태: 비공개 초안. 서버 등록 및 검증 기록은 HANDOFF.md를 참고하세요. 심사 제출과 스토어 공개는 별도 작업입니다.
 - 다음 작업은 [HANDOFF.md](HANDOFF.md)에 기록했습니다.
 

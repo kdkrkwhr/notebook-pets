@@ -1,4 +1,4 @@
-# New-companion reset · app 0.1.9 / tool 0.1.7
+# New-companion reset · app 0.1.10 / tool 0.1.8
 
 User-approved product change: keep one pet at a time, but allow an explicit fresh start. Both species and element are drawn again by the original engine; same combinations remain possible. New name is entered before confirmation. Old progress, chat and all portraits are cleared. No AI call runs automatically.
 
