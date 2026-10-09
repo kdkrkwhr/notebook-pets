@@ -2,7 +2,7 @@
 
 [한국어](README.md) · **English**
 
-One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. App version **0.1.4**, game tool **0.1.5**.
+One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. App version **0.1.9**, game tool **0.1.7**.
 
 ## Languages and saved progress
 
@@ -11,6 +11,10 @@ Choose English or 한국어 in the header. The preference is remembered in this 
 The selected language applies to game outcomes, quests, growth stages, errors, accessibility labels and new AI replies. Names and existing conversations remain unchanged. Daily activities always reset at midnight Korea time (UTC+9), regardless of language.
 
 Localization happens after the original engine commits an action. Changing language does not alter game saves, inventory or request receipts. Retrying the same request in another language does not award it again. Direct tool calls accept `language: "en" | "ko"` (default `en`).
+
+## Start over
+
+Choose **Privacy & data → Start over with a new companion**, enter a new name and confirm `RESET NOTEBUDDY`. This replaces the pet and clears progress, chat and portraits. Species and element are both randomly redrawn and may coincidentally match. Close other windows and stop pending requests first. Interrupted cleanup can resume; no AI portrait is generated automatically. **Remove my saved data** remains separate permanent removal, with no restart afterward.
 
 ## Development
 

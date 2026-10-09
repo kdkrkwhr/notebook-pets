@@ -14,6 +14,20 @@ const runtime={
  tools:{invoke:async request=>{
   const a=request.args;calls.push(clone(request));
   if(faults.permission)throw Error('permission denied');
+  if(request.method==='reset'){
+   if(faults.erased)return {ok:false,erased:true};
+   if(a.action==='inspect')return {ok:true,exists:!!state.save,etag:'game-etag',reset_pending:!!state.reset,reset_id:state.reset||state.lastReset};
+   if(a.action==='begin'){
+    if(state.lastReset===a.reset_id)return {ok:true,reset_complete:true,reset_id:a.reset_id};
+    if(!state.reset){state.save=create(a.name);state.save.pet_id='reset-'+a.reset_id;state.sequence++;state.reset=a.reset_id;write(state);}
+    if(faults.resetLost){faults.resetLost=false;throw Error('begin reply lost');}
+    return {ok:true,reset_pending:true,reset_id:state.reset};
+   }
+   state.lastReset=state.reset;state.reset=null;write(state);
+   if(faults.finishLost){faults.finishLost=false;throw Error('finish reply lost');}
+   return {ok:true,reset_complete:true,reset_id:a.reset_id};
+  }
+  if(state.reset)return {ok:false,reset_pending:true,reset_id:state.reset};
   if(request.method==='privacy'){
    if(a.action==='erase')throw Error('offline before removal');
    return {ok:true,exists:!!state.save,etag:'game-etag',erased:false};

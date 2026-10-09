@@ -1,7 +1,7 @@
 {
   "name": "tool-dev-notebuddy",
   "display_name": "Notebuddy Game",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
   "host_capabilities": [
     "aps.kv"
@@ -93,6 +93,43 @@
           "type": "string",
           "required": false,
           "description": "For erase only: etag from the preview the user confirmed. Reuse it on uncertain retries."
+        }
+      ]
+    },
+    {
+      "name": "reset",
+      "description": "Explicitly replace an existing companion with a new random companion. Requires user confirmation RESET NOTEBUDDY and a fresh inspect ETag. UI must clean chat and all portraits before finish. Resume a pending reset; never automatically begin a new reset on conflicts. Permanent privacy removal cannot be reset.",
+      "timeout": 60,
+      "parameters": [
+        {
+          "name": "action",
+          "type": "string",
+          "required": true,
+          "enum": [
+            "inspect",
+            "begin",
+            "finish"
+          ]
+        },
+        {
+          "name": "confirmation",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "expected_etag",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "reset_id",
+          "type": "string",
+          "required": false
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false
         }
       ]
     }

@@ -39,6 +39,14 @@ A readable existing album index is required; a missing index is not treated as a
 
 There is no atomic transaction between the album index and file deletion. The close-other-windows requirement is necessary: another client or delayed upload can change references after the last check. File ETags do not lock the index. Existing download URLs and platform retention remain separate from app-visible deletion.
 
+### Start over with a new companion
+
+For an active game, choose **Privacy & data → Start over with a new companion**. Enter a new name, close other Notebuddy windows and stop pending requests on every device, check the box, and type **RESET NOTEBUDDY**. Confirmation permanently replaces the old companion and its progress with a new random companion; species and element are both redrawn and may coincidentally match the old ones. The app clears saved chat and all portrait files before releasing the new game. No AI image request is made automatically. Cancel before confirmation changes nothing.
+
+The new companion is staged once, so repeating an interrupted reset with the same reset ID does not reroll it again. If cleanup is interrupted, use **Continue reset**; after reopening, Refresh shows any pending reset. Play is blocked until the cleanup flow finishes. An already-finished reset retry does not clear new progress again. A minimal reset ID and the advancing action sequence remain associated with the game to reject delayed old actions. Neither contains the old companion’s name or chat. Reset is not Anna-account erasure and does not erase platform/provider logs, backups or instantly revoke download URLs.
+
+App records, files and tool state are separate storage operations. Close-other-windows is a necessary precondition, not a global cancellation guarantee: legacy or already-running chat/image writes can arrive later. Missing app rows still have the platform’s unresolved create-if-absent limitation. Game reset uses a conditional write against an existing save; it does not solve concurrent first-ever creation. A permanently removed game cannot be restarted with this feature; choose reset, rather than permanent removal, when you intend to play again.
+
 ### Remove an existing saved game
 
 In Notebuddy, open **Privacy & data → Remove my saved data**. Read the confirmation, close other Notebuddy windows on every device and stop pending game/chat/image requests, check the box, and type **DELETE NOTEBUDDY**. Then choose **Remove saved data**. Cancel leaves your data unchanged.

@@ -2,6 +2,7 @@ import { AnnaAppRuntime } from '/static/anna-apps/_sdk/latest/index.js';
 import {unwrap,starter,imageKey,mergeHistory,errorText,newAction} from './model.mjs';
 import {t,loadLanguage,saveLanguage,translateDocument,chatPrompt} from './i18n.mjs';
 
+import {finishReset} from './reset-data.mjs';
 import {cleanUnusedPortraits} from './portraits.mjs';
 
 const $=selector=>document.querySelector(selector);
@@ -12,19 +13,19 @@ let preferences;
 try{preferences=window.localStorage;}catch{preferences=null;}
 let language=loadLanguage(preferences);
 let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingImage=null,pendingChat=null;
-let removalPreview=null,pendingRemoval=false;
+let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetRequest=null;
 const tr=(key,values)=>t(language,key,values);
 const problem=error=>errorText(error,language);
 function notice(message=''){ $('#notice').textContent=message;$('#notice').hidden=!message; }
 function controls(value){
   busy=value;
   document.querySelectorAll('button,input,select').forEach(e=>e.disabled=value);
-  if(!value&&(!anna||pendingRemoval||pendingAction))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
+  if(!value&&(!anna||pendingRemoval||pendingAction||pendingResetRequest||view?.reset_pending))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
   $('#retry-chat').hidden=!pendingChat;
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage))$('#clean-portraits').disabled=true;
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
-  if(!value&&anna&&!pendingRemoval&&!pendingAction&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
+  if(!value&&anna&&!pendingRemoval&&!pendingAction&&!pendingResetRequest&&!view?.reset_pending&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
 }
 function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
@@ -44,10 +45,13 @@ function drawChat(){
   container.scrollTop=container.scrollHeight;
 }
 function render(){
-  const s=view?.status;
+  const resetting=!!(view?.reset_pending||pendingResetRequest);
+  $('#resetting').hidden=!resetting;
+  if(resetting)forgetCachedData();
+  const s=resetting?null:view?.status;
   $('#removed').hidden=!view?.erased;
   if(view?.erased)forgetCachedData();
-  $('#welcome').hidden=!!s||view?.code!=='not_started';$('#game').hidden=!s;
+  $('#welcome').hidden=resetting||!!s||view?.code!=='not_started';$('#game').hidden=!s;
   if(!s)return;
   text('#name',s.name);text('#pet-type',`${s.species} · ${s.element}`);text('#mood',`◌ ${s.mood}`);
   text('#title',s.title);text('#level',`Lv. ${s.level}`);text('#stage-label',s.stage_label);
@@ -86,9 +90,9 @@ function forgetCachedData(){
   $('#pet-image').onerror=null;$('#pet-image').src='icon.svg';$('#pet-image').alt='';
   $('#retry-action').hidden=true;$('#retry-chat').hidden=true;
 }
-async function assertActive(){const status=await invoke('status');if(status.erased){view=status;render();throw new ErasedError();}if(!status.status)throw new Error('No active game');return status;}
+async function assertActive(){const status=await invoke('status');if(status.erased){view=status;render();throw new ErasedError();}if(status.reset_pending){view=status;render();throw new Error('Reset pending');}if(!status.status)throw new Error('No active game');return status;}
 async function readExtras(){
-  if(view?.erased){forgetCachedData();return;}
+  if(view?.erased||view?.reset_pending||pendingResetRequest){forgetCachedData();return;}
 
   const results=await Promise.allSettled([anna.storage.get({key:CHAT}),anna.storage.get({key:ART})]);
   if(results[0].status==='fulfilled')history=mergeHistory(results[0].value.value,pendingChat||[]);
@@ -206,6 +210,45 @@ async function confirmRemoval(){
   }catch{notice(tr('removalUncertain'));}
   finally{controls(false);}
 }
+async function resetCall(args){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'reset',args},{timeoutMs:60000}));}
+async function previewReset(){
+  if(busy)return;$('#privacy-dialog').close();controls(true);notice();
+  try{
+    resetPreview=await resetCall({action:'inspect'});
+    if(resetPreview.reset_pending){view=resetPreview;render();return;}
+    if(!resetPreview.ok||!resetPreview.exists||!resetPreview.etag){notice(tr('resetUnavailable'));return;}
+    $('#reset-name').value='';$('#reset-phrase').value='';$('#reset-quiescent').checked=false;text('#reset-error','');$('#reset-dialog').showModal();
+  }catch(error){notice(problem(error));}finally{controls(false);}
+}
+async function resumeReset(){
+  if(busy)return;controls(true);notice();
+  try{
+    if(pendingResetRequest){
+      const result=await resetCall(pendingResetRequest);
+      if(!result.ok){pendingResetRequest=null;view=await invoke('status');await readExtras();render();notice(tr('resetChanged'));return;}
+      pendingResetRequest=null;
+      if(result.reset_complete){view=await invoke('status');await readExtras();render();notice(tr('resetDone'));return;}
+      view=result;render();
+    }
+    if(!view?.reset_pending)throw Error('Refresh before resuming reset');
+    const check=await resetCall({action:'inspect'});
+    if(check.erased)throw new ErasedError();
+    if(!check.reset_pending&&check.reset_id===view.reset_id){view=await invoke('status');await readExtras();render();notice(tr('resetDone'));return;}
+    await finishReset(anna,resetCall,view.reset_id);
+    forgetCachedData();view=await invoke('status');await readExtras();render();notice(tr('resetDone'));
+  }catch(error){
+    if(error instanceof ErasedError){pendingResetRequest=null;view={erased:true};render();notice(tr('removedHeading'));}
+    else{render();notice(tr('resetInterrupted'));}
+  }finally{controls(false);}
+}
+$('#reset-game').addEventListener('click',previewReset);
+$('#resume-reset').addEventListener('click',resumeReset);
+$('#confirm-reset').addEventListener('click',()=>{
+  const name=$('#reset-name').value.trim();
+  if(!name||name.length>24||$('#reset-phrase').value!=='RESET NOTEBUDDY'||!$('#reset-quiescent').checked){text('#reset-error',tr('resetConfirmNeeded'));return;}
+  pendingResetRequest={action:'begin',confirmation:'RESET NOTEBUDDY',expected_etag:resetPreview.etag,reset_id:crypto.randomUUID(),name};
+  $('#reset-dialog').close();render();resumeReset();
+});
 $('#erase-data').addEventListener('click',previewRemoval);
 $('#confirm-erase').addEventListener('click',confirmRemoval);
 $('#resume-cleanup').addEventListener('click',async()=>{if(busy)return;controls(true);try{await cleanupRemovedData();}finally{controls(false);}});

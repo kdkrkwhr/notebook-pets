@@ -11,10 +11,11 @@ from executa_sdk import StorageClient, StorageError, bind_invoke
 from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
 from game_worker import ALLOWED
 from privacy import privacy, erased
+from reset import reset, pending
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.1.6'
+VERSION = '0.1.7'
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
@@ -39,6 +40,14 @@ MANIFEST = {
 
 MANIFEST['tools'].append({'name': 'privacy', 'description': 'Inspect or irreversibly erase the authenticated user’s existing game. Never invoke erase without an explicit data-removal request and confirmation. Not a reset/reroll. App chat and files require separate UI cleanup. Read inspect first; never automatically replace expected_etag after a conflict.', 'timeout': 60, 'parameters': [{'name': 'action', 'type': 'string', 'required': True, 'enum': ['inspect', 'erase'], 'description': 'inspect is read-only; erase replaces game content with a minimal permanent removal marker.'}, {'name': 'confirmation', 'type': 'string', 'required': False, 'description': 'For erase only: exact user-confirmed phrase DELETE NOTEBUDDY.'}, {'name': 'expected_etag', 'type': 'string', 'required': False, 'description': 'For erase only: etag from the preview the user confirmed. Reuse it on uncertain retries.'}]})
 
+
+MANIFEST['tools'].append({'name':'reset','description':'Explicitly replace an existing companion with a new random companion. Requires user confirmation RESET NOTEBUDDY and a fresh inspect ETag. UI must clean chat and all portraits before finish. Resume a pending reset; never automatically begin a new reset on conflicts. Permanent privacy removal cannot be reset.','timeout':60,'parameters':[
+ {'name':'action','type':'string','required':True,'enum':['inspect','begin','finish']},
+ {'name':'confirmation','type':'string','required':False},
+ {'name':'expected_etag','type':'string','required':False},
+ {'name':'reset_id','type':'string','required':False},
+ {'name':'name','type':'string','required':False}]})
+
 def evaluate(payload):
     argv = ([sys.executable, '--engine-worker'] if getattr(sys, 'frozen', False) else
             [sys.executable, '-B', '-X', 'utf8', str(Path(__file__).with_name('game_worker.py'))])
@@ -57,6 +66,10 @@ class GameService:
     async def privacy(self, args):
         async with self.lock:
             return await privacy(self.storage, SAVE_KEY, args)
+
+    async def reset(self, args):
+        async with self.lock:
+            return await reset(self.storage, SAVE_KEY, args, lambda payload: asyncio.to_thread(evaluate, payload))
 
     async def invoke(self, args, context=None):
         if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language'}:
@@ -94,6 +107,8 @@ class GameService:
                 if erased(previous):
                     return {'ok': False, 'code': 'data_erased', 'erased': True,
                             'msg': ('게임 데이터가 삭제되어 더 이상 플레이할 수 없습니다.' if language == 'ko' else 'Your game data was removed. This game can no longer be played.')}
+                if pending(previous):
+                    return {'ok':False,'code':'reset_pending','reset_pending':True,'reset_id':previous['reset_id'],'msg':('초기화 정리를 완료해 주세요.' if language=='ko' else 'Finish resetting your saved data.')}
                 previous = unpack(previous)
                 mode = disposition(previous, event) if event else 'read'
                 computed = await asyncio.to_thread(evaluate, {
@@ -162,13 +177,13 @@ async def serve():
     async def handle(frame):
         request_id, params = frame.get('id'), frame.get('params') or {}
         try:
-            if params.get('tool') not in ('game', 'privacy'):
+            if params.get('tool') not in ('game', 'privacy', 'reset'):
                 raise ValueError('Unknown tool.')
             with bind_invoke(params):
                 context = {**(params.get('context') or {})}
                 context.setdefault('invoke_id', params.get('invoke_id'))
-                result = (await service.privacy(params.get('arguments') or {}) if params['tool'] == 'privacy'
-                          else await service.invoke(params.get('arguments') or {}, context))
+                result = (await service.invoke(params.get('arguments') or {}, context) if params['tool']=='game'
+                          else await getattr(service, params['tool'])(params.get('arguments') or {}))
             write({'jsonrpc': '2.0', 'id': request_id,
                    'result': {'success': True, 'tool': params['tool'], 'data': result}})
         except ValueError as exc:

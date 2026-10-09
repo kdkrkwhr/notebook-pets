@@ -131,3 +131,27 @@ test('portrait cleanup confirms intent, retries failures and preserves current a
  assert.match(await p.locator('#notice').innerText(),/Removed 1/);assert.equal(await p.locator('#name').innerText(),'Recovery buddy');
  assert.deepEqual((await calls(p,'delete')).map(c=>c.path),['portraits/pet/old.png']);assert.equal((await calls(p,'image')).length,0);
 });
+
+async function resetDialog(p){await p.locator('#privacy').click();await p.locator('#reset-game').click();await idle(p);}
+async function confirmReset(p){await p.locator('#reset-name').fill('Fresh buddy');await p.locator('#reset-quiescent').check();await p.locator('#reset-phrase').fill('RESET NOTEBUDDY');await p.locator('#confirm-reset').click();await idle(p);}
+test('new companion reset requires confirmation, preserves cancel, and resumes lost begin plus interrupted cleanup after reopen',async t=>{
+ const p=await setup(t);await start(p);await p.locator('[data-action="feed"]').click();await idle(p);
+ await resetDialog(p);await p.locator('#confirm-reset').click();assert.match(await p.locator('#reset-error').innerText(),/Enter a new name/);
+ await p.locator('#reset-dialog button').first().click();assert.equal(await p.locator('#name').innerText(),'Recovery buddy');
+ await p.evaluate(()=>{window.hostTest.state.files={'portraits/old/a.png':'1'};window.hostTest.state.kv['notebuddy/chat-v1']=[{id:'old',role:'user',text:'old chat'}];});
+ await fault(p,{resetLost:true,delete:true});await resetDialog(p);await confirmReset(p);
+ assert.equal(await p.locator('#resetting').isVisible(),true);assert.equal(await p.locator('#game').isVisible(),false);
+ await p.locator('#resume-reset').click();await idle(p);assert.equal(await p.locator('#resetting').isVisible(),true);
+ await p.reload();await idle(p);assert.equal(await p.locator('#resetting').isVisible(),true);
+ await p.locator('#resume-reset').click();await idle(p);
+ assert.equal(await p.locator('#name').innerText(),'Fresh buddy');assert.equal(await p.locator('#xp-label').innerText(),'0 / 100 XP');
+ assert.equal(await p.locator('#messages .user').count(),0);assert.equal(await p.evaluate(()=>Object.keys(window.hostTest.state.files).length),0);
+ assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
+});
+test('lost finish response is recovered without clearing the new game again',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{finishLost:true});await resetDialog(p);await confirmReset(p);
+ assert.equal(await p.locator('#resetting').isVisible(),true);
+ await p.evaluate(()=>{window.hostTest.state.save.status.xp=20;});
+ await p.locator('#resume-reset').click();await idle(p);
+ assert.equal(await p.locator('#xp-label').innerText(),'20 / 100 XP');assert.equal(await p.locator('#name').innerText(),'Fresh buddy');
+});
