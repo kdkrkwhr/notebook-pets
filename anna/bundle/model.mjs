@@ -14,6 +14,9 @@ export function imageKey(view, stage=view.stage){return `${view.pet_id}/stage-${
 export function normalHistory(value){return Array.isArray(value)?value.filter(x=>['user','assistant'].includes(x?.role)&&typeof x.text==='string').slice(-24).map(x=>({...x,text:x.text.slice(0,3000)})):[];}
 export function mergeHistory(existing, additional){return [...new Map([...normalHistory(existing),...normalHistory(additional)].map(x=>[x.id||`${x.role}:${x.text}`,x])).values()].sort((a,b)=>(a.at||0)-(b.at||0)).slice(-24);}
 export function errorText(error){
+  const code=error?.details?.jsonrpc_code ?? error?.code;
+  if(Number(code)===-32021 || /-32021|storage_token missing/.test(String(error?.message||''))) return '게임 저장 권한을 확인하지 못했어요. Anna의 설치된 앱 → 노트버디 → 권한을 확인해 주세요. 이미 허용했다면 앱 업데이트 후 다시 열어 주세요.';
+  if(['agent_waking','executa_not_deployed','agent_offline'].includes(code)) return 'Anna 실행기를 준비하고 있어요. 잠시 후 새로고침해 주세요.';
   const s=String(error?.message||error);
   if(/quota|balance|credit|insufficient/i.test(s)) return 'Anna AI 사용량이 부족해요. 계정의 사용량을 확인한 뒤 다시 시도해 주세요.';
   if(/grant|permission|forbidden|not.granted/i.test(s)) return 'Anna에서 앱 실행·저장·AI 권한을 확인해 주세요.';

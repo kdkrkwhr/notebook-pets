@@ -12,13 +12,13 @@ from executa_sdk import StorageClient, StorageError, bind_invoke
 from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
 from game_worker import ALLOWED
 
-VERSION = '0.1.1'
+VERSION = '0.1.2'
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
     'name': 'tool-dev-notebuddy', 'display_name': 'Notebuddy Game', 'version': VERSION,
     'description': 'Care for the authenticated user’s lifelong pet. Python rules are authoritative.',
-    'host_capabilities': [],
+    'host_capabilities': ['aps.kv'],
     'storage': {'kv': True, 'files': True, 'scopes': {'tool': 'rw'}},
     'tools': [{
         'name': 'game', 'description': 'Read or care for your pet. Never choose a user or provide game state. Reuse request_id when retrying one action.',

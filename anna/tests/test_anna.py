@@ -9,7 +9,7 @@ from unittest.mock import patch
 
 PLUGIN = Path(__file__).resolve().parents[1] / 'executas' / 'notebuddy'
 sys.path.insert(0, str(PLUGIN))
-from notebuddy_plugin import GameService, evaluate, SAVE_KEY
+from notebuddy_plugin import GameService, evaluate, SAVE_KEY, MANIFEST, VERSION
 from executa_sdk import StorageError
 from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
 
@@ -122,6 +122,14 @@ class AdapterTests(unittest.IsolatedAsyncioTestCase):
 
 
 class ProtocolTests(unittest.TestCase):
+    def test_distribution_manifest_declares_storage_and_matches_protocol(self):
+        manifest = json.loads((PLUGIN / 'manifest.json').read_text(encoding='utf-8'))
+        distribution = json.loads((PLUGIN / 'executa.json').read_text(encoding='utf-8'))
+        self.assertEqual(manifest, MANIFEST)
+        self.assertEqual(distribution['version'], VERSION)
+        self.assertIn('aps.kv', manifest['host_capabilities'])
+        self.assertEqual(manifest['storage']['scopes'], {'tool': 'rw'})
+
     def test_reverse_rpc_and_invocation_context(self):
         process = subprocess.Popen([sys.executable, '-B', '-X', 'utf8', str(PLUGIN / 'notebuddy_plugin.py')],
                                    stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE,

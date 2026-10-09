@@ -1,0 +1,60 @@
+name: Anna app
+
+on:
+  push:
+  pull_request:
+    branches: [develop, release]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: anna-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Anna / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        working-directory: anna
+    env:
+      PYTHONUTF8: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: '3.11'
+      - name: Install locked tooling
+        run: |
+          python -m pip install uv==0.9.5
+          npm ci --ignore-scripts
+      - name: Prepare bundled engine and artwork
+        run: npm run prepare:assets
+      - name: Install locked Executa dependency
+        run: uv sync --locked --project executas/notebuddy
+      - name: Validate app manifest
+        run: npm run validate
+      - name: UI state tests
+        run: npm test
+      - name: Storage and protocol tests
+        run: npm run test:plugin
+      - name: Build and smoke-test standalone Executa
+        run: uv run --locked --project executas/notebuddy --with pyinstaller==6.16.0 python scripts/build_executa.py
+      - name: Retain tested platform package
+        uses: actions/upload-artifact@v4
+        with:
+          name: notebuddy-${{ matrix.os }}
+          path: anna/executas/notebuddy/dist/*.tar.gz
+          if-no-files-found: error
+          retention-days: 7
