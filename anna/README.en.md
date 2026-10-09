@@ -16,9 +16,9 @@ Localization happens after the original engine commits an action. Changing langu
 
 Choose **Privacy & data → Start over with a new companion**, enter a new name and confirm `RESET NOTEBUDDY`. This replaces the pet and clears progress, chat and portraits. Species and element are both randomly redrawn and may coincidentally match. Close other windows and stop pending requests first. Interrupted cleanup can resume; no AI portrait is generated automatically. **Remove my saved data** remains separate permanent removal, with no restart afterward.
 
-## Care reactions and battles
+## Battles and growth
 
-Successful care actions add an activity entry and a companion reaction to chat. Basic reactions use no AI allowance. Enable **AI reactions to care actions** for optional short AI replies using your Anna allowance. Gameplay is saved first. Failed AI calls keep a labelled basic reaction, and saving retries never call AI again.
+Care results appear below the action buttons. Ordinary AI chat remains available. This version does not include automatic AI reactions to care actions.
 
 Walking encounters show opponent artwork. A short 2D scene replays the server's committed battle turns, with HP bars, skip and reduced-motion support. The animation cannot award extra rewards or change the result.
 

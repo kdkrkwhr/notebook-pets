@@ -11,6 +11,7 @@ async function setup(t,faults={}){
  const browser=await chromium.launch(process.env.ANNA_BROWSER_CHANNEL?{channel:process.env.ANNA_BROWSER_CHANNEL}:process.platform==='win32'?{channel:'msedge'}:{});
  t.after(()=>browser.close());
  const page=await browser.newPage({viewport:{width:1120,height:800}});
+ let failModule=!!faults.appLoad;
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',async route=>{
   const url=new URL(route.request().url());
@@ -19,11 +20,12 @@ async function setup(t,faults={}){
   if(url.pathname==='/fixture-upload')return route.fulfill({body:''});
   if(url.pathname==='/anna-tool-ids.js')return route.fulfill({contentType:'text/javascript',body:'window.__ANNA_TOOL_IDS__={notebuddy:"isolated-ui-test"}'});
   const file=url.pathname==='/'?'index.html':url.pathname.slice(1);
+  if(file==='app.js'&&failModule){failModule=false;return route.fulfill({status:404,body:'Unavailable'});}
   if(file.includes('..'))return route.abort();
   try{await route.fulfill({body:await readFile(new URL(file,bundle)),contentType:file.endsWith('.js')||file.endsWith('.mjs')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.png')?'image/png':file.endsWith('.svg')?'image/svg+xml':'text/html'});}catch{await route.fulfill({status:404,body:''});}
  });
  await page.addInitScript(f=>{if(!sessionStorage.getItem('test-initialized')){sessionStorage.setItem('test-initialized','1');sessionStorage.setItem('test-faults',JSON.stringify(f));}},faults);
- await page.goto('https://notebuddy.test');await idle(page);
+ await page.goto('https://notebuddy.test');if(faults.appLoad)await page.waitForFunction(()=>!document.querySelector('#notice').hidden);else await idle(page);
  t.after(()=>assert.deepEqual(errors,[],'No uncaught browser errors'));
  return page;
 }
@@ -173,33 +175,17 @@ test('fresh companion and album load revised starter art without paid image call
 });
 
 
-test('care logs and default basic reply survive reopen without paid AI',async t=>{
+test('care succeeds without reaction modules or automatic AI and manual chat still works',async t=>{
  const p=await setup(t);await start(p);await p.locator('[data-action="feed"]').click();await idle(p);
- await p.waitForFunction(()=>window.hostTest.state.kv['notebuddy/chat-v1']?.length===2);
- assert.match(await p.locator('#messages').innerText(),/Basic reaction/);
- assert.equal((await calls(p,'llm')).length,0);
- await p.reload();await idle(p);assert.equal(await p.locator('#messages .message').count(),2);
-});
-test('opt-in AI runs after gameplay; storage retry and lost action reply do not repeat AI',async t=>{
- const p=await setup(t);await start(p);await p.locator('#action-reactions').check();await fault(p,{save:true,llmDelay:200});
- await p.locator('[data-action="feed"]').click();await idle(p);
  assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
- assert.equal(await p.locator('[data-action="play"]').isDisabled(),false);
- await p.waitForFunction(()=>document.querySelector('#messages').textContent.includes('happy to see'));
- await p.locator('#refresh').click();await idle(p);assert.match(await p.locator('#messages').innerText(),/happy to see/);
- await fault(p,{save:false,llmDelay:0});await p.locator('#retry-reactions').click();await idle(p);
- assert.equal((await calls(p,'llm')).length,1);assert.equal(await p.locator('#retry-reactions').isVisible(),false);
- await fault(p,{lost:true});await p.locator('[data-action="play"]').click();await idle(p);
- await p.locator('#retry-action').click();await idle(p);
- assert.equal((await calls(p,'llm')).length,1);assert.equal(await p.locator('#xp-label').innerText(),'20 / 100 XP');
+ assert.equal((await calls(p,'llm')).length,0);assert.equal(await p.locator('#action-reactions').count(),0);
+ await p.locator('#chat-input').fill('Hello');await p.locator('#chat-form button').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,1);assert.match(await p.locator('#messages').innerText(),/happy to see/);
 });
-test('AI failure keeps the labelled basic reply and saved game',async t=>{
- const p=await setup(t,{llm:true});await start(p);await p.locator('#action-reactions').check();
- await p.locator('[data-action="feed"]').click();await idle(p);
- await p.waitForFunction(()=>window.hostTest.calls.some(x=>x.method==='llm'));
- assert.match(await p.locator('#messages').innerText(),/Basic reaction/);
- assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
- await p.reload();await idle(p);assert.match(await p.locator('#messages').innerText(),/Basic reaction/);
+test('a missing startup module shows a recovery button instead of endless Connecting',async t=>{
+ const p=await setup(t,{appLoad:true});assert.match(await p.locator('#notice').innerText(),/load/);
+ assert.equal(await p.locator('#refresh').isDisabled(),false);
+ await p.locator('#refresh').click();await idle(p);assert.equal(await p.locator('#welcome').isVisible(),true);
 });
 test('encounter art and 2D battle replay use one committed result; skip only changes presentation',async t=>{
  const p=await setup(t);await start(p);await p.locator('[data-action="walk"]').click();await idle(p);

@@ -2,8 +2,7 @@
 
 ## Behavior
 
-- Care actions commit through the existing sequenced request/ETag mechanism before chat reactions. Basic responses are labelled; optional AI reactions are off by default and use Anna allowance. Only one automatic AI request is in flight per window. Replayed server receipts never request another AI reply.
-- Activity/reaction pairs use stable request-derived IDs and share the existing 24-entry chat window. Failed saves remain in memory, survive app Refresh and can be retried without AI. Full reload loses unsaved entries. The platform's existing first-row atomic-create limitation still applies.
+- Care results use the existing result panel. Automatic AI care reactions have been removed from this candidate; normal user-initiated chat is unchanged.
 - Battles expose the opponent and at most 20 authoritative turns. The UI replays these locally; skipping, closing or reduced-motion mode never changes rewards. Opponents use bundled species/element artwork without image generation. No capturing or extra companions.
 - Stage thresholds are level 1/10/30/50; max level stays 100. XP costs remain 100 at levels 1–30, 200 at 31–50, 400 at 51–80 and 800 at 81–99. Image generation remains explicit.
 
@@ -27,4 +26,4 @@ These are simulated daily schedules, not measured user retention or guaranteed p
 
 ## Verification
 
-Regression coverage includes legacy migration and invalid-save preservation, battle HP conservation and exactly-once rewards, adapter replay flags, disabled/failed/in-flight AI reactions, storage-only retries, and isolated browser tests for encounters, battle skip, reduced motion and 360px layout. The browser suite mocks Anna services and makes no paid AI calls. Live platform smoke checks and CI results are recorded separately in the release verification notes.
+Regression coverage includes legacy migration and invalid-save preservation, battle HP conservation and exactly-once rewards, adapter replay flags, chat storage retries, startup module-load recovery, and isolated browser tests for encounters, battle skip, reduced motion and 360px layout. The browser suite mocks Anna services and makes no paid AI calls. Live platform smoke checks and CI results are recorded separately in the release verification notes.

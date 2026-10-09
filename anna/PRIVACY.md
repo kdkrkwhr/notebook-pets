@@ -7,19 +7,15 @@ Last updated: 9 October 2026. Applies to the Notebuddy app on Anna, maintained b
 | Data | Purpose and location |
 | --- | --- |
 | Companion name, species, element, progress, inventory, daily activity, growth album milestones and recent action results | Saved in your authenticated Anna account’s Notebuddy Game tool storage, to continue your game and prevent repeat rewards. |
-| Recent conversation, care activities and reactions | Up to 24 messages are retained by the app in Anna app storage to show your conversation and provide recent context. This limit does not describe Anna or AI-provider logs. |
+| Recent conversation | Up to 24 messages are retained by the app in Anna app storage to show your conversation and provide recent context. This limit does not describe Anna or AI-provider logs. |
 | Portrait index and generated portrait files | Saved in Anna app storage and file storage for the growth album. Drawing a replacement changes the displayed portrait; older files are not automatically erased. |
-| Language and optional AI-reaction choices | Saved in this browser’s local storage. It is not synced across devices by Notebuddy. |
+| Language choice | Saved in this browser’s local storage. It is not synced across devices by Notebuddy. |
 
 The app does not request your real name, email, contacts or a separate API key. You choose your companion’s name and anything you type into chat. Avoid entering sensitive personal information. Anna authenticates access to the account’s saved data; Notebuddy’s game commands do not accept another user’s account ID.
 
 ## AI processing
 
 When you send a chat message, the app sends up to 12 recent messages, including that message, and a current companion-status snapshot to Anna’s AI service. The snapshot includes the companion’s name and game status. The service uses these to generate a reply. AI replies do not directly award XP or change game statistics.
-
-AI care reactions are off by default. When enabled in this browser, a successful care action sends that completed event and the companion-status snapshot to Anna AI for a short reply. This automatic reaction does not send the conversation transcript. The game is committed before the optional request; failures or overlapping requests leave a labelled basic reaction. Activities and reactions share the same 24-entry recent-chat window. The ordinary chat context may therefore include those entries.
-
-Pending reaction saves stay only in the open window. **Retry saving care reactions** reuses the same entries without another AI call. Refresh preserves them; closing or fully reloading loses unsaved entries. Replayed game requests do not generate a second AI reaction. A new action can request a new reaction when enabled.
 
 When you explicitly confirm a new portrait, the app sends a generated description of the companion’s species, element, growth stage and visual style to Anna’s image service. The app does not append your chat transcript to that image prompt. The generated image is downloaded and saved in Anna file storage.
 
@@ -57,7 +53,7 @@ In Notebuddy, open **Privacy & data → Remove my saved data**. Read the confirm
 
 This permanently ends the existing game. Its saved name, progress and action results are replaced by a minimal removal marker. The app then replaces its saved recent chat and portrait index with minimal markers and asks Anna to delete files under this app’s `portraits/` prefix, including replaced portraits. This is not a gameplay reset: a new companion cannot be created after removal. The markers contain only a removal flag, remain associated with your Anna account’s app/tool storage, and have no expiry configured. They prevent normal requests from recreating the game or conversation.
 
-If cleanup is interrupted, reopen the app and choose **Check and retry data cleanup**. A cleanup error does not mean everything was removed. “Cleanup checked” means the app observed its chat/index markers and an empty portrait file list at that check, not a guarantee about physical erasure or other active clients. Pending uploads and old windows may write afterward: stop them and check again. Already-issued image download links may remain usable until they expire or platform removal takes effect. The browser language and AI-reaction preferences are cleared after successful cleanup; the current window retains its selected language until closed.
+If cleanup is interrupted, reopen the app and choose **Check and retry data cleanup**. A cleanup error does not mean everything was removed. “Cleanup checked” means the app observed its chat/index markers and an empty portrait file list at that check, not a guarantee about physical erasure or other active clients. Pending uploads and old windows may write afterward: stop them and check again. Already-issued image download links may remain usable until they expire or platform removal takes effect. The browser language preference is cleared after successful cleanup; the current window retains its selected language until closed.
 
 If game progress changed after the confirmation preview, removal is refused: refresh and review the confirmation again. If the result is uncertain, refresh to check whether the game ended and resume cleanup. The app does not offer this removal flow for a missing game save, because Anna’s current APIs do not provide the first-write protection needed for that case. Concurrent initial creation and old in-flight unconditional writes remain release blockers; this private preview is not a claim of verified complete erasure under every concurrent-client scenario.
 
@@ -65,10 +61,10 @@ For cases this flow cannot handle or questions, use [Notebuddy project support](
 
 Anna’s APIs describe storage deletion as soft deletion, and file removal can involve later cleanup. Removing app-visible records is not a promise of immediate physical erasure, revocation of already-issued image URLs, or removal from platform/provider logs and backups. For Anna-account data and platform retention, use Anna’s account/support facilities.
 
-You can separately clear the app’s browser language and AI-reaction preferences through your browser’s site-data controls. This only removes the local preference; it does not delete your saved companion, conversation or portraits.
+You can separately clear the app’s browser language preference through your browser’s site-data controls. This only removes the local preference; it does not delete your saved companion, conversation or portraits.
 
 ## Technical reference
 
-The current app uses tool key `notebuddy/game-v1`, app keys `notebuddy/chat-v1` and `notebuddy/art-v1`, app files under `portraits/`, and browser keys `notebuddy/language-v1` and `notebuddy/action-reactions-v1`. Older development installations may hold separate records. These identifiers help scope a future authenticated deletion request; users should not post their values publicly.
+The current app uses tool key `notebuddy/game-v1`, app keys `notebuddy/chat-v1` and `notebuddy/art-v1`, app files under `portraits/`, and browser key `notebuddy/language-v1`. Older development installations may hold separate records. These identifiers help scope a future authenticated deletion request; users should not post their values publicly.
 
 Anna documents the underlying mechanisms in [Persistent Storage](https://anna.partners/developers/reference/executa-persistent-storage.md), [app storage](https://anna.partners/developers/reference/host-api-storage.md) and [app files](https://anna.partners/developers/reference/host-api-files.md). The data practices above describe this app’s current implementation, not a certification of Anna’s compliance or a substitute for Anna’s own policies.
