@@ -13,7 +13,7 @@ from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
 from game_worker import ALLOWED
 from localization import localize
 
-VERSION = '0.1.3'
+VERSION = '0.1.4'
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
@@ -89,6 +89,14 @@ class GameService:
                 computed = await asyncio.to_thread(evaluate, {'command': command, 'name': name,
                     'request_id': event, 'state': previous})
                 if computed.get('changed'):
+                    if not saved.get('exists'):
+                        # Engine evaluation can take time. Never replace a partner
+                        # another agent committed while we were computing a birth.
+                        # This narrows the race, but is NOT create-if-absent: APS
+                        # still has a gap between this read and the first write.
+                        latest = await self.storage.get(SAVE_KEY, scope='tool')
+                        if latest.get('exists'):
+                            continue
                     try:
                         await self.storage.set(SAVE_KEY, computed['state'], scope='tool',
                                                if_match=saved.get('etag'))

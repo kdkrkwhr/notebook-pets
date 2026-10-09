@@ -37,7 +37,7 @@ class MemoryAPS:
             self.value = evaluate({'state': self.value, 'command': 'attendance',
                                    'request_id': 'other-agent'})['state']
             self.generation += 1
-        if if_match is not None and if_match != str(self.generation):
+        if if_match is not None and (self.value is None or if_match != str(self.generation)):
             raise StorageError(STORAGE_ERR_PRECONDITION_FAILED, 'Conflict')
         self.value = copy.deepcopy(value)
         self.generation += 1

@@ -2,7 +2,7 @@
 
 [한국어](README.md) · **English**
 
-One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. App version **0.1.2**, game tool **0.1.3**.
+One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. App version **0.1.3**, game tool **0.1.4**.
 
 ## Languages and saved progress
 
@@ -34,7 +34,11 @@ npm test
 npm run test:plugin
 ```
 
-The Anna CI workflow validates the app, runs 10 UI tests and 17 Python tests, and builds and smoke-tests Windows/Linux packages without calling paid AI services.
+The Anna CI workflow validates the app, runs 10 UI tests and 24 Python tests, and builds and smoke-tests Windows/Linux packages without calling paid AI services.
+
+## First-partner creation
+
+Before the first write, the adapter rechecks whether another agent already created a partner while the engine was computing. This preserves that partner and its progress when observed. The final read/write gap remains: APS has no supported atomic create-if-absent operation. Cross-agent first creation remains a release blocker pending Anna support. See [FIRST_CREATION.md](FIRST_CREATION.md) for the API evidence, offline reproducer, and closure criteria.
 
 ## Structure
 

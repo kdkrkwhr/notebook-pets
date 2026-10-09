@@ -1,7 +1,7 @@
 {
   "slug": "notebuddy",
   "name": "Notebuddy",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "tagline": "One companion. A little care, every day.",
   "description": "Meet one lifelong AI companion. Feed, play, train and walk together, talk about your day, and keep an illustrated growth album. One of 9 species and 8 elements becomes your original partner for life.\n\nEnglish by default, with an optional Korean interface and AI replies. Your companion’s name, progress and conversation history stay the same when you switch languages. Daily quests reset at midnight Korea time (UTC+9).\n\nGame rules are evaluated by the original Notebook Pets Python engine; AI dialogue never awards XP or changes stats. Progress, recent chat and saved portraits use Anna Persistent Storage. Chat and new portraits use your Anna AI allowance. No external API key or ComfyUI installation is required.",
   "category": "entertainment",
