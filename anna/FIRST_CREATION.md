@@ -1,6 +1,6 @@
-# First-partner creation: remaining release blocker
+# First-partner creation: accepted submission limitation
 
-Checked on 2026-10-09. The owner chose to keep this as a release blocker until Anna supports or confirms an atomic first-write operation. No external database was added, and no support message has been sent.
+Checked on 2026-10-09. The owner now authorizes review submission without waiting for undocumented Anna capabilities or direct platform confirmation. This supersedes the earlier release-blocker decision; the race below is NOT fixed and remains tracked for follow-up. No external database was added, and no support message has been sent.
 
 ## What is protected
 
