@@ -4,8 +4,8 @@ Notebook Pets의 원본 Python 규칙을 사용하는 Anna 앱입니다. 기존 
 
 - 앱: `@kdkrkwhr/notebuddy` (ID 450)
 - [개발자 콘솔](https://anna.partners/developer?app=450)
-- 앱 버전: 0.1.0 / 게임 도구 버전: 0.1.1
-- 상태: 비공개 초안, 0.1.0 버전 생성 완료 (version ID 1154, bundle ID 1075). 심사 제출과 스토어 공개는 별도 작업입니다.
+- 앱 버전: 0.1.1 / 게임 도구 버전: 0.1.2
+- 상태: 비공개 초안, 0.1.1 버전 생성 완료 (version ID 1175). 심사 제출과 스토어 공개는 별도 작업입니다.
 - 다음 작업은 [HANDOFF.md](HANDOFF.md)에 기록했습니다.
 
 ## 실행
@@ -55,18 +55,20 @@ npm test
 npm run test:plugin
 ```
 
-2026-10-08 확인: 어댑터·프로토콜 9개, UI 상태 처리 4개 통과. 실제 계정에서 친구 생성, 밥 주기, AI 대화 1회, 이미지 생성 1회, APS 이미지 업로드, 새로고침 후 세 종류의 저장 복원을 확인했습니다. 1105px/375px 화면에서 가로 넘침이 없었습니다. Windows/Linux 패키지 모두 초기화·도구 설명·친구 생성·밥 주기 검사를 수행합니다.
+2026-10-09 확인: 어댑터·프로토콜 10개, UI 상태 처리 5개 통과. 실제 계정에서 친구 생성, 밥 주기, AI 대화 1회, 이미지 생성 1회, APS 이미지 업로드, 새로고침 후 세 종류의 저장 복원을 확인했습니다. 1105px/375px 화면에서 가로 넘침이 없었습니다. Windows/Linux 패키지 모두 초기화·도구 설명·친구 생성·밥 주기 검사를 수행합니다.
 
 ## 패키징 및 초안 갱신
 
 각 대상 OS에서 패키지를 빌드합니다. Windows와 Linux는 가상환경을 공유하지 마세요. Linux에서는 `UV_PROJECT_ENVIRONMENT`를 별도 경로로 지정할 수 있습니다.
 
 ```powershell
-uv run --project executas/notebuddy --with pyinstaller==6.16.0 python scripts/build_executa.py
+uv run --locked --project executas/notebuddy --with pyinstaller==6.16.0 python scripts/build_executa.py
 npx anna-app apps push --no-install-local --profile binary
-npx anna-app apps cut 0.1.0
+npx anna-app apps cut <새-버전>
 ```
 
-플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 최초로 등록했던 local 프로필 0.1.0과 구분하기 위해 배포 도구는 0.1.1을 사용합니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `VERSION`을 함께 올리고 다시 빌드해야 합니다.
+플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 최초로 등록했던 local 프로필 0.1.0과 구분하기 위해 현재 배포 도구는 0.1.2를 사용합니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드해야 합니다.
 
-`cut`은 검토할 비공개 버전을 만듭니다. `submit-review`는 심사 제출, `release`는 공개이므로 자동 실행하지 않습니다. 심사 전 실제 Anna Agent/Cloud 설치 실행, 소개 이미지·지원 정보, 장기간 저장 크기 및 여러 실행기의 동시 사용을 확인해야 합니다. 현재 실제 계정 검증은 공식 로컬 테스트 도구와 실제 Anna APS/AI 조합으로 수행했습니다.
+`cut`은 검토할 비공개 버전을 만듭니다. `submit-review`는 심사 제출, `release`는 공개이므로 자동 실행하지 않습니다. 심사 전 실제 Anna Agent/Cloud 설치 실행, 소개 이미지·지원 정보, 장기간 저장 크기 및 여러 실행기의 동시 사용을 확인해야 합니다. 실제 설치 초안을 Anna 대시보드에서 실행하여 생성·밥 주기·대화·그림 저장과 재접속 복원까지 확인했습니다. 세부 결과는 HANDOFF.md를 참고하세요.
+
+GitHub Actions의 Anna 워크플로는 Windows/Linux에서 검증·테스트·독립 실행 파일 빌드와 패키지 동작 검사를 수행합니다. 게임 도구는 실제 호스트의 저장 토큰 발급을 위해 `host_capabilities: ["aps.kv"]`를 명시합니다.
