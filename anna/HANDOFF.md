@@ -4,12 +4,24 @@
 
 - 앱 `@kdkrkwhr/notebuddy`, ID **450**, 상태 **draft** (비공개)
 - [개발자 콘솔](https://anna.partners/developer?app=450&tab=versions)
-- 고정된 앱 버전 **0.1.7**, version ID **1202**
+- 고정된 앱 버전 **0.1.8**, version ID **1203**
 - 게임 도구 `tool-kdkrkwhr-notebuddy-game-hc8mw4gu`, Executa ID **1193**
 - 고정된 도구 버전 **0.1.6**, Executa version ID **680**
-- 작업 초안 revision **9**, UI 96개 파일. 본인 계정에는 **0.0.0-draft** 설치
+- 작업 초안 revision **10**, UI 97개 파일. 본인 계정에는 **0.0.0-draft** 설치
 - Windows/Linux x86_64 패키지를 CI에서 빌드·검사한 뒤 Anna CDN에 업로드
 - 심사 제출·스토어 공개는 하지 않았습니다. 콘솔은 심사 승인 즉시 공개된다고 안내합니다.
+
+## 대화 저장 재시도·미사용 초상화 정리 · 앱 0.1.8
+
+저장 실패한 대화는 같은 메시지 ID로 저장만 재시도하며 AI를 다시 호출하지 않습니다. 미저장 대화가 있는 동안 새 전송을 막고, App Refresh/언어 전환 시에도 받은 답변을 유지합니다. 창 종료/전체 페이지 reload 후 미저장 정보 복구는 이번 범위 밖입니다.
+
+앨범의 「사용하지 않는 그림 정리」에서 다른 창/업로드 종료를 확인한 뒤 미참조 파일만 조건부 삭제합니다. 모든 성장 단계의 참조를 보존하고 기존 인덱스가 없거나 변경되면 중단합니다. 인덱스 자체는 수정하지 않습니다. ETag가 다른 키의 참조를 잠그지는 않으므로 다른 실행기가 활동 중인 상황의 원자적 삭제를 보장하지 않습니다. [범위와 실제 APS 검증](STORAGE_MAINTENANCE.md), [사용자 안내](PRIVACY.md)를 확인하세요.
+
+최종 코드 `2a512cb`의 [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37929575855)와 [엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37929575817)가 통과했습니다. Node 26개, 브라우저 11개, Python 41개 및 strict 검사를 확인했습니다. 도구 코드는 변경하지 않아 기존 Executa 0.1.6(version ID 680)을 그대로 고정했습니다.
+
+앱 0.1.8(version ID 1203)은 비공개이며 초안 revision 10, UI 97개 파일입니다. 실제 계정 초안을 업데이트한 뒤 모찌 10 XP, 대화 4개, 초상화 로딩과 정상 연결을 확인했습니다. 새 그림 정리 안내창은 열고 **취소만** 했으며 본인 파일을 삭제하거나 새 대화/그림을 생성하지 않았습니다. 새 설치가 아닌 기존 계정 업데이트 검증입니다. 설치 알림의 `already_satisfied` 이후 기존 도구 status가 정상 응답했습니다.
+
+원자적 최초 생성, 신규 계정 최초 설치·권한, 비공개 지원 접수와 플랫폼 보관 범위는 기존 출시 과제로 유지합니다. 심사 제출·공개는 실행하지 않았습니다.
 
 ## 연결·행동 재시도 복구 · 앱 0.1.7
 

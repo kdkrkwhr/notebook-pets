@@ -36,3 +36,7 @@ AI 답변을 받은 직후 사용자/답변 한 쌍과 원래 메시지 ID를 �
 실제 앱 모듈의 저장소 어댑터만 테스트 키/파일 접두사로 좁혀 호출했습니다. 미사용 파일 1개 삭제, 이전/현재 단계 파일 2개 보존, 실제 저장 성공 뒤 응답 유실 주입 후 같은 대화 재저장 시 메시지 2개 유지를 확인했습니다. 사용한 임시 파일은 모두 제거했고 임시 KV 2개는 최소 표식으로 대체했습니다. SDK 연결과 실제 APS ETag/list/delete/set을 사용했지만 `assertActive`는 이 어댑터 검사에서 대체했으므로 전체 게임 UI 흐름의 실서비스 검증으로 표현하지 않습니다. UI 확인은 별도 브라우저 테스트가 담당합니다.
 
 localhost 서명 PUT의 CORS 제약 때문에 SVG fixture 업로드만 Node에서 수행하고 SDK로 finalize했습니다. 서명 URL·인증 정보는 출력하지 않았습니다. 유료 AI 호출은 없었습니다. Windows Edge 브라우저 11개와 Node 26개 및 strict 검사를 통과했습니다.
+
+## 비공개 후보 반영
+
+앱 0.1.8(version ID 1203), 초안 revision 10/UI 97개 파일, 게임 도구 0.1.6(version ID 680). 실제 계정에서 모찌 10 XP·대화 4개·초상화를 복원했고, 정리 안내창을 열고 취소만 했습니다. 본인 파일 삭제나 유료 AI 요청은 없었습니다. 최종 코드 `2a512cb`의 [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37929575855)와 [엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37929575817)가 통과했습니다. 심사 제출·공개는 하지 않았습니다.
