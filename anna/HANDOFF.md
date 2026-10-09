@@ -7,7 +7,7 @@
 - 고정된 앱 버전 **0.1.11**, version ID **1215**
 - 게임 도구 `tool-kdkrkwhr-notebuddy-game-hc8mw4gu`, Executa ID **1193**
 - 고정된 도구 버전 **0.1.8**, Executa version ID **686**
-- 설치된 초안은 기존 UI 98개 파일입니다. 새 작업 초안은 revision **14**, UI 100개 파일 업로드가 WAF 차단으로 `initializing` 상태입니다. 현재 작업 초안을 설치하거나 cut하지 마세요.
+- 설치된 초안은 기존 UI 98개 파일입니다. 새 작업 초안은 revision **15**, UI 100개 파일 업로드가 WAF 차단으로 `initializing` 상태입니다. 현재 작업 초안을 설치하거나 cut하지 마세요.
 - Windows/Linux x86_64 패키지를 CI에서 빌드·검사한 뒤 Anna CDN에 업로드
 - 심사 제출·스토어 공개는 하지 않았습니다. 콘솔은 심사 승인 즉시 공개된다고 안내합니다.
 
@@ -20,6 +20,8 @@
 성공한 CI의 도구 0.1.9 Windows/Linux 패키지는 로컬 `executas/notebuddy/dist/`에 내려받았습니다. `apps push`가 manifest를 작업 revision 14에 반영했으나 `POST /api/v1/developer/apps/450/working/bundle/file`이 **403 WAF 차단**으로 실패했습니다. 일반 재시도와 동일 공식 API를 통한 단일 파일 진단에서도 확인됐습니다. 응답은 사이트 관리자에게 문의하라고 명시하며, 진단 Request ID는 `a47e086c59b0afd4-NRT`입니다. 인증 정보·계정 토큰·IP는 이 문서에 기록하지 않습니다.
 
 Anna 측 업로드 차단이 해제될 때까지 **0.2.0 cut·Install draft·심사 제출·공개를 실행하지 않았습니다.** 현재 최신 고정 버전은 0.1.11 / 도구 0.1.8입니다. 실패 뒤 기존 설치 화면에서 동동이 20 XP와 개인 그림 로딩, 새 기능 컨트롤 미적용을 읽기 전용으로 확인했습니다. 실제 게임 행동·삭제·초기화·유료 AI 요청은 실행하지 않았습니다.
+
+추가 진단: 동일 계정·공식 업로드 API에서 `icon.svg`, `style.css`, 기존 `model.mjs`, 변경한 `app.js`·`i18n.mjs`·`index.html`은 성공했습니다. `battle.mjs`는 Git 체크아웃 후 CRLF 차이로 등록 크기가 맞지 않았으나, CLI로 목록을 갱신한 뒤 정상 업로드했습니다. 작업 revision은 이제 **15**입니다. `reactions.mjs`만 403 WAF 차단이 반복됩니다(최종 Request ID `a47e10c3efeefcb7-KIX`). 스크립트 파일 전체 금지나 계정 전체 권한 실패는 관찰되지 않았습니다. 응답에는 일치한 규칙·문자열이 없으므로 특정 코드가 오탐 원인이라고 단정하지 않습니다. 파일명·인코딩·전송 경로를 바꿔 차단을 우회하지 않았으며 Anna 측 WAF 로그 확인이 필요합니다. 고정 버전/설치 앱은 갱신하지 않았습니다.
 
 재개 시 현재 working revision을 조회하고, 최신 성공 CI의 패키지를 확보한 뒤 `apps push --no-install-local --profile binary --if-match <현재 revision>`을 완료하세요. 업로드와 finalize가 모두 성공한 뒤에만 `apps cut 0.2.0`, 메타데이터 동기화, 비공개 설치 검증을 진행합니다. `apps status notebuddy`는 고정 버전만 보여 주므로 작업 revision과 혼동하지 마세요. 외부 문의는 전송하지 않았습니다.
 
