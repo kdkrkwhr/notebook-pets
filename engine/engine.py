@@ -28,15 +28,36 @@ def load_state(uid):
     st = read_json(state_path(uid))
     if st is MISSING:
         return None
+    return migrate_state(st, uid)
+
+def legacy_stage(level):
+    return 1 if level <= 30 else 2 if level <= 50 else 3 if level <= 80 else 4
+
+def migrate_state(source, uid):
+    """Validate old rules first; preserve identity/XP/receipts and upgrade in memory.
+
+    Reads never persist migration. The next successful mutation saves version 4
+    atomically with the action; old engines reject that version instead of reverting it.
+    """
+    validate_state(source, uid)
+    st = copy.deepcopy(source)
+    if st['version'] < 4:
+        if st['version'] == 2:
+            st['sleep_bonus_dates'] = []
+            st['daily'].pop('sleep_buff', None)
+        old_stage = st['stage']
+        st['stage'] = stage_of(st['level'])[0]
+        if st['stage'] == 4 and old_stage < 4:
+            st['evolution_branch'] = 'light' if st['intimacy'] >= G['evolution_branch_threshold'] else 'dark'
+        for stage in range(old_stage + 1, st['stage'] + 1):
+            st['history'].append({'event': 'evolved', 'ts': time.time(), 'stage': stage,
+                                  'level': st['level'], 'branch': st['evolution_branch'] if stage == 4 else None,
+                                  'reason': 'progression_update'})
+        st['version'] = 4
+    st.setdefault('last_decay_date', None)
     validate_state(st, uid)
-    # Old sleep_buff has no reliable activation date: expire it on migration.
-    # Preserve all progression, inventory and records; never guess old rewards.
-    if st.get("version") == 2:
-        st["version"] = 3
-        st["sleep_bonus_dates"] = []
-        st["daily"].pop("sleep_buff", None)
-    st.setdefault("last_decay_date", None)
     return st
+
 
 def save_state(st):
     validate_state(st, st.get("user_id"))
@@ -57,14 +78,14 @@ def validate_state(st, uid):
             raise ValueError("Invalid save field")
     try:
         require(isinstance(st, dict) and st["user_id"] == uid)
-        require(type(st["version"]) is int and st["version"] in (2, 3))
+        require(type(st["version"]) is int and st["version"] in (2, 3, 4))
         require(isinstance(st["name"], str))
         if "pet_id" in st:
             art.pet_identity(st)
         require(st["species"] in G["species"] and st["element"] in G["elements"])
         for key in ("level", "stage", "xp", "satiety", "intimacy"):
             require(type(st[key]) is int)
-        require(1 <= st["level"] <= G["max_level"] and st["stage"] == stage_of(st["level"])[0])
+        require(1 <= st["level"] <= G["max_level"] and st["stage"] == (stage_of(st["level"])[0] if st["version"] == 4 else legacy_stage(st["level"])))
         require(st["xp"] >= 0 and 0 <= st["satiety"] <= 100 and 0 <= st["intimacy"] <= 100)
         for key in ("daily", "inventory", "record", "cooldowns", "stats"):
             require(isinstance(st[key], dict))
@@ -101,7 +122,7 @@ def validate_state(st, uid):
             require(isinstance(wild["species"], str) and isinstance(wild["element"], str))
         if st.get("last_decay_date") is not None:
             date.fromisoformat(st["last_decay_date"])
-        if st["version"] == 3:
+        if st["version"] >= 3:
             require(isinstance(st["sleep_bonus_dates"], list))
             for value in st["sleep_bonus_dates"]:
                 date.fromisoformat(value)
@@ -116,10 +137,9 @@ def fresh_daily(st):
     st["sleep_bonus_dates"] = [d for d in st.get("sleep_bonus_dates", []) if d >= today()]
 
 def xp_needed(lv):
-    s = G["stages"]
-    for st in reversed(s):
-        if lv >= st["min_lv"]: return G["xp_per_level"].get(f"s{st['stage']}", G["xp_per_level"]["default"])
-    return G["xp_per_level"]["default"]
+    # Growth milestones and XP costs are deliberately independent.
+    return next(band['xp'] for band in reversed(G['xp_level_bands']) if lv >= band['min_lv'])
+
 
 def stage_of(lv):
     for st in G["stages"]:
@@ -277,7 +297,7 @@ def cmd_start(uid, name, replace=False):
     sp = random.choice(list(G["species"].keys()))
     el = random.choice(list(G["elements"].keys()))
     st = {
-        "version": 3, "user_id": uid, "name": name, "pet_id": uuid.uuid4().hex,
+        "version": 4, "user_id": uid, "name": name, "pet_id": uuid.uuid4().hex,
         "species": sp, "element": el, "stage": 1, "level": 1, "xp": 0,
         "stats": {}, "training_bonus": {}, "processed_requests": {}, "intimacy": 50, "satiety": 80,
         "record": {"win": 0, "lose": 0, "draw": 0},
@@ -400,11 +420,15 @@ def simulate_battle(st, w, rng=None):
     enemy_max = stat_total({"species": w["species_key"], "level": w["level"]})["hp"]
     my_hp, enemy_hp = float(my_max), float(enemy_max)
     total_me = total_enemy = 0.0
+    turns = []
     dodges_me = dodges_enemy = 0
     for rounds in range(1, G["commands"]["battle"]["max_rounds"] + 1):
         outgoing, incoming, enemy_dodged, dodged = battle_damage(st, w, rng)
         outgoing, incoming = min(enemy_hp, outgoing), min(my_hp, incoming)
         enemy_hp, my_hp = max(0.0, enemy_hp - outgoing), max(0.0, my_hp - incoming)
+        turns.append({'round': rounds, 'hp_me': round(my_hp, 2), 'hp_enemy': round(enemy_hp, 2),
+                      'damage_me': round(incoming, 2), 'damage_enemy': round(outgoing, 2),
+                      'dodged_me': dodged, 'dodged_enemy': enemy_dodged})
         total_me += outgoing
         total_enemy += incoming
         dodges_me += int(dodged)
@@ -417,7 +441,7 @@ def simulate_battle(st, w, rng=None):
         outcome = "draw"
     else:
         outcome = "win" if my_ratio > enemy_ratio else "lose"
-    return {"outcome": outcome, "rounds": rounds,
+    return {"outcome": outcome, "rounds": rounds, "turns": turns,
             "hp_me": round(my_hp, 2), "hp_enemy": round(enemy_hp, 2),
             "max_hp_me": my_max, "max_hp_enemy": enemy_max,
             "dmg_me": round(total_me, 2), "dmg_enemy": round(total_enemy, 2),
@@ -456,7 +480,7 @@ def cmd_battle(st):
     st["_wild"] = None
     save_state(st)
     return out(True, msg, won=win, xp_result=x, loot=loot, berserk=bers,
-               enemy_dodged=combat["dodges_enemy"] > 0, dodged=combat["dodges_me"] > 0, **combat)
+               enemy_dodged=combat["dodges_enemy"] > 0, dodged=combat["dodges_me"] > 0, opponent=copy.deepcopy(w), **combat)
 
 def cmd_attendance(st):
     ok, why = check_limit(st, "attendance")

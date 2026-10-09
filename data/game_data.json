@@ -32,11 +32,12 @@
     "dark":    {"strong_vs": ["light"],            "weak_vs": ["light"]}
   },
   "stages": [
-    {"stage": 1, "min_lv": 1,  "max_lv": 30,  "label": "새싹기"},
-    {"stage": 2, "min_lv": 31, "max_lv": 50,  "label": "성장기"},
-    {"stage": 3, "min_lv": 51, "max_lv": 80,  "label": "성숙기"},
-    {"stage": 4, "min_lv": 81, "max_lv": 100, "label": "완전체"}
+    {"stage": 1, "min_lv": 1,  "max_lv": 9,  "label": "새싹기"},
+    {"stage": 2, "min_lv": 10, "max_lv": 29,  "label": "성장기"},
+    {"stage": 3, "min_lv": 30, "max_lv": 49,  "label": "성숙기"},
+    {"stage": 4, "min_lv": 50, "max_lv": 100, "label": "완전체"}
   ],
+  "xp_level_bands": [{"min_lv": 1, "xp": 100}, {"min_lv": 31, "xp": 200}, {"min_lv": 51, "xp": 400}, {"min_lv": 81, "xp": 800}],
   "xp_per_level": {"default": 100, "s2": 200, "s3": 400, "s4": 800},
   "commands": {
     "start":    {"xp": 0,   "cooldown_min": null, "daily_limit": null},

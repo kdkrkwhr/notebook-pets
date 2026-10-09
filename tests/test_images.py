@@ -66,7 +66,7 @@ class ImageTests(unittest.TestCase):
         self.assertEqual(self.service().render("123", a)["status"], "stale")
 
     def test_evolution_metadata_in_all_xp_results(self):
-        st = base_state(level=30, xp=99)
+        st = base_state(level=9, xp=99)
         result = engine.add_xp(st, 1)
         self.assertEqual(result["image"]["stage"], 2)
         self.assertEqual(result["image"]["key"], "mammal_fire_stage2")
@@ -93,14 +93,14 @@ class ImageTests(unittest.TestCase):
         self.assertEqual(len(provider.calls), 4)
 
     def test_failed_evolution_retries_then_keeps_previous_image_and_progress(self):
-        self.seed(species="plant", element="nature", level=31, stage=2)
+        self.seed(species="plant", element="nature", level=10, stage=2)
         provider = FakeProvider()
         with patch.object(provider, "generate", side_effect=GameError("offline", "offline")) as generate:
             result = self.service(provider, curated=True).render("123", engine.execute("123", "status")["image"])
         self.assertEqual(generate.call_count, 3)
         self.assertEqual((result["status"], result["stage"]), ("fallback", 1))
         self.assertTrue(Path(result["path"]).is_file())
-        self.assertEqual(engine.load_state("123")["level"], 31)
+        self.assertEqual(engine.load_state("123")["level"], 10)
 
     def test_generation_does_not_hold_game_lock_or_overwrite_new_gameplay(self):
         self.seed()
@@ -125,7 +125,7 @@ class ImageTests(unittest.TestCase):
         self.assertEqual(list((self.root / "artwork").rglob("*.png")), [])
 
     def test_invalid_image_bytes_never_replace_valid_prior_stage(self):
-        self.seed(species="plant", element="nature", level=31, stage=2)
+        self.seed(species="plant", element="nature", level=10, stage=2)
         provider = FakeProvider()
         with patch.object(provider, "generate", return_value=b"not a png"):
             result = self.service(provider, curated=True).render("123", engine.execute("123", "status")["image"])
@@ -236,7 +236,7 @@ class ImageTests(unittest.TestCase):
         self.assertNotIn("23", build_workflow("starter", 42)["prompt"])
 
     def test_generated_starter_uses_shared_style_then_its_own_original(self):
-        self.seed(species="dragon", element="light", level=31, stage=2)
+        self.seed(species="dragon", element="light", level=10, stage=2)
         provider = FakeProvider()
         result = self.service(provider, curated=True).render("123", engine.execute("123", "status")["image"])
         self.assertEqual(result["status"], "ready")

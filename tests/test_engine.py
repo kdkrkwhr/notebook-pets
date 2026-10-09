@@ -10,7 +10,7 @@ import engine  # noqa: E402
 
 def base_state(**over):
     st = {
-        "version": 3, "user_id": "123", "name": "테스트몬", "species": "mammal",
+        "version": 4, "user_id": "123", "name": "테스트몬", "species": "mammal",
         "element": "fire", "stage": 1, "level": 1, "xp": 0, "stats": {},
         "intimacy": 50, "satiety": 80, "record": {"win": 0, "lose": 0},
         "cooldowns": {}, "daily": {"date": engine.today(), "train": 0, "battle": 0,

@@ -29,7 +29,7 @@ class AlbumTests(unittest.TestCase):
         self.assertEqual((self.state/'123.json').read_bytes(), before)
 
     def test_album_is_read_only_and_old_dates_not_invented(self):
-        self.seed(stage=3, level=51)
+        self.seed(stage=3, level=30)
         before = (self.state/'123.json').read_bytes()
         album = bind_game_event('123')('앨범')['album']
         self.assertEqual([e['reached'] for e in album['entries']], [True, True, True, False])
@@ -38,7 +38,7 @@ class AlbumTests(unittest.TestCase):
         self.assertEqual((self.state/'123.json').read_bytes(), before)
 
     def test_evolution_logged_once_with_message_retry(self):
-        self.seed(level=30, xp=90)
+        self.seed(level=9, xp=90)
         first = engine.execute('123', 'feed', request_id='grow:1')
         self.assertEqual(first, engine.execute('123', 'feed', request_id='grow:1'))
         events = [e for e in engine.load_state('123')['history'] if e['event']=='evolved']
@@ -96,11 +96,11 @@ class AlbumTests(unittest.TestCase):
         self.assertEqual(parse_command('!진화앨범'), ('album', []))
         text = response_text(engine.execute('123', 'album'))
         self.assertIn('성장 앨범', text)
-        self.assertIn('Lv.31', text)
+        self.assertIn('Lv.10', text)
         self.assertNotIn('포획', text)
 
     def test_cached_album_images_export_and_discord_delivery_without_regeneration(self):
-        self.seed(level=51, stage=3)
+        self.seed(level=30, stage=3)
         provider = FakeProvider()
         service = ImageService(provider, root=self.root/'artwork', examples=self.root/'no-examples')
         request = engine.execute('123', 'album')['album']['current_image']

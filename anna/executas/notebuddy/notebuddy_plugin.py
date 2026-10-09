@@ -15,7 +15,7 @@ from reset import reset, pending
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.1.8'
+VERSION = '0.1.9'
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
@@ -145,7 +145,7 @@ class GameService:
                 # Reads/replays never rewrite the save. Only expose the next
                 # sequence after its game state and receipt commit together.
                 return localize({**computed['result'], **computed.get('view', {}),
-                                 'request_id_prefix': prefix(committed)}, command, language)
+                                 'replayed': mode == 'replay', 'request_id_prefix': prefix(committed)}, command, language)
         raise RuntimeError('The game is busy. Please try again.')
 
 

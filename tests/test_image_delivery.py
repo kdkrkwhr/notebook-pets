@@ -159,7 +159,7 @@ class ComfyHTTPTests(unittest.TestCase):
         thread = threading.Thread(target=server.serve_forever, daemon=True)
         thread.start()
         try:
-            self.seed(species="plant", element="nature", level=31, stage=2)
+            self.seed(species="plant", element="nature", level=10, stage=2)
             provider = ComfyUIProvider(f"http://127.0.0.1:{server.server_port}")
             service = ImageService(provider, root=self.root / "artwork")
             result = service.render("123", engine.execute("123", "status")["image"])

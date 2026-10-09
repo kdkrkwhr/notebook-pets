@@ -30,7 +30,7 @@ The repository is named `notebook-pets`; the service name is **Notebuddy (노트
 | Daily quest | Feed once, train once, and walk once to claim a reward |
 | Activities | Persistent stat training, walks, HP-based automatic battles and fleeing |
 | Records | Partner evolution album, battle records, titles, and rankings |
-| Progression rules | Stage transitions at levels 31, 51, and 81; level cap of 100 |
+| Progression rules | Stage transitions at levels 10, 30, and 50; level cap of 100 |
 | Final evolution | Light branch at intimacy 70 or above; dark branch below 70 |
 | Artwork | Per-pet artwork and evolution with local ComfyUI and IP-Adapter |
 | Agent integration | Shared Python tools, stdio MCP, and a Discord gateway |

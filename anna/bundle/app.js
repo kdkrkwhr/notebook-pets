@@ -1,3 +1,5 @@
+import {createReactions,REACTION_PREFERENCE} from './reactions.mjs';
+import {createBattle} from './battle.mjs';
 import { AnnaAppRuntime } from '/static/anna-apps/_sdk/latest/index.js';
 import {unwrap,starter,imageKey,mergeHistory,errorText,newAction} from './model.mjs';
 import {t,loadLanguage,saveLanguage,translateDocument,chatPrompt} from './i18n.mjs';
@@ -16,6 +18,25 @@ let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendi
 let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetRequest=null;
 const tr=(key,values)=>t(language,key,values);
 const problem=error=>errorText(error,language);
+let reactionsEnabled=false;
+try{reactionsEnabled=preferences?.getItem(REACTION_PREFERENCE)==='on';}catch{}
+$('#action-reactions').checked=reactionsEnabled;
+const battleScene=createBattle(document);
+const reactions=createReactions({
+ getHistory:()=>history,setHistory:items=>{history=items;drawChat();},
+ enabled:()=>reactionsEnabled,
+ isCurrent:pet=>view?.pet_id===pet&&!pendingRemoval&&!pendingResetRequest&&!view?.reset_pending&&!view?.erased,
+ changed:count=>{$('#retry-reactions').hidden=!count;},
+ save:async(pet,entries)=>{const current=await assertActive();if(current.pet_id!==pet)throw Error('Companion changed');return mergeSaved(anna.storage,CHAT,old=>mergeHistory(old,entries));},
+ generate:systemPrompt=>anna.llm.complete({messages:[{role:'user',content:{type:'text',text:'React briefly to the completed event described above.'}}],systemPrompt,maxTokens:90,temperature:.7,modelPreferences:{costPriority:1,speedPriority:.8}},{timeoutMs:20000})
+});
+$('#action-reactions').addEventListener('change',()=>{
+ reactionsEnabled=$('#action-reactions').checked;
+ try{if(!preferences)throw Error();preferences.setItem(REACTION_PREFERENCE,reactionsEnabled?'on':'off');}catch{notice(tr('reactionPreferenceFailed'));}
+});
+$('#retry-reactions').addEventListener('click',async()=>{if(busy)return;controls(true);try{await reactions.retry();}finally{controls(false);}});
+$('#draw-evolved').addEventListener('click',()=>$('#draw').click());
+
 function notice(message=''){ $('#notice').textContent=message;$('#notice').hidden=!message; }
 function controls(value){
   busy=value;
@@ -37,9 +58,9 @@ function drawChat(){
   const container=$('#messages');container.replaceChildren();
   if(!history.length){const p=document.createElement('p');p.className='message';p.textContent=tr('chatEmpty');container.append(p);}
   for(const item of history){
-    const p=document.createElement('div');p.className=`message ${item.role}`;
+    const p=document.createElement('div');p.className=`message ${item.role}${item.kind==='activity'?' activity':''}`;
     const label=document.createElement('div');label.className='message-label';
-    label.textContent=item.role==='user'?tr('you'):view?.status?.name||tr('friend');
+    label.textContent=item.kind==='activity'?tr('activityLabel'):item.kind==='reaction'?`${view?.status?.name||tr('friend')} · ${tr(item.source==='ai'?'aiReaction':'basicReaction')}`:item.role==='user'?tr('you'):view?.status?.name||tr('friend');
     p.append(label,document.createTextNode(item.text));container.append(p);
   }
   container.scrollTop=container.scrollHeight;
@@ -70,6 +91,8 @@ function render(){
   }
   text('#claimquest',q.claimed?tr('claimed'):tr('reward',{xp:q.reward.xp,rare:q.reward.rare_feed}));$('#claimquest').disabled=busy||!q.ready;
   $('#encounter').hidden=!s.encounter;if(s.encounter)text('#encounter-text',tr('encounter',s.encounter));
+  if(s.encounter){picture($('#encounter-own'),image||starter(view),starter(view));picture($('#encounter-enemy'),starter(s.encounter),'icon.svg');$('#encounter-own').alt=s.name;$('#encounter-enemy').alt=s.encounter.species;}
+  $('#evolution-note').hidden=view.stage<2||!!image;
   $('#album').replaceChildren();
   for(const entry of view.album.entries){
     const item=document.createElement('div');item.className='album-item';
@@ -82,6 +105,7 @@ function render(){
   drawChat();
 }
 function forgetCachedData(){
+  reactions.clear();battleScene.close();
   history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
   $('#messages').replaceChildren();$('#album').replaceChildren();$('#quests').replaceChildren();
   for(const id of ['name','pet-type','title','action-result','pet-name','chat-input','mood','level','stage-label','xp-label','satiety','intimacy','stats','inventory','image-caption','quest-date','encounter-text']){const e=$(`#${id}`);if('value' in e)e.value='';else e.textContent='';}
@@ -95,7 +119,7 @@ async function readExtras(){
   if(view?.erased||view?.reset_pending||pendingResetRequest){forgetCachedData();return;}
 
   const results=await Promise.allSettled([anna.storage.get({key:CHAT}),anna.storage.get({key:ART})]);
-  if(results[0].status==='fulfilled')history=mergeHistory(results[0].value.value,pendingChat||[]);
+  if(results[0].status==='fulfilled')history=reactions.restore(mergeHistory(results[0].value.value,pendingChat||[]));
   if(results[1].status==='fulfilled')art=results[1].value.value||{};
   if(results.some(r=>r.status==='rejected'))notice(tr('extrasError'));
   urls={};await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)).map(async([key,entry])=>{try{urls[key]=(await anna.files.download_url({path:entry.path})).get_url;}catch{/* Keep the bundled portrait visible. */}}));
@@ -116,11 +140,13 @@ async function act(command,extra={},retry=false){
   if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
+    const before=view;const portrait=urls[imageKey(before)];
     const {command:action,...args}=pendingAction;view=await invoke(action,args);pendingAction=null;render();
     let message=view.msg;
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
     text('#action-result',message);if(!view.ok)notice(view.msg);
+    if(view.ok){if(action==='battle')battleScene.show(view,before,portrait,language);void reactions.handle(view,action,args.request_id,language);}
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;}
   finally{controls(false);}
 }
@@ -141,7 +167,7 @@ async function chat(event){
 }
 async function persistChat(){
   try{
-    history=await saveMerged(CHAT,old=>mergeHistory(old,pendingChat));
+    history=reactions.restore(await saveMerged(CHAT,old=>mergeHistory(old,pendingChat)));
     pendingChat=null;drawChat();notice(tr('chatSaved'));
   }catch(error){
     if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}
@@ -195,7 +221,7 @@ async function previewRemoval(){
 async function cleanupRemovedData(){
   try{
     await removeAppData(anna,()=>privacyCall({action:'inspect'}));
-    try{preferences?.removeItem('notebuddy/language-v1');}catch{/* No personal content is stored in this preference. */}
+    try{preferences?.removeItem('notebuddy/language-v1');preferences?.removeItem(REACTION_PREFERENCE);}catch{/* No personal content is stored in this preference. */}
     notice(tr('cleanupChecked'));
   }catch{notice(tr('cleanupPending'));}
 }

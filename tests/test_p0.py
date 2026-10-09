@@ -65,7 +65,7 @@ class RuntimeTests(unittest.TestCase):
         st = base_state()
         engine.add_xp(st, 250)
         self.assertEqual((st["level"], st["xp"]), (3, 50))
-        for level, amount, stage in ((30, 100, 2), (50, 200, 3), (80, 400, 4)):
+        for level, amount, stage in ((9, 100, 2), (29, 100, 3), (49, 200, 4)):
             for intimacy, branch in ((69, "dark"), (70, "light")):
                 with self.subTest(level=level, intimacy=intimacy):
                     st = base_state(level=level, stage=stage - 1, intimacy=intimacy, xp=amount - 1)
@@ -106,7 +106,7 @@ class RuntimeTests(unittest.TestCase):
         path.write_text(json.dumps(st), encoding="utf-8")
         self.assertTrue(engine.execute("123", "attendance")["ok"])
         saved = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual((saved["version"], saved["level"], saved["xp"]), (3, 7, 69))
+        self.assertEqual((saved["version"], saved["level"], saved["xp"]), (4, 7, 69))
         self.assertEqual(saved["inventory"]["normal_feed"], st["inventory"]["normal_feed"] + 3)
         self.assertEqual(saved["inventory"]["rare_feed"], st["inventory"]["rare_feed"])
         self.assertEqual(saved["history"], st["history"])

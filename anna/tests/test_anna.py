@@ -107,9 +107,30 @@ class AdapterTests(unittest.IsolatedAsyncioTestCase):
         before = copy.deepcopy(self.storage.value)
         again = await GameClient(self.storage).invoke(request)
         self.assertTrue(first['ok'], first)
-        self.assertEqual(first, again)
+        self.assertFalse(first["replayed"])
+        self.assertTrue(again["replayed"])
+        self.assertEqual({**first, "replayed": True}, again)
         self.assertEqual(self.storage.value, before)
         self.assertEqual(self.storage.writes, 2)
+
+    async def test_legacy_game_migrates_read_only_then_persists_with_action(self):
+        await self.start()
+        old = copy.deepcopy(self.storage.value)
+        old.update(version=3, level=50, stage=2, xp=17, intimacy=80)
+        self.storage.value = old
+        original = copy.deepcopy(self.storage.document)
+        status = await self.service.invoke({'command':'status'})
+        self.assertEqual(status['stage'], 4)
+        self.assertEqual(status['pet_id'], old['pet_id'])
+        self.assertEqual(status['status']['xp'], 17)
+        self.assertEqual(self.storage.document, original)
+        result = await self.service.invoke({'command':'feed','request_id':'migrated-feed'})
+        self.assertTrue(result['ok'], result)
+        self.assertEqual(self.storage.value['version'], 4)
+        self.assertEqual(self.storage.value['stage'], 4)
+        self.assertEqual(self.storage.value['pet_id'], old['pet_id'])
+        self.assertEqual(self.storage.value['xp'], 27)
+        self.assertEqual(self.storage.value['evolution_branch'], 'light')
 
     async def test_conflict_reloads_and_preserves_other_action(self):
         await self.start()

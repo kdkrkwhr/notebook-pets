@@ -35,7 +35,7 @@ def run(payload):
         previous = payload.get('state')
         save = Path(temporary) / 'state' / '1.json'
         if previous is not None:
-            engine.validate_state(previous, '1')
+            previous = engine.migrate_state(previous, '1')
             atomic_write_json(save, previous)
         arguments = [payload['name']] if command == 'start' and payload.get('name') else []
         result = engine.execute('1', command, arguments, request_id=payload.get('request_id'))

@@ -108,7 +108,7 @@ def progression(species, seed, max_days=180, supply=3, battles=True, *, profile=
             engine.cmd_care(st, "sleep")
             remaining = st["inventory"]["normal_feed"]
             minimum_food = remaining if minimum_food is None else min(minimum_food, remaining)
-            for target in (31, 51, 81, 100):
+            for target in (10, 30, 50, 100):
                 if st["level"] >= target:
                     milestones.setdefault(str(target), day)
             if st["level"] == 100:
@@ -168,12 +168,12 @@ def markdown(report):
               "하루 세 접속 시점은 2시간 간격이며 포만감 70 이하일 때 사료를 줍니다. 모든 조우는 전투로 해결합니다. "
               "방치·접속 누락은 포함하지 않으며 초과 플레이도 하지 않습니다. 속성은 불로 고정합니다. "
               "훈련 보너스는 누적되지만 야생에는 훈련 보너스가 없습니다. 수면·쿨타임·출석 공급·퀘스트 수령을 실제 명령 함수로 계산합니다.", "",
-              "| 종족 | Lv31 (일) | Lv51 (일) | Lv81 (일) | Lv100 (일) | 훈련 거절 횟수 |",
+              "| 종족 | Lv10 (일) | Lv30 (일) | Lv50 (일) | Lv100 (일) | 훈련 거절 횟수 |",
               "|---|---:|---:|---:|---:|---:|"]
     for sp in engine.G["species"]:
         runs = [r for r in growth if r["species"] == sp]
         values = []
-        for target in (31, 51, 81, 100):
+        for target in (10, 30, 50, 100):
             days = [r["milestone_days"].get(str(target)) for r in runs]
             values.append(f"{min(days)}–{max(days)}" if all(d is not None for d in days) else "180일 내 미도달")
         lines.append("| " + " | ".join([engine.G["species"][sp]["name_kr"], *values,
@@ -196,12 +196,12 @@ def markdown(report):
               '- 퀘스트 중심: 하루 한 번 먹이 1회, 퀘스트에 필요한 훈련, 간식 1회, 산책 1회. 놀이 없음.',
               '- 가벼운 돌보기: 하루 한 번 포만감 70 이하일 때 먹이, 놀이·간식·산책 각 1회. 훈련 없음.',
               '- 간식은 보유한 맛있는 사료를 자동 소비합니다. 퀘스트 보상 사료는 다음 날부터 사용됩니다.', '',
-              '| 일상 | Lv31 | Lv51 | Lv81 | Lv100 | 훈련 거절 합계 | 퀘스트 달성/진행일 |',
+              '| 일상 | Lv10 | Lv30 | Lv50 | Lv100 | 훈련 거절 합계 | 퀘스트 달성/진행일 |',
               '|---|---:|---:|---:|---:|---:|---:|']
     for profile, label in [('active','적극 돌보기'), ('daily_quest','퀘스트 중심'), ('relaxed','가벼운 돌보기')]:
         runs = [r for r in report['routines_without_battles'] if r['profile']==profile]
         values = []
-        for target in (31,51,81,100):
+        for target in (10,30,50,100):
             days = [r['milestone_days'].get(str(target)) for r in runs]
             reached = [value for value in days if value is not None]
             values.append(f'{min(reached)}–{max(reached)}일' if len(reached)==len(days) else
@@ -210,10 +210,10 @@ def markdown(report):
             f"{sum(r.get('quest_claims',0) for r in runs)}/{sum(r['days'] for r in runs)}"]) + ' |')
     lines += ['', '### 퀘스트 보상의 성장 영향', '',
               '포유류·전투 없음·적극 돌보기 동일 일정에서 퀘스트 수령만 비교합니다.', '',
-              '| 퀘스트 수령 | Lv31 | Lv51 | Lv81 | Lv100 | 퀘스트 경험치 합계 |', '|---|---:|---:|---:|---:|---:|']
+              '| 퀘스트 수령 | Lv10 | Lv30 | Lv50 | Lv100 | 퀘스트 경험치 합계 |', '|---|---:|---:|---:|---:|---:|']
     for run in report['quest_comparison']:
         lines.append('| ' + ' | '.join(['있음' if run['quests_enabled'] else '없음',
-            *[str(run['milestone_days'].get(str(level),'미도달')) for level in (31,51,81,100)],
+            *[str(run['milestone_days'].get(str(level),'미도달')) for level in (10,30,50,100)],
             str(run.get('quest_xp',0))]) + ' |')
     lines += ["", "## 먹이 수급", "",
               "포유류·30일·모든 조우에서 도망, 전투 보상 0 조건으로 비교했습니다. 초기 사료는 3개입니다.", "",

@@ -171,3 +171,54 @@ test('fresh companion and album load revised starter art without paid image call
  assert.ok(await p.locator('#pet-image').evaluate(img=>img.naturalWidth>=640));
  assert.equal((await calls(p,'image')).length,0);
 });
+
+
+test('care logs and default basic reply survive reopen without paid AI',async t=>{
+ const p=await setup(t);await start(p);await p.locator('[data-action="feed"]').click();await idle(p);
+ await p.waitForFunction(()=>window.hostTest.state.kv['notebuddy/chat-v1']?.length===2);
+ assert.match(await p.locator('#messages').innerText(),/Basic reaction/);
+ assert.equal((await calls(p,'llm')).length,0);
+ await p.reload();await idle(p);assert.equal(await p.locator('#messages .message').count(),2);
+});
+test('opt-in AI runs after gameplay; storage retry and lost action reply do not repeat AI',async t=>{
+ const p=await setup(t);await start(p);await p.locator('#action-reactions').check();await fault(p,{save:true,llmDelay:200});
+ await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
+ assert.equal(await p.locator('[data-action="play"]').isDisabled(),false);
+ await p.waitForFunction(()=>document.querySelector('#messages').textContent.includes('happy to see'));
+ await p.locator('#refresh').click();await idle(p);assert.match(await p.locator('#messages').innerText(),/happy to see/);
+ await fault(p,{save:false,llmDelay:0});await p.locator('#retry-reactions').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,1);assert.equal(await p.locator('#retry-reactions').isVisible(),false);
+ await fault(p,{lost:true});await p.locator('[data-action="play"]').click();await idle(p);
+ await p.locator('#retry-action').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,1);assert.equal(await p.locator('#xp-label').innerText(),'20 / 100 XP');
+});
+test('AI failure keeps the labelled basic reply and saved game',async t=>{
+ const p=await setup(t,{llm:true});await start(p);await p.locator('#action-reactions').check();
+ await p.locator('[data-action="feed"]').click();await idle(p);
+ await p.waitForFunction(()=>window.hostTest.calls.some(x=>x.method==='llm'));
+ assert.match(await p.locator('#messages').innerText(),/Basic reaction/);
+ assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
+ await p.reload();await idle(p);assert.match(await p.locator('#messages').innerText(),/Basic reaction/);
+});
+test('encounter art and 2D battle replay use one committed result; skip only changes presentation',async t=>{
+ const p=await setup(t);await start(p);await p.locator('[data-action="walk"]').click();await idle(p);
+ await p.waitForFunction(()=>document.querySelector('#encounter-enemy').naturalWidth>0);
+ assert.match(await p.locator('#encounter-enemy').getAttribute('src'),/dragon_fire/);
+ await p.locator('[data-action="battle"]').click();await idle(p);assert.equal(await p.locator('#battle-dialog').isVisible(),true);
+ await p.locator('#battle-skip').click();
+ assert.equal(await p.locator('#battle-enemy-hp').evaluate(e=>e.value),0);
+ assert.equal(await p.locator('#battle-own-hp').evaluate(e=>e.value),6);
+ await p.locator('#battle-skip').click();assert.equal(await p.locator('#battle-dialog').isVisible(),false);
+ assert.equal((await calls(p,'battle')).length,1);assert.equal(await p.locator('#xp-label').innerText(),'20 / 100 XP');
+ await p.reload();await idle(p);assert.equal(await p.locator('#battle-dialog').isVisible(),false);
+});
+test('battle supports 360px and reduced motion',async t=>{
+ const p=await setup(t);await start(p);await p.setViewportSize({width:360,height:740});await p.emulateMedia({reducedMotion:'reduce'});
+ await p.locator('[data-action="walk"]').click();await idle(p);await p.locator('[data-action="battle"]').click();await idle(p);
+ assert.equal(await p.locator('#battle-enemy-hp').evaluate(e=>e.value),0);
+ assert.equal(await p.locator('#battle-skip').innerText(),'Close');
+ assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth));
+ if(process.env.NOTEBUDDY_SCREENSHOT)await p.screenshot({path:process.env.NOTEBUDDY_SCREENSHOT});
+ await p.keyboard.press('Escape');assert.equal(await p.locator('#battle-dialog').isVisible(),false);
+});

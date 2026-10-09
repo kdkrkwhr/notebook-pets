@@ -34,15 +34,23 @@ const runtime={
   }
   if(a.command==='status'){if(faults.erased)return {ok:false,erased:true,code:'data_erased'};if(faults.status)throw Error('offline');return view();}
   if(faults.delay)await new Promise(r=>setTimeout(r,faults.delay));
-  if(receipts.has(a.request_id))return clone(receipts.get(a.request_id));
+  if(receipts.has(a.request_id))return {...clone(receipts.get(a.request_id)),replayed:true};
   if(a.command==='start')state.save=create(a.name);
   else {state.save.status.xp+=10;state.save.inventory.normal_feed-=a.command==='feed'?1:0;}
-  state.sequence++;write(state);const response=view();receipts.set(a.request_id,response);
+  let extra={replayed:false};
+  if(a.command==='walk')state.save.status.encounter={species_key:'dragon',element_key:'fire',species:'Dragon',element:'Fire',level:1};
+  if(a.command==='battle'){
+   extra={...extra,opponent:state.save.status.encounter,outcome:'win',max_hp_me:10,max_hp_enemy:10,hp_me:6,hp_enemy:0,
+    turns:[{round:1,hp_me:8,hp_enemy:5},{round:2,hp_me:6,hp_enemy:0}],xp_result:{gained:10}};
+   state.save.status.encounter=null;
+  }
+  if(a.command==='flee')state.save.status.encounter=null;
+  state.sequence++;write(state);const response={...view(),...extra};receipts.set(a.request_id,response);
   if(faults.lost){faults.lost=false;throw Error('timed out after commit');}
   return response;
  }},
  storage:{get:async({key})=>{if(faults.extras)throw Error('storage unavailable');return {value:clone(state.kv[key]),etag:state.kv[key]?'etag':undefined};},set:async({key,value})=>{if(faults.save)throw Error('storage unavailable');state.kv[key]=clone(value);write(state);if(faults.lostSave){faults.lostSave=false;throw Error('saved reply lost');}return {}; }},
- llm:{complete:async()=>{calls.push({method:'llm'});if(faults.llm)throw Error('insufficient credit');return {content:{text:'I am happy to see you!'}};}},
+ llm:{complete:async()=>{calls.push({method:'llm'});if(faults.llmDelay)await new Promise(r=>setTimeout(r,faults.llmDelay));if(faults.llm)throw Error('insufficient credit');return {content:{text:'I am happy to see you!'}};}},
  image:{generate:async options=>{calls.push({method:'image',options:clone(options)});return {images:[{url:portrait}]};}},
  files:{list:async()=>({items:Object.entries(state.files||{}).map(([path,etag])=>({path,etag}))}),delete:async({path,if_match})=>{if(faults.delete)throw Error('delete unavailable');if(state.files[path]!==if_match)throw Error('conflict');delete state.files[path];calls.push({method:'delete',path});write(state);},upload_init:async()=>({put_url:'/fixture-upload',headers:{}}),upload_finalize:async()=>{calls.push({method:'finalize'});if(faults.upload){faults.upload=false;throw Error('upload unavailable');}return {};},download_url:async()=>({get_url:portrait})}
 };
