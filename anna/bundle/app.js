@@ -74,7 +74,9 @@ function render(){
 function forgetCachedData(){
   history=[];art={};urls={};pendingAction=null;pendingImage=null;
   $('#messages').replaceChildren();$('#album').replaceChildren();$('#quests').replaceChildren();
-  for(const id of ['name','pet-type','title','action-result','pet-name','chat-input']){const e=$(`#${id}`);if('value' in e)e.value='';else e.textContent='';}
+  for(const id of ['name','pet-type','title','action-result','pet-name','chat-input','mood','level','stage-label','xp-label','satiety','intimacy','stats','inventory','image-caption','quest-date','encounter-text']){const e=$(`#${id}`);if('value' in e)e.value='';else e.textContent='';}
+  for(const e of document.querySelectorAll('#game progress'))e.value=0;
+  $('#encounter').hidden=true;
   $('#pet-image').onerror=null;$('#pet-image').src='icon.svg';$('#pet-image').alt='';
   $('#retry-action').hidden=true;
 }
@@ -118,7 +120,7 @@ async function chat(event){
   controls(true);notice();const additions=[{id:crypto.randomUUID(),role:'user',text:message,at:Date.now()}];
   history=mergeHistory(history,additions);drawChat();input.value='';
   try{
-    view=await invoke('status');if(!view.ok||!view.status)throw new Error('status unavailable');render();
+    view=await assertActive();render();
     const response=await anna.llm.complete({messages:history.slice(-12).map(m=>({role:m.role,content:{type:'text',text:m.text}})),systemPrompt:chatPrompt(language,view.status),maxTokens:280,temperature:.7,modelPreferences:{costPriority:1,speedPriority:.8}});
     if(typeof response.content?.text!=='string'||!response.content.text.trim())throw new Error('empty response');
     await assertActive();
