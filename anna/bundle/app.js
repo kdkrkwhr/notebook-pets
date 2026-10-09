@@ -135,6 +135,7 @@ $('#language').addEventListener('change',async()=>{
   $('#game').hidden=true;$('#welcome').hidden=true;text('#connection',tr('connecting'));
   await refresh();if(!saved)notice(tr('languageUnsaved'));
 });
+$('#privacy').addEventListener('click',()=>$('#privacy-dialog').showModal());
 $('#refresh').addEventListener('click',refresh);
 $('#start-form').addEventListener('submit',e=>{e.preventDefault();act('start',{name:$('#pet-name').value.trim()});});
 document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>act(button.dataset.action)));
@@ -144,4 +145,4 @@ document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListen
 $('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
 translate();
 try{anna=await AnnaAppRuntime.connect();await refresh();}
-catch(error){notice(tr('openAnna',{error:problem(error)}));text('#connection',tr('disconnected'));controls(true);$('#refresh').disabled=false;$('#language').disabled=false;}
+catch(error){notice(tr('openAnna',{error:problem(error)}));text('#connection',tr('disconnected'));controls(true);$('#refresh').disabled=false;$('#language').disabled=false;$('#privacy').disabled=false;}

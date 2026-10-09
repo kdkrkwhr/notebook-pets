@@ -1,6 +1,15 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  privacy: ["Privacy & data", "개인정보 및 데이터"],
+  privacyStoredHeading: ["What is saved", "저장하는 정보"],
+  privacyStored: ["Anna stores your companion’s name and progress, recent chat (up to 24 messages), and saved portraits. Your language preference stays in this browser. Older portrait files may remain after you draw a replacement.", "Anna에 친구의 이름과 성장 기록, 최근 대화(최대 24개 메시지), 저장한 초상화를 보관합니다. 언어 설정은 이 브라우저에 저장합니다. 그림을 교체해도 이전 그림 파일이 남아 있을 수 있습니다."],
+  privacyAIHeading: ["When AI is used", "AI에 보내는 정보"],
+  privacyAI: ["Sending a message shares up to 12 recent messages and your companion’s current status with Anna’s AI service. Drawing a portrait sends a description of your companion. Both use your Anna allowance. Avoid sharing sensitive personal information.", "메시지를 보내면 최근 최대 12개 메시지와 친구의 현재 상태를 Anna AI 서비스에 전송합니다. 그림을 요청하면 친구의 외형 설명을 전송합니다. 모두 Anna 사용량을 이용합니다. 민감한 개인정보는 입력하지 마세요."],
+  privacyDeletionHeading: ["Data removal", "데이터 삭제"],
+  privacyDeletion: ["This preview does not yet offer a verified complete-deletion flow. Closing or uninstalling the app is not a confirmed way to erase its stored data. Contact the project through the support link in the full notice for deletion assistance; a request is not confirmation that deletion has completed.", "현재 미리보기에는 검증된 전체 삭제 절차가 아직 없습니다. 앱을 닫거나 제거해도 저장 데이터가 삭제된다고 보장하지 않습니다. 삭제 지원은 전체 안내의 프로젝트 지원 링크로 문의해 주세요. 요청 접수는 삭제 완료를 뜻하지 않습니다."],
+  privacyPublic: ["GitHub support issues are public. Do not include chat contents, credentials, or account details. Ask for a private contact route first.", "GitHub 지원 이슈는 공개됩니다. 대화 내용, 인증 정보, 계정 정보를 올리지 말고 비공개 연락 방법을 먼저 요청해 주세요."],
+  privacyFull: ["Read the full data notice ↗", "전체 데이터 처리 안내 ↗"],
   refreshAction: ['Please refresh the app before choosing an action.', '상태를 새로고침한 뒤 행동을 선택해 주세요.'],
   saveQuotaError: ['Anna storage is full or this save is too large. Check your storage usage. The action could not be confirmed.', 'Anna 저장 공간이 부족하거나 저장 데이터가 너무 커요. 저장소 사용량을 확인해 주세요. 행동 결과를 확인하지 못했습니다.'],
   language: ['Language', '언어'], diary: ['A little growth diary', '나의 작은 성장 일기'],
