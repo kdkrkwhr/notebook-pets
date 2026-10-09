@@ -4,16 +4,18 @@
 
 - 앱 `@kdkrkwhr/notebuddy`, ID **450**, 상태 **draft** (비공개)
 - [개발자 콘솔](https://anna.partners/developer?app=450&tab=versions)
-- 고정된 앱 버전 **0.1.3**, version ID **1177**
+- 고정된 앱 버전 **0.1.4**, version ID **1180**
 - 게임 도구 `tool-kdkrkwhr-notebuddy-game-hc8mw4gu`, Executa ID **1193**
-- 고정된 도구 버전 **0.1.4**, Executa version ID **668**
-- 작업 초안 revision **5**, UI 95개 파일. 본인 계정에는 **0.0.0-draft** 설치
+- 고정된 도구 버전 **0.1.5**, Executa version ID **671**
+- 작업 초안 revision **6**, UI 95개 파일. 본인 계정에는 **0.0.0-draft** 설치
 - Windows/Linux x86_64 패키지를 CI에서 빌드·검사한 뒤 Anna CDN에 업로드
 - 심사 제출·스토어 공개는 하지 않았습니다. 콘솔은 심사 승인 즉시 공개된다고 안내합니다.
 
-## 저장 정책 변경 · 배포 전
+## 저장 정책 변경 · 비공개 배포·이행 확인
 
-소스는 앱 0.1.4 / 도구 0.1.5입니다. Python 36개·UI 13개·strict 검사와 새 저장 형식의 JSON-RPC 저장/복원을 검증했습니다. 1만 건 정책 시뮬레이션, 2천 건 기존 기록 이행, 오래된 요청 차단, 응답 유실 후 재시도, 구버전 엔진의 새 저장 거부를 포함합니다. 기존 서버 배포 버전은 위에 기록된 값이며, CI·비공개 배포 후 갱신합니다.
+앱 0.1.4 / 도구 0.1.5를 비공개 초안에 배포했습니다. Python 36개·UI 13개·strict 검사와 새 저장 형식의 JSON-RPC 저장/복원을 검증했고, Windows/Linux CI·패키지 빌드도 통과했습니다. 1만 건 정책 시뮬레이션, 2천 건 기존 기록 이행, 오래된 요청 차단, 응답 유실 후 재시도, 구버전 엔진의 새 저장 거부를 포함합니다.
+
+Install draft 후 실제 앱에서 기존 모찌의 `request_id_prefix=nb2:0:`을 확인했습니다. 이미 존재하는 파트너에 대한 start 요청을 한 번 보내 `already_started` 거절 결과와 함께 새 저장 형식으로 이행했습니다. XP나 게임 보상을 변경하지 않았습니다. 창을 닫고 다시 열어 `nb2:1:`, 모찌 10 XP, 대화 2개, AI 초상화의 정상 로딩을 확인했습니다. 새 파트너·유료 AI 대화·이미지를 생성하지 않았습니다. 이 계정의 게임 저장은 이제 새 envelope 형식이므로 도구 0.1.4 이하로 되돌리지 마세요.
 
 실제 Listing에서 스크린샷·cover·privacy URL이 비어 있음을 확인했습니다. [REVIEW_READINESS.md](REVIEW_READINESS.md)에 플랫폼 필수 조건과 프로젝트 출시 차단 항목을 구분했습니다. 심사 승인과 동시에 공개될 수 있으므로 아직 제출하지 않습니다.
 
@@ -54,10 +56,10 @@ Orca 브라우저의 Anna 대시보드 → Apps → Notebuddy에서 검증했습
 
 ## 자동 검증
 
-- Anna Python 테스트 **24개**, UI 상태·다국어 테스트 **10개**, `validate --strict` 통과
+- Anna Python 테스트 **36개**, UI 상태·다국어·요청 테스트 **13개**, `validate --strict` 통과
 - 기존 엔진 테스트 **145개 + 자체 검사 6개** Windows/Linux CI 통과
-- [Anna CI / 패키지 빌드](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37897781850)
-- [기존 엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37897781848)
+- [Anna CI / 패키지 빌드](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37903480685)
+- [기존 엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37903480860)
 - `.github/workflows/anna.yml`에서 두 OS의 독립 실행 파일 생성 후 initialize/describe/생성/밥 주기 검사까지 실행합니다. 결과물은 7일 보관합니다.
 - 실제 UI 검증은 연결된 Anna 실행기에서 했습니다. 두 운영체제 각각의 실제 Anna 설치 실행을 검증했다는 뜻은 아닙니다.
 

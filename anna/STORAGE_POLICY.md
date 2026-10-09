@@ -57,6 +57,10 @@ This does not fix a delayed *unconditional first write* that was already in flig
 - UI tests check new ID construction, preservation of pending IDs, refusal to mutate against old runtime responses, and storage-specific quota errors.
 - In one offline measurement using duplicated representative birth outcomes, 512 legacy receipts used 263,797 bytes; compaction plus the envelope used 28,560 bytes with 48 retained receipts. 2,000 receipts used 1,028,629 bytes before and the same 28,560 bytes after. These intentionally oversized legacy fixtures demonstrate migration and are not claims that production APS accepts oversized writes. Byte counts vary with outcome content.
 
+## Private installed-app verification
+
+App 0.1.4 (version ID 1180) / tool 0.1.5 (Executa version ID 671), working draft revision 6, was installed privately on 2026-10-09. The existing partner returned prefix `nb2:0:`. One `start` request against the existing partner correctly returned `already_started` and committed the migration with prefix `nb2:1:` without awarding XP or replacing the partner. Closing and reopening the app preserved the new sequence, 모찌 at 10 XP, two existing chat messages and the AI portrait. No paid AI calls or new partner were created for this check. Windows/Linux CI passed; this is not a claim that both OS-specific Anna installations were manually exercised.
+
 ## Scope still to review
 
 This bounds the **game document**. App-scope chat and portrait metadata, old portrait objects, account-wide quota, privacy/deletion controls and APS backups are separate concerns. The local-file backup and decay jobs do not manage APS storage. Existing user data must not be deleted merely to recover quota.
