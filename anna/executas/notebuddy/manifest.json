@@ -1,7 +1,7 @@
 {
   "name": "tool-dev-notebuddy",
   "display_name": "Notebuddy Game",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
   "host_capabilities": [
     "aps.kv"
@@ -16,7 +16,7 @@
   "tools": [
     {
       "name": "game",
-      "description": "Read or care for your pet. Never choose a user or provide game state. Reuse request_id when retrying one action.",
+      "description": "Read or care for your pet. Never choose a user or provide game state. Read status first. For a new action append a unique suffix to request_id_prefix from the latest response. Reuse the entire request_id on retries. Never restamp an expired request automatically.",
       "timeout": 60,
       "parameters": [
         {
@@ -63,7 +63,7 @@
           "name": "request_id",
           "type": "string",
           "required": false,
-          "description": "Stable ID for one action, reused on transport retries. Omit to use the host invoke ID."
+          "description": "Required for new actions: latest request_id_prefix plus a unique suffix, e.g. nb2:12:my-action. Reuse the exact ID for retries. Old unsequenced IDs can only replay retained results."
         }
       ]
     }

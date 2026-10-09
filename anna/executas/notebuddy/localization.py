@@ -14,6 +14,8 @@ LABELS = {
     '밥 주기': 'Feed', '훈련': 'Train', '산책': 'Walk',
 }
 ERRORS = {
+    'request_expired': ('This request is no longer current. It was not run again. Refresh and check your companion before choosing another action.', '이전 요청을 다시 실행하지 않았어요. 상태를 새로고침하고 친구를 확인한 뒤 다음 행동을 선택해 주세요.'),
+    'save_capacity': ('This action was not saved because the game data is too large. Your previous progress is safe. Please contact support.', '게임 저장 용량이 커서 이번 행동을 저장하지 못했어요. 기존 진행도는 보존됩니다. 지원팀에 문의해 주세요.'),
     'not_started': ('Meet your companion first.', '먼저 친구를 만나 주세요.'),
     'encounter_pending': ('A companion you met is waiting. Choose Battle or Walk away first.', '만난 친구가 기다리고 있어요. 배틀이나 지나가기를 먼저 선택해 주세요.'),
     'no_encounter': ('There is no encounter. Go for a walk first.', '아직 만난 친구가 없어요. 먼저 산책해 주세요.'),
@@ -28,6 +30,8 @@ ERRORS = {
     'attendance_claimed': ("You already collected today’s gift.", '오늘의 출석 선물은 이미 받았어요.'),
 }
 LEGACY_ERRORS = {
+    'request_expired': ('This request is no longer current. It was not run again. Refresh and check your companion before choosing another action.', '이전 요청을 다시 실행하지 않았어요. 상태를 새로고침하고 친구를 확인한 뒤 다음 행동을 선택해 주세요.'),
+    'save_capacity': ('This action was not saved because the game data is too large. Your previous progress is safe. Please contact support.', '게임 저장 용량이 커서 이번 행동을 저장하지 못했어요. 기존 진행도는 보존됩니다. 지원팀에 문의해 주세요.'),
     '이미 키우는 몬스터가 있어. (!상태 로 확인)': 'already_started',
     '사료가 없어. 출석 보급이나 배틀 보상으로 모아.': 'no_food',
     '너무 배고파서 훈련을 못 해. !밥줘 먼저.': 'too_hungry',

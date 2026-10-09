@@ -10,7 +10,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tests'))
-from test_anna import MemoryAPS, GameService
+from test_anna import MemoryAPS, GameClient
 
 
 async def reproduce():
@@ -31,11 +31,11 @@ async def reproduce():
             return await super().set(key, value, scope=scope, if_match=if_match)
 
     storage = PausedFirstWrite()
-    delayed = asyncio.create_task(GameService(storage).invoke(
+    delayed = asyncio.create_task(GameClient(storage).invoke(
         {'command': 'start', 'name': 'Delayed', 'request_id': 'delayed-birth'}))
     try:
         await asyncio.wait_for(ready_to_write.wait(), 10)
-        winner = GameService(storage)
+        winner = GameClient(storage)
         original = await winner.invoke({'command': 'start', 'name': 'Original', 'request_id': 'first-birth'})
         cared = await winner.invoke({'command': 'feed', 'request_id': 'first-meal'})
         assert original['ok'] and cared['ok']

@@ -7,7 +7,7 @@ import asyncio
 import copy
 import unittest
 
-from test_anna import MemoryAPS, GameService, evaluate, SAVE_KEY
+from test_anna import MemoryAPS, GameClient, evaluate, SAVE_KEY
 from executa_sdk import StorageError
 from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
 
@@ -33,11 +33,11 @@ class CreationTests(unittest.IsolatedAsyncioTestCase):
 
                 storage = DelayedFirstRead()
                 request = {'command': 'start', 'name': 'Original', 'request_id': 'birth'}
-                delayed = asyncio.create_task(GameService(storage).invoke(
+                delayed = asyncio.create_task(GameClient(storage).invoke(
                     request if same_request else {**request, 'name': 'Late', 'request_id': 'other-birth'}))
                 try:
                     await asyncio.wait_for(observed_missing.wait(), 10)
-                    winner = GameService(storage)
+                    winner = GameClient(storage)
                     born = await winner.invoke(request)
                     await winner.invoke({'command': 'feed', 'request_id': 'first-meal'})
                     before = copy.deepcopy(storage.value)
@@ -45,7 +45,7 @@ class CreationTests(unittest.IsolatedAsyncioTestCase):
                     result = await asyncio.wait_for(delayed, 10)
                     self.assertEqual(result['ok'], same_request)
                     if not same_request:
-                        self.assertEqual(result['code'], 'already_started')
+                        self.assertEqual(result['code'], 'request_expired')
                     self.assertEqual(result['pet_id'], born['pet_id'])
                     self.assertEqual(result['status']['xp'], 10)
                     self.assertEqual(storage.value, before)
@@ -68,7 +68,7 @@ class CreationTests(unittest.IsolatedAsyncioTestCase):
 
         storage = UnavailableRecheck()
         with self.assertRaises(StorageError):
-            await GameService(storage).invoke({'command': 'start', 'request_id': 'birth'})
+            await GameClient(storage).invoke({'command': 'start', 'request_id': 'birth'})
         self.assertIsNone(storage.value)
         self.assertEqual(storage.writes, 0)
 
@@ -84,7 +84,7 @@ class CreationTests(unittest.IsolatedAsyncioTestCase):
                 return await super().get(key, scope=scope)
 
         storage = InvalidWinner()
-        result = await GameService(storage).invoke({'command': 'start', 'request_id': 'birth'})
+        result = await GameClient(storage).invoke({'command': 'start', 'request_id': 'birth'})
         self.assertFalse(result['ok'])
         self.assertEqual(result['code'], 'invalid_state')
         self.assertEqual(storage.value, {'name': 'preserve this invalid save'})
@@ -101,11 +101,11 @@ class CreationTests(unittest.IsolatedAsyncioTestCase):
                 return await super().set(key, value, scope=scope, if_match=if_match)
 
         storage = InsertConflict()
-        result = await GameService(storage).invoke({'command': 'start', 'name': 'Late', 'request_id': 'birth'})
+        result = await GameClient(storage).invoke({'command': 'start', 'name': 'Late', 'request_id': 'birth'})
         self.assertFalse(result['ok'])
         self.assertEqual(result['code'], 'already_started')
         self.assertEqual(result['status']['name'], 'Winner')
-        self.assertEqual(storage.writes, 0)
+        self.assertEqual(storage.writes, 1)
 
     async def test_missing_or_stale_etag_cannot_authorize_a_write(self):
         storage = MemoryAPS()
@@ -114,7 +114,7 @@ class CreationTests(unittest.IsolatedAsyncioTestCase):
                 await storage.set(SAVE_KEY, {'name': 'no'}, scope='tool', if_match=etag)
             self.assertEqual(caught.exception.code, STORAGE_ERR_PRECONDITION_FAILED)
         self.assertIsNone(storage.value)
-        await GameService(storage).invoke({'command': 'start', 'request_id': 'birth'})
+        await GameClient(storage).invoke({'command': 'start', 'request_id': 'birth'})
         before = copy.deepcopy(storage.value)
         for etag in ('', '*', 'stale'):
             with self.subTest(etag=etag), self.assertRaises(StorageError):
@@ -123,9 +123,9 @@ class CreationTests(unittest.IsolatedAsyncioTestCase):
 
     async def test_independent_services_retry_one_meal_only_once(self):
         storage = MemoryAPS()
-        await GameService(storage).invoke({'command': 'start', 'request_id': 'birth'})
+        await GameClient(storage).invoke({'command': 'start', 'request_id': 'birth'})
         args = {'command': 'feed', 'request_id': 'shared-meal'}
-        results = await asyncio.gather(*(GameService(storage).invoke(args) for _ in range(2)))
+        results = await asyncio.gather(*(GameClient(storage).invoke(args) for _ in range(2)))
         self.assertTrue(all(result['ok'] for result in results))
         self.assertEqual(storage.value['xp'], 10)
         self.assertEqual(storage.value['inventory']['normal_feed'], 2)
@@ -143,11 +143,11 @@ class CreationTests(unittest.IsolatedAsyncioTestCase):
                 return await super().set(key, value, scope=scope, if_match=if_match)
 
         storage = AlwaysConflicts()
-        await GameService(storage).invoke({'command': 'start', 'request_id': 'birth'})
+        await GameClient(storage).invoke({'command': 'start', 'request_id': 'birth'})
         before = copy.deepcopy(storage.value)
         storage.reject = True
         with self.assertRaises(StorageError):
-            await GameService(storage).invoke({'command': 'feed', 'request_id': 'meal'})
+            await GameClient(storage).invoke({'command': 'feed', 'request_id': 'meal'})
         self.assertEqual(storage.rejected, 3)
         self.assertEqual(storage.value, before)
         self.assertEqual(storage.writes, 1)

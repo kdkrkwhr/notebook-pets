@@ -1,5 +1,5 @@
 import { AnnaAppRuntime } from '/static/anna-apps/_sdk/latest/index.js';
-import {unwrap,starter,imageKey,normalHistory,mergeHistory,errorText} from './model.mjs';
+import {unwrap,starter,imageKey,normalHistory,mergeHistory,errorText,newAction} from './model.mjs';
 import {t,loadLanguage,saveLanguage,translateDocument,chatPrompt} from './i18n.mjs';
 
 const $=selector=>document.querySelector(selector);
@@ -86,7 +86,7 @@ async function refresh(){
 }
 async function act(command,extra={},retry=false){
   if(busy)return;controls(true);notice();
-  if(!retry)pendingAction={command,...extra,request_id:crypto.randomUUID()};
+  if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
     const {command:action,...args}=pendingAction;view=await invoke(action,args);pendingAction=null;render();

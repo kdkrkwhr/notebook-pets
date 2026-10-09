@@ -1,6 +1,5 @@
 """Anna Executa v2 bridge. APS is authoritative; local files are disposable."""
 import asyncio
-import hashlib
 import json
 from pathlib import Path
 import re
@@ -12,8 +11,9 @@ from executa_sdk import StorageClient, StorageError, bind_invoke
 from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
 from game_worker import ALLOWED
 from localization import localize
+from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.1.4'
+VERSION = '0.1.5'
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
@@ -22,7 +22,7 @@ MANIFEST = {
     'host_capabilities': ['aps.kv'],
     'storage': {'kv': True, 'files': True, 'scopes': {'tool': 'rw'}},
     'tools': [{
-        'name': 'game', 'description': 'Read or care for your pet. Never choose a user or provide game state. Reuse request_id when retrying one action.',
+        'name': 'game', 'description': 'Read or care for your pet. Never choose a user or provide game state. Read status first. For a new action append a unique suffix to request_id_prefix from the latest response. Reuse the entire request_id on retries. Never restamp an expired request automatically.',
         'timeout': 60,
         'parameters': [
             {'name': 'command', 'type': 'string', 'required': True, 'enum': sorted(ALLOWED),
@@ -31,7 +31,7 @@ MANIFEST = {
             {'name': 'language', 'type': 'string', 'required': False, 'enum': ['en', 'ko'],
              'description': 'Response language. Defaults to English. Presentation only; reuse request_id when switching language on a retry.'},
             {'name': 'request_id', 'type': 'string', 'required': False,
-             'description': 'Stable ID for one action, reused on transport retries. Omit to use the host invoke ID.'},
+             'description': 'Required for new actions: latest request_id_prefix plus a unique suffix, e.g. nb2:12:my-action. Reuse the exact ID for retries. Old unsequenced IDs can only replay retained results.'},
         ]
     }],
 }
@@ -73,7 +73,6 @@ class GameService:
             event = event or (context or {}).get('invoke_id')
             if not isinstance(event, str) or not event:
                 raise ValueError('Mutations require a stable request ID.')
-            event = 'anna:' + hashlib.sha256(event.encode()).hexdigest()
         else:
             event = None
         # Serialize this agent's calls, including first creation. Existing rows
@@ -86,26 +85,43 @@ class GameService:
                     raise ValueError('Invalid saved game; original preserved.')
                 if saved.get('exists') and not saved.get('etag'):
                     raise ValueError('Storage must support conditional writes.')
-                computed = await asyncio.to_thread(evaluate, {'command': command, 'name': name,
-                    'request_id': event, 'state': previous})
-                if computed.get('changed'):
-                    if not saved.get('exists'):
-                        # Engine evaluation can take time. Never replace a partner
-                        # another agent committed while we were computing a birth.
-                        # This narrows the race, but is NOT create-if-absent: APS
-                        # still has a gap between this read and the first write.
-                        latest = await self.storage.get(SAVE_KEY, scope='tool')
-                        if latest.get('exists'):
-                            continue
+                previous = unpack(previous)
+                mode = disposition(previous, event) if event else 'read'
+                computed = await asyncio.to_thread(evaluate, {
+                    'command': 'status' if mode == 'expired' else command, 'name': name,
+                    'request_id': event_key(event) if event and mode != 'expired' else None,
+                    'state': previous})
+                if mode == 'expired' and computed['result'].get('code') != 'invalid_state':
+                    computed['result'] = {'ok': False, 'code': 'request_expired', 'msg': ''}
+                committed = previous
+                # Cache terminal failures too: retrying a failed action later
+                # must not silently turn it into a successful, new game action.
+                if mode == 'new' and isinstance(computed.get('state'), dict):
                     try:
-                        await self.storage.set(SAVE_KEY, computed['state'], scope='tool',
-                                               if_match=saved.get('etag'))
-                    except StorageError as exc:
-                        if exc.code == STORAGE_ERR_PRECONDITION_FAILED and attempt < 2:
-                            continue
-                        raise
-                # Only return progress once the authoritative write succeeded.
-                return localize({**computed['result'], **computed.get('view', {})}, command, language)
+                        candidate = commit_result(computed['state'], previous, event,
+                                                  command, name, computed['result'])
+                    except SaveCapacityError:
+                        computed = await asyncio.to_thread(evaluate, {'command': 'status', 'state': previous})
+                        computed['result'] = {'ok': False, 'code': 'save_capacity', 'msg': ''}
+                    else:
+                        if not saved.get('exists'):
+                            # This recheck narrows the first-write race, but APS
+                            # still has no atomic create-if-absent operation.
+                            latest = await self.storage.get(SAVE_KEY, scope='tool')
+                            if latest.get('exists'):
+                                continue
+                        try:
+                            await self.storage.set(SAVE_KEY, pack(candidate), scope='tool',
+                                                   if_match=saved.get('etag'))
+                        except StorageError as exc:
+                            if exc.code == STORAGE_ERR_PRECONDITION_FAILED and attempt < 2:
+                                continue
+                            raise
+                        committed = candidate
+                # Reads/replays never rewrite the save. Only expose the next
+                # sequence after its game state and receipt commit together.
+                return localize({**computed['result'], **computed.get('view', {}),
+                                 'request_id_prefix': prefix(committed)}, command, language)
         raise RuntimeError('The game is busy. Please try again.')
 
 

@@ -1,6 +1,8 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  refreshAction: ['Please refresh the app before choosing an action.', '상태를 새로고침한 뒤 행동을 선택해 주세요.'],
+  saveQuotaError: ['Anna storage is full or this save is too large. Check your storage usage. The action could not be confirmed.', 'Anna 저장 공간이 부족하거나 저장 데이터가 너무 커요. 저장소 사용량을 확인해 주세요. 행동 결과를 확인하지 못했습니다.'],
   language: ['Language', '언어'], diary: ['A little growth diary', '나의 작은 성장 일기'],
   connecting: ['Connecting…', '연결하는 중'], connected: ['● Connected', '● 연결됨'], disconnected: ['Check connection', '연결 확인 필요'],
   heading: ['One companion. A little care, every day.', '처음 만난 너와, 오래오래.'],

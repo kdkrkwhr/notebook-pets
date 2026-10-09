@@ -2,7 +2,7 @@
 
 [한국어](README.md) · **English**
 
-One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. App version **0.1.3**, game tool **0.1.4**.
+One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. App version **0.1.4**, game tool **0.1.5**.
 
 ## Languages and saved progress
 
@@ -34,7 +34,11 @@ npm test
 npm run test:plugin
 ```
 
-The Anna CI workflow validates the app, runs 10 UI tests and 24 Python tests, and builds and smoke-tests Windows/Linux packages without calling paid AI services.
+The Anna CI workflow validates the app, runs 13 UI tests and 36 Python tests, and builds and smoke-tests Windows/Linux packages without calling paid AI services.
+
+## Bounded game saves and retries
+
+New actions append a unique suffix to `request_id_prefix` from the latest status/action response. Reuse the entire ID after a timeout. At most 64 outcomes / 24 KiB of receipts are retained; the entire game document is guarded at 48 KiB. Forgotten requests are rejected using the persistent sequence, never executed as fresh actions. The next accepted new action migrates legacy saves without changing the partner; older tool versions cannot write the new envelope. See [STORAGE_POLICY.md](STORAGE_POLICY.md) for the exact contract and rollback restrictions.
 
 ## First-partner creation
 

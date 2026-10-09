@@ -3,13 +3,13 @@ import copy
 import json
 import re
 import unittest
-from test_anna import MemoryAPS, GameService, evaluate
+from test_anna import MemoryAPS, GameClient, evaluate
 from localization import localize
 
 class LocalizationTests(unittest.IsolatedAsyncioTestCase):
     async def asyncSetUp(self):
         self.storage=MemoryAPS()
-        self.service=GameService(self.storage)
+        self.service=GameClient(self.storage)
 
     async def start(self):
         return await self.service.invoke({'command':'start','name':'Mochi','request_id':'birth'})
