@@ -10,10 +10,11 @@ import threading
 from executa_sdk import StorageClient, StorageError, bind_invoke
 from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
 from game_worker import ALLOWED
+from privacy import privacy, erased
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.1.5'
+VERSION = '0.1.6'
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
@@ -36,6 +37,7 @@ MANIFEST = {
     }],
 }
 
+MANIFEST['tools'].append({'name': 'privacy', 'description': 'Inspect or irreversibly erase the authenticated user’s existing game. Never invoke erase without an explicit data-removal request and confirmation. Not a reset/reroll. App chat and files require separate UI cleanup. Read inspect first; never automatically replace expected_etag after a conflict.', 'timeout': 60, 'parameters': [{'name': 'action', 'type': 'string', 'required': True, 'enum': ['inspect', 'erase'], 'description': 'inspect is read-only; erase replaces game content with a minimal permanent removal marker.'}, {'name': 'confirmation', 'type': 'string', 'required': False, 'description': 'For erase only: exact user-confirmed phrase DELETE NOTEBUDDY.'}, {'name': 'expected_etag', 'type': 'string', 'required': False, 'description': 'For erase only: etag from the preview the user confirmed. Reuse it on uncertain retries.'}]})
 
 def evaluate(payload):
     argv = ([sys.executable, '--engine-worker'] if getattr(sys, 'frozen', False) else
@@ -51,6 +53,10 @@ class GameService:
     def __init__(self, storage):
         self.storage = storage
         self.lock = asyncio.Lock()
+
+    async def privacy(self, args):
+        async with self.lock:
+            return await privacy(self.storage, SAVE_KEY, args)
 
     async def invoke(self, args, context=None):
         if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language'}:
@@ -85,6 +91,9 @@ class GameService:
                     raise ValueError('Invalid saved game; original preserved.')
                 if saved.get('exists') and not saved.get('etag'):
                     raise ValueError('Storage must support conditional writes.')
+                if erased(previous):
+                    return {'ok': False, 'code': 'data_erased', 'erased': True,
+                            'msg': ('게임 데이터가 삭제되어 더 이상 플레이할 수 없습니다.' if language == 'ko' else 'Your game data was removed. This game can no longer be played.')}
                 previous = unpack(previous)
                 mode = disposition(previous, event) if event else 'read'
                 computed = await asyncio.to_thread(evaluate, {
@@ -153,14 +162,15 @@ async def serve():
     async def handle(frame):
         request_id, params = frame.get('id'), frame.get('params') or {}
         try:
-            if params.get('tool') != 'game':
+            if params.get('tool') not in ('game', 'privacy'):
                 raise ValueError('Unknown tool.')
             with bind_invoke(params):
                 context = {**(params.get('context') or {})}
                 context.setdefault('invoke_id', params.get('invoke_id'))
-                result = await service.invoke(params.get('arguments') or {}, context)
+                result = (await service.privacy(params.get('arguments') or {}) if params['tool'] == 'privacy'
+                          else await service.invoke(params.get('arguments') or {}, context))
             write({'jsonrpc': '2.0', 'id': request_id,
-                   'result': {'success': True, 'tool': 'game', 'data': result}})
+                   'result': {'success': True, 'tool': params['tool'], 'data': result}})
         except ValueError as exc:
             write({'jsonrpc': '2.0', 'id': request_id, 'error': {'code': -32602, 'message': str(exc)}})
         except StorageError as exc:

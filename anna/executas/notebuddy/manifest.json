@@ -1,7 +1,7 @@
 {
   "name": "tool-dev-notebuddy",
   "display_name": "Notebuddy Game",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
   "host_capabilities": [
     "aps.kv"
@@ -64,6 +64,35 @@
           "type": "string",
           "required": false,
           "description": "Required for new actions: latest request_id_prefix plus a unique suffix, e.g. nb2:12:my-action. Reuse the exact ID for retries. Old unsequenced IDs can only replay retained results."
+        }
+      ]
+    },
+    {
+      "name": "privacy",
+      "description": "Inspect or irreversibly erase the authenticated user’s existing game. Never invoke erase without an explicit data-removal request and confirmation. Not a reset/reroll. App chat and files require separate UI cleanup. Read inspect first; never automatically replace expected_etag after a conflict.",
+      "timeout": 60,
+      "parameters": [
+        {
+          "name": "action",
+          "type": "string",
+          "required": true,
+          "enum": [
+            "inspect",
+            "erase"
+          ],
+          "description": "inspect is read-only; erase replaces game content with a minimal permanent removal marker."
+        },
+        {
+          "name": "confirmation",
+          "type": "string",
+          "required": false,
+          "description": "For erase only: exact user-confirmed phrase DELETE NOTEBUDDY."
+        },
+        {
+          "name": "expected_etag",
+          "type": "string",
+          "required": false,
+          "description": "For erase only: etag from the preview the user confirmed. Reuse it on uncertain retries."
         }
       ]
     }

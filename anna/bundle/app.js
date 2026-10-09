@@ -4,19 +4,21 @@ import {t,loadLanguage,saveLanguage,translateDocument,chatPrompt} from './i18n.m
 
 const $=selector=>document.querySelector(selector);
 const TOOL=window.__ANNA_TOOL_IDS__?.notebuddy||'tool-dev-notebuddy';
-const CHAT='notebuddy/chat-v1', ART='notebuddy/art-v1';
+import {CHAT,ART,erased,ErasedError,mergeSaved,removeAppData} from './data.mjs';
 // Accessing localStorage itself can throw in a restricted iframe.
 let preferences;
 try{preferences=window.localStorage;}catch{preferences=null;}
 let language=loadLanguage(preferences);
 let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingImage=null;
+let removalPreview=null,pendingRemoval=false;
 const tr=(key,values)=>t(language,key,values);
 const problem=error=>errorText(error,language);
 function notice(message=''){ $('#notice').textContent=message;$('#notice').hidden=!message; }
 function controls(value){
   busy=value;
   document.querySelectorAll('button,input,select').forEach(e=>e.disabled=value);
-  if(!value&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
+  if(!value&&pendingRemoval)document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
+  if(!value&&!pendingRemoval&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
 }
 function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
@@ -37,6 +39,8 @@ function drawChat(){
 }
 function render(){
   const s=view?.status;
+  $('#removed').hidden=!view?.erased;
+  if(view?.erased)forgetCachedData();
   $('#welcome').hidden=!!s||view?.code!=='not_started';$('#game').hidden=!s;
   if(!s)return;
   text('#name',s.name);text('#pet-type',`${s.species} · ${s.element}`);text('#mood',`◌ ${s.mood}`);
@@ -67,7 +71,17 @@ function render(){
   }
   drawChat();
 }
+function forgetCachedData(){
+  history=[];art={};urls={};pendingAction=null;pendingImage=null;
+  $('#messages').replaceChildren();$('#album').replaceChildren();$('#quests').replaceChildren();
+  for(const id of ['name','pet-type','title','action-result','pet-name','chat-input']){const e=$(`#${id}`);if('value' in e)e.value='';else e.textContent='';}
+  $('#pet-image').onerror=null;$('#pet-image').src='icon.svg';$('#pet-image').alt='';
+  $('#retry-action').hidden=true;
+}
+async function assertActive(){const status=await invoke('status');if(status.erased){view=status;render();throw new ErasedError();}if(!status.status)throw new Error('No active game');return status;}
 async function readExtras(){
+  if(view?.erased){forgetCachedData();return;}
+
   const results=await Promise.allSettled([anna.storage.get({key:CHAT}),anna.storage.get({key:ART})]);
   if(results[0].status==='fulfilled')history=normalHistory(results[0].value.value);
   if(results[1].status==='fulfilled')art=results[1].value.value||{};
@@ -79,7 +93,7 @@ async function refresh(){
   if(busy)return;controls(true);notice();
   try{
     view=await invoke('status');if(!view.ok&&view.code!=='not_started')notice(view.msg);
-    await readExtras();render();text('#connection',tr('connected'));
+    if(view.erased)pendingRemoval=false;await readExtras();render();text('#connection',tr('connected'));
     if(pendingAction)notice(tr('uncertain'));
   }catch(error){notice(problem(error));text('#connection',tr('disconnected'));}
   finally{controls(false);}
@@ -97,7 +111,7 @@ async function act(command,extra={},retry=false){
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;}
   finally{controls(false);}
 }
-async function saveMerged(key,merge){for(let attempt=0;attempt<3;attempt++){const current=await anna.storage.get({key});try{const value=merge(current.value);await anna.storage.set({key,value,...(current.etag?{if_match:current.etag}:{})});return value;}catch(error){if(!/precondition|conflict/i.test(String(error.message))||attempt===2)throw error;}}}
+async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
 async function chat(event){
   event.preventDefault();if(busy||!view?.status)return;
   const input=$('#chat-input'),message=input.value.trim();if(!message)return;
@@ -107,27 +121,61 @@ async function chat(event){
     view=await invoke('status');if(!view.ok||!view.status)throw new Error('status unavailable');render();
     const response=await anna.llm.complete({messages:history.slice(-12).map(m=>({role:m.role,content:{type:'text',text:m.text}})),systemPrompt:chatPrompt(language,view.status),maxTokens:280,temperature:.7,modelPreferences:{costPriority:1,speedPriority:.8}});
     if(typeof response.content?.text!=='string'||!response.content.text.trim())throw new Error('empty response');
+    await assertActive();
     additions.push({id:crypto.randomUUID(),role:'assistant',text:response.content.text,at:Date.now()});history=mergeHistory(history,additions);drawChat();
-    try{history=await saveMerged(CHAT,old=>mergeHistory(old,additions));}catch{notice(tr('chatUnsaved'));}
-  }catch(error){notice(tr('chatFailed',{error:problem(error)}));input.value=message;history=history.filter(m=>m.id!==additions[0].id);drawChat();}
+    try{history=await saveMerged(CHAT,old=>mergeHistory(old,additions));}catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else notice(tr('chatUnsaved'));}
+  }catch(error){if(error instanceof ErasedError){notice(tr('removedHeading'));forgetCachedData();}else{notice(tr('chatFailed',{error:problem(error)}));input.value=message;history=history.filter(m=>m.id!==additions[0].id);drawChat();}}
   finally{controls(false);input.focus();}
 }
 async function generate(){
   if(busy)return;$('#draw-dialog').close();controls(true);notice();text('#draw',tr('drawing'));
   try{
     if(!pendingImage){
-      const snapshot=await invoke('status');if(!snapshot.status)throw new Error('no pet');
+      const snapshot=await assertActive();
       const generated=await anna.image.generate({prompt:`${snapshot.image_prompt}. One single friendly virtual pet on a warm ivory notebook page, full body, delicate colored pencil and watercolor accents, no words, no lettering.`,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
       const url=generated.images?.[0]?.url;if(!url)throw new Error('no image');
       pendingImage={key:imageKey(snapshot),url,path:`portraits/${snapshot.pet_id}/${crypto.randomUUID()}.png`};
     }
+    await assertActive();
     const p=pendingImage;
     if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw new Error('image download');p.blob=await response.blob();}
     if(!p.uploaded){const upload=await anna.files.upload_init({path:p.path,content_type:p.blob.type||'image/png',size:p.blob.size});const result=await fetch(upload.put_url,{method:'PUT',headers:upload.headers,body:p.blob});if(!result.ok)throw new Error('image upload');await anna.files.upload_finalize({path:p.path,size:p.blob.size});p.uploaded=true;}
     art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));urls[p.key]=(await anna.files.download_url({path:p.path})).get_url;pendingImage=null;render();notice(tr('imageSaved'));
-  }catch(error){notice(pendingImage?tr('imagePending'):tr('imageFailed',{error:problem(error)}));}
+  }catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else notice(pendingImage?tr('imagePending'):tr('imageFailed',{error:problem(error)}));}
   finally{text('#draw',tr(pendingImage?'retryImage':'draw'));controls(false);}
 }
+async function privacyCall(args){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'privacy',args},{timeoutMs:60000}));}
+async function previewRemoval(){
+  if(busy)return;$('#privacy-dialog').close();controls(true);notice();
+  try{
+    removalPreview=await privacyCall({action:'inspect'});
+    if(removalPreview.erased){view={erased:true};render();notice(tr('cleanupPending'));return;}
+    if(!removalPreview.ok||!removalPreview.exists||!removalPreview.etag){notice(tr('removalUnavailable'));return;}
+    $('#erase-phrase').value='';$('#erase-quiescent').checked=false;$('#erase-dialog').showModal();
+  }catch(error){notice(problem(error));}
+  finally{controls(false);}
+}
+async function cleanupRemovedData(){
+  try{
+    await removeAppData(anna,()=>privacyCall({action:'inspect'}));
+    try{preferences?.removeItem('notebuddy/language-v1');}catch{/* No personal content is stored in this preference. */}
+    notice(tr('cleanupChecked'));
+  }catch{notice(tr('cleanupPending'));}
+}
+async function confirmRemoval(){
+  if(busy)return;
+  if($('#erase-phrase').value!=='DELETE NOTEBUDDY'||!$('#erase-quiescent').checked){$('#erase-error').textContent=tr('eraseConfirmNeeded');return;}
+  $('#erase-error').textContent='';$('#erase-dialog').close();pendingRemoval=true;controls(true);notice();
+  try{
+    const result=await privacyCall({action:'erase',confirmation:'DELETE NOTEBUDDY',expected_etag:removalPreview.etag});
+    if(!result.ok||!result.erased){pendingRemoval=false;notice(tr('removalChanged'));return;}
+    pendingRemoval=false;view={erased:true};render();await cleanupRemovedData();
+  }catch{notice(tr('removalUncertain'));}
+  finally{controls(false);}
+}
+$('#erase-data').addEventListener('click',previewRemoval);
+$('#confirm-erase').addEventListener('click',confirmRemoval);
+$('#resume-cleanup').addEventListener('click',async()=>{if(busy)return;controls(true);try{await cleanupRemovedData();}finally{controls(false);}});
 $('#language').addEventListener('change',async()=>{
   if(busy)return;language=$('#language').value;
   const saved=saveLanguage(preferences,language);translate();

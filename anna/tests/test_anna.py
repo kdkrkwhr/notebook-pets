@@ -217,8 +217,31 @@ class ProtocolTests(unittest.TestCase):
             result = json.loads(process.stdout.readline())
             self.assertEqual(result['result']['data']['status']['name'], 'Wire test')
             self.assertEqual(result['result']['data']['request_id_prefix'], 'nb2:1:')
-            send({'id':6,'method':'shutdown'})
-            self.assertEqual(json.loads(process.stdout.readline())['id'],6)
+            send({'id':6,'method':'invoke','params':{'tool':'privacy','arguments':{'action':'inspect'},
+                'context':{'invoke_id':'privacy-preview'}}})
+            reverse = json.loads(process.stdout.readline())
+            self.assertEqual(reverse['method'], 'storage/get')
+            send({'id':reverse['id'],'result':{'exists':True,'value':stored,'etag':'committed'}})
+            result = json.loads(process.stdout.readline())
+            self.assertEqual(result['result']['tool'], 'privacy')
+            self.assertEqual(result['result']['data']['etag'], 'committed')
+            send({'id':7,'method':'invoke','params':{'tool':'privacy','arguments':{
+                'action':'erase','confirmation':'DELETE NOTEBUDDY','expected_etag':'committed'},
+                'context':{'invoke_id':'privacy-erase'}}})
+            reverse = json.loads(process.stdout.readline())
+            self.assertEqual(reverse['method'], 'storage/get')
+            send({'id':reverse['id'],'result':{'exists':True,'value':stored,'etag':'committed'}})
+            reverse = json.loads(process.stdout.readline())
+            self.assertEqual(reverse['method'], 'storage/set')
+            self.assertEqual(reverse['params']['scope'], 'tool')
+            self.assertEqual(reverse['params']['if_match'], 'committed')
+            self.assertEqual(reverse['params']['context']['invoke_id'], 'privacy-erase')
+            self.assertEqual(reverse['params']['value'], {'_notebuddy_erased':1})
+            send({'id':reverse['id'],'result':{'etag':'removed','generation':2}})
+            result = json.loads(process.stdout.readline())
+            self.assertTrue(result['result']['data']['erased'])
+            send({'id':8,'method':'shutdown'})
+            self.assertEqual(json.loads(process.stdout.readline())['id'],8)
             process.wait(timeout=5)
         finally:
             if process.poll() is None:
