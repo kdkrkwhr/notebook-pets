@@ -22,4 +22,18 @@ Last confirmed review candidate: 0.2.1, version ID 1219, pending_review. Prepari
 
 ## Outcome
 
-Upload and submission pending; the existing review has not been cancelled.
+The official upload attempt on 10 October 2026 was blocked by Anna's WAF: HTTP 403 on `/api/v1/developer/apps/450/working/bundle/file`, uploading `portrait-features.mjs`. Request ID: `a48407618a8dd472-NRT`. The upload announced 88 files and deduplicated 80; finalization did not succeed.
+
+The main working draft is now revision **18**, bundle status **initializing**. Tool 0.1.10 was registered as working configuration, but no new immutable app/tool pair was cut. Listing synchronization occurs after successful bundle upload and was not reached. Server re-query confirmed the old description, three screenshot URLs and release privacy link remain unchanged.
+
+The review remains **pending_review / 0.2.1 / version ID 1219**. No cancellation, new submission, installation or publication occurred. Do not report 0.3.0 as submitted. Retrying the same known WAF rejection or altering content to evade the filter is not a resolution; the platform must permit the normal upload path.
+
+Source preparation commit: `af91469`; source/privacy tag: `anna-v0.3.0`. Local strict manifest validation, 39 UI unit tests, 62 browser tests and 48 storage/protocol tests passed. CI and packaged binary evidence are recorded in the completion note below.
+
+`release` remains on the prior submitted source so the existing review's public privacy URL stays accurate. The new source is merged into `develop`. Once normal uploads work, refresh working revision, upload the matching UI and tool packages, validate the hosted candidate, cut 0.3.0, synchronize listing and repin review. Do not bypass server prechecks.
+
+## Completion evidence
+
+Candidate source `af91469` passed develop CI: core run 38035707653 and Anna Windows/Linux run 38035707613. Both tested 0.1.10 platform archives were downloaded from that exact successful Anna run into the ignored local Executa dist directory. Archive SHA-256 values are retained in the local submission workspace. The version-pinned public privacy URL returned HTTP 200 with the 0.3.0 notice.
+
+The follow-up commit contains documentation only; it does not change the tested UI, rules, manifest, version or screenshots. Upload remains blocked as recorded above; neither a new review candidate nor a 1.0 release is claimed.

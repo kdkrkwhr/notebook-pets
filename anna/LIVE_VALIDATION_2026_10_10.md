@@ -1,3 +1,5 @@
+Latest submission attempt: the user authorized 0.3.0 on 10 October. Main app upload also hit WAF 403; [current submission record](REVIEW_READINESS.md) supersedes the earlier hold instruction and revision-17 snapshot below.
+
 # Live validation — 10 October 2026
 
 ## Decision
