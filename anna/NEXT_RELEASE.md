@@ -38,3 +38,11 @@ Before publishing the next candidate: run the prepared source checks, choose/bum
 The user accepted submission with the documented platform limitations. Historical documents calling these submission blockers or saying submission has not happened are superseded by REVIEW_READINESS.md and the receipt in HANDOFF.md.
 
 Automatic evolution uses the documented `reference_image_urls` API. Reference-capable provider availability and actual visual fidelity still need live verification. The new privacy/listing copy must ship together with this behavior; the currently submitted release copy remains unchanged.
+
+## Live verification failed — 2026-10-10
+
+Actual reference-conditioned generation returned a provider endpoint 404; no new evolution image was obtained. APS reference save/reopen passed and production data remained unchanged. This blocks the agreed 1.0 image criterion. See [the verification record](EVOLUTION_LIVE_VERIFICATION.md). Do not describe the develop implementation as provider-verified.
+
+## Rechargeable walks
+
+Walks now hold up to 5 charges and recover one every 300 seconds, including offline time. Existing saves start with 5 charges once. Midnight does not refill charges. Each walk exclusively yields quiet time (50%), XP (30%; 10/20/30 equally likely), or an encounter (20%). Base expected walk XP is 6; the existing sleep bonus and level cap still apply. Battles remain limited to 5 per KST day. Replayed requests reuse the same result without spending or rolling again.

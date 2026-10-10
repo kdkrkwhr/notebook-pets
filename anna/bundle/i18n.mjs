@@ -82,6 +82,7 @@ export const messages = {
   chatLabel: ['A message for your companion', '친구에게 할 말'], chatPlaceholder: ['Tell your companion about your day', '친구에게 한마디 건네 보세요'],
   send: ['Send message', '메시지 보내기'], chatUsage: ['Chat uses your Anna AI allowance. Your recent conversation is remembered.', '대화는 Anna AI 사용량을 이용해요. 최근 대화를 기억합니다.'],
   care: ['Time together', '함께하는 시간'], feed: ['Feed', '밥 주기'], snack: ['Treat', '간식'], play: ['Play', '놀아 주기'], train: ['Train', '훈련'], walk: ['Walk', '산책'], sleep: ['Sleep', '재우기'], attendance: ['Daily gift', '출석 선물'], battle: ['Battle', '배틀하기'], flee: ['Walk away', '지나가기'], claimquest: ['Quest reward', '퀘스트 보상'], start: ['First meeting', '처음 만나기'],
+  walkHint: ['+1 every 5 min · Max 5', '5분마다 +1 · 최대 5회'], walkEnergy: ['{charges}/{capacity} · +1 every 5 min', '{charges}/{capacity}회 · 5분마다 +1'],
   feedHint: ['1 food · Every hour', '사료 1 · 1시간 간격'], threeDaily: ['3 times a day', '하루 3번'], hourly: ['Every hour', '1시간 간격'], fiveDaily: ['5 times a day', '하루 5번'], sleepHint: ['Bonus XP tomorrow', '내일 경험치 보너스'], onceDaily: ['Once a day', '하루 한 번'],
   careIntro: ['A little care goes a long way.', '작은 돌봄부터 시작해 볼까요?'], retry: ['Check the same action again', '같은 행동 다시 확인하기'],
   questHeading: ["Today’s promises", '오늘의 약속'], claim: ['Claim reward', '보상 받기'], resetTime: ['Resets daily at midnight Korea time (UTC+9).', '매일 한국 시간 자정에 새로 시작해요.'],

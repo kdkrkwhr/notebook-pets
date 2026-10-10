@@ -63,6 +63,17 @@ function evolutionEffect(phase=''){
   const frame=$('.portrait');if(phase)frame.classList.remove('evolution-reveal');frame.classList.toggle('evolving',!!phase);frame.setAttribute('aria-busy',String(!!phase));
   const effect=$('#evolution-effect');effect.hidden=!phase;text('#evolution-phase',phase?tr(phase):'');
 }
+let walkSnapshot=null,walkSnapshotAt=0;
+function renderWalkEnergy(){
+  const energy=view?.status?.walk_energy;
+  if(!energy){text('#walk-energy',tr('walkHint'));return;}
+  if(energy!==walkSnapshot){walkSnapshot=energy;walkSnapshotAt=performance.now();}
+  const elapsed=Math.max(0,(performance.now()-walkSnapshotAt)/1000);
+  const added=energy.charges<energy.capacity&&elapsed>=energy.next_in_seconds?1+Math.floor((elapsed-energy.next_in_seconds)/energy.recharge_seconds):0;
+  const charges=Math.min(energy.capacity,energy.charges+added);
+  text('#walk-energy',tr('walkEnergy',{...energy,charges}));
+}
+setInterval(renderWalkEnergy,1000);
 function render(){
   const resetting=!!(view?.reset_pending||pendingResetRequest);
   $('#resetting').hidden=!resetting;
@@ -73,6 +84,7 @@ function render(){
   $('#welcome').hidden=resetting||!!s||view?.code!=='not_started';$('#game').hidden=!s;
   if(!s)return;
   text('#name',s.name);text('#pet-type',`${s.species} · ${s.element}`);text('#mood',`◌ ${s.mood}`);
+  renderWalkEnergy();
   text('#title',s.title);text('#level',`Lv. ${s.level}`);text('#stage-label',s.stage_label);
   text('#xp-label',`${s.xp} / ${s.xp_next} XP`);$('#xp').max=s.xp_next;$('#xp').value=s.xp;
   for(const key of ['satiety','intimacy']){text(`#${key}`,`${s[key]} / 100`);$(`#${key}-bar`).value=s[key];}

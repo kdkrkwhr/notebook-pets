@@ -1,5 +1,12 @@
 # Anna 작업 인계 · 2026-10-09
 
+## 실제 진화 이미지 검증 실패 · 2026-10-10
+
+실제 유년기 원본을 확보해 별도 검증 앱 APS에 복사하고 새 클라이언트 다운로드 해시 일치를 확인했습니다. 원본 게임·앨범은 전후 동일합니다. 새 이미지 생성은 개발용 경로 502, 실제 앱 runtime 경로에서 공급자 `/image-to-image` 404로 실패했습니다. 모델 힌트 두 가지도 같은 오류였으나 실제 선택 모델은 확인되지 않았습니다. 새 성장기·성숙기·최종 단계 그림은 얻지 못했습니다. 사용자 현재 성장기 그림은 재생성한 결과이므로 최초 괴리감 사례의 원본으로 취급하지 않습니다.
+
+[실제 검증 기록](EVOLUTION_LIVE_VERIFICATION.md)에 증거와 다음 확인을 남겼고 [1.0 기준](V1_READINESS.md)의 진화 그림 항목을 차단으로 변경했습니다. 심사 후보·release·원본 펫 데이터는 유지했습니다. 진단용 생성 요청 결과를 사용자 앨범에 쓰지 않았습니다.
+
+
 Verification 2026-10-10: 32 UI unit tests; 38 full browser tests plus 1 final battle/evolution regression; strict manifest and diff checks passed. Bundle contains exactly 72 baby images. Evolution effect screenshot inspected. Live provider visual fidelity remains unverified. See [1.0 release criteria](V1_READINESS.md).
 
 ## 자동 진화 그림과 연출 · 2026-10-10
