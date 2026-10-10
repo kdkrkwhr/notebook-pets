@@ -1,5 +1,8 @@
 # 심사 후보 검증 · 2026-10-09
 
+> Current status (2026-10-10): app 0.2.1 has been submitted and is pending_review. The historical “not submitted” and “release blocker” entries below describe earlier milestones. The user accepted submission with documented limitations; see [REVIEW_READINESS.md](REVIEW_READINESS.md). New-account installation remains unverified. Current develop verification and next deployment scope are tracked in [NEXT_RELEASE.md](NEXT_RELEASE.md).
+
+
 현재 심사 후보는 앱 **0.2.1** (1219), 도구 **0.1.9** (694)입니다. 화면 복구·2D 전투·성장 1/10/30/50의 최신 검증은 [HANDOFF.md](HANDOFF.md)에 기록했습니다. UI 테스트 31개, 브라우저 테스트 18개와 strict manifest 검증을 통과했습니다. 아래는 이전 0.1.7 복구 검증 이력이며 신규 계정 전체 검증 완료를 뜻하지 않습니다. 원자적 최초 생성은 미해결이지만 사용자 결정으로 이번 제출의 차단 조건에서는 제외했습니다.
 
 ## 이번에 수정한 복구 동작

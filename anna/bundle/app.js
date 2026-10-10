@@ -18,6 +18,12 @@ let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetReque
 const tr=(key,values)=>t(language,key,values);
 const problem=error=>errorText(error,language);
 const battleScene=createBattle(document);
+const feedback={};
+function localStatus(area,key='',values={}){
+  feedback[area]={key,values};
+  const element=$(`#${area}-status`);element.textContent=key?tr(key,values):'';element.hidden=!key;
+}
+function report(area,key,values={}){localStatus(area,key,values);notice(tr(key,values));}
 $('#draw-evolved').addEventListener('click',()=>$('#draw').click());
 
 function notice(message=''){ $('#notice').textContent=message;$('#notice').hidden=!message; }
@@ -38,6 +44,7 @@ function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
 function translate(){
   translateDocument(document,language);$('#language').value=language;
+  for(const [area,{key,values}] of Object.entries(feedback))localStatus(area,key,values);
   text('#draw',tr(pendingImage?'retryImage':'draw'));
 }
 function drawChat(){
@@ -91,7 +98,7 @@ function render(){
   drawChat();
 }
 function forgetCachedData(){
-  battleScene.close();
+  battleScene.close();localStatus('chat');localStatus('image');
   history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
   $('#messages').replaceChildren();$('#album').replaceChildren();$('#quests').replaceChildren();
   for(const id of ['name','pet-type','title','action-result','pet-name','chat-input','mood','level','stage-label','xp-label','satiety','intimacy','stats','inventory','image-caption','quest-date','encounter-text']){const e=$(`#${id}`);if('value' in e)e.value='';else e.textContent='';}
@@ -173,7 +180,7 @@ async function saveMerged(key,merge){await assertActive();return mergeSaved(anna
 async function chat(event){
   event.preventDefault();if(busy||pendingChat||pendingAction||pendingRemoval||!view?.status)return;
   const input=$('#chat-input'),message=input.value.trim();if(!message)return;
-  controls(true);notice();const additions=[{id:crypto.randomUUID(),role:'user',text:message,at:Date.now()}];
+  controls(true);notice();localStatus('chat','chatWorking');const additions=[{id:crypto.randomUUID(),role:'user',text:message,at:Date.now()}];
   history=mergeHistory(history,additions);drawChat();input.value='';
   try{
     view=await assertActive();render();
@@ -181,16 +188,17 @@ async function chat(event){
     if(typeof response.content?.text!=='string'||!response.content.text.trim())throw new Error('empty response');
     additions.push({id:crypto.randomUUID(),role:'assistant',text:response.content.text,at:Date.now()});history=mergeHistory(history,additions);drawChat();
     pendingChat=additions;await persistChat();
-  }catch(error){if(error instanceof ErasedError){notice(tr('removedHeading'));forgetCachedData();}else if(error instanceof PartnerChangedError){notice(tr('partnerChanged'));}else{notice(tr('chatFailed',{error:problem(error)}));input.value=message;history=history.filter(m=>m.id!==additions[0].id);drawChat();}}
+  }catch(error){if(error instanceof ErasedError){notice(tr('removedHeading'));forgetCachedData();}else if(error instanceof PartnerChangedError){notice(tr('partnerChanged'));}else{report('chat','chatFailed',{error:problem(error)});input.value=message;history=history.filter(m=>m.id!==additions[0].id);drawChat();}}
   finally{controls(false);input.focus();}
 }
 async function persistChat(){
+  localStatus('chat','chatSaving');
   try{
     history=await saveMerged(CHAT,old=>mergeHistory(old,pendingChat));
-    pendingChat=null;drawChat();notice(tr('chatSaved'));
+    pendingChat=null;drawChat();report('chat','chatSaved');
   }catch(error){
     if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}
-    else notice(tr(error instanceof PartnerChangedError?'partnerChanged':'chatUnsaved'));
+    else report('chat',error instanceof PartnerChangedError?'partnerChanged':'chatUnsaved');
   }
 }
 async function retryChat(){
@@ -210,7 +218,7 @@ async function cleanupPortraits(){
   }finally{controls(false);}
 }
 async function generate(){
-  if(busy)return;$('#draw-dialog').close();controls(true);notice();text('#draw',tr('drawing'));
+  if(busy)return;$('#draw-dialog').close();controls(true);notice();text('#draw',tr('drawing'));localStatus('image',pendingImage?'imageSaving':'drawing');
   try{
     if(!pendingImage){
       const snapshot=await assertActive();
@@ -218,12 +226,13 @@ async function generate(){
       const url=generated.images?.[0]?.url;if(!url)throw new Error('no image');
       pendingImage={key:imageKey(snapshot),url,path:`portraits/${snapshot.pet_id}/${crypto.randomUUID()}.png`};
     }
+    localStatus('image','imageSaving');
     await assertActive();
     const p=pendingImage;
     if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw new Error('image download');p.blob=await response.blob();}
     if(!p.uploaded){const upload=await anna.files.upload_init({path:p.path,content_type:p.blob.type||'image/png',size:p.blob.size});const result=await fetch(upload.put_url,{method:'PUT',headers:upload.headers,body:p.blob});if(!result.ok)throw new Error('image upload');await anna.files.upload_finalize({path:p.path,size:p.blob.size});p.uploaded=true;}
-    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));urls[p.key]=(await anna.files.download_url({path:p.path})).get_url;pendingImage=null;render();notice(tr('imageSaved'));
-  }catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else notice(error instanceof PartnerChangedError?tr('partnerChanged'):pendingImage?tr('imagePending'):tr('imageFailed',{error:problem(error)}));}
+    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));urls[p.key]=(await anna.files.download_url({path:p.path})).get_url;pendingImage=null;render();report('image','imageSaved');
+  }catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else report('image',error instanceof PartnerChangedError?'partnerChanged':pendingImage?'imagePending':'imageFailed',{error:problem(error)});}
   finally{text('#draw',tr(pendingImage?'retryImage':'draw'));controls(false);}
 }
 async function privacyCall(args){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'privacy',args},{timeoutMs:60000}));}

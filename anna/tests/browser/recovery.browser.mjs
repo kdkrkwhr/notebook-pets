@@ -355,3 +355,58 @@ test('initial creation retains its top-level retry and Korean care retry is loca
  await p.locator('#retry-care').click();await idle(p);
  assert.equal(await p.locator('#retry-care').isVisible(),false);
 });
+
+test('local chat feedback survives unrelated care and translation; retry saves without AI',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{llm:true});
+ await p.locator('#chat-input').fill('Keep my draft');await p.locator('#chat-form button').click();await idle(p);
+ assert.match(await p.locator('#chat-status').innerText(),/back in the input/);
+ await fault(p,{llm:false,save:true});await p.locator('#chat-form button').click();await idle(p);
+ assert.match(await p.locator('#chat-status').innerText(),/without another AI call/);
+ await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.match(await p.locator('#chat-status').innerText(),/could not be saved/);
+ await p.locator('#language').selectOption('ko');await idle(p);
+ assert.match(await p.locator('#chat-status').innerText(),/저장하지 못/);
+ await fault(p,{save:false});await p.locator('#retry-chat').click();await idle(p);
+ assert.match(await p.locator('#chat-status').innerText(),/저장했/);
+ assert.equal((await calls(p,'llm')).length,2);
+ await p.reload();await idle(p);assert.equal(await p.locator('#chat-status').isVisible(),false);
+ assert.equal(await p.locator('#messages .message').count(),2);
+});
+
+test('portrait generation failure and save failure have distinct local recovery guidance',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{image:true});
+ await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.match(await p.locator('#image-status').innerText(),/Could not finish/);
+ assert.doesNotMatch(await p.locator('#draw').innerText(),/Retry saving/);
+ await fault(p,{image:false,save:true});await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.match(await p.locator('#image-status').innerText(),/without generating another image/);
+ await p.locator('#refresh').click();await idle(p);
+ assert.match(await p.locator('#image-status').innerText(),/Keep this window open/);
+ await p.locator('#language').selectOption('ko');await idle(p);
+ assert.match(await p.locator('#image-status').innerText(),/저장만 다시/);
+ await fault(p,{save:false,download:true});await p.locator('#draw').click();await idle(p);
+ assert.match(await p.locator('#image-status').innerText(),/저장만 다시/);
+ await fault(p,{download:false});await p.locator('#draw').evaluate(e=>{e.click();e.click();});await idle(p);
+ assert.equal((await calls(p,'image')).length,2,'Only failed generation and successful generation; retries never regenerate');
+ assert.equal((await calls(p,'finalize')).length,1,'Saved upload is reused');
+ await p.reload();await idle(p);assert.equal(await p.locator('#image-status').isVisible(),false);
+ assert.equal(await p.locator('#pet-image').evaluate(e=>e.complete&&e.naturalWidth>0),true);
+});
+
+test('isolated first-time permission recovery to care, chat, portrait and reopen',async t=>{
+ const p=await setup(t,{permission:true});
+ assert.equal((await calls(p,'start')).length,0);await fault(p,{permission:false});
+ await p.evaluate(()=>sessionStorage.setItem('test-faults',JSON.stringify({permission:false}))); // Keep the simulated grant across reopen.
+ await p.locator('#refresh').click();await idle(p);await start(p);
+ await p.locator('[data-action="feed"]').click();await idle(p);
+ await p.locator('#chat-input').fill('Our first day');await p.locator('#chat-form button').click();await idle(p);
+ await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.match(await p.locator('#chat-status').innerText(),/Conversation saved/);
+ assert.match(await p.locator('#image-status').innerText(),/safe in your album/);
+ await p.reload();await idle(p);
+ assert.equal(await p.locator('#name').innerText(),'Recovery buddy');
+ assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
+ assert.equal(await p.locator('#messages .message').count(),2);
+ assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
+ assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
+});
