@@ -1,5 +1,17 @@
 # Incremental Anna updates — 10 October 2026
 
+## Drawing-only birth candidate 0.2.5
+
+Source: `89298ba`, tag `anna-v0.2.5`, branch `release-prep/anna-drawing-birth`. Adds in-app drawing to 0.2.4 while keeping random start. Photo/file input and its selector are removed, rather than merely hidden. The editor supports color, eraser, undo and clear; blank input is rejected locally. AI refusal is distinct from service failure. Birth generation uses checked textual drawing features and server-assigned species/element. Explicit generation retries retain that companion; received results can retry saving without generating again.
+
+Local strict manifest validation, 40 UI unit tests and all 40 browser scenarios passed. Source CI passed: core 38041093732 and Anna Windows/Linux 38041093771, including both platform package checks. Executa remains 0.1.13 with unchanged previously tested binaries. The portrait-features.mjs evolution module is not part of this candidate.
+
+Official push succeeded without a WAF rejection: revision 22, 103 files ready. Cut 0.2.5 created app version 1242 and reused Executa version 704. Working-draft installation succeeded with 0.1.13 loaded. Reopening the app loaded `/anna-apps/kdkrkwhr/notebuddy/0.0.0-draft/index.html`, Connected and the existing mochi companion. The deployed UI offers Random / From my drawing, has zero file inputs, and opens the canvas with color/eraser/undo/clear controls. An empty-canvas attempt displayed the local guidance; the dialog was canceled without selecting a drawing or requesting AI.
+
+No live pet reset, game action or paid AI request was made for this verification. Successful birth generation, storage/reopen and failure recovery were checked with isolated browser mocks; a new paid production drawing-to-baby round trip was not performed. This successful bundle upload does not resolve or diagnose the separate portrait-features.mjs WAF block.
+
+Final platform status: unpublished, pending_review, review candidate still 0.2.1, newest uploaded version 0.2.5. No review cancellation or resubmission. Develop retains the fuller feature set while also removing photo upload; release remains pinned to the existing review candidate.
+
 ## Care reaction candidate 0.2.4
 
 Source: `8c7025a`, tag `anna-v0.2.4`, branch `release-prep/anna-care-reactions`. Adds asynchronous AI chat reactions after successful care actions to 0.2.3. Rejected actions do not request a reaction. Game changes remain committed when AI fails; received but unsaved replies support a save-only retry. Reaction reservations prevent automatic regeneration on reload within the retained chat history; this is not a permanent cross-runtime exactly-once guarantee.

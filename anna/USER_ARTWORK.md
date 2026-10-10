@@ -1,36 +1,26 @@
-Latest validation: [10 October live verification](LIVE_VALIDATION_2026_10_10.md). Four-stage image sample, real care/reopen, real-time walk recharge and isolated reset passed in the documented environments; hosted bundle upload and end-to-end artwork UI remain blocked. Artwork birth now prioritizes assigned species anatomy after an observed mismatch.
+# Drawing your first companion
 
-# Artwork first meeting — develop only
+The 0.2.5 incremental candidate adds **From my drawing** alongside random start. The editor accepts only strokes drawn on its 512 by 512 canvas, with mouse, pen or touch, color, eraser, undo and clear. There is no photo/file picker, clipboard-image import or drag-and-drop import. Random start uses the 72 bundled baby portraits without a paid birth-image call.
 
-## Flow
+Choosing **Use this artwork** keeps a local preview. Choosing **Meet** checks it with Anna's vision-capable LLM. Only structured approval with bounded visual features proceeds to receipt-protected game start. Blank drawings fail locally; unclear or unsuitable drawings ask for changes. An outage or malformed assessment is a failed check, not a rejection. Source content remains data, never instructions or authoritative game rules.
 
-Random mode remains free of automatic birth image calls and uses the 72 bundled baby pictures. Artwork mode accepts a file or 512px canvas drawing (color, eraser, undo, clear). On explicit Meet, local input checks precede a multimodal `llm.complete` suitability check. Only a strict `allow` JSON decision with bounded visual features proceeds to the ordinary, receipt-protected start action. Unclear, refused, malformed or unavailable assessments do not create a pet or request an image. Source text is treated as data, never instructions; the AI cannot choose game species, element, stats or rewards.
+The engine chooses species and element once. The PNG is saved under `portraits/<pet_id>/source-<uuid>.png`; `<pet_id>/birth-source` records its phase and features in the portrait index. The image generator receives textual features and assigned game traits, with assigned anatomy taking precedence. It receives no reference-image URL. The baby portrait is saved in the album.
 
-The engine chooses species and element once. The source is normalized PNG under `portraits/<pet_id>/source-<uuid>.png`; the ART key `<pet_id>/birth-source` records its path, features and phase. The image request sends only the checked textual features, baby proportions and actual game traits. It does not send a reference image URL. A generated stage-1 portrait is saved through the existing ART index and becomes the reference for later evolution.
+## Recovery
 
-## Failure and recovery
+- Lost start response: retry the same receipt, retaining the checked drawing in memory.
+- Source-save failure: retry while the window is open; if an unsaved drawing is lost on reload, draw again for the same baby.
+- Generation failure: retain the source and fixed species/element for explicit retry. Reopening never automatically requests another paid image.
+- Provider refusal: draw another sketch or choose the same baby's default appearance.
+- Generated-image save failure: retry saving the received result without another generation while this window remains open.
+- Companion replacement or growth during work: stop before applying output to the wrong companion.
 
-| Case | Behavior |
-| --- | --- |
-| Empty, unsupported, undersized, oversized, unreadable input | Local correction guidance; no AI call |
-| Unclear reference / explicit AI refusal | Ask for another artwork; no birth action before acceptance |
-| Missing vision model, assessment outage or malformed JSON | Report check unavailable, never claim artwork was rejected; no silent approval |
-| Lost start response | Keep the original game request ID and approved artwork in memory; explicit receipt retry |
-| Reference save/upload failure | Retry source work while the page remains open; if lost, reselect for the existing baby without restarting the game |
-| Provider generation failure | Persist reference; manual retry with same pet and traits, with allowance warning |
-| Explicit provider content refusal | Mark source rejected; require replacement artwork or default appearance before further generation |
-| Generated image save failure | Keep received URL/bytes in memory; retry download/upload/index without another generation |
-| Reopen with an uncertain generating marker | No automatic AI retry; warn previous request may have consumed allowance |
-| Companion reset/replaced or stage changed during work | Stop applying the old source/output; guards precede uploads and index writes |
+Care/evolution controls pause while this UI has an unfinished custom baby. Other agents are not globally locked. Existing first-row creation and concurrent-generation limitations remain; provider exactly-once billing is not promised. Both analysis and generation use Anna allowance; failed requests may still consume it.
 
-Care/evolution buttons are disabled in this UI while a custom baby is unfinished. The user can explicitly choose the same companion's default appearance. This does not erase source files. Other agents are not globally blocked by this UI; the existing cross-runtime concurrency limitations remain. Manual concurrent generations are not guaranteed exactly-once and no provider request idempotency is claimed.
+Source and output files use the portraits prefix and are included in reset/removal. Unfinished references remain indexed so unused-portrait cleanup preserves them. The AI check is product guidance, not a moderation guarantee.
 
-All sources and outputs stay in the existing portraits prefix; ART and files are covered by reset/removal. Unfinished source records remain indexed so ordinary unused-portrait cleanup does not delete their reference. No raw filenames, signed URLs, full saves, real photos or generated personal pictures are committed to Git. The browser input check and LLM assessment are product guidance, not a server-side security or moderation guarantee.
+## Verification
 
-## Verification boundary
+Browser tests use isolated storage and mocked vision/image providers for drawing, blank/canceled input, refusal, outages, retries, persistence, narrow Korean layout and companion replacement. They do not establish live model quality. Deployment and live checks are recorded in [incremental releases](INCREMENTAL_RELEASE.md).
 
-Automated browser tests use a mocked image/vision provider. They verify UI, rejection decisions, request shape, identities, persistence, uncertainty and recovery, not real model quality or provider moderation accuracy. The previous image-to-image 404 is bypassed by text-only image requests; success of the new live route is not yet established. No new paid live image attempts, submission replacement or release deployment are part of this change. Actual vision support and feature-conditioned birth quality still need a working Anna route and live verification.
-
-Official API: [LLM image inputs](https://anna.partners/developers/reference/host-api-llm.md), [image generation](https://anna.partners/developers/reference/host-api-image.md). This implementation uses the already declared `llm.complete` and `image.generate` permissions; it does not add image.edit grants.
-
-Live follow-up: one actual Anna baby-to-juvenile vision/text-generation/download sample succeeded. No production game or album write was requested. Deployed UI, user-artwork birth and stages 3/4 remain unverified. See [verification record](EVOLUTION_LIVE_VERIFICATION.md).
+This candidate excludes the separately blocked portrait-analysis evolution module. It keeps Executa 0.1.13 and existing LLM/image permissions.

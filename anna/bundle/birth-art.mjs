@@ -63,11 +63,10 @@ export function createArtworkEditor({document,tr,locked}){
   for(const event of ['pointerup','pointercancel','lostpointercapture'])canvas.addEventListener(event,()=>{active=null;});
   $('#art-undo').addEventListener('click',()=>{if(!locked()){strokes.pop();paint();}});
   $('#art-clear').addEventListener('click',()=>{if(!locked()){strokes=[];paint();}});
-  $('#art-input-kind').addEventListener('change',()=>{$('#art-upload-area').hidden=$('#art-input-kind').value!=='upload';$('#art-draw-area').hidden=$('#art-input-kind').value!=='draw';});
   $('#art-use').addEventListener('click',async()=>{
     if(locked())return;const attempt=++operation;$('#art-use').disabled=true;$('#art-editor-error').textContent='';
     try{
-      const file=$('#art-input-kind').value==='draw'?await new Promise(resolve=>canvas.toBlob(resolve,'image/png')):$('#art-file').files[0];
+      const file=await new Promise(resolve=>canvas.toBlob(resolve,'image/png'));
       const blob=await normalizeArtwork(file);if(attempt!==operation||!$('#art-dialog').open)return;selected={blob,features:null};
       if(preview)URL.revokeObjectURL(preview);preview=URL.createObjectURL(blob);
       for(const img of document.querySelectorAll('.art-source-preview')){img.src=preview;img.hidden=false;}
@@ -76,5 +75,5 @@ export function createArtworkEditor({document,tr,locked}){
     finally{$('#art-use').disabled=false;}
   });
   paint();
-  return {get:()=>selected,open:()=>{if(!locked()){$('#art-editor-error').textContent='';$('#art-dialog').showModal();}},clear(){operation++;selected=null;strokes=[];active=null;paint();$('#art-file').value='';if(preview)URL.revokeObjectURL(preview);preview=null;for(const img of document.querySelectorAll('.art-source-preview')){img.removeAttribute('src');img.hidden=true;}}};
+  return {get:()=>selected,open:()=>{if(!locked()){$('#art-editor-error').textContent='';$('#art-dialog').showModal();}},clear(){operation++;selected=null;strokes=[];active=null;paint();if(preview)URL.revokeObjectURL(preview);preview=null;for(const img of document.querySelectorAll('.art-source-preview')){img.removeAttribute('src');img.hidden=true;}}};
 }

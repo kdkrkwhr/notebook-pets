@@ -515,10 +515,14 @@ test('walk counter recovers locally without issuing actions and caps at five',as
  assert.equal((await calls(p,'walk')).length,before);
 });
 
-async function artwork(p){
- await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();
- await p.locator('#art-file').setInputFiles({name:'my-picture.png',mimeType:'image/png',buffer:await readFile(new URL('../../bundle/assets/starters-v1/fairy_nature_stage1.png',import.meta.url))});
+async function drawSketch(p){
+ const box=await p.locator('#art-canvas').boundingBox();
+ await p.mouse.move(box.x+box.width*.25,box.y+box.height*.25);await p.mouse.down();
+ await p.mouse.move(box.x+box.width*.65,box.y+box.height*.65,{steps:8});await p.mouse.up();
  await p.locator('#art-use').click();await p.waitForFunction(()=>!document.querySelector('#art-dialog').open);
+}
+async function artwork(p){
+ await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();await drawSketch(p);
 }
 async function artStart(p){await p.locator('#pet-name').fill('My artwork buddy');await p.locator('#start-form button').click();await idle(p);}
 
@@ -533,17 +537,17 @@ test('artwork first meeting validates source then saves a referenced baby; reope
  await p.reload();await idle(p);assert.equal((await calls(p,'image')).length,0);
  assert.match(await p.locator('#image-caption').innerText(),/portrait/i);
 });
-test('empty drawing and unsupported file stop locally before AI or game creation',async t=>{
+test('drawing-only editor rejects blank input locally and exposes no upload controls',async t=>{
  const p=await setup(t);await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();
- await p.locator('#art-input-kind').selectOption('draw');await p.locator('#art-use').click();
- await p.waitForFunction(()=>document.querySelector('#art-editor-error').textContent.includes('clear shape'));assert.match(await p.locator('#art-editor-error').innerText(),/clear shape/);
- await p.locator('#art-input-kind').selectOption('upload');await p.locator('#art-file').setInputFiles({name:'bad.png',mimeType:'image/png',buffer:Buffer.from('not an image')});await p.locator('#art-use').click();
- await p.waitForFunction(()=>document.querySelector('#art-editor-error').textContent.includes('format'));assert.match(await p.locator('#art-editor-error').innerText(),/format/);
+ assert.equal(await p.locator('input[type=file]').count(),0);assert.equal(await p.locator('#art-input-kind').count(),0);
+ assert.equal(await p.locator('#art-canvas').isVisible(),true);
+ await p.locator('#art-use').click();await p.waitForFunction(()=>document.querySelector('#art-editor-error').textContent.includes('clear shape'));
  assert.equal((await calls(p,'llm')).length,0);assert.equal((await calls(p,'start')).length,0);
+ await p.locator('#art-dialog form button').click();assert.equal((await calls(p,'image')).length,0);
 });
 test('drawing with undo produces a source and works in a narrow Korean UI',async t=>{
  const p=await setup(t);await p.setViewportSize({width:360,height:800});await p.locator('#language').selectOption('ko');await idle(p);
- await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();await p.locator('#art-input-kind').selectOption('draw');
+ await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();
  const box=await p.locator('#art-canvas').boundingBox();await p.mouse.move(box.x+30,box.y+30);await p.mouse.down();await p.mouse.move(box.x+100,box.y+100);await p.mouse.up();
  await p.locator('#art-undo').click();await p.locator('#art-use').click();await p.waitForFunction(()=>document.querySelector('#art-editor-error').textContent.includes('참고할 형태'));assert.match(await p.locator('#art-editor-error').innerText(),/참고할 형태/);
  await p.mouse.move(box.x+40,box.y+50);await p.mouse.down();await p.mouse.move(box.x+130,box.y+130);await p.mouse.up();
@@ -606,8 +610,7 @@ test('unfinished artwork resumes after reopen without automatically spending all
 test('birth metadata save failure before source upload can be recovered after reopen',async t=>{
  const p=await setup(t,{save:true});await artwork(p);await artStart(p);
  assert.equal((await calls(p,'image')).length,0);await p.reload();await idle(p);await fault(p,{save:false});
- await p.locator('#setup-birth').click();await p.locator('#art-file').setInputFiles({name:'again.png',mimeType:'image/png',buffer:await readFile(new URL('../../bundle/assets/starters-v1/fairy_nature_stage1.png',import.meta.url))});
- await p.locator('#art-use').click();await p.waitForFunction(()=>!document.querySelector('#art-dialog').open);
+ await p.locator('#setup-birth').click();await drawSketch(p);
  await p.locator('#retry-birth').click();await idle(p);assert.equal((await calls(p,'start')).length,0);assert.equal((await calls(p,'image')).length,1);
 });
 test('replacement during birth generation never applies the old artwork to the new pet',async t=>{
