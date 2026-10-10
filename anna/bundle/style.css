@@ -103,3 +103,15 @@ footer span{padding:0}footer #privacy{margin-left:0}
 h1,h2,p,label,.actions b,.actions small{word-break:keep-all;overflow-wrap:break-word}
 @media(max-width:480px){.intro{flex-wrap:wrap;gap:12px}.intro>div{flex-basis:100%}.intro>.quiet{margin-left:auto}.actions button:last-child{grid-column:1/-1;flex-direction:row;justify-content:center;gap:12px}.actions button:last-child span{height:auto}.actions button:last-child small{margin-top:0}}
 
+
+/* First artwork stays unrevealed until generation and saving finish. */
+.birth-recovery{max-width:720px;margin:0 auto 24px;text-align:center;padding:48px 32px}
+.birth-recovery .birth-buttons{justify-content:center;margin-top:24px}
+.birth-recovery .art-source-preview{margin:16px auto;display:block}
+.birth-recovery>p{max-width:540px;margin:12px auto;line-height:1.7}
+.birth-orbit{width:112px;height:112px;border:1px dashed #b9c6b2;border-radius:50%;display:grid;place-items:center;margin:0 auto 28px;background:#eef2e8;color:#687f5d}
+.birth-orbit span{font-size:48px;line-height:1}
+.birth-recovery[data-working="true"] .birth-orbit span{animation:birth-breathe 2.4s ease-in-out infinite}
+@keyframes birth-breathe{50%{transform:scale(1.18);opacity:.45}}
+@media(prefers-reduced-motion:reduce){.birth-recovery[data-working="true"] .birth-orbit span{animation:none}}
+@media(max-width:480px){.birth-recovery{padding:32px 20px}.birth-recovery .birth-buttons{flex-direction:column;align-items:stretch}.birth-orbit{width:88px;height:88px}}

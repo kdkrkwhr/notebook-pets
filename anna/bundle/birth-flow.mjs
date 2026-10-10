@@ -4,8 +4,8 @@ import {ArtworkError,checkArtwork,artworkErrorKey,birthPrompt,sourceKey,sourcePa
 
 // No automatic paid retry. A generation failure never calls the game start tool.
 export function createBirthFlow(h){
-  let intent=null,owner=null,output=null,phase='';
-  const message=(key,values={})=>{phase=key;h.message(key,values);};
+  let intent=null,owner=null,output=null,phase='',preparing=false;
+  const message=(key,values={})=>{phase=key;h.message(key,values);render();};
   const guard=async()=>{const current=await h.assertActive();if(current.pet_id!==owner||current.stage!==1)throw new ArtworkError('artPartnerChanged');return current;};
   const source=()=>h.art()?.[sourceKey(h.view()||{})];
   async function checked(selection){
@@ -19,7 +19,7 @@ export function createBirthFlow(h){
   }
   function render(){
     const view=h.view();const record=source();
-    const active=!!(view?.status&&view.stage===1&&((owner===view.pet_id&&(intent||output))||record&&!['done','abandoned'].includes(record.phase)));
+    const active=preparing||!!(intent&&!owner)||!!(view?.status&&view.stage===1&&((owner===view.pet_id&&(intent||output))||record&&!['done','abandoned'].includes(record.phase)));
     h.panel(active,!!output);
     if(active&&!phase)message(record?.phase==='rejected'?'artRejected':record?.phase==='generating'?'artUncertain':'artResume');
   }
@@ -61,7 +61,7 @@ export function createBirthFlow(h){
       if(!pending.uploaded){await h.upload(pending.path,pending.blob);pending.uploaded=true;}
       await guard();
       await h.save(old=>({...old,[pending.key]:{path:pending.path,at:Date.now()},[sourceKey(snapshot)]:{...pending.source,phase:'done'}}));
-      output=null;intent=null;h.editor.clear();message('artSaved');await h.reload();render();
+      await h.reload();output=null;intent=null;h.editor.clear();message('artSaved');render();
     }catch(error){
       if(error instanceof ErasedError){clear();message('removedHeading');}
       else if(h.isPartnerChanged(error)||error instanceof ArtworkError&&error.key==='artPartnerChanged'){clear();message('artPartnerChanged');}
@@ -75,8 +75,9 @@ export function createBirthFlow(h){
     }finally{h.controls(false);render();}
   }
   async function prepare(){
-    try{intent=await checked(h.editor.get());return true;}
+    try{preparing=true;render();intent=await checked(h.editor.get());return true;}
     catch(error){message(error instanceof ArtworkError?error.key:artworkErrorKey(error));return false;}
+    finally{preparing=false;render();}
   }
   async function started(view){if(intent&&view?.ok&&view.stage===1){owner=view.pet_id;await run();}}
   async function fallback(){
