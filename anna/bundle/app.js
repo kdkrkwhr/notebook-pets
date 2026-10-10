@@ -95,9 +95,25 @@ function forgetCachedData(){
   for(const e of document.querySelectorAll('#game progress'))e.value=0;
   $('#encounter').hidden=true;
   $('#pet-image').onerror=null;$('#pet-image').src='icon.svg';$('#pet-image').alt='';
-  $('#retry-action').hidden=true;$('#retry-chat').hidden=true;
+  $('#retry-action').hidden=true;$('#retry-chat').hidden=true;text('#draw',tr('draw'));
 }
-async function assertActive(){const status=await invoke('status');if(status.erased){view=status;render();throw new ErasedError();}if(status.reset_pending){view=status;render();throw new Error('Reset pending');}if(!status.status)throw new Error('No active game');return status;}
+class PartnerChangedError extends Error {}
+// Pending work belongs to the companion shown when it started. Never merge
+// that work into a different companion after another window completes reset.
+function adoptView(next){
+  const changed=!!(view?.pet_id&&next?.pet_id&&view.pet_id!==next.pet_id);
+  if(changed)forgetCachedData();
+  view=next;
+  return changed;
+}
+async function assertActive(){
+  const status=await invoke('status');
+  if(view?.pet_id&&status.pet_id&&view.pet_id!==status.pet_id){adoptView(status);render();throw new PartnerChangedError();}
+  if(status.erased){view=status;render();throw new ErasedError();}
+  if(status.reset_pending){view=status;render();throw new Error('Reset pending');}
+  if(!status.status)throw new Error('No active game');
+  return status;
+}
 async function readExtras(){
   if(view?.erased||view?.reset_pending||pendingResetRequest){forgetCachedData();return;}
 
@@ -112,8 +128,9 @@ async function refresh(){
   if(busy)return;controls(true);notice();
   try{
     anna??=await AnnaAppRuntime.connect();
-    view=await invoke('status');if(!view.ok&&view.code!=='not_started')notice(view.msg);
+    const changed=adoptView(await invoke('status'));if(!view.ok&&view.code!=='not_started')notice(view.msg);
     if(view.erased||view.status||view.code==='not_started')pendingRemoval=false;await readExtras();render();text('#connection',tr('connected'));
+    if(changed)notice(tr('partnerChanged'));
     if(pendingAction)notice(tr('uncertain'));
   }catch(error){notice(problem(error));text('#connection',tr('disconnected'));}
   finally{controls(false);}
@@ -124,7 +141,7 @@ async function act(command,extra={},retry=false){
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
     const before=view;const portrait=urls[imageKey(before)];
-    const {command:action,...args}=pendingAction;view=await invoke(action,args);pendingAction=null;render();
+    const {command:action,...args}=pendingAction;adoptView(await invoke(action,args));pendingAction=null;render();
     let message=view.msg;
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
@@ -145,7 +162,7 @@ async function chat(event){
     if(typeof response.content?.text!=='string'||!response.content.text.trim())throw new Error('empty response');
     additions.push({id:crypto.randomUUID(),role:'assistant',text:response.content.text,at:Date.now()});history=mergeHistory(history,additions);drawChat();
     pendingChat=additions;await persistChat();
-  }catch(error){if(error instanceof ErasedError){notice(tr('removedHeading'));forgetCachedData();}else{notice(tr('chatFailed',{error:problem(error)}));input.value=message;history=history.filter(m=>m.id!==additions[0].id);drawChat();}}
+  }catch(error){if(error instanceof ErasedError){notice(tr('removedHeading'));forgetCachedData();}else if(error instanceof PartnerChangedError){notice(tr('partnerChanged'));}else{notice(tr('chatFailed',{error:problem(error)}));input.value=message;history=history.filter(m=>m.id!==additions[0].id);drawChat();}}
   finally{controls(false);input.focus();}
 }
 async function persistChat(){
@@ -154,7 +171,7 @@ async function persistChat(){
     pendingChat=null;drawChat();notice(tr('chatSaved'));
   }catch(error){
     if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}
-    else notice(tr('chatUnsaved'));
+    else notice(tr(error instanceof PartnerChangedError?'partnerChanged':'chatUnsaved'));
   }
 }
 async function retryChat(){
@@ -170,7 +187,7 @@ async function cleanupPortraits(){
     notice(tr('portraitsCleaned',result));
   }catch(error){
     if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}
-    else notice(tr('portraitsFailed'));
+    else notice(tr(error instanceof PartnerChangedError?'partnerChanged':'portraitsFailed'));
   }finally{controls(false);}
 }
 async function generate(){
@@ -187,7 +204,7 @@ async function generate(){
     if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw new Error('image download');p.blob=await response.blob();}
     if(!p.uploaded){const upload=await anna.files.upload_init({path:p.path,content_type:p.blob.type||'image/png',size:p.blob.size});const result=await fetch(upload.put_url,{method:'PUT',headers:upload.headers,body:p.blob});if(!result.ok)throw new Error('image upload');await anna.files.upload_finalize({path:p.path,size:p.blob.size});p.uploaded=true;}
     art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));urls[p.key]=(await anna.files.download_url({path:p.path})).get_url;pendingImage=null;render();notice(tr('imageSaved'));
-  }catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else notice(pendingImage?tr('imagePending'):tr('imageFailed',{error:problem(error)}));}
+  }catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else notice(error instanceof PartnerChangedError?tr('partnerChanged'):pendingImage?tr('imagePending'):tr('imageFailed',{error:problem(error)}));}
   finally{text('#draw',tr(pendingImage?'retryImage':'draw'));controls(false);}
 }
 async function privacyCall(args){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'privacy',args},{timeoutMs:60000}));}

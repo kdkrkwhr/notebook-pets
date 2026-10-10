@@ -1,6 +1,7 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  partnerChanged: ['Your companion changed in another window. Previous pending work was cleared. Refresh to load the current chat and album.', '다른 창에서 친구가 바뀌어 이전 친구의 대기 작업을 지웠어요. 새로고침하면 현재 대화와 앨범을 불러옵니다.'],
   resetGame: ['Start over with a new companion…', '새 친구로 초기화…'],
   newPetName: ['New companion’s name', '새 친구 이름'],
   resetWarning: ['This permanently replaces your current companion with a new random companion and clears progress, chat and all saved portraits. You cannot undo this. Species and element may happen to be the same. No AI image is generated. Close other windows and stop pending requests before continuing. For permanent data removal without restarting, use “Remove my saved data” instead.', '현재 친구를 새로운 무작위 친구로 교체하고 성장 기록·대화·저장한 모든 그림을 지웁니다. 되돌릴 수 없으며 종족·속성은 우연히 같을 수 있습니다. AI 그림을 자동 생성하지 않습니다. 다른 창과 진행 중인 요청을 종료한 뒤 진행하세요. 다시 시작하지 않는 영구 데이터 삭제는 「저장 데이터 삭제」를 이용하세요.'],

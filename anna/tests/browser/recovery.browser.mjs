@@ -208,3 +208,56 @@ test('battle supports 360px and reduced motion',async t=>{
  if(process.env.NOTEBUDDY_SCREENSHOT)await p.screenshot({path:process.env.NOTEBUDDY_SCREENSHOT});
  await p.keyboard.press('Escape');assert.equal(await p.locator('#battle-dialog').isVisible(),false);
 });
+
+
+// Model a completed reset elsewhere without invoking paid services or changing
+// production saves. The old window still has its original companion cached.
+async function replacePartner(p){
+ await p.evaluate(()=>{
+  const s=window.hostTest.state;s.save.pet_id='another-partner';s.save.status.name='New partner';s.save.status.xp=0;s.sequence++;
+  s.kv['notebuddy/chat-v1']=[];s.kv['notebuddy/art-v1']={};
+ });
+}
+test('pending chat retry cannot write the old conversation into a replacement companion',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{save:true});
+ await p.locator('#chat-input').fill('Old private conversation');await p.locator('#chat-form button').click();await idle(p);
+ await replacePartner(p);await fault(p,{save:false});await p.locator('#retry-chat').click();await idle(p);
+ assert.equal(await p.locator('#name').innerText(),'New partner');
+ assert.equal(await p.locator('#retry-chat').isVisible(),false);
+ assert.match(await p.locator('#notice').innerText(),/companion changed/);
+ assert.equal(await p.locator('#messages .user').count(),0);
+ assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']),[]);
+ assert.equal((await calls(p,'llm')).length,1);
+});
+test('refresh discards pending chat when another window completed reset',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{save:true});
+ await p.locator('#chat-input').fill('Previous partner');await p.locator('#chat-form button').click();await idle(p);
+ await replacePartner(p);await fault(p,{save:false});await p.locator('#refresh').click();await idle(p);
+ assert.equal(await p.locator('#retry-chat').isVisible(),false);
+ assert.equal(await p.locator('#messages .user').count(),0);
+ await p.locator('#chat-input').fill('New conversation');await p.locator('#chat-form button').click();await idle(p);
+ const saved=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']);
+ assert.equal(saved.length,2);assert.equal(saved[0].text,'New conversation');
+});
+test('portrait retry stops before upload when the companion was replaced',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{upload:true});
+ await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.equal((await calls(p,'finalize')).length,1);
+ await replacePartner(p);await p.locator('#draw').click();await idle(p);
+ assert.equal(await p.locator('#name').innerText(),'New partner');
+ assert.match(await p.locator('#notice').innerText(),/companion changed/);
+ assert.equal((await calls(p,'finalize')).length,1);
+ assert.doesNotMatch(await p.locator('#draw').innerText(),/Retry/);
+ assert.equal((await calls(p,'image')).length,1);
+ assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']),{});
+});
+test('a delayed AI reply is discarded after another window replaces the companion',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{llmDelay:700});
+ await p.locator('#chat-input').fill('Old delayed message');await p.locator('#chat-form button').click();
+ await p.waitForFunction(()=>window.hostTest.calls.some(c=>c.method==='llm'));
+ await replacePartner(p);await idle(p);
+ assert.equal(await p.locator('#name').innerText(),'New partner');
+ assert.equal(await p.locator('#chat-input').inputValue(),'');
+ assert.equal(await p.locator('#messages .user').count(),0);
+ assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']),[]);
+});
