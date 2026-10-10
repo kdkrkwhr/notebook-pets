@@ -18,3 +18,88 @@ select{font:inherit;color:inherit;background:var(--paper);border:1px solid var(-
 .art-tools label{white-space:nowrap;flex-shrink:0}.art-tools input[type="checkbox"]{width:auto;flex:0 0 auto}
 
 .message.reaction-pending{opacity:.72;font-style:italic}
+
+/* Consistent card, form and dialog spacing. */
+:root{--card-space:24px;--section-gap:24px}
+button,input,select{line-height:1.45}
+button{min-height:40px}
+.inline{align-items:stretch;gap:12px}
+.inline>input{flex:1}
+main{padding-top:32px;padding-bottom:24px}
+.intro{gap:24px;margin-bottom:24px}
+.main-grid,.bottom-grid{gap:var(--section-gap)}
+.pet-card,.care-card,.quest-card,.album-card{padding:var(--card-space)}
+.care-card{margin:var(--section-gap) 0}
+.section-heading{margin-bottom:20px;row-gap:12px}
+.chat-card>.card-top{padding:24px}
+.messages{padding:24px;gap:16px}
+.chat-bottom{padding:20px 24px}
+.suggestions{gap:8px;margin-bottom:12px}
+.suggestions button{min-height:32px}
+.chat-bottom small{line-height:1.65;margin-top:12px}
+.actions{gap:12px}
+.actions button{padding:14px 8px;display:flex;flex-direction:column;align-items:center}
+.actions span{height:36px}
+.actions b{line-height:1.5}
+.actions small{margin-top:8px;line-height:1.5}
+.result{margin-top:16px;padding:12px 16px;line-height:1.7}
+.album{gap:12px}
+.album-image{margin-bottom:12px}
+#setup-birth{margin-bottom:16px;max-width:100%;text-align:left}
+#clean-portraits{margin-top:20px}
+.album-card>p{margin-top:12px;line-height:1.7}
+.quests li{gap:16px;line-height:1.6}
+.quest-card>small{line-height:1.7}
+.welcome{padding:40px;gap:40px}
+.welcome h2{margin:8px 0 16px}
+.welcome p:not(.eyebrow){line-height:1.75}
+.birth-choice{margin:24px 0 0}
+.welcome label{margin-bottom:8px;line-height:1.5}
+.birth-choice select{width:100%;min-height:46px;margin:0;padding:10px 12px}
+#birth-art-choice{margin-top:16px}
+.welcome form{margin:20px 0 12px}
+.welcome .inline button{padding-inline:20px}
+.welcome small{display:block;line-height:1.7}
+.birth-recovery{padding:24px}
+.birth-recovery>p{margin-top:12px;line-height:1.7}
+.birth-recovery .birth-buttons{margin-top:20px;gap:12px}
+.birth-recovery>small{display:block;margin-top:12px;line-height:1.7}
+dialog{width:min(520px,calc(100vw - 32px));max-width:520px;padding:28px;max-height:calc(100dvh - 32px);overflow:auto}
+dialog p{line-height:1.7}
+#reset-dialog form,#erase-dialog form,#portraits-dialog form{display:grid;gap:16px}
+#reset-dialog h2,#erase-dialog h2,#portraits-dialog h2{margin:0 0 4px}
+#reset-dialog p,#erase-dialog p,#portraits-dialog p{margin:0}
+dialog .erase-checkbox{display:flex;align-items:flex-start;gap:12px;margin:0;line-height:1.65}
+dialog .erase-checkbox input{width:16px;height:16px;margin:3px 0 0;padding:0}
+label[for="reset-phrase"],label[for="erase-phrase"]{font-size:13px;line-height:1.5;margin-bottom:-8px}
+#reset-phrase,#erase-phrase{margin:0}
+#reset-error:empty,#erase-error:empty,#portraits-error:empty{display:none}
+dialog .inline{justify-content:flex-end;flex-wrap:wrap;margin-top:8px}
+footer{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:12px;padding:28px 0 8px;line-height:1.7}
+footer span{padding:0}footer #privacy{margin-left:0}
+@media(max-width:900px) and (min-width:761px){.actions{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media(max-width:760px){
+ :root{--card-space:20px;--section-gap:20px}
+ main{padding:24px 16px}.masthead{padding:16px}
+ .intro{gap:16px;margin-bottom:20px}
+ .welcome{padding:24px;gap:24px}.welcome>img{height:180px}
+ .welcome form{margin-top:20px}.welcome .inline{gap:12px}
+ .chat-card>.card-top,.messages{padding:20px}.chat-bottom{padding:16px 20px}
+ .actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+ .actions button{padding:12px 6px}.actions small{font-size:10px}
+ .section-heading{align-items:flex-start}
+ .album{gap:8px}.album-image{height:76px}.album-image img{height:72px}
+ footer{gap:10px;padding-top:24px}
+ dialog{padding:24px}
+}
+@media(max-width:480px){
+ .welcome .inline button{width:100%}.welcome>img{height:160px}
+ .intro>.quiet{flex-shrink:0}
+ dialog .inline>button{flex:1;min-width:0;padding-inline:12px}
+ .section-heading>.quiet{max-width:100%}
+ footer>span:last-of-type{flex-basis:100%}
+}
+
+h1,h2,p,label,.actions b,.actions small{word-break:keep-all;overflow-wrap:break-word}
+@media(max-width:480px){.intro{flex-wrap:wrap;gap:12px}.intro>div{flex-basis:100%}.intro>.quiet{margin-left:auto}.actions button:last-child{grid-column:1/-1;flex-direction:row;justify-content:center;gap:12px}.actions button:last-child span{height:auto}.actions button:last-child small{margin-top:0}}
+
