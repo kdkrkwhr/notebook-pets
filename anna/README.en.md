@@ -67,3 +67,7 @@ Before the first write, the adapter rechecks whether another agent already creat
 | `executas/notebuddy/game_worker.py` | Original game engine in an isolated temporary store |
 
 See [HANDOFF.md](HANDOFF.md) for deployment evidence and remaining release checks. The app is a private draft, not a public store release.
+
+## Next update: evolution portraits
+
+The develop version bundles only 72 baby pictures. Evolution automatically generates a new portrait using the previous saved appearance as a reference (the matching baby picture if no prior portrait exists). It uses Anna image allowance and shows a growing/saving effect. Failures preserve game progress and the old appearance. The submitted 0.2.1 candidate is unchanged.

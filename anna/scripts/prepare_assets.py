@@ -27,9 +27,9 @@ for name in sorted(expected):
 # Remove obsolete generated starter copies, never personal storage or source art.
 for path in ART.glob('*_stage1.png'):
     path.unlink()
-for path in (ROOT / 'assets' / 'anchored_evolution').glob('*.png'):
-    if not path.name.endswith('_stage1.png'):
-        shutil.copy2(path, ART / path.name)
+# Evolution portraits are always generated per companion, never bundled presets.
+for path in ART.glob('*_stage[234]*.png'):
+    path.unlink()
 for directory, names in [('engine', ['engine.py', 'runtime.py', 'art.py']),
                           ('data', ['game_data.json', 'image_prompts.json'])]:
     (CORE / directory).mkdir(parents=True, exist_ok=True)

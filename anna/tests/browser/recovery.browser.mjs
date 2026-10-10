@@ -410,3 +410,93 @@ test('isolated first-time permission recovery to care, chat, portrait and reopen
  assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
  assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
 });
+
+test('evolution automatically references the baby and reveals the saved new stage once',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{evolve:2,imageDelay:process.env.EVOLUTION_SCREENSHOT?2500:650});
+ await p.locator('[data-action="feed"]').click();
+ await p.waitForFunction(()=>window.hostTest.calls.some(c=>c.method==='image'));
+ assert.equal(await p.locator('#evolution-effect').isVisible(),true);
+ assert.match(await p.locator('#evolution-phase').innerText(),/Evolving/);
+ if(process.env.EVOLUTION_SCREENSHOT)await p.locator('.pet-card').screenshot({path:process.env.EVOLUTION_SCREENSHOT});
+ assert.equal(await p.locator('[data-action="play"]').isDisabled(),true);
+ await idle(p);assert.equal(await p.locator('#evolution-effect').isVisible(),false);
+ const generated=await calls(p,'image');assert.equal(generated.length,1);
+ assert.equal(generated[0].options.reference_image_urls.length,1);
+ assert.match(generated[0].options.prompt,/SAME individual/);
+ assert.match(generated[0].options.prompt,/from growth stage 1 to 2/);
+ const saved=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']);
+ assert.equal(saved['isolated-fixture/stage-1'].starter,true);
+ assert.ok(saved['isolated-fixture/stage-2'].path);assert.equal(saved['isolated-fixture/stage-2'].state,undefined);
+ await p.reload();await idle(p);assert.equal((await calls(p,'image')).length,0);
+ assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
+});
+
+test('mature evolution references the saved juvenile portrait, never a fixed evolution preset',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{evolve:2});await p.locator('[data-action="feed"]').click();await idle(p);
+ const path=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']['isolated-fixture/stage-2'].path);
+ await fault(p,{evolve:3});await p.locator('[data-action="play"]').click();await idle(p);
+ const generated=await calls(p,'image');assert.equal(generated.length,2);
+ assert.match(generated[1].options.prompt,/from growth stage 2 to 3/);
+ assert.ok((await calls(p,'download')).some(c=>c.path===path));
+ assert.equal(await p.evaluate(()=>Object.keys(window.hostTest.state.kv['notebuddy/art-v1']).length),3);
+});
+
+test('failed automatic evolution remains retryable without spending again on refresh or reopen',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{evolve:2,image:true});
+ await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.match(await p.locator('#image-status').innerText(),/previous appearance and progress are safe/);
+ assert.equal(await p.locator('#level').innerText(),'Lv. 10');
+ assert.equal(await p.locator('#evolution-effect').isVisible(),false);
+ await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'image')).length,1);
+ await p.reload();await idle(p);assert.equal((await calls(p,'image')).length,0);
+ await p.locator('#draw-evolved').click();assert.equal(await p.locator('#draw-dialog').isVisible(),true);
+ await p.locator('#confirm-draw').click();await idle(p);assert.equal((await calls(p,'image')).length,1);
+ assert.equal(await p.locator('#evolution-note').isVisible(),false);
+});
+
+test('lost evolution action response generates only after receipt retry; upload retry never regenerates',async t=>{
+ const p=await setup(t);await start(p);
+ // Save a personal baby first so the injected upload failure applies to the new portrait.
+ await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ await fault(p,{evolve:2,lost:true,upload:true});await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.equal((await calls(p,'image')).length,1);
+ await p.locator('#retry-care').click();await idle(p);assert.equal((await calls(p,'image')).length,2);
+ assert.match(await p.locator('#draw').innerText(),/Retry saving/);
+ await p.locator('#draw').click();await idle(p);assert.equal((await calls(p,'image')).length,2);
+ assert.equal(await p.locator('#evolution-note').isVisible(),false);
+});
+
+test('unavailable prior reference prevents unanchored AI calls; reduced motion disables effects',async t=>{
+ const p=await setup(t);await start(p);await p.emulateMedia({reducedMotion:'reduce'});
+ await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ await fault(p,{evolve:2,download:true});await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.equal((await calls(p,'image')).length,1);
+ await fault(p,{download:false,imageDelay:700});await p.locator('#draw').click();await p.locator('#confirm-draw').click();
+ await p.waitForFunction(()=>!document.querySelector('#evolution-effect').hidden);
+ assert.equal(await p.locator('.evolution-ring').evaluate(e=>getComputedStyle(e).animationName),'none');
+ await idle(p);assert.equal((await calls(p,'image')).length,2);
+});
+
+test('reset during evolution discards the old generated portrait before upload',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{evolve:2,imageDelay:700});
+ await p.locator('[data-action="feed"]').click();await p.waitForFunction(()=>window.hostTest.calls.some(c=>c.method==='image'));
+ await replacePartner(p);await idle(p);
+ assert.equal(await p.locator('#name').innerText(),'New partner');
+ assert.equal(await p.locator('#evolution-effect').isVisible(),false);
+ assert.equal((await calls(p,'finalize')).length,1,'Only the baby reference uploaded before reset');
+ assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']),{});
+});
+
+test('battle evolution waits for replay close, then automatically reveals the new portrait',async t=>{
+ const p=await setup(t);await start(p);await p.emulateMedia({reducedMotion:'reduce'});
+ await p.locator('[data-action="walk"]').click();await idle(p);await fault(p,{evolve:2,imageDelay:400});
+ await p.locator('[data-action="battle"]').click();await idle(p);
+ assert.equal(await p.locator('#battle-dialog').isVisible(),true);assert.equal((await calls(p,'image')).length,0);
+ await p.locator('#battle-skip').click();await p.waitForFunction(()=>window.hostTest.calls.some(c=>c.method==='image'));
+ await idle(p);assert.equal((await calls(p,'image')).length,1);
+ assert.equal(await p.locator('#evolution-effect').isVisible(),false);
+ await fault(p,{evolve:3});await p.locator('[data-action="play"]').click();await idle(p);
+ await fault(p,{evolve:4});await p.locator('[data-action="train"]').click();await idle(p);
+ assert.equal((await calls(p,'image')).length,3);
+ assert.match((await calls(p,'image'))[2].options.prompt,/from growth stage 3 to 4/);
+});

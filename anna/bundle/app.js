@@ -58,6 +58,11 @@ function drawChat(){
   }
   container.scrollTop=container.scrollHeight;
 }
+function previousPortrait(v){for(let stage=v.stage-1;stage>=1;stage--){const url=urls[imageKey(v,stage)];if(url)return url;}return starter(v);}
+function evolutionEffect(phase=''){
+  const frame=$('.portrait');if(phase)frame.classList.remove('evolution-reveal');frame.classList.toggle('evolving',!!phase);frame.setAttribute('aria-busy',String(!!phase));
+  const effect=$('#evolution-effect');effect.hidden=!phase;text('#evolution-phase',phase?tr(phase):'');
+}
 function render(){
   const resetting=!!(view?.reset_pending||pendingResetRequest);
   $('#resetting').hidden=!resetting;
@@ -73,7 +78,7 @@ function render(){
   for(const key of ['satiety','intimacy']){text(`#${key}`,`${s[key]} / 100`);$(`#${key}-bar`).value=s[key];}
   text('#stats',tr('stats',{...s.stats,...s.record,draw:s.record.draw||0}));
   text('#inventory',tr('inventory',{food:view.inventory.normal_feed,rare:view.inventory.rare_feed}));
-  const image=urls[imageKey(view)];picture($('#pet-image'),image||starter(view),starter(view));
+  const image=urls[imageKey(view)];picture($('#pet-image'),image||previousPortrait(view),starter(view));
   $('#pet-image').alt=`${s.name}, ${s.species} ${s.element} ${s.stage_label}`;
   text('#image-caption',tr(image?'portrait':view.stage>1?'oldPortrait':'firstPortrait'));
   const q=s.quest;text('#quest-date',q.date);$('#quests').replaceChildren();
@@ -98,7 +103,7 @@ function render(){
   drawChat();
 }
 function forgetCachedData(){
-  battleScene.close();localStatus('chat');localStatus('image');
+  battleScene.close();evolutionEffect();localStatus('chat');localStatus('image');
   history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
   $('#messages').replaceChildren();$('#album').replaceChildren();$('#quests').replaceChildren();
   for(const id of ['name','pet-type','title','action-result','pet-name','chat-input','mood','level','stage-label','xp-label','satiety','intimacy','stats','inventory','image-caption','quest-date','encounter-text']){const e=$(`#${id}`);if('value' in e)e.value='';else e.textContent='';}
@@ -135,6 +140,7 @@ async function readExtras(){
   const nextUrls={};
   await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)).map(async([key,entry])=>{
     try{
+      if(entry?.state==='generating')return;
       if(typeof entry?.path!=='string'||!entry.path)throw new Error('Invalid portrait reference');
       const url=(await anna.files.download_url({path:entry.path})).get_url;
       if(typeof url!=='string'||!url)throw new Error('Missing portrait URL');
@@ -160,14 +166,17 @@ async function refresh(){
     if(pendingAction)notice(tr('uncertain'));
   }catch(error){notice(problem(error));text('#connection',tr('disconnected'));}
   finally{controls(false);}
+  if(view?.status&&view.stage>1&&!pendingAction&&!pendingImage&&!pendingRemoval&&!pendingResetRequest)await generate(true);
 }
 async function act(command,extra={},retry=false){
   if(busy||pendingRemoval||(!retry&&pendingAction))return;controls(true);notice();
   if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
+  let evolved=false;
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
     const before=view;const portrait=urls[imageKey(before)];
     const {command:action,...args}=pendingAction;adoptView(await invoke(action,args));pendingAction=null;render();
+    evolved=!!(view.ok&&view.stage>1&&((before?.pet_id===view.pet_id&&view.stage>before.stage)||view.xp_result?.evolutions?.length));
     let message=view.msg;
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
@@ -175,6 +184,10 @@ async function act(command,extra={},retry=false){
     if(view.ok&&action==='battle')battleScene.show(view,before,portrait,language);
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',`${problem(error)} ${tr('uncertain')}`);$('#retry-action').hidden=false;}
   finally{controls(false);}
+  if(evolved){
+    if($('#battle-dialog').open)$('#battle-dialog').addEventListener('close',()=>generate(true),{once:true});
+    else await generate(true);
+  }
 }
 async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
 async function chat(event){
@@ -217,23 +230,88 @@ async function cleanupPortraits(){
     else notice(tr(error instanceof PartnerChangedError?'partnerChanged':'portraitsFailed'));
   }finally{controls(false);}
 }
-async function generate(){
-  if(busy)return;$('#draw-dialog').close();controls(true);notice();text('#draw',tr('drawing'));localStatus('image',pendingImage?'imageSaving':'drawing');
-  try{
-    if(!pendingImage){
-      const snapshot=await assertActive();
-      const generated=await anna.image.generate({prompt:`${snapshot.image_prompt}. One single friendly virtual pet, full body centered with generous margins, plain white background, soft painted game character illustration, smooth warm shading, delicate warm outlines, pastel colors. No text, lettering, notebook, desk, scenery, panels, photorealism or 3D rendering.`,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
-      const url=generated.images?.[0]?.url;if(!url)throw new Error('no image');
-      pendingImage={key:imageKey(snapshot),url,path:`portraits/${snapshot.pet_id}/${crypto.randomUUID()}.png`};
+class PortraitAlreadyStarted extends Error {}
+async function uploadPortrait(path,blob){
+  const upload=await anna.files.upload_init({path,content_type:blob.type||'image/png',size:blob.size});
+  const result=await fetch(upload.put_url,{method:'PUT',headers:upload.headers,body:blob});
+  if(!result.ok)throw new Error('image upload');
+  await anna.files.upload_finalize({path,size:blob.size});
+}
+async function referencePortrait(snapshot){
+  // A fresh index and fresh signed URL: never silently substitute a different
+  // character when a saved reference cannot be read.
+  const saved=await anna.storage.get({key:ART});
+  if(saved.value?._notebuddy_erased)throw new ErasedError();
+  art=saved.value||{};
+  for(let stage=snapshot.stage-1;stage>=1;stage--){
+    const entry=art[imageKey(snapshot,stage)];
+    if(entry?.state==='generating')continue; // Use the latest actually saved appearance, never an unfinished job.
+    if(entry){
+      if(!entry.path)throw new Error('Missing reference path');
+      const {get_url}=await anna.files.download_url({path:entry.path});
+      if(!get_url)throw new Error('Missing reference URL');
+      return {url:get_url,stage};
     }
-    localStatus('image','imageSaving');
+  }
+  // Only the 72 baby pictures ship with the app. Upload the actual baby picture
+  // so the image provider can fetch it without the private app iframe session.
+  const response=await fetch(starter(snapshot));if(!response.ok)throw new Error('Starter unavailable');
+  const path=`portraits/${snapshot.pet_id}/starter.png`;
+  await uploadPortrait(path,await response.blob());
+  const key=imageKey(snapshot,1);
+  art=await saveMerged(ART,old=>({...old,[key]:old?.[key]||{path,at:Date.now(),starter:true}}));
+  const {get_url}=await anna.files.download_url({path:art[key].path});
+  if(!get_url)throw new Error('Missing reference URL');
+  return {url:get_url,stage:1};
+}
+async function generate(automatic=false){
+  if(busy||pendingAction||pendingRemoval||pendingResetRequest)return;
+  // Event listeners call this through a wrapper, never pass an Event as a flag.
+  $('#draw-dialog').close();controls(true);
+  let snapshot,animation=false,savedEarlierStage=false;
+  try{
+    snapshot=await assertActive();
+    if(automatic){
+      if(snapshot.stage<2||pendingImage)return;
+      const saved=await anna.storage.get({key:ART});
+      if(saved.value?._notebuddy_erased)throw new ErasedError();
+      if(saved.value?.[imageKey(snapshot)])return; // Saved or uncertain: no automatic paid retry.
+    }
+    notice();text('#draw',tr('drawing'));localStatus('image',pendingImage?'imageSaving':'drawing');
+    animation=snapshot.stage>1;
+    if(animation)evolutionEffect('evolutionWorking');
+    if(!pendingImage){
+      let reference;
+      if(snapshot.stage>1)reference=await referencePortrait(snapshot);
+      const key=imageKey(snapshot),path=`portraits/${snapshot.pet_id}/${crypto.randomUUID()}.png`;
+      if(automatic){
+        // Reference preparation establishes the album row. Conditional writes
+        // then serialize automatic attempts on that existing row.
+        art=await saveMerged(ART,old=>{
+          if(old?.[key])throw new PortraitAlreadyStarted();
+          return {...old,[key]:{path,state:'generating',at:Date.now()}};
+        });
+      }
+      const identity=reference?`Evolve the SAME individual shown in the reference, from growth stage ${reference.stage} to ${snapshot.stage}. Preserve its facial identity, eye color, palette, signature markings and illustration style. Make the age progression clearly visible through a more developed body silhouette and species-appropriate appendages. Do not replace it with another character. The reference identity takes priority over conflicting color or ornament suggestions. `:'';
+      const generated=await anna.image.generate({prompt:`${identity}${snapshot.image_prompt}. One single friendly virtual pet, full body centered with generous margins, plain white background, soft painted game character illustration, smooth warm shading, delicate warm outlines, pastel colors. No text, lettering, notebook, desk, scenery, panels, photorealism or 3D rendering.`,...(reference?{reference_image_urls:[reference.url]}:{}),n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
+      const url=generated.images?.[0]?.url;if(!url)throw new Error('no image');
+      pendingImage={key,url,path};
+    }
+    localStatus('image','imageSaving');if(animation)evolutionEffect('evolutionSaving');
     await assertActive();
     const p=pendingImage;
     if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw new Error('image download');p.blob=await response.blob();}
-    if(!p.uploaded){const upload=await anna.files.upload_init({path:p.path,content_type:p.blob.type||'image/png',size:p.blob.size});const result=await fetch(upload.put_url,{method:'PUT',headers:upload.headers,body:p.blob});if(!result.ok)throw new Error('image upload');await anna.files.upload_finalize({path:p.path,size:p.blob.size});p.uploaded=true;}
-    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));urls[p.key]=(await anna.files.download_url({path:p.path})).get_url;pendingImage=null;render();report('image','imageSaved');
-  }catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else report('image',error instanceof PartnerChangedError?'partnerChanged':pendingImage?'imagePending':'imageFailed',{error:problem(error)});}
-  finally{text('#draw',tr(pendingImage?'retryImage':'draw'));controls(false);}
+    if(!p.uploaded){await uploadPortrait(p.path,p.blob);p.uploaded=true;}
+    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));
+    const {get_url}=await anna.files.download_url({path:p.path});if(!get_url)throw new Error('Missing portrait URL');
+    urls[p.key]=get_url;savedEarlierStage=p.key!==imageKey(snapshot);pendingImage=null;render();report('image','imageSaved');
+    if(animation){$('.portrait').classList.remove('evolution-reveal');void $('.portrait').offsetWidth;$('.portrait').classList.add('evolution-reveal');}
+  }catch(error){
+    if(error instanceof PortraitAlreadyStarted){await readExtras();render();}
+    else if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}
+    else report('image',error instanceof PartnerChangedError?'partnerChanged':pendingImage?'imagePending':snapshot?.stage>1?'evolutionFailed':'imageFailed',{error:problem(error)});
+  }finally{evolutionEffect();text('#draw',tr(pendingImage?'retryImage':'draw'));controls(false);}
+  if(savedEarlierStage)await generate(true);
 }
 async function privacyCall(args){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'privacy',args},{timeoutMs:60000}));}
 async function previewRemoval(){
@@ -332,6 +410,6 @@ $('#retry-chat').addEventListener('click',retryChat);
 $('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval)return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
 $('#confirm-clean-portraits').addEventListener('click',cleanupPortraits);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
-$('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
+$('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',()=>generate());
 translate();
 await refresh();

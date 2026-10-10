@@ -1,5 +1,18 @@
 # Anna 작업 인계 · 2026-10-09
 
+Verification 2026-10-10: 32 UI unit tests; 38 full browser tests plus 1 final battle/evolution regression; strict manifest and diff checks passed. Bundle contains exactly 72 baby images. Evolution effect screenshot inspected. Live provider visual fidelity remains unverified. See [1.0 release criteria](V1_READINESS.md).
+
+## 자동 진화 그림과 연출 · 2026-10-10
+
+develop에서 진화 행동 결과 및 재접속 후 누락된 현재 단계 그림을 확인해 새 그림을 자동 요청합니다. 기본 번들은 유년기 72종만 포함합니다. 직전 저장 단계의 개인 그림을 새 signed URL로 읽어 `image.generate.reference_image_urls`에 전달하며, 이전 개인 그림이 없으면 해당 유년기 그림을 APS에 복사해 참조합니다. 고정 진화 예시를 번들에 복사하지 않습니다. 기본 원본/개발용 갤러리는 삭제하지 않았습니다.
+
+펫의 얼굴·눈색·무늬·스타일을 유지하고 체형·부속기관이 성장하도록 지시합니다. 참조 조회 실패 시 무참조 생성으로 대체하지 않습니다. 참조 미지원 모델은 오류 안내 후 재시도가 필요합니다. 공급자의 실제 동일 개체 재현 품질을 보장하지 않으며, 실서비스 유료 생성 품질은 아직 검증하지 않았습니다. 공식 API: https://anna.partners/developers/reference/host-api-image.md
+
+빛 고리·입자·펫 광채와 진화 중/저장 중 안내를 표시하고 저장 성공 시 새 모습을 공개합니다. reduced-motion에서는 정적인 안내를 제공합니다. 실패 시 이전 모습·게임 성장은 유지되고 저장만 재시도할 수 있습니다. 자동 시도 전 기존 앨범 행에 조건부 생성 표식을 남겨 재접속/Refresh에서 유료 요청을 반복하지 않습니다. 결과를 잃은 생성의 수동 재시도는 추가 사용량이 발생할 수 있어 확인창에 안내합니다. 분산 최초 행 생성의 기존 플랫폼 경합과 구버전 클라이언트/수동 동시 재생성은 전역 exactly-once 보장 범위 밖입니다.
+
+개인 그림과 참조 복사본은 portraits/ 범위에 저장돼 기존 초기화·삭제 정리 대상입니다. 미완료 자동 생성 표식에도 예약 파일 경로가 포함되어 일반 미사용 파일 정리가 진행 중 파일을 삭제하지 않습니다. 사용자 이름에 따른 외형 변화는 제안만 논의했으며 이번 변경에는 포함하지 않습니다. 심사 후보/release는 변경하지 않습니다.
+
+
 ## 채팅·그림 저장 안내 및 다음 배포 준비 · 2026-10-10
 
 채팅 입력과 성장 앨범 가까이에 진행·저장 성공·실패 안내를 추가했습니다. AI 응답 실패는 초안 복원, 생성 후 저장 실패는 기존 결과 저장 재시도로 안내합니다. 다른 돌봄이나 Refresh가 상단 알림을 지워도 해당 영역의 안내는 남고 영어·한국어 전환에 맞춰 다시 표시됩니다. 초기화/삭제/친구 교체 시 이전 안내를 정리합니다. 재시도는 기존 AI 결과와 업로드를 재사용합니다.

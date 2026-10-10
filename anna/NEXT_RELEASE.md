@@ -1,10 +1,16 @@
 # Next Anna update — prepared on 2026-10-10
 
+See [1.0 release criteria](V1_READINESS.md) for the frozen product scope and outstanding evidence.
+
 ## Deployment boundary
 
 The submitted candidate remains app **0.2.1** (version 1219), Executa **0.1.9** (version 694). The last live query on 2026-10-10 returned `pending_review`; working draft revision 17 was `ready`. No upload, version cut, resubmission or release-branch update is part of this work. The next version number is intentionally not assigned before packaging.
 
 ## Prepared user-facing release notes
+
+- Only 72 baby pictures are bundled. Evolution automatically creates new personal artwork from the latest previous saved appearance and consumes Anna image allowance.
+- A growing/saving animation reveals the new portrait after storage completes; reduced motion is supported.
+- Interrupted automatic requests do not repeat on Refresh/reopen; manually retry after checking other windows and allowance.
 
 - Get started with care, a first conversation and the growth album from the new welcome guide.
 - Retry an uncertain care result beside the action, keeping the same request to avoid duplicate rewards.
@@ -15,7 +21,7 @@ The submitted candidate remains app **0.2.1** (version 1219), Executa **0.1.9** 
 
 ## Verification and remaining evidence
 
-Local verification passed on 2026-10-10: **31 UI unit tests, 32 browser recovery tests, 47 Python storage/protocol tests**, strict manifest validation and `git diff --check`. Browser tests use an isolated host, including permission denial/recovery → first companion → care → chat → portrait → reload. They also cover failed generation, failed writes, lost responses, retry without duplicate AI generation and English/Korean feedback.
+Local verification passed on 2026-10-10: **32 UI unit tests and 39 browser tests (38 full-suite plus the final battle/evolution regression)**; the unchanged Python storage/protocol suite previously passed 47 tests, strict manifest validation and `git diff --check`. Browser tests use an isolated host, including permission denial/recovery → first companion → care → chat → portrait → reload. They also cover failed generation, failed writes, lost responses, retry without duplicate AI generation and English/Korean feedback.
 
 This is **not** evidence of a new Anna account's installer or actual first permission grant. No separate authenticated test account is available for that check. Existing production saves must not be erased or rerolled to simulate a new account.
 
@@ -30,3 +36,5 @@ Before publishing the next candidate: run the prepared source checks, choose/bum
 - Mobile enablement is deferred by the user.
 
 The user accepted submission with the documented platform limitations. Historical documents calling these submission blockers or saying submission has not happened are superseded by REVIEW_READINESS.md and the receipt in HANDOFF.md.
+
+Automatic evolution uses the documented `reference_image_urls` API. Reference-capable provider availability and actual visual fidelity still need live verification. The new privacy/listing copy must ship together with this behavior; the currently submitted release copy remains unchanged.
