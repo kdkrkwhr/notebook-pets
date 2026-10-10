@@ -27,3 +27,8 @@ The hosted request passed far enough to report an upstream image-provider route 
 Direct-edit implementation is retained in source for follow-up. Do not promote 0.2.6 or replace the review candidate until a supported model/provider route actually returns an image and its visual result is inspected. Keep review/release at 0.2.5. Restore the working test installation to 0.2.5 after the failed live probe. No new immutable release or review submission is authorized by this technical verification record.
 
 Next external diagnostic: ask Anna which available image-edit model/route supports this account, with the above provider error. Do not remove prompt safeguards or change user-wide preferences to conceal the failure.
+
+## Final state
+
+Working revision 26 was restored from release 0.2.5 and reinstalled successfully; tool 0.1.13 remains loaded and review remains pending_review on 0.2.5. Candidate CI passed both workflows. Develop integration passed 41 unit tests and manifest validation. Its 63 browser cases had one merge-only birth assertion error, corrected and rerun successfully (the other 62 passed). No production release was made.
+
