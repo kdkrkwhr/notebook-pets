@@ -422,7 +422,7 @@ test('evolution automatically references the baby and reveals the saved new stag
  assert.equal(await p.locator('[data-action="play"]').isDisabled(),true);
  await idle(p);assert.equal(await p.locator('#evolution-effect').isVisible(),false);
  const generated=await calls(p,'image');assert.equal(generated.length,1);
- assert.equal(generated[0].options.reference_image_urls,undefined);assert.match(generated[0].options.prompt,/round face and gold ears/);
+ assert.equal(generated[0].operation,'edit');assert.ok(generated[0].options.image_url);assert.equal(generated[0].options.reference_image_urls,undefined);
  assert.match(generated[0].options.prompt,/SAME individual/);
  assert.match(generated[0].options.prompt,/from growth stage 1 to 2/);
  const saved=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']);
@@ -529,7 +529,7 @@ async function artStart(p){await p.locator('#pet-name').fill('My artwork buddy')
 test('artwork first meeting validates source then saves a referenced baby; reopen never regenerates',async t=>{
  const p=await setup(t);await artwork(p);await artStart(p);
  assert.equal((await calls(p,'start')).length,1);assert.equal((await calls(p,'llm')).length,1);
- const generated=await calls(p,'image');assert.equal(generated.length,1);assert.equal(generated[0].options.reference_image_urls,undefined);assert.match(generated[0].options.prompt,/round face and gold ears/);
+ const generated=await calls(p,'image');assert.equal(generated.length,1);assert.equal(generated[0].operation,'edit');assert.ok(generated[0].options.image_url);assert.equal(generated[0].options.reference_image_urls,undefined);
  assert.match(generated[0].options.prompt,/species fairy and element nature/);
  assert.equal(await p.locator('#birth-recovery').isVisible(),false);
  const saved=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']);
@@ -678,29 +678,25 @@ test('manual chat remains visible while a care reaction saves concurrently',asyn
  const stored=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']);assert.equal(stored.length,3);assert.equal(stored.filter(x=>x.kind==='reaction').length,1);
 });
 
-test('failed evolution analysis prevents generation and requires manual retry',async t=>{
- const p=await setup(t);await start(p);await fault(p,{evolve:2,artMalformed:true});
+test('edit permission failure preserves progress and never falls back to unrelated generation',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{evolve:2,editPermission:true});
  await p.locator('[data-action="feed"]').click();await idle(p);
- assert.equal((await calls(p,'image')).length,0);
+ assert.equal(await p.locator('#level').innerText(),'Lv. 10');
  assert.match(await p.locator('#image-status').innerText(),/previous appearance and progress are safe/);
- await p.reload();await idle(p);assert.equal((await calls(p,'llm')).length,0);
- await fault(p,{artMalformed:false});await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.equal((await calls(p,'image')).length,1);
+ assert.deepEqual((await calls(p,'image')).map(c=>c.operation),['edit']);
+ await p.reload();await idle(p);assert.equal((await calls(p,'image')).length,0);
+ await fault(p,{editPermission:false});await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.deepEqual((await calls(p,'image')).map(c=>c.operation),['edit']);
 });
-test('evolution caches analysis across generation failure and keeps original identity at later stages',async t=>{
- const p=await setup(t);await start(p);await fault(p,{evolve:2,image:true});
- await p.locator('[data-action="feed"]').click();await idle(p);
- const before=(await calls(p,'llm')).length;
- await fault(p,{image:false,artMalformed:true});await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.equal((await calls(p,'llm')).length,before,'Retry reuses saved analysis');
- const a=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']);
- assert.equal(a['isolated-fixture/stage-1'].features,'round face and gold ears');
- assert.equal(a['isolated-fixture/stage-2'].identity,'round face and gold ears');
- await fault(p,{artMalformed:false,evolve:3});await p.locator('[data-action="play"]').click();await idle(p);
- const last=(await calls(p,'image')).at(-1).options;
- assert.equal(last.reference_image_urls,undefined);
- assert.match(last.prompt,/Fixed identity.*round face and gold ears/);
- assert.match(last.prompt,/from growth stage 2 to 3/);
+
+test('later edits use saved prior portraits without extracting or persisting visual features',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{evolve:2});await p.locator('[data-action="feed"]').click();await idle(p);
+ await fault(p,{evolve:3});await p.locator('[data-action="play"]').click();await idle(p);
+ const images=await calls(p,'image');assert.deepEqual(images.map(c=>c.operation),['edit','edit']);
+ assert.match(images[1].options.prompt,/from growth stage 2 to 3/);
+ assert.equal((await calls(p,'llm')).length,2,'Only care reactions use the LLM');
+ const entries=await p.evaluate(()=>Object.values(window.hostTest.state.kv['notebuddy/art-v1']));
+ assert.ok(entries.every(e=>e.features===undefined&&e.identity===undefined));
 });
 
 test('removed game explicitly restarts, resumes cleanup and reopens as a new partner',async t=>{
