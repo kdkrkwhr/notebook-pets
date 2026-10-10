@@ -11,11 +11,11 @@ from executa_sdk import StorageClient, StorageError, bind_invoke
 from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
 from game_worker import ALLOWED
 from privacy import privacy, erased
-from reset import reset, pending
+from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.1.11'
+VERSION = '0.1.14'
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
@@ -41,12 +41,12 @@ MANIFEST = {
 MANIFEST['tools'].append({'name': 'privacy', 'description': 'Inspect or irreversibly erase the authenticated user’s existing game. Never invoke erase without an explicit data-removal request and confirmation. Not a reset/reroll. App chat and files require separate UI cleanup. Read inspect first; never automatically replace expected_etag after a conflict.', 'timeout': 60, 'parameters': [{'name': 'action', 'type': 'string', 'required': True, 'enum': ['inspect', 'erase'], 'description': 'inspect is read-only; erase replaces game content with a minimal permanent removal marker.'}, {'name': 'confirmation', 'type': 'string', 'required': False, 'description': 'For erase only: exact user-confirmed phrase DELETE NOTEBUDDY.'}, {'name': 'expected_etag', 'type': 'string', 'required': False, 'description': 'For erase only: etag from the preview the user confirmed. Reuse it on uncertain retries.'}]})
 
 
-MANIFEST['tools'].append({'name':'reset','description':'Explicitly replace an existing companion with a new random companion. Requires user confirmation RESET NOTEBUDDY and a fresh inspect ETag. UI must clean chat and all portraits before finish. Resume a pending reset; never automatically begin a new reset on conflicts. A removed game may explicitly start a new companion through reset; deleted records are never recovered.','timeout':60,'parameters':[
- {'name':'action','type':'string','description':'inspect previews the save; begin stages one new pet; finish follows verified UI chat/file cleanup.','required':True,'enum':['inspect','begin','finish']},
+MANIFEST['tools'].append({'name':'reset','description':'Explicitly clear an existing companion and return to the welcome screen. Omit name so the user chooses a name and creation mode afterward. Requires user confirmation RESET NOTEBUDDY and a fresh inspect ETag. UI must clean chat and all portraits before finish. Resume a pending reset; never automatically begin a new reset on conflicts. A removed game may explicitly start a new companion through reset; deleted records are never recovered.','timeout':60,'parameters':[
+ {'name':'action','type':'string','description':'inspect previews the save; begin clears the old pet for the welcome screen (legacy name optionally stages a pet); finish follows verified UI chat/file cleanup.','required':True,'enum':['inspect','begin','finish']},
  {'name':'confirmation','type':'string','description':'For begin only: exact user-confirmed phrase RESET NOTEBUDDY.','required':False},
  {'name':'expected_etag','type':'string','description':'For begin only: ETag from the preview the user confirmed; never refresh it automatically.','required':False},
  {'name':'reset_id','type':'string','description':'Stable UUID for this confirmed reset. Reuse on begin and finish retries.','required':False},
- {'name':'name','type':'string','description':'For begin only: new companion name, 1–24 characters.','required':False}]})
+ {'name':'name','type':'string','description':'Legacy clients only: optional new companion name. Omit to return to the welcome screen.','required':False}]})
 
 def evaluate(payload):
     argv = ([sys.executable, '--engine-worker'] if getattr(sys, 'frozen', False) else
@@ -110,11 +110,12 @@ class GameService:
                 if pending(previous):
                     return {'ok':False,'code':'reset_pending','reset_pending':True,'reset_id':previous['reset_id'],'msg':('초기화 정리를 완료해 주세요.' if language=='ko' else 'Finish resetting your saved data.')}
                 previous = unpack(previous)
+                awaiting_start = ready(previous)
                 mode = disposition(previous, event) if event else 'read'
                 computed = await asyncio.to_thread(evaluate, {
                     'command': 'status' if mode == 'expired' else command, 'name': name,
                     'request_id': event_key(event) if event and mode != 'expired' else None,
-                    'state': previous})
+                    'state': None if awaiting_start else previous})
                 if mode == 'expired' and computed['result'].get('code') != 'invalid_state':
                     computed['result'] = {'ok': False, 'code': 'request_expired', 'msg': ''}
                 committed = previous
@@ -125,9 +126,11 @@ class GameService:
                         candidate = commit_result(computed['state'], previous, event,
                                                   command, name, computed['result'])
                     except SaveCapacityError:
-                        computed = await asyncio.to_thread(evaluate, {'command': 'status', 'state': previous})
+                        computed = await asyncio.to_thread(evaluate, {'command': 'status', 'state': None if awaiting_start else previous})
                         computed['result'] = {'ok': False, 'code': 'save_capacity', 'msg': ''}
                     else:
+                        if awaiting_start:
+                            candidate[ID_KEY]=previous[ID_KEY]
                         if not saved.get('exists'):
                             # This recheck narrows the first-write race, but APS
                             # still has no atomic create-if-absent operation.

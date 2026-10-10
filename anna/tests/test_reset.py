@@ -121,3 +121,38 @@ class ResetTests(unittest.IsolatedAsyncioTestCase):
         other={**self.args,'reset_id':'competing-12345678'}
         self.assertEqual((await self.service.reset(other))['code'],'reset_changed')
         self.assertEqual(self.store.document,candidate)
+
+
+class WelcomeResetTests(unittest.IsolatedAsyncioTestCase):
+    asyncSetUp = ResetTests.asyncSetUp
+    finish = ResetTests.finish
+    async def test_welcome_reset_waits_for_explicit_first_meeting_and_retires_old_calls(self):
+        args={k:v for k,v in self.args.items() if k!='name'}
+        await self.service.reset(args)
+        self.assertNotIn('game',self.store.document)
+        self.assertTrue((await self.service.invoke({'command':'status'}))['reset_pending'])
+        await self.finish()
+        status=await self.service.invoke({'command':'status'})
+        self.assertEqual(status['code'],'not_started')
+        self.assertNotIn('pet_id',status)
+        self.assertTrue((await self.service.reset(args))['reset_complete'])
+        self.assertEqual((await self.service.invoke({'command':'start','name':'Stale','request_id':self.late}))['code'],'request_expired')
+        request=status['request_id_prefix']+'welcome-birth'
+        born=await self.service.invoke({'command':'start','name':'Chosen later','request_id':request})
+        self.assertTrue(born['ok']);self.assertEqual(born['status']['name'],'Chosen later')
+        self.assertEqual(born['status']['xp'],0)
+        saved=copy.deepcopy(self.store.document)
+        self.assertTrue((await self.finish())['reset_complete'])
+        self.assertTrue((await self.service.reset(args))['reset_complete'])
+        self.assertEqual(saved,self.store.document)
+        self.assertTrue((await self.service.invoke({'command':'start','name':'Chosen later','request_id':request}))['replayed'])
+
+    async def test_removed_welcome_reset_survives_reopen_before_creation(self):
+        self.store.document=copy.deepcopy(TOMBSTONE)
+        args={k:v for k,v in self.args.items() if k!='name'}
+        args['expected_etag']=(await self.service.reset({'action':'inspect'}))['etag']
+        await self.service.reset(args);await self.finish()
+        status=await GameService(self.store).invoke({'command':'status'})
+        self.assertEqual(status['code'],'not_started')
+        self.assertTrue(status['request_id_prefix'].startswith('nb3:'))
+        self.assertEqual(evaluate({'command':'start','state':self.store.document})['result']['code'],'invalid_state')

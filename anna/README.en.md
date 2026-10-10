@@ -84,3 +84,6 @@ If the first reference save failed before closing the app, the baby album offers
 Current develop analyzes the previous portrait with vision, stores visual features, and generates from text containing fixed identity, previous appearance and growth direction. User artwork birth also generates from extracted features. No reference URL is sent to the image generator. Failed analysis stops generation. Text descriptions cannot guarantee visual identity. Live Anna generation and stage-by-stage quality remain separate verification gates; the review candidate is unchanged.
 
 Live follow-up: one actual Anna baby-to-juvenile vision/text-generation/download sample succeeded. No production game or album write was requested. Deployed UI, user-artwork birth and stages 3/4 remain unverified. See [verification record](EVOLUTION_LIVE_VERIFICATION.md).
+## Start over
+
+Confirm **Start over** with the checkbox and `RESET NOTEBUDDY`. After clearing the old companion, chat and portraits, the app returns to the first-meeting screen. Choose a name and Random or Drawing there. Reset alone does not create a companion or call image generation. Interrupted cleanup can resume; deleted records cannot be recovered.
