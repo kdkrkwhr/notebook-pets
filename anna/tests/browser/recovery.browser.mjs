@@ -25,6 +25,7 @@ async function setup(t,faults={}){
   try{await route.fulfill({body:await readFile(new URL(file,bundle)),contentType:file.endsWith('.js')||file.endsWith('.mjs')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.png')?'image/png':file.endsWith('.svg')?'image/svg+xml':'text/html'});}catch{await route.fulfill({status:404,body:''});}
  });
  await page.addInitScript(f=>{if(!sessionStorage.getItem('test-initialized')){sessionStorage.setItem('test-initialized','1');sessionStorage.setItem('test-faults',JSON.stringify(f));}},faults);
+ if(faults.clock)await page.clock.install();
  await page.goto('https://notebuddy.test');if(faults.appLoad)await page.waitForFunction(()=>!document.querySelector('#notice').hidden);else await idle(page);
  t.after(()=>assert.deepEqual(errors,[],'No uncaught browser errors'));
  return page;
@@ -221,4 +222,17 @@ test('removed game explicitly restarts, resumes cleanup and reopens as a new par
  assert.equal(await p.locator('#name').innerText(),'Fresh buddy');assert.equal(await p.locator('#removed').isVisible(),false);
  await p.reload();await idle(p);assert.equal(await p.locator('#name').innerText(),'Fresh buddy');
  assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']),[]);
+});
+
+test('walk counter recovers locally without issuing actions and caps at five',async t=>{
+ const p=await setup(t,{clock:true});await start(p);
+ await p.evaluate(()=>{window.hostTest.state.save.status.walk_energy={charges:0,capacity:5,next_in_seconds:2,recharge_seconds:300};});
+ await p.locator('#refresh').click();await idle(p);
+ assert.match(await p.locator('#walk-energy').innerText(),/0\/5/);
+ const before=(await calls(p,'walk')).length;
+ await p.clock.fastForward(3000);
+ assert.match(await p.locator('#walk-energy').innerText(),/1\/5/);
+ await p.clock.fastForward(1800000);
+ assert.match(await p.locator('#walk-energy').innerText(),/5\/5/);
+ assert.equal((await calls(p,'walk')).length,before);
 });

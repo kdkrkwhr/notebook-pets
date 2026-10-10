@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 10 October 2026. This notice describes Notebuddy 0.2.2. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 10 October 2026. This notice describes Notebuddy 0.2.3. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 

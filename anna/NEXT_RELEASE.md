@@ -1,3 +1,5 @@
+Current incremental candidate: 0.2.3 / tool 0.1.13 adds only rechargeable walks to the verified reset-only 0.2.2. Upload and live verification pending.
+
 # Notebuddy 0.2.2
 
 

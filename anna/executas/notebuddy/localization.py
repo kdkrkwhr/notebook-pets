@@ -14,6 +14,7 @@ LABELS = {
     '밥 주기': 'Feed', '훈련': 'Train', '산책': 'Walk',
 }
 ERRORS = {
+    'walk_recharging': ('Walks are recharging: one every 5 minutes, up to 5.', '산책 횟수 충전 중이에요. 5분마다 1회, 최대 5회까지 충전돼요.'),
     'request_expired': ('This request is no longer current. It was not run again. Refresh and check your companion before choosing another action.', '이전 요청을 다시 실행하지 않았어요. 상태를 새로고침하고 친구를 확인한 뒤 다음 행동을 선택해 주세요.'),
     'save_capacity': ('This action was not saved because the game data is too large. Your previous progress is safe. Please contact support.', '게임 저장 용량이 커서 이번 행동을 저장하지 못했어요. 기존 진행도는 보존됩니다. 지원팀에 문의해 주세요.'),
     'not_started': ('Meet your companion first.', '먼저 친구를 만나 주세요.'),
@@ -30,6 +31,7 @@ ERRORS = {
     'attendance_claimed': ("You already collected today’s gift.", '오늘의 출석 선물은 이미 받았어요.'),
 }
 LEGACY_ERRORS = {
+    'walk_recharging': ('Walks are recharging: one every 5 minutes, up to 5.', '산책 횟수 충전 중이에요. 5분마다 1회, 최대 5회까지 충전돼요.'),
     'request_expired': ('This request is no longer current. It was not run again. Refresh and check your companion before choosing another action.', '이전 요청을 다시 실행하지 않았어요. 상태를 새로고침하고 친구를 확인한 뒤 다음 행동을 선택해 주세요.'),
     'save_capacity': ('This action was not saved because the game data is too large. Your previous progress is safe. Please contact support.', '게임 저장 용량이 커서 이번 행동을 저장하지 못했어요. 기존 진행도는 보존됩니다. 지원팀에 문의해 주세요.'),
     '이미 키우는 몬스터가 있어. (!상태 로 확인)': 'already_started',
@@ -69,6 +71,10 @@ def _message(value, command, language):
         # Never translate names or use a locale-dependent name in saved command arguments.
         name = (value.get('status') or {}).get('name', '')
         return f'{name}, 반가워요!' if index else f'Welcome, {name}!'
+    if command == 'walk':
+        return {'quiet': ('A peaceful walk. Nothing unusual happened.', '별일 없이 느긋하게 산책했어요.'),
+                'xp': ('You discovered XP on your walk!', '산책 중 경험치를 발견했어요!'),
+                'encounter': ('You met a monster on your walk!', '산책 중 몬스터를 만났어요!')}.get(value.get('walk_outcome'), SUCCESS['walk'])[index]
     if command == 'train':
         stat = {'hp': ('HP', 'HP'), 'atk': ('ATK', '공격'), 'def': ('DEF', '방어')}.get(value.get('trained_stat'), ('Stat', '능력치'))[index]
         return f'{stat} +{value.get("stat_gain", 0)} · ' + ('훈련 완료' if index else 'Training complete')

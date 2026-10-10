@@ -113,6 +113,21 @@ class AdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.storage.value, before)
         self.assertEqual(self.storage.writes, 2)
 
+    async def test_walk_charge_and_random_result_survive_runtime_restart(self):
+        await self.start()
+        request = {'command':'walk','request_id':'walk-once'}
+        first = await self.service.invoke(request)
+        self.assertTrue(first['ok'], first)
+        self.assertIn(first['walk_outcome'], ('quiet', 'xp', 'encounter'))
+        self.assertEqual(self.storage.value['walk_energy']['charges'], 4)
+        before = copy.deepcopy(self.storage.value)
+        again = await GameClient(self.storage).invoke(request)
+        self.assertTrue(again['replayed'])
+        self.assertEqual(again['walk_outcome'], first['walk_outcome'])
+        self.assertEqual(again['xp_result'], first['xp_result'])
+        self.assertEqual(self.storage.value, before)
+        self.assertEqual(self.storage.writes, 2)
+
     async def test_legacy_game_migrates_read_only_then_persists_with_action(self):
         await self.start()
         old = copy.deepcopy(self.storage.value)

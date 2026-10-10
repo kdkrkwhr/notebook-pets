@@ -105,6 +105,11 @@ def validate_state(st, uid):
             if key not in ("date", "sleep_buff"):
                 require(type(value) is int and value >= 0)
         require(st["daily"].get("quest_claimed", 0) in (0, 1))
+        if "walk_energy" in st:
+            energy = st["walk_energy"]
+            require(isinstance(energy, dict))
+            require(type(energy["charges"]) is int and 0 <= energy["charges"] <= G["commands"]["walk"]["capacity"])
+            require(type(energy["updated_at"]) in (int, float) and math.isfinite(energy["updated_at"]) and energy["updated_at"] >= 0)
         for value in st["cooldowns"].values():
             require(type(value) in (int, float) and math.isfinite(value) and value >= 0)
         for key in ("normal_feed", "rare_feed"):
@@ -319,7 +324,7 @@ def cmd_status(st):
                element=G["elements"][st["element"]]["name_kr"], stage_label=dict((s["stage"], s["label"]) for s in G["stages"])[st["stage"]],
                level=st["level"], xp=st["xp"], xp_next=xp_needed(st["level"]),
                stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"), image=art.describe(st),
-               record=st["record"], quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
+               record=st["record"], walk_energy={k: v for k, v in walk_energy(st).items() if k != "updated_at"}, quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
 
 def cmd_titles(st):
@@ -367,22 +372,46 @@ def cmd_train(st):
     save_state(st)
     return out(True, f"{pick} 훈련 완료", trained_stat=pick, stat_gain=gain, stats_after=stat_total(st), xp_result=x)
 
+def walk_energy(st, now=None):
+    """Project regeneration without writing on reads; full capacity never banks time."""
+    now = time.time() if now is None else now
+    rules = G["commands"]["walk"]
+    capacity, interval = rules["capacity"], rules["recharge_seconds"]
+    stored = st.get("walk_energy", {"charges": capacity, "updated_at": now})
+    anchor = stored["updated_at"]
+    elapsed = max(0, now - anchor)
+    recovered = int(elapsed // interval)
+    charges = min(capacity, stored["charges"] + recovered)
+    anchor = now if charges == capacity else anchor + recovered * interval
+    remaining = 0 if charges == capacity else max(1, math.ceil(anchor + interval - now))
+    return {"charges": charges, "capacity": capacity, "updated_at": anchor,
+            "recharge_seconds": interval, "next_in_seconds": remaining}
+
+
 def cmd_walk(st):
     if st.get("_wild") is not None:
         return out(False, "만난 몬스터가 기다리고 있어. 배틀·도망 중 하나를 먼저 선택해.",
                    code="encounter_pending", encounter=st["_wild"])
-    ok, why = check_limit(st, "walk")
-    if not ok: return out(False, why)
-    mark(st, "walk"); x = add_xp(st, G["commands"]["walk"]["xp"])
+    energy = walk_energy(st)
+    if not energy["charges"]:
+        return out(False, "산책 횟수를 충전하고 있어요.", code="walk_recharging", walk_energy=energy)
+    st["walk_energy"] = {"charges": energy["charges"] - 1, "updated_at": energy["updated_at"]}
+    mark(st, "walk")
+    rules = G["commands"]["walk"]
+    roll = random.random()
+    outcome = "encounter" if roll < rules["encounter_chance"] else ("xp" if roll < rules["encounter_chance"] + rules["xp_chance"] else "quiet")
+    reward = random.choice(rules["xp_rewards"]) if outcome == "xp" else 0
+    x = add_xp(st, reward)
     encounter = None
-    if random.random() < G["commands"]["walk"]["encounter_chance"]:
+    if outcome == "encounter":
         wsp = random.choice(list(G["species"].keys())); wel = random.choice(list(G["elements"].keys()))
         wlv = min(G["max_level"], max(1, st["level"] + random.randint(-3, 3)))
         encounter = {"species": G["species"][wsp]["name_kr"], "element": G["elements"][wel]["name_kr"],
                      "species_key": wsp, "element_key": wel, "level": wlv}
         st["_wild"] = encounter
     save_state(st)
-    r = out(True, "산책 완료", xp_result=x, encounter=bool(encounter), wild=encounter)
+    messages = {"quiet": "별일 없이 느긋하게 산책했어요.", "xp": "산책 중 경험치를 발견했어요!", "encounter": "산책 중 몬스터를 만났어요!"}
+    r = out(True, messages[outcome], walk_outcome=outcome, walk_energy=walk_energy(st), xp_result=x, encounter=bool(encounter), wild=encounter)
     return r
 
 def cmd_flee(st):
