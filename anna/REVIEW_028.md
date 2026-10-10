@@ -15,3 +15,6 @@ Four English listing screenshots were recaptured from the 0.2.8 UI using the rea
 ## Validation
 
 41 browser recovery cases passed on the release candidate; strict manifest validation passed. The unchanged server 0.1.14 previously passed 52 storage/protocol tests and Linux/Windows package CI run 38061043894. UI source CI is tracked at commit 5d2df2b. Confirm remote link checks and final review_candidate_version after submission; no public publishing action is required.
+
+Submission confirmed on 11 October 2026 (KST): review_candidate_version=0.2.8, status=pending_review, immutable version 1255, tool 0.1.14 / Executa 706, working revision 29 ready. All eight listing links returned HTTP 200 on recheck. Final source acfe0e6 passed both CI workflows on the branch and anna-v0.2.8 tag. The API exposes review_candidate_version but no separate review_candidate_version_id field; the corresponding version record supplies id 1255. No public release was performed.
+
