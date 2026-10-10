@@ -261,3 +261,39 @@ test('a delayed AI reply is discarded after another window replaces the companio
  assert.equal(await p.locator('#messages .user').count(),0);
  assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']),[]);
 });
+
+
+async function savePortrait(p){
+ await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
+}
+test('temporary portrait URL and metadata failures preserve the same saved portrait and recover',async t=>{
+ const p=await setup(t);await start(p);await savePortrait(p);
+ const src=await p.locator('#pet-image').getAttribute('src');
+ for(const extras of [false,true]){
+  await fault(p,{download:true,extras});await p.locator('#refresh').click();await idle(p);
+  assert.match(await p.locator('#notice').innerText(),/chat or album/);
+  assert.equal(await p.locator('#pet-image').getAttribute('src'),src);
+  assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
+ }
+ await fault(p,{download:false,extras:false});await p.locator('#refresh').click();await idle(p);
+ assert.equal(await p.locator('#notice').isVisible(),false);
+ assert.equal((await calls(p,'image')).length,1,'Refresh never regenerates a paid portrait');
+});
+test('failed lookup of a replacement portrait never restores the old saved file',async t=>{
+ const p=await setup(t);await start(p);await savePortrait(p);
+ await p.evaluate(()=>{window.hostTest.state.kv['notebuddy/art-v1']['isolated-fixture/stage-1']={path:'portraits/replacement.png'};});
+ await fault(p,{download:true});await p.locator('#refresh').click();await idle(p);
+ assert.match(await p.locator('#pet-image').getAttribute('src'),/assets\/starters-v1/);
+ assert.match(await p.locator('#notice').innerText(),/chat or album/);
+ await fault(p,{download:false});await p.locator('#refresh').click();await idle(p);
+ assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
+});
+test('removed portrait references clear cached images even during a URL outage',async t=>{
+ const p=await setup(t);await start(p);await savePortrait(p);
+ await p.evaluate(()=>{window.hostTest.state.kv['notebuddy/art-v1']={};});
+ await fault(p,{download:true});await p.locator('#refresh').click();await idle(p);
+ assert.match(await p.locator('#pet-image').getAttribute('src'),/assets\/starters-v1/);
+ assert.doesNotMatch(await p.locator('#image-caption').innerText(),/AI portrait/);
+ assert.equal(await p.locator('#notice').isVisible(),false);
+});

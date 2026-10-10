@@ -117,11 +117,27 @@ async function assertActive(){
 async function readExtras(){
   if(view?.erased||view?.reset_pending||pendingResetRequest){forgetCachedData();return;}
 
+  const previousArt=art,previousUrls=urls;
   const results=await Promise.allSettled([anna.storage.get({key:CHAT}),anna.storage.get({key:ART})]);
   if(results[0].status==='fulfilled')history=mergeHistory(results[0].value.value,pendingChat||[]);
   if(results[1].status==='fulfilled')art=results[1].value.value||{};
-  if(results.some(r=>r.status==='rejected'))notice(tr('extrasError'));
-  urls={};await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)).map(async([key,entry])=>{try{urls[key]=(await anna.files.download_url({path:entry.path})).get_url;}catch{/* Keep the bundled portrait visible. */}}));
+  let incomplete=results.some(r=>r.status==='rejected');
+  const nextUrls={};
+  await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)).map(async([key,entry])=>{
+    try{
+      if(typeof entry?.path!=='string'||!entry.path)throw new Error('Invalid portrait reference');
+      const url=(await anna.files.download_url({path:entry.path})).get_url;
+      if(typeof url!=='string'||!url)throw new Error('Missing portrait URL');
+      nextUrls[key]=url;
+    }catch{
+      incomplete=true;
+      // Retain only the exact same saved file. Replaced or removed references
+      // must never resurrect an older portrait after a failed URL request.
+      if(entry?.path&&previousArt[key]?.path===entry.path&&previousUrls[key])nextUrls[key]=previousUrls[key];
+    }
+  }));
+  urls=nextUrls;
+  if(incomplete)notice(tr('extrasError'));
 }
 async function invoke(command,extra={}){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'game',args:{command,...extra,language}}, {timeoutMs:60000}));}
 async function refresh(){
