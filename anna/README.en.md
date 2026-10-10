@@ -2,7 +2,11 @@
 
 [한국어](README.md) · **English**
 
-One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. Installed private version: app **0.2.1**, game tool **0.1.9**. Startup recovery and the new growth milestones have been verified in the installed app. See [deployment status](HANDOFF.md).
+One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. This candidate is app **0.2.5**, game tool **0.1.13**. See [deployment verification](INCREMENTAL_RELEASE.md) for actual upload/install results; the review candidate remains separate.
+
+## Draw your first companion
+
+Choose a random companion or **From my drawing**. Draw directly on the canvas; photo and file uploads are not offered. **Meet** starts an AI drawing check followed by baby portrait generation with random species and element. Both steps use Anna allowance. A failed generation can be retried for the same companion.
 
 ## Languages and saved progress
 
@@ -14,11 +18,11 @@ Localization happens after the original engine commits an action. Changing langu
 
 ## Start over
 
-Choose **Privacy & data → Start over with a new companion**, enter a new name and confirm `RESET NOTEBUDDY`. This replaces the pet and clears progress, chat and portraits. Species and element are both randomly redrawn and may coincidentally match. Close other windows and stop pending requests first. Interrupted cleanup can resume; no AI portrait is generated automatically. **Remove my saved data** remains separate permanent removal, with no restart afterward.
+Choose **Privacy & data → Start over with a new companion**, enter a new name and confirm `RESET NOTEBUDDY`. This replaces the pet and clears progress, chat and portraits. Species and element are both randomly redrawn and may coincidentally match. Close other windows and stop pending requests first. Interrupted cleanup can resume; no AI portrait is generated automatically. **Remove my saved data** permanently deletes the existing records. After removal, an explicit confirmed start-over can create a new companion; deleted records cannot be restored.
 
 ## Battles and growth
 
-Care results appear below the action buttons. Ordinary AI chat remains available. This version does not include automatic AI reactions to care actions.
+Care results appear below the action buttons. Ordinary AI chat remains available. Successful care triggers an AI reaction using Anna allowance. Failed replies never undo committed care.
 
 Walking encounters show opponent artwork. A short 2D scene replays the server's committed battle turns, with HP bars, skip and reduced-motion support. The animation cannot award extra rewards or change the result.
 

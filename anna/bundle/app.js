@@ -1,3 +1,6 @@
+import {createArtworkEditor} from './birth-art.mjs';
+import {createBirthFlow} from './birth-flow.mjs';
+let birth,artEditor;
 import {createReactions,reactionEvent} from './reactions.mjs';
 let reactions;
 import {createBattle} from './battle.mjs';
@@ -30,14 +33,16 @@ function controls(value){
   $('#retry-chat').hidden=!pendingChat;
   $('#retry-reaction').hidden=!reactions?.hasUnsaved();
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
-  if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage))$('#clean-portraits').disabled=true;
+  if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage||birth?.hasOutput()))$('#clean-portraits').disabled=true;
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
   if(!value&&anna&&!pendingRemoval&&!pendingAction&&!pendingResetRequest&&!view?.reset_pending&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
+  birth?.render();
 }
 function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
 function translate(){
   translateDocument(document,language);$('#language').value=language;
+  if(birthNotice)birthMessage(birthNotice.key,birthNotice.values);
   text('#draw',tr(pendingImage?'retryImage':'draw'));
 }
 function drawChat(){
@@ -85,6 +90,7 @@ function render(){
   for(const key of ['satiety','intimacy']){text(`#${key}`,`${s[key]} / 100`);$(`#${key}-bar`).value=s[key];}
   text('#stats',tr('stats',{...s.stats,...s.record,draw:s.record.draw||0}));
   text('#inventory',tr('inventory',{food:view.inventory.normal_feed,rare:view.inventory.rare_feed}));
+  $('#setup-birth').hidden=view.stage!==1||!!art[`${view.pet_id}/birth-source`]||!!art[imageKey(view,1)];
   const image=urls[imageKey(view)];picture($('#pet-image'),image||starter(view),starter(view));
   $('#pet-image').alt=`${s.name}, ${s.species} ${s.element} ${s.stage_label}`;
   text('#image-caption',tr(image?'portrait':view.stage>1?'oldPortrait':'firstPortrait'));
@@ -107,9 +113,10 @@ function render(){
     const subtitle=document.createElement('small');subtitle.textContent=entry.reached?tr(entry.current?'currentStage':'memoryStage'):tr('futureStage',{level:entry.min_level});
     item.append(frame,title,subtitle);$('#album').append(item);
   }
-  drawChat();
+  drawChat();birth?.render();
 }
 function forgetCachedData(){
+  birth?.clear();
   reactions?.clear();reactionFeedback();
   battleScene.close();
   history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
@@ -120,7 +127,23 @@ function forgetCachedData(){
   $('#pet-image').onerror=null;$('#pet-image').src='icon.svg';$('#pet-image').alt='';
   $('#retry-action').hidden=true;$('#retry-chat').hidden=true;
 }
-async function assertActive(){const status=await invoke('status');if(status.erased){view=status;render();throw new ErasedError();}if(status.reset_pending){view=status;render();throw new Error('Reset pending');}if(!status.status)throw new Error('No active game');return status;}
+class PartnerChangedError extends Error {}
+// Pending work belongs to the companion shown when it started. Never merge
+// that work into a different companion after another window completes reset.
+function adoptView(next){
+  const changed=!!(view?.pet_id&&next?.pet_id&&view.pet_id!==next.pet_id);
+  if(changed)forgetCachedData();
+  view=next;
+  return changed;
+}
+async function assertActive(){
+  const status=await invoke('status');
+  if(view?.pet_id&&status.pet_id&&view.pet_id!==status.pet_id){adoptView(status);render();throw new PartnerChangedError();}
+  if(status.erased){view=status;render();throw new ErasedError();}
+  if(status.reset_pending){view=status;render();throw new Error('Reset pending');}
+  if(!status.status)throw new Error('No active game');
+  return status;
+}
 async function readExtras(){
   if(view?.erased||view?.reset_pending||pendingResetRequest){forgetCachedData();return;}
 
@@ -128,14 +151,14 @@ async function readExtras(){
   if(results[0].status==='fulfilled')history=mergeHistory(results[0].value.value,pendingChat||[]);
   if(results[1].status==='fulfilled')art=results[1].value.value||{};
   if(results.some(r=>r.status==='rejected'))notice(tr('extrasError'));
-  urls={};await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)).map(async([key,entry])=>{try{urls[key]=(await anna.files.download_url({path:entry.path})).get_url;}catch{/* Keep the bundled portrait visible. */}}));
+  urls={};await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)&&!key.endsWith('/birth-source')).map(async([key,entry])=>{try{urls[key]=(await anna.files.download_url({path:entry.path})).get_url;}catch{/* Keep the bundled portrait visible. */}}));
 }
 async function invoke(command,extra={}){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'game',args:{command,...extra,language}}, {timeoutMs:60000}));}
 async function refresh(){
   if(busy)return;controls(true);notice();
   try{
     anna??=await AnnaAppRuntime.connect();
-    view=await invoke('status');if(!view.ok&&view.code!=='not_started')notice(view.msg);
+    adoptView(await invoke('status'));if(!view.ok&&view.code!=='not_started')notice(view.msg);
     if(view.erased||view.status||view.code==='not_started')pendingRemoval=false;await readExtras();render();text('#connection',tr('connected'));
     if(pendingAction)notice(tr('uncertain'));
   }catch(error){notice(problem(error));text('#connection',tr('disconnected'));}
@@ -144,11 +167,12 @@ async function refresh(){
 async function act(command,extra={},retry=false){
   if(busy||pendingRemoval||(!retry&&pendingAction))return;controls(true);notice();
   if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
-  let reaction=null;
+  let started=false,reaction=null;
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
     const before=view;const portrait=urls[imageKey(before)];
-    const {command:action,...args}=pendingAction;view=await invoke(action,args);pendingAction=null;render();
+    const {command:action,...args}=pendingAction;adoptView(await invoke(action,args));pendingAction=null;render();
+    started=view.ok&&action==='start';
     reaction=reactionEvent(action,args.request_id,view,language);
     let message=view.msg;
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
@@ -158,6 +182,7 @@ async function act(command,extra={},retry=false){
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;}
   finally{controls(false);}
   reactions.enqueue(reaction);
+  if(started)await birth.started(view);
 }
 async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
 async function chat(event){
@@ -188,7 +213,7 @@ async function retryChat(){
   controls(true);notice();try{await persistChat();}finally{controls(false);}
 }
 async function cleanupPortraits(){
-  if(busy||pendingAction||pendingRemoval||pendingImage)return;
+  if(busy||pendingAction||pendingRemoval||pendingImage||birth?.hasOutput())return;
   if(!$('#portraits-quiescent').checked){text('#portraits-error',tr('portraitsConfirm'));return;}
   $('#portraits-dialog').close();controls(true);notice();
   try{
@@ -198,6 +223,12 @@ async function cleanupPortraits(){
     if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}
     else notice(tr('portraitsFailed'));
   }finally{controls(false);}
+}
+async function uploadPortrait(path,blob){
+  const upload=await anna.files.upload_init({path,content_type:blob.type||'image/png',size:blob.size});
+  const result=await fetch(upload.put_url,{method:'PUT',headers:upload.headers,body:blob});
+  if(!result.ok)throw new Error('image upload');
+  await anna.files.upload_finalize({path,size:blob.size});
 }
 async function generate(){
   if(busy)return;$('#draw-dialog').close();controls(true);notice();text('#draw',tr('drawing'));
@@ -298,12 +329,20 @@ $('#language').addEventListener('change',async()=>{
 });
 $('#privacy').addEventListener('click',()=>$('#privacy-dialog').showModal());
 $('#refresh').addEventListener('click',refresh);
-$('#start-form').addEventListener('submit',e=>{e.preventDefault();act('start',{name:$('#pet-name').value.trim()});});
+$('#start-form').addEventListener('submit',async e=>{
+  e.preventDefault();if(busy||pendingAction||pendingRemoval)return;
+  const name=$('#pet-name').value.trim();$('#pet-name').value=name;if(!$('#start-form').reportValidity())return;
+  if($('#birth-mode').value==='art'){
+    controls(true);let accepted=false;try{accepted=await birth.prepare();}finally{controls(false);}
+    if(!accepted)return;
+  }else birth.clear();
+  await act('start',{name});
+});
 document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>act(button.dataset.action)));
 $('#retry-action').addEventListener('click',()=>pendingAction&&act(pendingAction.command,{},true));
 $('#chat-form').addEventListener('submit',chat);
 $('#retry-chat').addEventListener('click',retryChat);
-$('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval)return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
+$('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval||birth?.hasOutput())return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
 $('#confirm-clean-portraits').addEventListener('click',cleanupPortraits);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
 $('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
@@ -311,5 +350,25 @@ let reactionNotice='';
 function reactionFeedback(key=''){reactionNotice=key;const e=$('#reaction-status');e.hidden=!key;e.textContent=key?tr(key):'';}
 reactions=createReactions({anna:()=>anna,active:assertActive,saved:saved=>{const local=history.filter(item=>item.kind!=='reaction'&&!saved.some(value=>value.id===item.id));history=mergeHistory(saved,[...local,...(pendingChat||[])]);},render:drawChat,feedback:reactionFeedback});
 $('#retry-reaction').addEventListener('click',async()=>{if(busy||pendingAction||pendingRemoval||pendingResetRequest)return;controls(true);try{await reactions.retrySave();}finally{controls(false);}});
+let birthNotice=null;
+function birthMessage(key,values={}){birthNotice={key,values};for(const id of ['#birth-status','#birth-recovery-status']){text(id,tr(key,values));$(id).hidden=false;}notice(tr(key,values));}
+artEditor=createArtworkEditor({document,tr,locked:()=>busy||!!pendingAction||birth?.hasOutput()});
+birth=createBirthFlow({
+  anna:()=>anna,view:()=>view,art:()=>art,language:()=>language,editor:artEditor,
+  locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest||pendingImage),
+  controls,assertActive,upload:uploadPortrait,isPartnerChanged:error=>error instanceof PartnerChangedError,
+  save:async merge=>{art=await saveMerged(ART,merge);return art;},
+  reload:async()=>{await readExtras();render();},
+  clearMessage:()=>{birthNotice=null;for(const id of ['#birth-status','#birth-recovery-status']){text(id,'');$(id).hidden=true;}},
+  message:birthMessage,
+  panel:(visible,pending)=>{$('#birth-recovery').hidden=!visible;text('#retry-birth',tr(pending?'artRetrySave':'artRetry'));$('#replace-birth-source').disabled=busy||pending;if(visible)document.querySelectorAll('[data-action],#draw,#draw-evolved').forEach(e=>e.disabled=true);},
+});
+$('#birth-mode').addEventListener('change',()=>{$('#birth-art-choice').hidden=$('#birth-mode').value!=='art';});
+$('#choose-art').addEventListener('click',()=>artEditor.open());
+$('#setup-birth').addEventListener('click',()=>artEditor.open());
+document.addEventListener('artwork-selected',()=>birth.selected());
+$('#replace-birth-source').addEventListener('click',()=>artEditor.open());
+$('#retry-birth').addEventListener('click',()=>birth.run());
+$('#default-birth').addEventListener('click',()=>birth.fallback());
 translate();
 await refresh();
