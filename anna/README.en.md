@@ -71,3 +71,7 @@ Before the first write, the adapter rechecks whether another agent already creat
 | `executas/notebuddy/game_worker.py` | Original game engine in an isolated temporary store |
 
 See [HANDOFF.md](HANDOFF.md) for deployment evidence and remaining release checks. The app is a private draft, not a public store release.
+
+## Start over
+
+Confirm **Start over** with the checkbox and `RESET NOTEBUDDY`. After clearing the old companion, chat and portraits, the app returns to the first-meeting screen. Choose a name and Random or Drawing there. Reset alone does not create a companion or call image generation. Interrupted cleanup can resume; deleted records cannot be recovered.
