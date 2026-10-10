@@ -1,4 +1,7 @@
 import {createBattle} from './battle.mjs';
+import {createArtworkEditor} from './birth-art.mjs';
+import {createBirthFlow} from './birth-flow.mjs';
+let birth,artEditor;
 import { AnnaAppRuntime } from '/static/anna-apps/_sdk/latest/index.js';
 import {unwrap,starter,imageKey,mergeHistory,errorText,newAction} from './model.mjs';
 import {t,loadLanguage,saveLanguage,translateDocument,chatPrompt} from './i18n.mjs';
@@ -36,15 +39,16 @@ function controls(value){
   $('#retry-care').disabled=value||!!(pendingRemoval||pendingResetRequest||view?.reset_pending);
   $('#retry-chat').hidden=!pendingChat;
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
-  if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage))$('#clean-portraits').disabled=true;
+  if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage||birth?.hasOutput()))$('#clean-portraits').disabled=true;
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
   if(!value&&anna&&!pendingRemoval&&!pendingAction&&!pendingResetRequest&&!view?.reset_pending&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
+  birth?.render();
 }
 function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
 function translate(){
   translateDocument(document,language);$('#language').value=language;
-  for(const [area,{key,values}] of Object.entries(feedback))localStatus(area,key,values);
+  for(const [area,{key,values}] of Object.entries(feedback)){localStatus(area,key,values);if(area==='birth')text('#birth-recovery-status',tr(key,values));}
   text('#draw',tr(pendingImage?'retryImage':'draw'));
 }
 function drawChat(){
@@ -90,6 +94,7 @@ function render(){
   for(const key of ['satiety','intimacy']){text(`#${key}`,`${s[key]} / 100`);$(`#${key}-bar`).value=s[key];}
   text('#stats',tr('stats',{...s.stats,...s.record,draw:s.record.draw||0}));
   text('#inventory',tr('inventory',{food:view.inventory.normal_feed,rare:view.inventory.rare_feed}));
+  $('#setup-birth').hidden=view.stage!==1||!!art[`${view.pet_id}/birth-source`]||!!art[imageKey(view,1)];
   const image=urls[imageKey(view)];picture($('#pet-image'),image||previousPortrait(view),starter(view));
   $('#pet-image').alt=`${s.name}, ${s.species} ${s.element} ${s.stage_label}`;
   text('#image-caption',tr(image?'portrait':view.stage>1?'oldPortrait':'firstPortrait'));
@@ -112,9 +117,10 @@ function render(){
     const subtitle=document.createElement('small');subtitle.textContent=entry.reached?tr(entry.current?'currentStage':'memoryStage'):tr('futureStage',{level:entry.min_level});
     item.append(frame,title,subtitle);$('#album').append(item);
   }
-  drawChat();
+  drawChat();birth?.render();
 }
 function forgetCachedData(){
+  birth?.clear();
   battleScene.close();evolutionEffect();localStatus('chat');localStatus('image');
   history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
   $('#messages').replaceChildren();$('#album').replaceChildren();$('#quests').replaceChildren();
@@ -150,7 +156,7 @@ async function readExtras(){
   if(results[1].status==='fulfilled')art=results[1].value.value||{};
   let incomplete=results.some(r=>r.status==='rejected');
   const nextUrls={};
-  await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)).map(async([key,entry])=>{
+  await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)&&!key.endsWith('/birth-source')).map(async([key,entry])=>{
     try{
       if(entry?.state==='generating')return;
       if(typeof entry?.path!=='string'||!entry.path)throw new Error('Invalid portrait reference');
@@ -183,12 +189,13 @@ async function refresh(){
 async function act(command,extra={},retry=false){
   if(busy||pendingRemoval||(!retry&&pendingAction))return;controls(true);notice();
   if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
-  let evolved=false;
+  let evolved=false,started=false;
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
     const before=view;const portrait=urls[imageKey(before)];
     const {command:action,...args}=pendingAction;adoptView(await invoke(action,args));pendingAction=null;render();
     evolved=!!(view.ok&&view.stage>1&&((before?.pet_id===view.pet_id&&view.stage>before.stage)||view.xp_result?.evolutions?.length));
+    started=view.ok&&action==='start';
     let message=view.msg;
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
@@ -196,6 +203,7 @@ async function act(command,extra={},retry=false){
     if(view.ok&&action==='battle')battleScene.show(view,before,portrait,language);
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',`${problem(error)} ${tr('uncertain')}`);$('#retry-action').hidden=false;}
   finally{controls(false);}
+  if(started)await birth.started(view);
   if(evolved){
     if($('#battle-dialog').open)$('#battle-dialog').addEventListener('close',()=>generate(true),{once:true});
     else await generate(true);
@@ -231,7 +239,7 @@ async function retryChat(){
   controls(true);notice();try{await persistChat();}finally{controls(false);}
 }
 async function cleanupPortraits(){
-  if(busy||pendingAction||pendingRemoval||pendingImage)return;
+  if(busy||pendingAction||pendingRemoval||pendingImage||birth?.hasOutput())return;
   if(!$('#portraits-quiescent').checked){text('#portraits-error',tr('portraitsConfirm'));return;}
   $('#portraits-dialog').close();controls(true);notice();
   try{
@@ -414,14 +422,40 @@ $('#guide-chat').addEventListener('click',()=>{
 $('#guide-album').addEventListener('click',()=>{if(!busy)guideTarget('.album-card');});
 $('#privacy').addEventListener('click',()=>$('#privacy-dialog').showModal());
 $('#refresh').addEventListener('click',refresh);
-$('#start-form').addEventListener('submit',e=>{e.preventDefault();act('start',{name:$('#pet-name').value.trim()});});
+$('#start-form').addEventListener('submit',async e=>{
+  e.preventDefault();if(busy||pendingAction||pendingRemoval)return;
+  const name=$('#pet-name').value.trim();$('#pet-name').value=name;if(!$('#start-form').reportValidity())return;
+  if($('#birth-mode').value==='art'){
+    controls(true);let accepted=false;try{accepted=await birth.prepare();}finally{controls(false);}
+    if(!accepted)return;
+  }else birth.clear();
+  await act('start',{name});
+});
 document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>act(button.dataset.action)));
 for(const selector of ['#retry-action','#retry-care'])$(selector).addEventListener('click',()=>pendingAction&&act(pendingAction.command,{},true));
 $('#chat-form').addEventListener('submit',chat);
 $('#retry-chat').addEventListener('click',retryChat);
-$('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval)return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
+$('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval||birth?.hasOutput())return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
 $('#confirm-clean-portraits').addEventListener('click',cleanupPortraits);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
 $('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',()=>generate());
+artEditor=createArtworkEditor({document,tr,locked:()=>busy||!!pendingAction||birth?.hasOutput()});
+birth=createBirthFlow({
+  anna:()=>anna,view:()=>view,art:()=>art,language:()=>language,editor:artEditor,
+  locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest||pendingImage),
+  controls,assertActive,upload:uploadPortrait,isPartnerChanged:error=>error instanceof PartnerChangedError,
+  save:async merge=>{art=await saveMerged(ART,merge);return art;},
+  reload:async()=>{await readExtras();render();},
+  clearMessage:()=>{delete feedback.birth;for(const id of ['#birth-status','#birth-recovery-status']){text(id,'');$(id).hidden=true;}},
+  message:(key,values)=>{feedback.birth={key,values};for(const id of ['#birth-status','#birth-recovery-status']){text(id,tr(key,values));$(id).hidden=false;}notice(tr(key,values));},
+  panel:(visible,pending)=>{$('#birth-recovery').hidden=!visible;text('#retry-birth',tr(pending?'artRetrySave':'artRetry'));$('#replace-birth-source').disabled=busy||pending;if(visible)document.querySelectorAll('[data-action],#draw,#draw-evolved').forEach(e=>e.disabled=true);},
+});
+$('#birth-mode').addEventListener('change',()=>{$('#birth-art-choice').hidden=$('#birth-mode').value!=='art';});
+$('#choose-art').addEventListener('click',()=>artEditor.open());
+$('#setup-birth').addEventListener('click',()=>artEditor.open());
+document.addEventListener('artwork-selected',()=>birth.selected());
+$('#replace-birth-source').addEventListener('click',()=>artEditor.open());
+$('#retry-birth').addEventListener('click',()=>birth.run());
+$('#default-birth').addEventListener('click',()=>birth.fallback());
 translate();
 await refresh();

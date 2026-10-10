@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 9 October 2026. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 10 October 2026. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -12,6 +12,14 @@ Last updated: 9 October 2026. Applies to the Notebuddy app on Anna, maintained b
 | Language choice | Saved in this browser’s local storage. It is not synced across devices by Notebuddy. |
 
 The app does not request your real name, email, contacts or a separate API key. You choose your companion’s name and anything you type into chat. Avoid entering sensitive personal information. Anna authenticates access to the account’s saved data; Notebuddy’s game commands do not accept another user’s account ID.
+
+## Optional source artwork (develop update, not yet the submitted version)
+
+Choosing artwork mode sends a normalized PNG copy of your photo or drawing to Anna's LLM service for an image suitability check and a short description of visible features. This check uses your AI allowance, including when no pet is created. Local file checks alone do not send an image. The browser accepts PNG/JPEG/WebP up to 12 MB and 16 megapixels, with minimum dimensions 32 by 32; it resizes to a maximum side of 1024 pixels and re-encodes as PNG instead of uploading the original file or its metadata. Original filenames are not sent in the prompt.
+
+If the check accepts the source, the game assigns random species and element, and the normalized reference and short visual description are saved in Anna app storage. A fresh file URL and those features are sent to Anna's image service to generate the baby. The app stores both the reference and generated portrait under its portraits prefix. Failed, replaced or abandoned references may remain until reset or removal; the latest source remains indexed. The app does not promise that its AI check detects every unsuitable input or that a provider deletes submitted content after a refusal. Provider logs, backups and billing remain subject to Anna/provider handling.
+
+The in-browser editor and uncommitted generated image are held in memory. Closing the page may require reselecting unsaved artwork or making another paid generation request. The app does not automatically regenerate an unfinished custom baby when reopened. Choosing the default appearance does not reroll the companion or erase the saved source file. Existing reset/removal covers these source files and descriptions as well as generated portraits. No new file bucket or browser storage key is introduced.
 
 ## AI processing
 

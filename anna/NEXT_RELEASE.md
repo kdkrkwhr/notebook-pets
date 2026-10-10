@@ -46,3 +46,7 @@ Actual reference-conditioned generation returned a provider endpoint 404; no new
 ## Rechargeable walks
 
 Walks now hold up to 5 charges and recover one every 300 seconds, including offline time. Existing saves start with 5 charges once. Midnight does not refill charges. Each walk exclusively yields quiet time (50%), XP (30%; 10/20/30 equally likely), or an encounter (20%). Base expected walk XP is 6; the existing sleep bonus and level cap still apply. Battles remain limited to 5 per KST day. Replayed requests reuse the same result without spending or rolling again.
+
+## Artwork first meeting
+
+Optional upload/drawing input, local validation, explicit vision check, referenced baby generation and distinct refusal/check/generation/save failure recovery are implemented on develop. See [USER_ARTWORK.md](USER_ARTWORK.md). Real vision/provider behavior remains unverified; do not ship until the existing image route blocker is resolved and this flow is tested live. Screenshots and the deployed privacy URL must be updated with any candidate that includes this behavior.

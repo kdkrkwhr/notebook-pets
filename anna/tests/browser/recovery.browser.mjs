@@ -301,7 +301,7 @@ test('removed portrait references clear cached images even during a URL outage',
 
 
 test('first visit guides care, optional chat and album without automatic AI calls; progress survives reopen',async t=>{
- const p=await setup(t);assert.match(await p.locator('.welcome-help').innerText(),/does not generate an AI image/);
+ const p=await setup(t);assert.match(await p.locator('.welcome-help').innerText(),/Random companions start with an included baby picture/);
  await start(p);assert.equal(await p.locator('#first-steps').isVisible(),true);
  await p.locator('#guide-care').click();assert.equal(await p.evaluate(()=>document.activeElement.dataset.action),'feed');
  assert.equal((await calls(p,'feed')).length,0);
@@ -513,4 +513,118 @@ test('walk counter recovers locally without issuing actions and caps at five',as
  await p.clock.fastForward(1800000);
  assert.match(await p.locator('#walk-energy').innerText(),/5\/5/);
  assert.equal((await calls(p,'walk')).length,before);
+});
+
+async function artwork(p){
+ await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();
+ await p.locator('#art-file').setInputFiles({name:'my-picture.png',mimeType:'image/png',buffer:await readFile(new URL('../../bundle/assets/starters-v1/fairy_nature_stage1.png',import.meta.url))});
+ await p.locator('#art-use').click();await p.waitForFunction(()=>!document.querySelector('#art-dialog').open);
+}
+async function artStart(p){await p.locator('#pet-name').fill('My artwork buddy');await p.locator('#start-form button').click();await idle(p);}
+
+test('artwork first meeting validates source then saves a referenced baby; reopen never regenerates',async t=>{
+ const p=await setup(t);await artwork(p);await artStart(p);
+ assert.equal((await calls(p,'start')).length,1);assert.equal((await calls(p,'llm')).length,1);
+ const generated=await calls(p,'image');assert.equal(generated.length,1);assert.equal(generated[0].options.reference_image_urls.length,1);
+ assert.match(generated[0].options.prompt,/species fairy and element nature/);
+ assert.equal(await p.locator('#birth-recovery').isVisible(),false);
+ const saved=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']);
+ assert.equal(saved['isolated-fixture/birth-source'].phase,'done');assert.ok(saved['isolated-fixture/stage-1'].path);
+ await p.reload();await idle(p);assert.equal((await calls(p,'image')).length,0);
+ assert.match(await p.locator('#image-caption').innerText(),/portrait/i);
+});
+test('empty drawing and unsupported file stop locally before AI or game creation',async t=>{
+ const p=await setup(t);await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();
+ await p.locator('#art-input-kind').selectOption('draw');await p.locator('#art-use').click();
+ await p.waitForFunction(()=>document.querySelector('#art-editor-error').textContent.includes('clear shape'));assert.match(await p.locator('#art-editor-error').innerText(),/clear shape/);
+ await p.locator('#art-input-kind').selectOption('upload');await p.locator('#art-file').setInputFiles({name:'bad.png',mimeType:'image/png',buffer:Buffer.from('not an image')});await p.locator('#art-use').click();
+ await p.waitForFunction(()=>document.querySelector('#art-editor-error').textContent.includes('format'));assert.match(await p.locator('#art-editor-error').innerText(),/format/);
+ assert.equal((await calls(p,'llm')).length,0);assert.equal((await calls(p,'start')).length,0);
+});
+test('drawing with undo produces a source and works in a narrow Korean UI',async t=>{
+ const p=await setup(t);await p.setViewportSize({width:360,height:800});await p.locator('#language').selectOption('ko');await idle(p);
+ await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();await p.locator('#art-input-kind').selectOption('draw');
+ const box=await p.locator('#art-canvas').boundingBox();await p.mouse.move(box.x+30,box.y+30);await p.mouse.down();await p.mouse.move(box.x+100,box.y+100);await p.mouse.up();
+ await p.locator('#art-undo').click();await p.locator('#art-use').click();await p.waitForFunction(()=>document.querySelector('#art-editor-error').textContent.includes('참고할 형태'));assert.match(await p.locator('#art-editor-error').innerText(),/참고할 형태/);
+ await p.mouse.move(box.x+40,box.y+50);await p.mouse.down();await p.mouse.move(box.x+130,box.y+130);await p.mouse.up();
+ assert.equal(await p.evaluate(()=>document.querySelector('#art-dialog').scrollWidth<=document.querySelector('#art-dialog').clientWidth),true);
+ await p.locator('#art-use').click();await p.waitForFunction(()=>!document.querySelector('#art-dialog').open);await artStart(p);
+ assert.equal((await calls(p,'image')).length,1);
+});
+test('AI refusal and unclear artwork do not create a pet or send a generation request',async t=>{
+ const p=await setup(t,{artDecision:'reject'});await artwork(p);await artStart(p);
+ assert.match(await p.locator('#birth-status').innerText(),/could not use this image/i);assert.equal((await calls(p,'start')).length,0);assert.equal((await calls(p,'image')).length,0);
+ await fault(p,{artDecision:'unclear'});await artStart(p);assert.match(await p.locator('#birth-status').innerText(),/clear shape/);assert.equal((await calls(p,'start')).length,0);
+});
+test('vision outage and malformed assessment do not blame the artwork or silently allow it',async t=>{
+ const p=await setup(t,{llm:true});await artwork(p);await artStart(p);
+ assert.match(await p.locator('#birth-status').innerText(),/not a rejection/);assert.equal((await calls(p,'start')).length,0);
+ await fault(p,{llm:false,artMalformed:true});await artStart(p);assert.match(await p.locator('#birth-status').innerText(),/not a rejection/);assert.equal((await calls(p,'start')).length,0);
+});
+test('generation outage keeps species and source; refresh never retries and explicit retry does not reroll',async t=>{
+ const p=await setup(t,{image:true});await artwork(p);await artStart(p);
+ assert.match(await p.locator('#birth-recovery-status').innerText(),/not finish generating/);
+ const before=await p.evaluate(()=>({pet:window.hostTest.state.save.pet_id,species:window.hostTest.state.save.species_key,element:window.hostTest.state.save.element_key}));
+ assert.equal((await calls(p,'start')).length,1);assert.equal((await calls(p,'image')).length,1);
+ await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'image')).length,1);
+ await fault(p,{image:false});await p.locator('#retry-birth').click();await idle(p);
+ assert.equal((await calls(p,'image')).length,2);assert.equal((await calls(p,'start')).length,1);assert.equal((await calls(p,'llm')).length,1);
+ assert.deepEqual(await p.evaluate(()=>({pet:window.hostTest.state.save.pet_id,species:window.hostTest.state.save.species_key,element:window.hostTest.state.save.element_key})),before);
+});
+test('generation refusal asks for another source; retry does not resend refused artwork',async t=>{
+ const p=await setup(t,{imageRefusal:true});await artwork(p);await artStart(p);
+ assert.match(await p.locator('#birth-recovery-status').innerText(),/could not use this image/i);
+ await p.locator('#retry-birth').click();await idle(p);assert.equal((await calls(p,'image')).length,1);
+ await p.locator('#default-birth').click();await idle(p);assert.equal(await p.locator('#birth-recovery').isVisible(),false);assert.equal((await calls(p,'start')).length,1);
+});
+test('received birth portrait retries only saving after upload failure',async t=>{
+ const p=await setup(t,{birthUpload:true});await artwork(p);await artStart(p);
+ assert.match(await p.locator('#birth-recovery-status').innerText(),/saving is unfinished/);
+ assert.match(await p.locator('#retry-birth').innerText(),/saving/);
+ await p.locator('#retry-birth').click();await idle(p);assert.equal((await calls(p,'image')).length,1);
+ assert.equal(await p.locator('#birth-recovery').isVisible(),false);
+});
+test('failed source upload recovers without rechecking or creating another pet',async t=>{
+ const p=await setup(t,{upload:true});await artwork(p);await artStart(p);
+ assert.match(await p.locator('#birth-recovery-status').innerText(),/reference/);assert.equal((await calls(p,'image')).length,0);
+ await p.locator('#retry-birth').click();await idle(p);assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'llm')).length,1);assert.equal((await calls(p,'start')).length,1);
+});
+test('lost birth action reply keeps the same action and artwork until explicit retry',async t=>{
+ const p=await setup(t,{lost:true});await artwork(p);await artStart(p);
+ assert.equal((await calls(p,'image')).length,0);await p.locator('#retry-action').click();await idle(p);
+ const starts=await calls(p,'start');assert.equal(starts.length,2);assert.equal(starts[0].args.request_id,starts[1].args.request_id);assert.equal((await calls(p,'image')).length,1);
+});
+
+test('unfinished artwork resumes after reopen without automatically spending allowance',async t=>{
+ const p=await setup(t,{image:true});await artwork(p);await artStart(p);await p.reload();await idle(p);
+ assert.equal(await p.locator('#birth-recovery').isVisible(),true);assert.equal((await calls(p,'image')).length,0);
+ assert.equal(await p.locator('[data-action="feed"]').isDisabled(),true);
+ await fault(p,{image:false});await p.locator('#retry-birth').click();await idle(p);
+ assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'start')).length,0);
+ assert.equal(await p.locator('[data-action="feed"]').isEnabled(),true);
+});
+test('birth metadata save failure before source upload can be recovered after reopen',async t=>{
+ const p=await setup(t,{save:true});await artwork(p);await artStart(p);
+ assert.equal((await calls(p,'image')).length,0);await p.reload();await idle(p);await fault(p,{save:false});
+ await p.locator('#setup-birth').click();await p.locator('#art-file').setInputFiles({name:'again.png',mimeType:'image/png',buffer:await readFile(new URL('../../bundle/assets/starters-v1/fairy_nature_stage1.png',import.meta.url))});
+ await p.locator('#art-use').click();await p.waitForFunction(()=>!document.querySelector('#art-dialog').open);
+ await p.locator('#retry-birth').click();await idle(p);assert.equal((await calls(p,'start')).length,0);assert.equal((await calls(p,'image')).length,1);
+});
+test('replacement during birth generation never applies the old artwork to the new pet',async t=>{
+ const p=await setup(t,{imageDelay:400});await artwork(p);
+ await p.locator('#pet-name').fill('Original');await p.locator('#start-form button').click();
+ await p.waitForFunction(()=>window.hostTest.calls.some(x=>x.method==='image'));
+ await p.evaluate(()=>{window.hostTest.state.save.pet_id='replacement';});await idle(p);
+ const saved=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']);
+ assert.equal(saved?.['replacement/stage-1'],undefined);assert.equal(saved?.['isolated-fixture/stage-1'],undefined);
+ assert.match(await p.locator('#notice').innerText(),/changed/);
+});
+
+test('lost birth index acknowledgement retains a save-only retry even after refresh',async t=>{
+ const p=await setup(t,{lostBirthSave:true});await artwork(p);await artStart(p);
+ assert.match(await p.locator('#birth-recovery-status').innerText(),/saving is unfinished/);
+ assert.equal(await p.locator('#clean-portraits').isDisabled(),true);
+ await p.locator('#refresh').click();await idle(p);assert.equal(await p.locator('#retry-birth').isVisible(),true);
+ await p.locator('#retry-birth').click();await idle(p);
+ assert.equal((await calls(p,'image')).length,1);assert.equal(await p.locator('#birth-recovery').isVisible(),false);
 });
