@@ -22,3 +22,11 @@ test('every starter uses the complete reviewed set, with identical shipped bytes
   assert.equal(source.subarray(0,8).toString('hex'),'89504e470d0a1a0a');
  }
 });
+
+test('the app bundles only baby artwork, never fixed evolution portraits',async()=>{
+ const {readdir}=await import('node:fs/promises');
+ const files=await readdir(new URL('../bundle/assets/',import.meta.url),{recursive:true});
+ const png=files.filter(f=>f.endsWith('.png'));
+ assert.equal(png.length,72);
+ assert.ok(png.every(f=>f.endsWith('_stage1.png')));
+});

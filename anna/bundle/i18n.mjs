@@ -1,6 +1,13 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  imageSaving: ["Saving your generated portrait…", "생성된 그림을 저장하는 중이에요…"],
+  startHelp: ["Random companions start with an included baby picture. Choosing your own artwork uses AI to check the source and create a custom baby portrait. At levels 10, 30 and 50, evolution automatically creates a new portrait from the previous appearance using your Anna image allowance.", "랜덤으로 만나면 기본 유년기 그림이 제공돼요. 내 작품으로 만나면 AI로 참고 이미지를 확인하고 유년기 모습을 생성해요. 10·30·50레벨 진화 시 이전 모습을 참조해 새 그림을 자동 생성하며 Anna 이미지 사용량을 소모해요."],
+  evolutionWorking: ["Evolving…", "진화 중…"],
+  evolutionSaving: ["Saving your new appearance…", "새 모습을 앨범에 저장 중…"],
+  evolutionWait: ["Your companion is growing. Keep this window open.", "친구가 성장하고 있어요. 이 창을 열어 두세요."],
+  evolutionFailed: ["Your companion has evolved, but the new portrait is unfinished. Your previous appearance and progress are safe. Check your connection, image allowance and a vision-capable model, then retry drawing. If the result was lost, a new attempt may use allowance again. {error}", "친구는 진화했지만 새 그림을 완성하지 못했어요. 이전 모습과 성장 기록은 유지돼요. 연결·이미지 사용량·이미지를 읽을 수 있는 모델을 확인하고 다시 그려 주세요. 결과를 받지 못한 요청도 재시도 시 사용량이 추가로 소모될 수 있어요. {error}"],
+  analyzingPortrait: ["Reading your companion’s appearance…", "친구의 외형 특징을 살펴보는 중…"],
   artSetup: ['Create this baby from my artwork…', '내 작품으로 유년기 모습 만들기…'],
   birthChoice: ["How would you like to meet?", "어떻게 만나고 싶나요?"],
   birthRandom: ["Surprise me · Random companion", "랜덤으로 만나기"],
@@ -96,7 +103,7 @@ export const messages = {
   privacyStoredHeading: ["What is saved", "저장하는 정보"],
   privacyStored: ["Anna stores your companion’s name and progress, recent chat (up to 24 messages), and saved portraits. Your language preference stays in this browser. Older portrait files may remain after you draw a replacement. Use “Clean unused portraits” in the album to remove files no longer referenced by saved portraits.", "Anna에 친구의 이름과 성장 기록, 최근 대화(최대 24개 메시지), 저장한 초상화를 보관합니다. 언어 설정은 이 브라우저에 저장합니다. 그림을 교체해도 이전 그림 파일이 남아 있을 수 있습니다. 앨범의 「사용하지 않는 그림 정리」에서 저장된 그림이 참조하지 않는 파일을 지울 수 있습니다."],
   privacyAIHeading: ["When AI is used", "AI에 보내는 정보"],
-  privacyAI: ["Sending a message shares up to 12 recent messages and your companion’s current status with Anna’s AI service. Drawing a portrait sends a description of your companion. Both use your Anna allowance. Avoid sharing sensitive personal information.", "메시지를 보내면 최근 최대 12개 메시지와 친구의 현재 상태를 Anna AI 서비스에 전송합니다. 그림을 요청하면 친구의 외형 설명을 전송합니다. 모두 Anna 사용량을 이용합니다. 민감한 개인정보는 입력하지 마세요."],
+  privacyAI: ["Chat sends up to 12 recent messages and your companion’s status to Anna AI. Evolution sends the previous portrait to Anna AI to extract and save visual features, then sends those features and growth instructions as text to the image generator. Manual redraws use the same flow. Both use your Anna allowance. Avoid sensitive personal information.", "대화 시 최근 최대 12개 메시지와 친구 상태를 Anna AI에 보냅니다. 진화 시 이전 그림을 Anna AI로 분석해 외형 특징을 저장하고, 특징과 성장 설명을 텍스트로 이미지 생성기에 보냅니다. 직접 다시 그릴 때도 같은 방식을 사용합니다. 모두 Anna 사용량을 소모해요. 민감한 개인정보는 입력하지 마세요."],
   privacyDeletionHeading: ["Data removal", "데이터 삭제"],
   privacyPublic: ["GitHub support issues are public. Do not include chat contents, credentials, or account details. Ask for a private contact route first.", "GitHub 지원 이슈는 공개됩니다. 대화 내용, 인증 정보, 계정 정보를 올리지 말고 비공개 연락 방법을 먼저 요청해 주세요."],
   privacyFull: ["Read the full data notice ↗", "전체 데이터 처리 안내 ↗"],
@@ -124,10 +131,10 @@ export const messages = {
   careIntro: ['A little care goes a long way.', '작은 돌봄부터 시작해 볼까요?'], retry: ['Check the same action again', '같은 행동 다시 확인하기'],
   questHeading: ["Today’s promises", '오늘의 약속'], claim: ['Claim reward', '보상 받기'], resetTime: ['Resets daily at midnight Korea time (UTC+9).', '매일 한국 시간 자정에 새로 시작해요.'],
   albumHeading: ['Our growth album', '우리의 성장 앨범'], draw: ['✧ Draw a new portrait', '✧ 지금 모습 그리기'],
-  imageUsage: ['New portraits use your Anna AI allowance and are generated only when you ask.', '새 그림은 Anna AI 사용량을 이용하며, 생성 버튼을 누를 때만 실행돼요.'],
+  imageUsage: ["Evolution automatically generates a new portrait from the previous appearance using your Anna image allowance. Extra redraws are optional.", "진화 시 이전 모습을 참조한 새 그림을 자동 생성하며 Anna 이미지 사용량을 소모해요. 추가로 다시 그릴 수도 있어요."],
   footer: ['Your one-of-a-kind story, one page at a time.', '하나뿐인 너의 이야기를, 한 페이지씩.'], close: ['Close', '닫기'],
   drawHeading: ['A portrait of you, today?', '지금의 너를 담아 볼까?'],
-  drawDescription: ['Create a portrait based on your companion’s current species, element and growth stage. This uses your Anna image allowance.', '현재 종족·속성·성장 단계로 새 그림을 만들어요. Anna 계정의 이미지 생성 사용량이 소모됩니다.'],
+  drawDescription: ["Create a new portrait for the current stage. Evolved companions use the previous saved appearance as a reference. This uses your Anna image allowance. Close other windows and stop other image requests before retrying an interrupted evolution.", "현재 단계의 새 그림을 만들어요. 진화한 친구는 이전에 저장한 모습을 참조합니다. Anna 이미지 사용량을 소모해요. 중단된 진화를 재시도하기 전 다른 창과 이미지 요청을 종료해 주세요."],
   drawVariation: ['AI portraits can look different each time. The latest saved portrait appears for this growth stage in your album.', 'AI 그림은 매번 조금 다를 수 있어요. 저장된 가장 최근 그림이 이 성장 단계의 앨범에 표시됩니다.'],
   confirmDraw: ['Generate one portrait', '새 그림 생성하기'],
   chatEmpty: ['Your first conversation is waiting. Tell your companion about your day.', '우리의 첫 대화를 기다리고 있어요. 친구에게 오늘 있었던 일을 들려주세요.'],
@@ -147,7 +154,7 @@ export const messages = {
   chatUnsaved: ['The reply arrived, but the conversation could not be saved. Choose “Retry saving conversation” to save this reply without another AI call. Keep this window open until it is saved.', '대화는 도착했지만 기억을 저장하지 못했어요. 「대화 저장 재시도」로 AI를 다시 호출하지 않고 저장할 수 있어요. 저장될 때까지 이 창을 열어 두세요.'],
   chatFailed: ['Could not get a reply. {error}', '친구의 답장을 받지 못했어요. {error}'],
   drawing: ['Preparing your portrait…', '그림을 준비하는 중…'], imageSaved: ['A new memory is safe in your album.', '새로운 모습을 앨범에 간직했어요.'],
-  imagePending: ['Your portrait was generated, but saving is unfinished. “Retry saving portrait” retries storage without generating another image.', '그림은 생성됐지만 앨범 저장이 끝나지 않았어요. 「그림 저장 재시도」를 누르면 새 생성 없이 저장만 다시 시도합니다.'],
+  imagePending: ['Your portrait was generated, but saving is unfinished. “Retry saving portrait” retries storage without generating another image. Keep this window open until saving finishes.', '그림은 생성됐지만 앨범 저장이 끝나지 않았어요. 「그림 저장 재시도」를 누르면 새 생성 없이 저장만 다시 시도합니다. 저장될 때까지 이 창을 열어 두세요.'],
   imageFailed: ['Could not finish the portrait. {error}', '그림을 완성하지 못했어요. {error}'], retryImage: ['Retry saving portrait', '그림 저장 재시도'],
   openAnna: ['Open this app inside Anna. {error}', 'Anna 안에서 앱을 열어 주세요. {error}'],
   storageError: ['Game storage is not authorized. Check Anna → Installed Apps → Notebuddy → Permissions. If already allowed, update and reopen the app.', '게임 저장 권한을 확인하지 못했어요. Anna의 설치된 앱 → 노트버디 → 권한을 확인해 주세요. 이미 허용했다면 앱 업데이트 후 다시 열어 주세요.'],
@@ -165,7 +172,7 @@ export const messages = {
   battle_draw: ["A well-matched draw!", "팽팽한 무승부!"],
   yourHP: ["Your companion’s HP", "내 친구 체력"],
   opponentHP: ["Opponent HP", "상대 체력"],
-  growthPortrait: ["Your companion has grown. You can draw a portrait for this stage; until then, the starter picture remains.", "친구가 성장했어요. 이 단계의 새 그림을 생성할 수 있어요. 그전까지는 첫 모습이 표시됩니다."],
+  growthPortrait: ["The new evolution portrait is not ready yet. Your previous appearance remains while it is prepared. If interrupted, close other windows before retrying.", "새 진화 그림이 아직 준비되지 않았어요. 준비 중에는 이전 모습을 유지해요. 중단됐다면 다른 창을 닫고 다시 시도해 주세요."],
   drawEvolved: ["Draw this growth stage", "성장한 모습 그리기"],
 };
 export function normalizeLanguage(value){return value==='ko'?'ko':'en';}

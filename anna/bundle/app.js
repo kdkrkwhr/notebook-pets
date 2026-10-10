@@ -1,3 +1,4 @@
+import {describePortrait,evolutionDescription} from './portrait-features.mjs';
 import {createArtworkEditor} from './birth-art.mjs';
 import {createBirthFlow} from './birth-flow.mjs';
 let birth,artEditor;
@@ -23,6 +24,9 @@ let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetReque
 const tr=(key,values)=>t(language,key,values);
 const problem=error=>errorText(error,language);
 const battleScene=createBattle(document);
+const feedback={};
+function localStatus(area,key='',values={}){feedback[area]={key,values};const e=$(`#${area}-status`);e.textContent=key?tr(key,values):'';e.hidden=!key;}
+function report(area,key,values={}){localStatus(area,key,values);notice(tr(key,values));}
 $('#draw-evolved').addEventListener('click',()=>$('#draw').click());
 
 function notice(message=''){ $('#notice').textContent=message;$('#notice').hidden=!message; }
@@ -42,6 +46,7 @@ function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
 function translate(){
   translateDocument(document,language);$('#language').value=language;
+  for(const [area,{key,values}] of Object.entries(feedback))localStatus(area,key,values);
   if(birthNotice)birthMessage(birthNotice.key,birthNotice.values);
   text('#draw',tr(pendingImage?'retryImage':'draw'));
 }
@@ -62,6 +67,10 @@ function drawChat(){
   container.scrollTop=container.scrollHeight;
 }
 function previousPortrait(v){for(let stage=v.stage-1;stage>=1;stage--){const url=urls[imageKey(v,stage)];if(url)return url;}return starter(v);}
+function evolutionEffect(phase=''){
+  const frame=$('.portrait');if(phase)frame.classList.remove('evolution-reveal');frame.classList.toggle('evolving',!!phase);frame.setAttribute('aria-busy',String(!!phase));
+  const effect=$('#evolution-effect');effect.hidden=!phase;text('#evolution-phase',phase?tr(phase):'');
+}
 let walkSnapshot=null,walkSnapshotAt=0;
 function renderWalkEnergy(){
   const energy=view?.status?.walk_energy;
@@ -91,7 +100,7 @@ function render(){
   text('#stats',tr('stats',{...s.stats,...s.record,draw:s.record.draw||0}));
   text('#inventory',tr('inventory',{food:view.inventory.normal_feed,rare:view.inventory.rare_feed}));
   $('#setup-birth').hidden=view.stage!==1||!!art[`${view.pet_id}/birth-source`]||!!art[imageKey(view,1)];
-  const image=urls[imageKey(view)];picture($('#pet-image'),image||starter(view),starter(view));
+  const image=urls[imageKey(view)];picture($('#pet-image'),image||previousPortrait(view),starter(view));
   $('#pet-image').alt=`${s.name}, ${s.species} ${s.element} ${s.stage_label}`;
   text('#image-caption',tr(image?'portrait':view.stage>1?'oldPortrait':'firstPortrait'));
   const q=s.quest;text('#quest-date',q.date);$('#quests').replaceChildren();
@@ -116,6 +125,7 @@ function render(){
   drawChat();birth?.render();
 }
 function forgetCachedData(){
+  evolutionEffect();localStatus('image');
   birth?.clear();
   reactions?.clear();reactionFeedback();
   battleScene.close();
@@ -147,11 +157,28 @@ async function assertActive(){
 async function readExtras(){
   if(view?.erased||view?.reset_pending||pendingResetRequest){forgetCachedData();return;}
 
+  const previousArt=art,previousUrls=urls;
   const results=await Promise.allSettled([anna.storage.get({key:CHAT}),anna.storage.get({key:ART})]);
   if(results[0].status==='fulfilled')history=mergeHistory(results[0].value.value,pendingChat||[]);
   if(results[1].status==='fulfilled')art=results[1].value.value||{};
-  if(results.some(r=>r.status==='rejected'))notice(tr('extrasError'));
-  urls={};await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)&&!key.endsWith('/birth-source')).map(async([key,entry])=>{try{urls[key]=(await anna.files.download_url({path:entry.path})).get_url;}catch{/* Keep the bundled portrait visible. */}}));
+  let incomplete=results.some(r=>r.status==='rejected');
+  const nextUrls={};
+  await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)&&!key.endsWith('/birth-source')).map(async([key,entry])=>{
+    try{
+      if(entry?.state==='generating')return;
+      if(typeof entry?.path!=='string'||!entry.path)throw new Error('Invalid portrait reference');
+      const url=(await anna.files.download_url({path:entry.path})).get_url;
+      if(typeof url!=='string'||!url)throw new Error('Missing portrait URL');
+      nextUrls[key]=url;
+    }catch{
+      incomplete=true;
+      // Retain only the exact same saved file. Replaced or removed references
+      // must never resurrect an older portrait after a failed URL request.
+      if(entry?.path&&previousArt[key]?.path===entry.path&&previousUrls[key])nextUrls[key]=previousUrls[key];
+    }
+  }));
+  urls=nextUrls;
+  if(incomplete)notice(tr('extrasError'));
 }
 async function invoke(command,extra={}){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'game',args:{command,...extra,language}}, {timeoutMs:60000}));}
 async function refresh(){
@@ -163,16 +190,18 @@ async function refresh(){
     if(pendingAction)notice(tr('uncertain'));
   }catch(error){notice(problem(error));text('#connection',tr('disconnected'));}
   finally{controls(false);}
+  if(view?.status&&view.stage>1&&!pendingAction&&!pendingImage&&!pendingRemoval&&!pendingResetRequest)await generate(true);
 }
 async function act(command,extra={},retry=false){
   if(busy||pendingRemoval||(!retry&&pendingAction))return;controls(true);notice();
   if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
-  let started=false,reaction=null;
+  let started=false,evolved=false,reaction=null;
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
     const before=view;const portrait=urls[imageKey(before)];
     const {command:action,...args}=pendingAction;adoptView(await invoke(action,args));pendingAction=null;render();
     started=view.ok&&action==='start';
+    evolved=!!(view.ok&&view.stage>1&&((before?.pet_id===view.pet_id&&view.stage>before.stage)||view.xp_result?.evolutions?.length));
     reaction=reactionEvent(action,args.request_id,view,language);
     let message=view.msg;
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
@@ -183,6 +212,7 @@ async function act(command,extra={},retry=false){
   finally{controls(false);}
   reactions.enqueue(reaction);
   if(started)await birth.started(view);
+  if(evolved){if($('#battle-dialog').open)$('#battle-dialog').addEventListener('close',()=>generate(true),{once:true});else await generate(true);}
 }
 async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
 async function chat(event){
@@ -224,28 +254,103 @@ async function cleanupPortraits(){
     else notice(tr('portraitsFailed'));
   }finally{controls(false);}
 }
+class PortraitAlreadyStarted extends Error {}
 async function uploadPortrait(path,blob){
   const upload=await anna.files.upload_init({path,content_type:blob.type||'image/png',size:blob.size});
   const result=await fetch(upload.put_url,{method:'PUT',headers:upload.headers,body:blob});
   if(!result.ok)throw new Error('image upload');
   await anna.files.upload_finalize({path,size:blob.size});
 }
-async function generate(){
-  if(busy)return;$('#draw-dialog').close();controls(true);notice();text('#draw',tr('drawing'));
-  try{
-    if(!pendingImage){
-      const snapshot=await assertActive();
-      const generated=await anna.image.generate({prompt:`${snapshot.image_prompt}. One single friendly virtual pet, full body centered with generous margins, plain white background, soft painted game character illustration, smooth warm shading, delicate warm outlines, pastel colors. No text, lettering, notebook, desk, scenery, panels, photorealism or 3D rendering.`,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
-      const url=generated.images?.[0]?.url;if(!url)throw new Error('no image');
-      pendingImage={key:imageKey(snapshot),url,path:`portraits/${snapshot.pet_id}/${crypto.randomUUID()}.png`};
+async function referencePortrait(snapshot){
+  // A fresh index and fresh signed URL: never silently substitute a different
+  // character when a saved reference cannot be read.
+  const saved=await anna.storage.get({key:ART});
+  if(saved.value?._notebuddy_erased)throw new ErasedError();
+  art=saved.value||{};
+  for(let stage=snapshot.stage-1;stage>=1;stage--){
+    const entry=art[imageKey(snapshot,stage)];
+    if(entry?.state==='generating')continue; // Use the latest actually saved appearance, never an unfinished job.
+    if(entry){
+      if(!entry.path)throw new Error('Missing reference path');
+      const {get_url}=await anna.files.download_url({path:entry.path});
+      if(!get_url)throw new Error('Missing reference URL');
+      return {url:get_url,stage,key:imageKey(snapshot,stage),entry};
     }
+  }
+  // Only the 72 baby pictures ship with the app. Upload the actual baby picture
+  // so analysis can read it independently of the private app iframe session.
+  const response=await fetch(starter(snapshot));if(!response.ok)throw new Error('Starter unavailable');
+  const path=`portraits/${snapshot.pet_id}/starter.png`;
+  await uploadPortrait(path,await response.blob());
+  const key=imageKey(snapshot,1);
+  art=await saveMerged(ART,old=>({...old,[key]:old?.[key]||{path,at:Date.now(),starter:true}}));
+  const {get_url}=await anna.files.download_url({path:art[key].path});
+  if(!get_url)throw new Error('Missing reference URL');
+  return {url:get_url,stage:1,key,entry:art[key]};
+}
+async function generate(automatic=false){
+  if(busy||pendingAction||pendingRemoval||pendingResetRequest)return;
+  // Event listeners call this through a wrapper, never pass an Event as a flag.
+  $('#draw-dialog').close();controls(true);
+  let snapshot,animation=false,savedEarlierStage=false;
+  try{
+    snapshot=await assertActive();
+    if(automatic){
+      if(snapshot.stage<2||pendingImage)return;
+      const saved=await anna.storage.get({key:ART});
+      if(saved.value?._notebuddy_erased)throw new ErasedError();
+      if(saved.value?.[imageKey(snapshot)])return; // Saved or uncertain: no automatic paid retry.
+    }
+    notice();text('#draw',tr('drawing'));localStatus('image',pendingImage?'imageSaving':'drawing');
+    animation=snapshot.stage>1;
+    if(animation)evolutionEffect('evolutionWorking');
+    if(!pendingImage){
+      let reference;
+      if(snapshot.stage>1)reference=await referencePortrait(snapshot);
+      const key=imageKey(snapshot),path=`portraits/${snapshot.pet_id}/${crypto.randomUUID()}.png`;
+      if(automatic){
+        // Reference preparation establishes the album row. Conditional writes
+        // then serialize automatic attempts on that existing row.
+        art=await saveMerged(ART,old=>{
+          if(old?.[key])throw new PortraitAlreadyStarted();
+          return {...old,[key]:{path,state:'generating',at:Date.now()}};
+        });
+      }
+      let features,identity='';
+      if(reference){
+        features=reference.entry.features;
+        if(typeof features!=='string'||!features.trim()||features.length>600){
+          localStatus('image','analyzingPortrait');
+          features=await describePortrait(anna,reference.url);
+          await assertActive();
+          art=await saveMerged(ART,old=>{
+            if(old?.[reference.key]?.path!==reference.entry.path)throw new PartnerChangedError();
+            return {...old,[reference.key]:{...old[reference.key],features}};
+          });
+        }
+        identity=typeof reference.entry.identity==='string'&&reference.entry.identity.trim()&&reference.entry.identity.length<=600?reference.entry.identity:features;
+      }
+      const prompt=reference?evolutionDescription(snapshot,reference.stage,identity,features):snapshot.image_prompt;
+      await assertActive();
+      const generated=await anna.image.generate({prompt:`${prompt}. One single friendly virtual pet, full body centered with generous margins, plain white background, soft painted game character illustration, smooth warm shading, delicate warm outlines, pastel colors. No text, lettering, notebook, desk, scenery, panels, photorealism or 3D rendering.`,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
+      const url=generated.images?.[0]?.url;if(!url)throw new Error('no image');
+      pendingImage={key,url,path,identity};
+    }
+    localStatus('image','imageSaving');if(animation)evolutionEffect('evolutionSaving');
     await assertActive();
     const p=pendingImage;
     if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw new Error('image download');p.blob=await response.blob();}
-    if(!p.uploaded){const upload=await anna.files.upload_init({path:p.path,content_type:p.blob.type||'image/png',size:p.blob.size});const result=await fetch(upload.put_url,{method:'PUT',headers:upload.headers,body:p.blob});if(!result.ok)throw new Error('image upload');await anna.files.upload_finalize({path:p.path,size:p.blob.size});p.uploaded=true;}
-    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));urls[p.key]=(await anna.files.download_url({path:p.path})).get_url;pendingImage=null;render();notice(tr('imageSaved'));
-  }catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else notice(pendingImage?tr('imagePending'):tr('imageFailed',{error:problem(error)}));}
-  finally{text('#draw',tr(pendingImage?'retryImage':'draw'));controls(false);}
+    if(!p.uploaded){await uploadPortrait(p.path,p.blob);p.uploaded=true;}
+    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now(),...(p.identity?{identity:p.identity}:{})}}));
+    const {get_url}=await anna.files.download_url({path:p.path});if(!get_url)throw new Error('Missing portrait URL');
+    urls[p.key]=get_url;savedEarlierStage=p.key!==imageKey(snapshot);pendingImage=null;render();report('image','imageSaved');
+    if(animation){$('.portrait').classList.remove('evolution-reveal');void $('.portrait').offsetWidth;$('.portrait').classList.add('evolution-reveal');}
+  }catch(error){
+    if(error instanceof PortraitAlreadyStarted){await readExtras();render();}
+    else if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}
+    else report('image',error instanceof PartnerChangedError?'partnerChanged':pendingImage?'imagePending':snapshot?.stage>1?'evolutionFailed':'imageFailed',{error:problem(error)});
+  }finally{evolutionEffect();text('#draw',tr(pendingImage?'retryImage':'draw'));controls(false);}
+  if(savedEarlierStage)await generate(true);
 }
 async function privacyCall(args){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'privacy',args},{timeoutMs:60000}));}
 async function previewRemoval(){
@@ -345,7 +450,7 @@ $('#retry-chat').addEventListener('click',retryChat);
 $('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval||birth?.hasOutput())return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
 $('#confirm-clean-portraits').addEventListener('click',cleanupPortraits);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
-$('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
+$('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',()=>generate());
 let reactionNotice='';
 function reactionFeedback(key=''){reactionNotice=key;const e=$('#reaction-status');e.hidden=!key;e.textContent=key?tr(key):'';}
 reactions=createReactions({anna:()=>anna,active:assertActive,saved:saved=>{const local=history.filter(item=>item.kind!=='reaction'&&!saved.some(value=>value.id===item.id));history=mergeHistory(saved,[...local,...(pendingChat||[])]);},render:drawChat,feedback:reactionFeedback});

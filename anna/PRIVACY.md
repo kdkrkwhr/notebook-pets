@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 10 October 2026. This notice describes Notebuddy 0.2.5. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 10 October 2026. This notice describes Notebuddy 0.2.6. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -32,7 +32,7 @@ The in-browser editor and uncommitted generated image are held in memory. Closin
 
 When you send a chat message, the app sends up to 12 recent messages, including that message, and a current companion-status snapshot to Anna’s AI service. The snapshot includes the companion’s name and game status. The service uses these to generate a reply. AI replies do not directly award XP or change game statistics.
 
-When you explicitly confirm a new portrait, the app sends a generated description of the companion’s species, element, growth stage and visual style to Anna’s image service. The app does not append your chat transcript to that image prompt. The generated image is downloaded and saved in Anna file storage.
+Evolution automatically requests a new portrait using your Anna image allowance. The app sends the previous saved portrait (or the matching bundled baby picture) to Anna’s vision-capable LLM to extract visual features. Those features and a fixed identity description are saved in the existing portrait index. Only textual features and growth instructions are sent to the image generator; no reference image URL is included. Analysis and generation each use Anna AI allowance. Saved analysis is reused for retries of the same source portrait. Manual redraws after evolution use the same reference flow. The app does not append your chat transcript to that image prompt. The generated image is downloaded and saved in Anna file storage. A bundled baby reference may also be copied to that storage. An unfinished evolution marker is stored in the portrait index before an automatic AI request to prevent automatic repeat requests after reopening. Signed image URLs are not saved in the index.
 
 These calls use your Anna AI allowance. Anna routes AI requests to its supported providers. Notebuddy does not promise a particular provider, training policy, processing country or retention period on their behalf. Review the terms presented by Anna for your account before sending information you consider private.
 
