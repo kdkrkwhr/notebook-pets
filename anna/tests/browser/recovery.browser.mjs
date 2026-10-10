@@ -529,7 +529,7 @@ async function artStart(p){await p.locator('#pet-name').fill('My artwork buddy')
 test('artwork first meeting validates source then saves a referenced baby; reopen never regenerates',async t=>{
  const p=await setup(t);await artwork(p);await artStart(p);
  assert.equal((await calls(p,'start')).length,1);assert.equal((await calls(p,'llm')).length,1);
- const generated=await calls(p,'image');assert.equal(generated.length,1);assert.equal(generated[0].operation,'edit');assert.ok(generated[0].options.image_url);assert.equal(generated[0].options.reference_image_urls,undefined);
+ const generated=await calls(p,'image');assert.equal(generated.length,1);assert.equal(generated[0].options.reference_image_urls,undefined);assert.match(generated[0].options.prompt,/round face and gold ears/);
  assert.match(generated[0].options.prompt,/species fairy and element nature/);
  assert.equal(await p.locator('#birth-recovery').isVisible(),false);
  const saved=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']);
