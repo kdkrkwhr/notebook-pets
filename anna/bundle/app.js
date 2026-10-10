@@ -1,3 +1,5 @@
+import {createReactions,reactionEvent} from './reactions.mjs';
+let reactions;
 import {createBattle} from './battle.mjs';
 import { AnnaAppRuntime } from '/static/anna-apps/_sdk/latest/index.js';
 import {unwrap,starter,imageKey,mergeHistory,errorText,newAction} from './model.mjs';
@@ -26,6 +28,7 @@ function controls(value){
   document.querySelectorAll('button,input,select').forEach(e=>e.disabled=value);
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingResetRequest||view?.reset_pending))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
   $('#retry-chat').hidden=!pendingChat;
+  $('#retry-reaction').hidden=!reactions?.hasUnsaved();
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage))$('#clean-portraits').disabled=true;
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
@@ -38,16 +41,22 @@ function translate(){
   text('#draw',tr(pendingImage?'retryImage':'draw'));
 }
 function drawChat(){
-  const container=$('#messages');container.replaceChildren();
-  if(!history.length){const p=document.createElement('p');p.className='message';p.textContent=tr('chatEmpty');container.append(p);}
-  for(const item of history){
+  const container=$('#messages');container.replaceChildren();container.dataset.reactionBusy=String(reactions?.isWorking()||false);
+  const transcript=mergeHistory(history,reactions?.messages()||[]);
+  $('#retry-reaction').hidden=!reactions?.hasUnsaved();
+  if(!transcript.length){const p=document.createElement('p');p.className='message';p.textContent=tr('chatEmpty');container.append(p);}
+  for(const item of transcript){
     const p=document.createElement('div');p.className=`message ${item.role}${item.kind==='activity'?' activity':''}`;
     const label=document.createElement('div');label.className='message-label';
     label.textContent=item.role==='user'?tr('you'):view?.status?.name||tr('friend');
-    p.append(label,document.createTextNode(item.text));container.append(p);
+    const content=item.kind==='reaction'&&item.state!=='done'?tr(item.state==='failed'?'reactionBubbleFailed':reactions?.messages().some(x=>x.id===item.id)?'reactionWorking':'reactionInterrupted',{name:view?.status?.name||tr('friend')}):item.text;
+    if(item.kind==='reaction'){p.dataset.reactionState=item.state;if(item.state==='pending')p.classList.add('reaction-pending');}
+    p.append(label,document.createTextNode(content));container.append(p);
   }
+  reactionFeedback(reactionNotice);
   container.scrollTop=container.scrollHeight;
 }
+function previousPortrait(v){for(let stage=v.stage-1;stage>=1;stage--){const url=urls[imageKey(v,stage)];if(url)return url;}return starter(v);}
 let walkSnapshot=null,walkSnapshotAt=0;
 function renderWalkEnergy(){
   const energy=view?.status?.walk_energy;
@@ -101,6 +110,7 @@ function render(){
   drawChat();
 }
 function forgetCachedData(){
+  reactions?.clear();reactionFeedback();
   battleScene.close();
   history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
   $('#messages').replaceChildren();$('#album').replaceChildren();$('#quests').replaceChildren();
@@ -134,10 +144,12 @@ async function refresh(){
 async function act(command,extra={},retry=false){
   if(busy||pendingRemoval||(!retry&&pendingAction))return;controls(true);notice();
   if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
+  let reaction=null;
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
     const before=view;const portrait=urls[imageKey(before)];
     const {command:action,...args}=pendingAction;view=await invoke(action,args);pendingAction=null;render();
+    reaction=reactionEvent(action,args.request_id,view,language);
     let message=view.msg;
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
@@ -145,6 +157,7 @@ async function act(command,extra={},retry=false){
     if(view.ok&&action==='battle')battleScene.show(view,before,portrait,language);
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;}
   finally{controls(false);}
+  reactions.enqueue(reaction);
 }
 async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
 async function chat(event){
@@ -154,7 +167,7 @@ async function chat(event){
   history=mergeHistory(history,additions);drawChat();input.value='';
   try{
     view=await assertActive();render();
-    const response=await anna.llm.complete({messages:history.slice(-12).map(m=>({role:m.role,content:{type:'text',text:m.text}})),systemPrompt:chatPrompt(language,view.status),maxTokens:280,temperature:.7,modelPreferences:{costPriority:1,speedPriority:.8}});
+    const response=await anna.llm.complete({messages:history.filter(m=>m.kind!=='reaction'||m.state==='done').slice(-12).map(m=>({role:m.role,content:{type:'text',text:m.text}})),systemPrompt:chatPrompt(language,view.status),maxTokens:280,temperature:.7,modelPreferences:{costPriority:1,speedPriority:.8}});
     if(typeof response.content?.text!=='string'||!response.content.text.trim())throw new Error('empty response');
     additions.push({id:crypto.randomUUID(),role:'assistant',text:response.content.text,at:Date.now()});history=mergeHistory(history,additions);drawChat();
     pendingChat=additions;await persistChat();
@@ -294,5 +307,9 @@ $('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendi
 $('#confirm-clean-portraits').addEventListener('click',cleanupPortraits);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
 $('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
+let reactionNotice='';
+function reactionFeedback(key=''){reactionNotice=key;const e=$('#reaction-status');e.hidden=!key;e.textContent=key?tr(key):'';}
+reactions=createReactions({anna:()=>anna,active:assertActive,saved:saved=>{const local=history.filter(item=>item.kind!=='reaction'&&!saved.some(value=>value.id===item.id));history=mergeHistory(saved,[...local,...(pendingChat||[])]);},render:drawChat,feedback:reactionFeedback});
+$('#retry-reaction').addEventListener('click',async()=>{if(busy||pendingAction||pendingRemoval||pendingResetRequest)return;controls(true);try{await reactions.retrySave();}finally{controls(false);}});
 translate();
 await refresh();

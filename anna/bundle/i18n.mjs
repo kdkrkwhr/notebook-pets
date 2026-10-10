@@ -1,6 +1,13 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  reactionWorking: ["{name} is reacting…", "{name}가 반응하는 중…"],
+  reactionBubbleFailed: ["Your care is complete, but I could not reply this time.", "돌봄은 완료됐지만 이번에는 답하지 못했어요."],
+  reactionInterrupted: ["This care reaction has no saved reply. It will not be generated again automatically.", "이 돌봄 반응의 저장된 답변이 없어요. 자동으로 다시 생성하지 않아요."],
+  reactionFailed: ["Care is saved. The AI reaction could not be completed. Check your connection and Anna allowance; future care can trigger a new reaction.", "돌봄은 저장됐어요. AI 반응을 완료하지 못했어요. 연결·Anna 사용량을 확인해 주세요. 다음 돌봄에는 새 반응을 요청해요."],
+  reactionUnsaved: ["The reaction arrived, but saving is unfinished. Keep this window open and retry saving without another AI request.", "반응은 받았지만 저장하지 못했어요. 창을 열어 둔 채 저장을 재시도하면 AI를 다시 호출하지 않아요."],
+  reactionRetrySave: ["Retry saving care reactions", "돌봄 반응 저장 재시도"],
+  reactionSaved: ["Care reactions saved.", "돌봄 반응을 저장했어요."],
   resetGame: ['Start over…', '새로 시작…'],
   newPetName: ['New companion’s name', '새 친구 이름'],
   resetWarning: ['Choose a new name and start at level 1 with a new random species and element. This clears your current companion’s progress, chat and saved portraits and cannot be undone. Species and element may coincidentally match. No AI image is generated. Close other windows and stop pending requests before continuing.', '새 이름을 입력하면 무작위 종족·속성의 새로운 유년기 친구와 1레벨부터 시작합니다. 기존 친구의 성장 기록·대화·저장한 그림은 지워지며 복구할 수 없습니다. 종족·속성은 우연히 같을 수 있어요. AI 그림을 자동 생성하지 않습니다. 다른 창과 진행 중인 요청을 종료한 뒤 진행하세요.'],
@@ -65,7 +72,7 @@ export const messages = {
   moodSuggestion: ['How are you feeling?', '오늘 기분은?'], supportSuggestion: ['I could use some encouragement', '응원이 필요해'],
   moodPrompt: ['How are you feeling today?', '오늘 기분이 어때?'], supportPrompt: ['Today was a little tough. Could you cheer me on?', '오늘 조금 힘들었어. 응원해 줄래?'],
   chatLabel: ['A message for your companion', '친구에게 할 말'], chatPlaceholder: ['Tell your companion about your day', '친구에게 한마디 건네 보세요'],
-  send: ['Send message', '메시지 보내기'], chatUsage: ['Chat uses your Anna AI allowance. Your recent conversation is remembered.', '대화는 Anna AI 사용량을 이용해요. 최근 대화를 기억합니다.'],
+  send: ['Send message', '메시지 보내기'], chatUsage: ['Chat and care reactions use your Anna AI allowance. Your recent conversation is remembered.', '대화와 돌봄 반응은 Anna AI 사용량을 이용해요. 최근 대화를 기억합니다.'],
   care: ['Time together', '함께하는 시간'], feed: ['Feed', '밥 주기'], snack: ['Treat', '간식'], play: ['Play', '놀아 주기'], train: ['Train', '훈련'], walk: ['Walk', '산책'], sleep: ['Sleep', '재우기'], attendance: ['Daily gift', '출석 선물'], battle: ['Battle', '배틀하기'], flee: ['Walk away', '지나가기'], claimquest: ['Quest reward', '퀘스트 보상'], start: ['First meeting', '처음 만나기'],
   walkHint: ['+1 every 5 min · Max 5', '5분마다 +1 · 최대 5회'], walkEnergy: ['{charges}/{capacity} · +1 every 5 min', '{charges}/{capacity}회 · 5분마다 +1'],
   feedHint: ['1 food · Every hour', '사료 1 · 1시간 간격'], threeDaily: ['3 times a day', '하루 3번'], hourly: ['Every hour', '1시간 간격'], fiveDaily: ['5 times a day', '하루 5번'], sleepHint: ['Bonus XP tomorrow', '내일 경험치 보너스'], onceDaily: ['Once a day', '하루 한 번'],

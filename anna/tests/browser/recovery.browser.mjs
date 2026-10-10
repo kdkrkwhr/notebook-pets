@@ -30,7 +30,7 @@ async function setup(t,faults={}){
  t.after(()=>assert.deepEqual(errors,[],'No uncaught browser errors'));
  return page;
 }
-async function idle(p){await p.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled);}
+async function idle(p){await p.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled&&document.querySelector('#messages').dataset.reactionBusy!=='true');}
 async function fault(p,value){await p.evaluate(v=>Object.assign(window.hostTest.faults,v),value);}
 async function start(p){await p.locator('#pet-name').fill('Recovery buddy');await p.locator('#start-form button').click();await idle(p);}
 async function calls(p,method){return p.evaluate(m=>window.hostTest.calls.filter(x=>x.args?.command===m||x.method===m),method);}
@@ -176,12 +176,12 @@ test('fresh companion and album load revised starter art without paid image call
 });
 
 
-test('care succeeds without reaction modules or automatic AI and manual chat still works',async t=>{
+test('care automatically reacts in chat and manual chat still works',async t=>{
  const p=await setup(t);await start(p);await p.locator('[data-action="feed"]').click();await idle(p);
  assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
- assert.equal((await calls(p,'llm')).length,0);assert.equal(await p.locator('#action-reactions').count(),0);
+ assert.equal((await calls(p,'llm')).length,1);assert.equal(await p.locator('[data-reaction-state="done"]').count(),1);
  await p.locator('#chat-input').fill('Hello');await p.locator('#chat-form button').click();await idle(p);
- assert.equal((await calls(p,'llm')).length,1);assert.match(await p.locator('#messages').innerText(),/happy to see/);
+ assert.equal((await calls(p,'llm')).length,2);assert.match(await p.locator('#messages').innerText(),/happy to see/);
 });
 test('a missing startup module shows a recovery button instead of endless Connecting',async t=>{
  const p=await setup(t,{appLoad:true});assert.match(await p.locator('#notice').innerText(),/load/);
@@ -235,4 +235,50 @@ test('walk counter recovers locally without issuing actions and caps at five',as
  await p.clock.fastForward(1800000);
  assert.match(await p.locator('#walk-energy').innerText(),/5\/5/);
  assert.equal((await calls(p,'walk')).length,before);
+});
+
+test('care reactions show pending after committed care without blocking another action',async t=>{
+ const p=await setup(t,{llmDelay:800});await start(p);
+ await p.locator('[data-action="feed"]').click();await p.waitForFunction(()=>!document.querySelector('#refresh').disabled);
+ assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
+ await p.waitForFunction(()=>document.querySelector('#messages').textContent.includes('is reacting'));
+ assert.equal(await p.locator('[data-action="play"]').isEnabled(),true);await p.locator('[data-action="play"]').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,2);assert.equal(await p.locator('[data-reaction-state="done"]').count(),2);
+ const prompts=await p.evaluate(()=>window.hostTest.calls.filter(x=>x.method==='llm').map(x=>x.prompt));
+ assert.match(prompts[0],/"command":"feed"/);assert.match(prompts[1],/"command":"play"/);
+});
+test('failed care reaction preserves game result and never retries on refresh or reopen',async t=>{
+ const p=await setup(t,{llm:true});await start(p);await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');assert.match(await p.locator('#reaction-status').innerText(),/Care is saved/);
+ assert.equal(await p.locator('[data-reaction-state="failed"]').count(),1);
+ await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'llm')).length,1);
+ await p.reload();await idle(p);assert.equal((await calls(p,'llm')).length,0);
+});
+test('reaction save retry preserves received text and never calls AI or care again',async t=>{
+ const p=await setup(t,{reactionSave:true});await start(p);await p.locator('[data-action="snack"]').click();await idle(p);
+ assert.equal(await p.locator('#retry-reaction').isVisible(),true);assert.match(await p.locator('#messages').innerText(),/happy to see/);
+ await fault(p,{reactionSave:false});await p.locator('#retry-reaction').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,1);assert.equal((await calls(p,'snack')).length,1);
+ await p.reload();await idle(p);assert.equal(await p.locator('[data-reaction-state="done"]').count(),1);
+});
+test('lost care response produces one reaction only after the same action retry',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{lost:true});await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,0);await p.locator('#retry-action').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,1);assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
+ await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'llm')).length,1);
+});
+test('reset during a delayed care reaction discards the old response',async t=>{
+ const p=await setup(t,{llmDelay:600});await start(p);await p.locator('[data-action="feed"]').click();
+ await p.waitForFunction(()=>window.hostTest.calls.some(x=>x.method==='llm'));await resetDialog(p);await confirmReset(p);await idle(p);
+ assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']),[]);
+ assert.equal(await p.locator('[data-reaction-state="done"]').count(),0);
+});
+
+test('manual chat remains visible while a care reaction saves concurrently',async t=>{
+ const p=await setup(t,{llmDelay:400});await start(p);await p.locator('[data-action="feed"]').click();
+ await p.waitForFunction(()=>window.hostTest.calls.some(x=>x.method==='llm'));await fault(p,{llmDelay:1400});
+ await p.locator('#chat-input').fill('Still here');await p.locator('#chat-form button').click();
+ await p.waitForFunction(()=>document.querySelector('[data-reaction-state="done"]'));
+ assert.match(await p.locator('#messages').innerText(),/Still here/);await idle(p);
+ const stored=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']);assert.equal(stored.length,3);assert.equal(stored.filter(x=>x.kind==='reaction').length,1);
 });
