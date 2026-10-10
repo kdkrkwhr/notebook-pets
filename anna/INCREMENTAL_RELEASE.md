@@ -1,5 +1,15 @@
 # Incremental Anna updates — 10 October 2026
 
+## Walk candidate 0.2.3
+
+Source: `f559932`, tag `anna-v0.2.3`, branch `release-prep/anna-walk-recharge`. Adds only rechargeable walks to reset candidate 0.2.2. Executa 0.1.13 uses a five-charge cap and one charge per 300 seconds, including offline time. Each walk chooses one outcome: quiet 50%, XP 30% (10/20/30), encounter 20%. Pending encounters must still be resolved before another walk. Retrying a committed request neither redraws its outcome nor consumes another charge.
+
+Local verification: strict manifest, 33 UI unit tests, 20 browser scenarios, 50 storage/protocol tests, and 158 core tests (one optional test skipped). Core CI run 38039693270 and Anna Windows/Linux run 38039693285 identify the exact source build; both platform jobs passed and their packages were used for deployment.
+
+Official push completed with working revision 20 and 100 files ready. Cut 0.2.3 created app version 1240 and Executa version 704. The documented working-draft installation succeeded; the loaded agent reports 0.1.13. Reopening Notebuddy loaded `/anna-apps/kdkrkwhr/notebuddy/0.0.0-draft/index.html`, Connected, mochi, and `5/5 · +1 every 5 min`. An old 0.2.2 window retained stale state until reopened. Live verification read status only; no live walk, reset or image generation was requested. Existing pet data was preserved.
+
+The review candidate remains 0.2.1 and no public release or review resubmission was requested. Subsequent tool versions must exceed 0.1.13. Develop retains all newer features; merging this incremental branch records ancestry without replacing that broader work.
+
 ## Reset-only candidate 0.2.2
 
 Source: `e02a359`, tag `anna-v0.2.2`, branch `release-prep/anna-reset-only`.
