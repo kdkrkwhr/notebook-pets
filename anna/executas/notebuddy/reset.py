@@ -8,6 +8,10 @@ from privacy import erased
 
 MARKER = '_notebuddy_reset'
 ID_KEY = '_anna_reset_id'
+READY = '_notebuddy_new_start'
+
+def ready(document):
+    return isinstance(document, dict) and document.get(READY) == 1
 
 def pending(document):
     return isinstance(document, dict) and document.get(MARKER) == 1
@@ -19,14 +23,14 @@ async def reset(storage, key, args, evaluate):
     if action not in ('inspect','begin','finish'):
         raise ValueError('Unsupported reset action.')
     allowed={'inspect':{'action'},'begin':{'action','confirmation','expected_etag','reset_id','name'},'finish':{'action','reset_id'}}[action]
-    if set(args)!=allowed:
+    if set(args)!=allowed and not (action=='begin' and set(args)==allowed-{'name'}):
         raise ValueError('Reset arguments do not match the action.')
     if action!='inspect' and not re.fullmatch(r'[A-Za-z0-9_-]{16,64}',str(args.get('reset_id',''))):
         raise ValueError('Invalid reset ID.')
     if action=='begin':
         if args['confirmation']!='RESET NOTEBUDDY' or not isinstance(args['expected_etag'],str) or not args['expected_etag']:
             raise ValueError('Explicit reset confirmation and preview are required.')
-        if not isinstance(args['name'],str) or not 1<=len(args['name'].strip())<=24 or any(ord(c)<32 for c in args['name']):
+        if 'name' in args and (not isinstance(args['name'],str) or not 1<=len(args['name'].strip())<=24 or any(ord(c)<32 for c in args['name'])):
             raise ValueError('A new companion name is required (1–24 characters).')
     row=await storage.get(key,scope='tool');document=row.get('value')
     restarting = erased(document)
@@ -38,7 +42,7 @@ async def reset(storage, key, args, evaluate):
     if pending(document):
         if args['reset_id']!=document['reset_id']:return {'ok':False,'code':'reset_changed'}
         if action=='begin':return {'ok':True,'reset_pending':True,'reset_id':document['reset_id']}
-        candidate=pack(document['game'])
+        candidate=document['welcome'] if 'welcome' in document else pack(document['game'])
     else:
         previous={} if restarting else unpack(document)
         if previous.get(ID_KEY)==args['reset_id']:
@@ -52,6 +56,14 @@ async def reset(storage, key, args, evaluate):
             if not old['result'].get('ok'):return {'ok':False,'code':'reset_unavailable'}
         sequence=0 if restarting else metadata(previous)['next_sequence']
         if sequence>=MAX_SEQUENCE:return {'ok':False,'code':'reset_unavailable'}
+        if 'name' not in args:
+            welcome={READY:1,ID_KEY:args['reset_id'],META:{'version':1,'next_sequence':0,'order':[],'epoch':uuid.uuid4().hex}}
+            candidate={MARKER:1,'reset_id':args['reset_id'],'welcome':welcome,'from_erasure':restarting}
+            try:await storage.set(key,candidate,scope='tool',if_match=row['etag'])
+            except StorageError as error:
+                if error.code==STORAGE_ERR_PRECONDITION_FAILED:return {'ok':False,'code':'reset_changed'}
+                raise
+            return {'ok':True,'reset_pending':True,'reset_id':args['reset_id']}
         new=await evaluate({'command':'start','name':args['name'].strip(),'state':None})
         if not new['result'].get('ok'):return {'ok':False,'code':'reset_unavailable'}
         game=new['state'];game['processed_requests']={}

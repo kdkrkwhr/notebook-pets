@@ -1,7 +1,7 @@
 {
   "name": "tool-dev-notebuddy",
   "display_name": "Notebuddy Game",
-  "version": "0.1.13",
+  "version": "0.1.14",
   "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
   "host_capabilities": [
     "aps.kv"
@@ -98,13 +98,13 @@
     },
     {
       "name": "reset",
-      "description": "Explicitly replace an existing companion with a new random companion. Requires user confirmation RESET NOTEBUDDY and a fresh inspect ETag. UI must clean chat and all portraits before finish. Resume a pending reset; never automatically begin a new reset on conflicts. A removed game may explicitly start a new companion through reset; deleted records are never recovered.",
+      "description": "Explicitly clear an existing companion and return to the welcome screen. Omit name so the user chooses a name and creation mode afterward. Requires user confirmation RESET NOTEBUDDY and a fresh inspect ETag. UI must clean chat and all portraits before finish. Resume a pending reset; never automatically begin a new reset on conflicts. A removed game may explicitly start a new companion through reset; deleted records are never recovered.",
       "timeout": 60,
       "parameters": [
         {
           "name": "action",
           "type": "string",
-          "description": "inspect previews the save; begin stages one new pet; finish follows verified UI chat/file cleanup.",
+          "description": "inspect previews the save; begin clears the old pet for the welcome screen (legacy name optionally stages a pet); finish follows verified UI chat/file cleanup.",
           "required": true,
           "enum": [
             "inspect",
@@ -133,7 +133,7 @@
         {
           "name": "name",
           "type": "string",
-          "description": "For begin only: new companion name, 1–24 characters.",
+          "description": "Legacy clients only: optional new companion name. Omit to return to the welcome screen.",
           "required": false
         }
       ]

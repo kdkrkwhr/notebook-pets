@@ -284,7 +284,7 @@ async function previewReset(){
     if(resetPreview.reset_pending){view=resetPreview;render();return;}
     if(!resetPreview.ok||!resetPreview.exists||!resetPreview.etag){notice(tr('resetUnavailable'));return;}
     text('#reset-dialog [data-i18n=resetWarning]',tr(resetPreview.erased?'restartWarning':'resetWarning'));
-    $('#reset-name').value='';$('#reset-phrase').value='';$('#reset-quiescent').checked=false;text('#reset-error','');$('#reset-dialog').showModal();
+    $('#reset-phrase').value='';$('#reset-quiescent').checked=false;text('#reset-error','');$('#reset-dialog').showModal();
   }catch(error){notice(problem(error));}finally{controls(false);}
 }
 async function resumeReset(){
@@ -312,9 +312,8 @@ $('#reset-game').addEventListener('click',previewReset);
 $('#restart-removed').addEventListener('click',previewReset);
 $('#resume-reset').addEventListener('click',resumeReset);
 $('#confirm-reset').addEventListener('click',()=>{
-  const name=$('#reset-name').value.trim();
-  if(!name||name.length>24||$('#reset-phrase').value!=='RESET NOTEBUDDY'||!$('#reset-quiescent').checked){text('#reset-error',tr('resetConfirmNeeded'));return;}
-  pendingResetRequest={action:'begin',confirmation:'RESET NOTEBUDDY',expected_etag:resetPreview.etag,reset_id:crypto.randomUUID(),name};
+  if($('#reset-phrase').value!=='RESET NOTEBUDDY'||!$('#reset-quiescent').checked){text('#reset-error',tr('resetConfirmNeeded'));return;}
+  pendingResetRequest={action:'begin',confirmation:'RESET NOTEBUDDY',expected_etag:resetPreview.etag,reset_id:crypto.randomUUID()};
   $('#reset-dialog').close();render();resumeReset();
 });
 $('#erase-data').addEventListener('click',previewRemoval);

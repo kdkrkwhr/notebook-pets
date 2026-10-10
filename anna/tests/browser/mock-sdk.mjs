@@ -18,7 +18,7 @@ const runtime={
    if(a.action==='inspect')return {ok:true,exists:!!state.save||!!faults.erased,erased:!!faults.erased,reset_from_erasure:!!state.resetFromErasure,etag:'game-etag',reset_pending:!!state.reset,reset_id:state.reset||state.lastReset};
    if(a.action==='begin'){
     if(state.lastReset===a.reset_id)return {ok:true,reset_complete:true,reset_id:a.reset_id};
-    if(!state.reset){state.resetFromErasure=!!faults.erased;faults.erased=false;sessionStorage.setItem('test-faults',JSON.stringify({...JSON.parse(sessionStorage.getItem('test-faults')||'{}'),erased:false}));state.save=create(a.name);state.save.pet_id='reset-'+a.reset_id;state.sequence++;state.reset=a.reset_id;write(state);}
+    if(!state.reset){state.resetFromErasure=!!faults.erased;faults.erased=false;sessionStorage.setItem('test-faults',JSON.stringify({...JSON.parse(sessionStorage.getItem('test-faults')||'{}'),erased:false}));state.save=a.name?create(a.name):null;if(state.save)state.save.pet_id='reset-'+a.reset_id;state.sequence++;state.reset=a.reset_id;write(state);}
     if(faults.resetLost){faults.resetLost=false;throw Error('begin reply lost');}
     return {ok:true,reset_pending:true,reset_id:state.reset};
    }
