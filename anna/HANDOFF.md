@@ -249,3 +249,10 @@ Orca 브라우저의 Anna 대시보드 → Apps → Notebuddy에서 검증했습
 ## Automatic care reactions · 2026-10-10
 
 Implemented on develop after user approval of per-action Anna allowance. Successful actions queue short reactions with pending/failure/save-only recovery, receipt-based deduplication and companion guards. [CARE_REACTIONS.md](CARE_REACTIONS.md) describes scope and limits. Review candidate/release unchanged.
+
+
+## Text feature generation — 2026-10-10
+
+Current develop: portrait-features.mjs extracts and caches visual features using vision llm.complete; image.generate receives text only for evolution and artwork birth. Fixed identity propagates across stages. Analysis failure stops generation; generation retries reuse source analysis. New live-route/visual verification remains outstanding; do not replace review candidate automatically.
+
+Live follow-up: one actual Anna baby-to-juvenile vision/text-generation/download sample succeeded. No production game or album write was requested. Deployed UI, user-artwork birth and stages 3/4 remain unverified. See [verification record](EVOLUTION_LIVE_VERIFICATION.md).

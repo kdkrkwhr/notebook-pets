@@ -4,7 +4,7 @@
 
 Random mode remains free of automatic birth image calls and uses the 72 bundled baby pictures. Artwork mode accepts a file or 512px canvas drawing (color, eraser, undo, clear). On explicit Meet, local input checks precede a multimodal `llm.complete` suitability check. Only a strict `allow` JSON decision with bounded visual features proceeds to the ordinary, receipt-protected start action. Unclear, refused, malformed or unavailable assessments do not create a pet or request an image. Source text is treated as data, never instructions; the AI cannot choose game species, element, stats or rewards.
 
-The engine chooses species and element once. The source is normalized PNG under `portraits/<pet_id>/source-<uuid>.png`; the ART key `<pet_id>/birth-source` records its path, features and phase. The image request references a fresh APS download URL and asks for baby proportions, source identity cues and the actual game traits. A generated stage-1 portrait is saved through the existing ART index and becomes the reference for later evolution.
+The engine chooses species and element once. The source is normalized PNG under `portraits/<pet_id>/source-<uuid>.png`; the ART key `<pet_id>/birth-source` records its path, features and phase. The image request sends only the checked textual features, baby proportions and actual game traits. It does not send a reference image URL. A generated stage-1 portrait is saved through the existing ART index and becomes the reference for later evolution.
 
 ## Failure and recovery
 
@@ -27,6 +27,8 @@ All sources and outputs stay in the existing portraits prefix; ART and files are
 
 ## Verification boundary
 
-Automated browser tests use a mocked image/vision provider. They verify UI, rejection decisions, request shape, identities, persistence, uncertainty and recovery, not real model quality or provider moderation accuracy. The previously observed real reference generation 404 remains a release blocker. No new paid live image attempts, submission replacement or release deployment are part of this change. Actual vision support and reference-conditioned birth quality still need a working Anna route and live verification.
+Automated browser tests use a mocked image/vision provider. They verify UI, rejection decisions, request shape, identities, persistence, uncertainty and recovery, not real model quality or provider moderation accuracy. The previous image-to-image 404 is bypassed by text-only image requests; success of the new live route is not yet established. No new paid live image attempts, submission replacement or release deployment are part of this change. Actual vision support and feature-conditioned birth quality still need a working Anna route and live verification.
 
 Official API: [LLM image inputs](https://anna.partners/developers/reference/host-api-llm.md), [image generation](https://anna.partners/developers/reference/host-api-image.md). This implementation uses the already declared `llm.complete` and `image.generate` permissions; it does not add image.edit grants.
+
+Live follow-up: one actual Anna baby-to-juvenile vision/text-generation/download sample succeeded. No production game or album write was requested. Deployed UI, user-artwork birth and stages 3/4 remain unverified. See [verification record](EVOLUTION_LIVE_VERIFICATION.md).

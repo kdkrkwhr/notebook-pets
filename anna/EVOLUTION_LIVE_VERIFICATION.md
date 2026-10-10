@@ -1,6 +1,8 @@
 # Actual Anna evolution verification — 2026-10-10
 
-## Result: blocked at provider generation, not a visual pass
+Latest result: text-feature vision-to-generation succeeded for one baby-to-juvenile sample. The older reference-image-route failure below is historical.
+
+## Historical result: direct reference route failed
 
 The real machine/light companion was level 10, stage 2. Its baby portrait and current juvenile portrait were read from APS. The user confirmed the juvenile picture is a manually regenerated replacement; it is **not** the original mismatched result. Do not claim to have compared the original reported failure.
 
@@ -37,3 +39,20 @@ Previous-image-based evolution is now in the agreed 1.0 scope. Treat the live ge
 Next resolve a functioning reference route: verify the actually selected model and its provider route, or evaluate the documented single-source `image.edit` route in a separate developer candidate with the required explicit grants. Only after one real stage-2 result succeeds should the same image be chained through stages 3 and 4, visually compared, then tested through the deployed candidate's full UI. Do not keep sending identical failing paid requests. No provider support message was sent.
 
 Personal source pictures, signed URLs, authentication and the full save are excluded from Git. A local comparison report displays only the two existing images and clearly labels that no new verification image was produced.
+
+
+## Text feature generation — 2026-10-10
+
+Implementation update: vision-to-text + text-only generation now replaces the failing reference_image_urls route. The above failure record describes the old route. No successful new live image is implied by this code change; live output and visual continuity must still be checked.
+
+## Text-feature route: one real successful sample
+
+Using the existing authenticated app runtime, read the actual saved baby image and sent its PNG bytes to llm.complete with the shipped artwork assessment prompt (320 tokens, temperature 0). The response passed the same allow/nonempty/600-character checks and reported google/gemini-3-flash-preview. It described cream/gold machinery, glowing orange eyes, a flame ornament, forehead diamond and leaf chest emblem.
+
+Sent those textual observations plus stage-2 growth instructions to image.generate with no reference_image_urls and no model hint. The response reported openai/gpt-image-2 and returned a downloadable image. This attempt did not produce the former /image-to-image 404. The probe used the same text-feature strategy and options, but a separately assembled diagnostic prompt rather than deploying the new UI.
+
+Downloaded and visually inspected the result beside the source. The sample retains the cream/gold palette, flame, forehead gem and leaf emblem, with larger limbs and armor. Eye rendering and linework differ; this is not proof of pixel-level identity or consistent results for all pets. No stages 3/4 were generated. Local-only files: output/anna-evolution-live/text-stage-2.png and text-verification.json in the mentor workspace. Personal images, signed URLs and credentials are not committed.
+
+No game mutation or production album write was requested. The existing 0.2.1 candidate was not replaced. The new deployed UI end-to-end flow, user artwork birth generation, later evolution stages and final visual acceptance remain to be verified.
+
+Automated validation: 38 unit tests, 60 existing browser scenarios, 2 additional analysis-failure/cache/identity scenarios, and strict manifest validation passed. Browser providers are mocked; the real one-sample check above is separate evidence.

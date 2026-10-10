@@ -2,6 +2,7 @@ import {createBattle} from './battle.mjs';
 import {createReactions,reactionEvent} from './reactions.mjs';
 let reactions;
 import {createArtworkEditor} from './birth-art.mjs';
+import {describePortrait,evolutionDescription} from './portrait-features.mjs';
 import {createBirthFlow} from './birth-flow.mjs';
 let birth,artEditor;
 import { AnnaAppRuntime } from '/static/anna-apps/_sdk/latest/index.js';
@@ -280,11 +281,11 @@ async function referencePortrait(snapshot){
       if(!entry.path)throw new Error('Missing reference path');
       const {get_url}=await anna.files.download_url({path:entry.path});
       if(!get_url)throw new Error('Missing reference URL');
-      return {url:get_url,stage};
+      return {url:get_url,stage,key:imageKey(snapshot,stage),entry};
     }
   }
   // Only the 72 baby pictures ship with the app. Upload the actual baby picture
-  // so the image provider can fetch it without the private app iframe session.
+  // so analysis can read it independently of the private app iframe session.
   const response=await fetch(starter(snapshot));if(!response.ok)throw new Error('Starter unavailable');
   const path=`portraits/${snapshot.pet_id}/starter.png`;
   await uploadPortrait(path,await response.blob());
@@ -292,7 +293,7 @@ async function referencePortrait(snapshot){
   art=await saveMerged(ART,old=>({...old,[key]:old?.[key]||{path,at:Date.now(),starter:true}}));
   const {get_url}=await anna.files.download_url({path:art[key].path});
   if(!get_url)throw new Error('Missing reference URL');
-  return {url:get_url,stage:1};
+  return {url:get_url,stage:1,key,entry:art[key]};
 }
 async function generate(automatic=false){
   if(busy||pendingAction||pendingRemoval||pendingResetRequest)return;
@@ -322,17 +323,32 @@ async function generate(automatic=false){
           return {...old,[key]:{path,state:'generating',at:Date.now()}};
         });
       }
-      const identity=reference?`Evolve the SAME individual shown in the reference, from growth stage ${reference.stage} to ${snapshot.stage}. Preserve its facial identity, eye color, palette, signature markings and illustration style. Make the age progression clearly visible through a more developed body silhouette and species-appropriate appendages. Do not replace it with another character. The reference identity takes priority over conflicting color or ornament suggestions. `:'';
-      const generated=await anna.image.generate({prompt:`${identity}${snapshot.image_prompt}. One single friendly virtual pet, full body centered with generous margins, plain white background, soft painted game character illustration, smooth warm shading, delicate warm outlines, pastel colors. No text, lettering, notebook, desk, scenery, panels, photorealism or 3D rendering.`,...(reference?{reference_image_urls:[reference.url]}:{}),n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
+      let features,identity='';
+      if(reference){
+        features=reference.entry.features;
+        if(typeof features!=='string'||!features.trim()||features.length>600){
+          localStatus('image','analyzingPortrait');
+          features=await describePortrait(anna,reference.url);
+          await assertActive();
+          art=await saveMerged(ART,old=>{
+            if(old?.[reference.key]?.path!==reference.entry.path)throw new PartnerChangedError();
+            return {...old,[reference.key]:{...old[reference.key],features}};
+          });
+        }
+        identity=typeof reference.entry.identity==='string'&&reference.entry.identity.trim()&&reference.entry.identity.length<=600?reference.entry.identity:features;
+      }
+      const prompt=reference?evolutionDescription(snapshot,reference.stage,identity,features):snapshot.image_prompt;
+      await assertActive();
+      const generated=await anna.image.generate({prompt:`${prompt}. One single friendly virtual pet, full body centered with generous margins, plain white background, soft painted game character illustration, smooth warm shading, delicate warm outlines, pastel colors. No text, lettering, notebook, desk, scenery, panels, photorealism or 3D rendering.`,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
       const url=generated.images?.[0]?.url;if(!url)throw new Error('no image');
-      pendingImage={key,url,path};
+      pendingImage={key,url,path,identity};
     }
     localStatus('image','imageSaving');if(animation)evolutionEffect('evolutionSaving');
     await assertActive();
     const p=pendingImage;
     if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw new Error('image download');p.blob=await response.blob();}
     if(!p.uploaded){await uploadPortrait(p.path,p.blob);p.uploaded=true;}
-    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));
+    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now(),...(p.identity?{identity:p.identity}:{})}}));
     const {get_url}=await anna.files.download_url({path:p.path});if(!get_url)throw new Error('Missing portrait URL');
     urls[p.key]=get_url;savedEarlierStage=p.key!==imageKey(snapshot);pendingImage=null;render();report('image','imageSaved');
     if(animation){$('.portrait').classList.remove('evolution-reveal');void $('.portrait').offsetWidth;$('.portrait').classList.add('evolution-reveal');}

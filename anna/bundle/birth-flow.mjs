@@ -45,13 +45,12 @@ export function createBirthFlow(h){
         }
         if(!record||!sourcePath(snapshot,record.path)||!['ready','failed','generating'].includes(record.phase))throw new ArtworkError(record?.phase==='rejected'?'artRejected':'artSelectAgain');
         if(typeof record.features!=='string'||!record.features||record.features.length>600)throw new ArtworkError('artSelectAgain');
-        const {get_url}=await h.anna().files.download_url({path:record.path});if(!get_url)throw Error('Missing reference');
         await guard();
         const path=`portraits/${owner}/${crypto.randomUUID()}.png`;
         // Reserve before requesting an image, so reopening never silently repeats a paid call.
         await setSource(snapshot,{...record,phase:'generating'});
         step='generate';message('artGenerating');
-        const generated=await h.anna().image.generate({prompt:birthPrompt(snapshot,record.features),reference_image_urls:[get_url],n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
+        const generated=await h.anna().image.generate({prompt:birthPrompt(snapshot,record.features),n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
         const url=generated.images?.[0]?.url;if(!url)throw Error('Missing image');
         await guard();output={owner,key:imageKey(snapshot,1),path,url,source:record};step='save';
       }

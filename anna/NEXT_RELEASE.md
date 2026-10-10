@@ -37,11 +37,11 @@ Before publishing the next candidate: run the prepared source checks, choose/bum
 
 The user accepted submission with the documented platform limitations. Historical documents calling these submission blockers or saying submission has not happened are superseded by REVIEW_READINESS.md and the receipt in HANDOFF.md.
 
-Automatic evolution uses the documented `reference_image_urls` API. Reference-capable provider availability and actual visual fidelity still need live verification. The new privacy/listing copy must ship together with this behavior; the currently submitted release copy remains unchanged.
+Automatic evolution uses vision-extracted textual features followed by text-only image generation. Actual visual fidelity still needs live verification. The new privacy/listing copy must ship together with this behavior; the currently submitted release copy remains unchanged.
 
 ## Live verification failed — 2026-10-10
 
-Actual reference-conditioned generation returned a provider endpoint 404; no new evolution image was obtained. APS reference save/reopen passed and production data remained unchanged. This blocks the agreed 1.0 image criterion. See [the verification record](EVOLUTION_LIVE_VERIFICATION.md). Do not describe the develop implementation as provider-verified.
+Historical check of the superseded reference-conditioned route returned a provider endpoint 404; no image was obtained from that route. APS reference save/reopen passed and production data remained unchanged. This blocks the agreed 1.0 image criterion. See [the verification record](EVOLUTION_LIVE_VERIFICATION.md). Do not describe the develop implementation as provider-verified.
 
 ## Rechargeable walks
 
@@ -49,8 +49,15 @@ Walks now hold up to 5 charges and recover one every 300 seconds, including offl
 
 ## Artwork first meeting
 
-Optional upload/drawing input, local validation, explicit vision check, referenced baby generation and distinct refusal/check/generation/save failure recovery are implemented on develop. See [USER_ARTWORK.md](USER_ARTWORK.md). Real vision/provider behavior remains unverified; do not ship until the existing image route blocker is resolved and this flow is tested live. Screenshots and the deployed privacy URL must be updated with any candidate that includes this behavior.
+Optional upload/drawing input, local validation, explicit vision check, feature-based baby generation and distinct refusal/check/generation/save failure recovery are implemented on develop. See [USER_ARTWORK.md](USER_ARTWORK.md). Real vision/provider behavior remains unverified; do not ship until the new text-based flow is tested live. Screenshots and the deployed privacy URL must be updated with any candidate that includes this behavior.
 
 ## Automatic care reactions · 2026-10-10
 
 Implemented on develop after user approval of per-action Anna allowance. Successful actions queue short reactions with pending/failure/save-only recovery, receipt-based deduplication and companion guards. [CARE_REACTIONS.md](CARE_REACTIONS.md) describes scope and limits. Review candidate/release unchanged.
+
+
+## Text feature generation — 2026-10-10
+
+The current implementation replaces reference_image_urls with vision-to-text extraction followed by text-only image.generate. Prior provider 404 evidence is historical for the superseded route, not evidence that the new route succeeds. Validate actual vision, ordinary generation and visual identity before submission. Features and inherited identity live on existing ART entries and reset/removal covers them.
+
+Live follow-up: one actual Anna baby-to-juvenile vision/text-generation/download sample succeeded. No production game or album write was requested. Deployed UI, user-artwork birth and stages 3/4 remain unverified. See [verification record](EVOLUTION_LIVE_VERIFICATION.md).
