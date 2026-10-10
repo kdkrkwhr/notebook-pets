@@ -82,7 +82,7 @@ function render(){
   $('#reset-game').hidden=resetting||!s;
   if(view?.erased)forgetCachedData();
   $('#welcome').hidden=resetting||!!s||view?.code!=='not_started';$('#game').hidden=!s;
-  if(!s)return;
+  if(!s){birth?.render();return;}
   text('#name',s.name);text('#pet-type',`${s.species} · ${s.element}`);text('#mood',`◌ ${s.mood}`);
   renderWalkEnergy();
   text('#title',s.title);text('#level',`Lv. ${s.level}`);text('#stage-label',s.stage_label);
@@ -350,7 +350,7 @@ function reactionFeedback(key=''){reactionNotice=key;const e=$('#reaction-status
 reactions=createReactions({anna:()=>anna,active:assertActive,saved:saved=>{const local=history.filter(item=>item.kind!=='reaction'&&!saved.some(value=>value.id===item.id));history=mergeHistory(saved,[...local,...(pendingChat||[])]);},render:drawChat,feedback:reactionFeedback});
 $('#retry-reaction').addEventListener('click',async()=>{if(busy||pendingAction||pendingRemoval||pendingResetRequest)return;controls(true);try{await reactions.retrySave();}finally{controls(false);}});
 let birthNotice=null;
-function birthMessage(key,values={}){birthNotice={key,values};for(const id of ['#birth-status','#birth-recovery-status']){text(id,tr(key,values));$(id).hidden=false;}notice(tr(key,values));}
+function birthMessage(key,values={}){birthNotice={key,values};for(const id of ['#birth-status','#birth-recovery-status']){text(id,tr(key,values));$(id).hidden=false;}notice(['artChecking','artUploading','artGenerating','artSaving'].includes(key)?'':tr(key,values));}
 artEditor=createArtworkEditor({document,tr,locked:()=>busy||!!pendingAction||birth?.hasOutput()});
 birth=createBirthFlow({
   anna:()=>anna,view:()=>view,art:()=>art,language:()=>language,editor:artEditor,
@@ -360,7 +360,16 @@ birth=createBirthFlow({
   reload:async()=>{await readExtras();render();},
   clearMessage:()=>{birthNotice=null;for(const id of ['#birth-status','#birth-recovery-status']){text(id,'');$(id).hidden=true;}},
   message:birthMessage,
-  panel:(visible,pending)=>{$('#birth-recovery').hidden=!visible;text('#retry-birth',tr(pending?'artRetrySave':'artRetry'));$('#replace-birth-source').disabled=busy||pending;if(visible)document.querySelectorAll('[data-action],#draw,#draw-evolved').forEach(e=>e.disabled=true);},
+  panel:(visible,pending)=>{
+    const panel=$('#birth-recovery');panel.hidden=!visible;panel.dataset.working=String(busy);
+    panel.setAttribute('aria-busy',String(visible&&busy));
+    text('#birth-heading',tr(busy?'artWaiting':'artFinish'));
+    panel.querySelector('[data-i18n=artRecoveryHelp]').textContent=tr(busy?'artWaitingHelp':'artRecoveryHelp');
+    panel.querySelector('[data-i18n=artRetryUsage]').hidden=busy;
+    panel.querySelector('.birth-buttons').hidden=busy||!view?.status||!!pendingAction;
+    $('#game').hidden=visible||!view?.status||!!(view?.reset_pending||pendingResetRequest);
+    $('#welcome').hidden=visible||view?.code!=='not_started'||!!pendingResetRequest;
+text('#retry-birth',tr(pending?'artRetrySave':'artRetry'));$('#replace-birth-source').disabled=busy||pending;if(visible)document.querySelectorAll('[data-action],#draw,#draw-evolved').forEach(e=>e.disabled=true);},
 });
 $('#birth-mode').addEventListener('change',()=>{$('#birth-art-choice').hidden=$('#birth-mode').value!=='art';});
 $('#choose-art').addEventListener('click',()=>artEditor.open());

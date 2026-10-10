@@ -412,3 +412,33 @@ test('reset returns to empty welcome and drawing can be chosen before a new birt
  assert.equal(await p.locator('#birth-recovery').isVisible(),false);
  assert.equal((await calls(p,'image')).length,1);
 });
+
+
+test('drawing birth hides all game portraits while generating, then reveals the saved portrait',async t=>{
+ const p=await setup(t,{imageDelay:1200});await artwork(p);
+ await p.locator('#pet-name').fill('Waiting buddy');await p.locator('#start-form button').click();
+ await p.waitForFunction(()=>window.hostTest.calls.some(x=>x.method==='image'));
+ assert.equal(await p.locator('#birth-recovery').isVisible(),true);
+ assert.equal(await p.locator('#game').isVisible(),false);
+ assert.equal(await p.locator('#welcome').isVisible(),false);
+ assert.equal(await p.locator('#pet-image').isVisible(),false);
+ assert.equal(await p.locator('#birth-recovery .birth-buttons').isVisible(),false);
+ assert.match(await p.locator('#birth-recovery-status').innerText(),/Bringing/);
+ await idle(p);
+ assert.equal(await p.locator('#birth-recovery').isVisible(),false);
+ assert.equal(await p.locator('#pet-image').isVisible(),true);
+ assert.equal((await calls(p,'image')).length,1);
+});
+
+test('failed drawing stays unrevealed after reload until an explicit default choice',async t=>{
+ const p=await setup(t,{image:true});await artwork(p);await artStart(p);
+ assert.equal(await p.locator('#game').isVisible(),false);
+ await p.reload();await idle(p);
+ assert.equal(await p.locator('#game').isVisible(),false);
+ assert.equal(await p.locator('#birth-recovery').isVisible(),true);
+ assert.equal((await calls(p,'image')).length,0);
+ await p.locator('#default-birth').click();await idle(p);
+ assert.equal(await p.locator('#game').isVisible(),true);
+ assert.equal(await p.locator('#birth-recovery').isVisible(),false);
+ assert.equal((await calls(p,'image')).length,0);
+});
