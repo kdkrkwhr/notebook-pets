@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 10 October 2026. This notice describes Notebuddy 0.3.1. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 10 October 2026. This notice describes Notebuddy 0.3.2. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -55,7 +55,7 @@ There is no atomic transaction between the album index and file deletion. The cl
 
 ### Start over with a new companion
 
-For an active game, choose **Privacy & data → Start over with a new companion**. After removal, the same action is available directly on the ended-game screen. Enter a new name, close other Notebuddy windows and stop pending requests on every device, check the box, and type **RESET NOTEBUDDY**. Confirmation permanently replaces the old companion and its progress with a new random companion; species and element are both redrawn and may coincidentally match the old ones. The app clears saved chat and all portrait files before releasing the new game. No AI image request is made automatically. Cancel before confirmation changes nothing.
+For an active game, choose **Start over** at the bottom of the game screen. After removal, **Start over** is available directly on the ended-game screen. Data removal without a new game remains a separate action under Privacy & data. Enter a new name, close other Notebuddy windows and stop pending requests on every device, check the box, and type **RESET NOTEBUDDY**. Confirmation permanently replaces the old companion and its progress with a new random companion; species and element are both redrawn and may coincidentally match the old ones. The app clears saved chat and all portrait files before releasing the new game. No AI image request is made automatically. Cancel before confirmation changes nothing.
 
 The new companion is staged once, so repeating an interrupted reset with the same reset ID does not reroll it again. If cleanup is interrupted, use **Continue reset**; after reopening, Refresh shows any pending reset. Play is blocked until the cleanup flow finishes. An already-finished reset retry does not clear new progress again. A minimal reset ID and the advancing action sequence remain associated with the game to reject delayed old actions. Neither contains the old companion’s name or chat. Reset is not Anna-account erasure and does not erase platform/provider logs, backups or instantly revoke download URLs.
 

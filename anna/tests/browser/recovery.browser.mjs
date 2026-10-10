@@ -140,7 +140,7 @@ test('portrait cleanup confirms intent, retries failures and preserves current a
  assert.deepEqual((await calls(p,'delete')).map(c=>c.path),['portraits/pet/old.png']);assert.equal((await calls(p,'image')).length,0);
 });
 
-async function resetDialog(p){await p.locator('#privacy').click();await p.locator('#reset-game').click();await idle(p);}
+async function resetDialog(p){await p.locator('#reset-game').click();await idle(p);}
 async function confirmReset(p){await p.locator('#reset-name').fill('Fresh buddy');await p.locator('#reset-quiescent').check();await p.locator('#reset-phrase').fill('RESET NOTEBUDDY');await p.locator('#confirm-reset').click();await idle(p);}
 test('new companion reset requires confirmation, preserves cancel, and resumes lost begin plus interrupted cleanup after reopen',async t=>{
  const p=await setup(t);await start(p);await p.locator('[data-action="feed"]').click();await idle(p);

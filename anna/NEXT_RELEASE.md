@@ -1,3 +1,5 @@
+Latest UI candidate: **0.3.2 / tool 0.1.11** exposes Start over directly in the game. See [current behavior](RESTART_AFTER_REMOVAL.md). Anna deployment remains blocked; installed/review version unchanged.
+
 Latest change: **0.3.1 / tool 0.1.11** adds explicit new-companion restart after removal. Deleted records are not recovered. See [restart behavior](RESTART_AFTER_REMOVAL.md). Older permanent-no-restart descriptions and the 0.3.0 candidate below are historical; deployed 0.2.1 is unchanged.
 
 # Notebuddy 0.3.0 submission candidate

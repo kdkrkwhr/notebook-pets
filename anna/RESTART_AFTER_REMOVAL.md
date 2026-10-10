@@ -1,3 +1,11 @@
+# Start over — app 0.3.2 / tool 0.1.11
+
+Normal gameplay now exposes **Start over / 새로 시작** directly at the bottom of the game screen. The confirmation describes a new name, random species/element and level-1 baby with cleared progress, chat and portraits. It uses the confirmed reset transaction, not the privacy erase operation. Data-only removal remains separately labelled under Privacy & data. An already removed game uses the same explicit new-companion flow on its ended-game screen.
+
+This UI update has not been deployed to Anna. The 0.2.1 installed/review candidate remains unchanged because the previously confirmed WAF upload rejection is unresolved. Do not report the new button as live.
+
+Previous implementation and validation evidence follows.
+
 # Explicit new companion after removal — 0.3.1
 
 The user reported the ended-game screen and approved creating a new random companion after removal. The old game, chat and artwork are not restored. The deployed 0.2.1 explicitly rejects reset of removal markers; this explains the observed behavior.
@@ -11,3 +19,5 @@ Cleanup may replace app removal markers only while the tool confirms the exact p
 Release boundary: app 0.3.1 and tool 0.1.11 must be deployed together. Current Anna 0.2.1 remains installed/pending review; the previous upload was rejected by Anna WAF on portrait-features.mjs. This change does not bypass that filter or alter the user's live records. The new button is unavailable in the old installed app until a supported deployment succeeds.
 
 Validation: strict manifest validation, 41 UI unit tests, 50 Python storage/protocol tests and 63 browser scenarios passed locally. Coverage includes confirmed restart from all three removal markers, cancel, interrupted cleanup/reopen, namespace-preserving active reset, expired pre-removal requests, reply-loss idempotency and conditional-write conflicts. This is local/fault-injected verification, not deployment or a live-account reset.
+
+0.3.2 verification: strict validation, 41 unit tests and four affected browser scenarios passed (normal reset/cancel/resume/reopen, lost finish, removed-game restart and narrow Korean layout). No game rules or storage protocol changes in this UI update.

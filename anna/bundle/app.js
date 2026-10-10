@@ -92,6 +92,7 @@ function render(){
   if(resetting)forgetCachedData();
   const s=resetting?null:view?.status;
   $('#removed').hidden=!view?.erased;
+  $('#reset-game').hidden=resetting||!s;
   if(view?.erased)forgetCachedData();
   $('#welcome').hidden=resetting||!!s||view?.code!=='not_started';$('#game').hidden=!s;
   if(!s)return;
