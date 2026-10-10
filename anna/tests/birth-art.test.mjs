@@ -22,3 +22,11 @@ test('birth prompt preserves server chosen traits and only accepts own portrait 
   assert.equal(sourcePath(view,'portraits/own/source.png'),true);
   for(const path of ['portraits/other/source.png','portraits/own/../other.png','portraits/own/%2e.png','https://secret'])assert.equal(sourcePath(view,path),false);
 });
+
+
+test('source artwork cannot override the assigned species anatomy',()=>{
+ const prompt=birthPrompt({species_key:'mammal',element_key:'fire',image_prompt:'soft fur, rounded ears, paw pads; small flames'},'a metal robot with jointed arms');
+ assert.match(prompt,/Authoritative game anatomy and element design: soft fur/);
+ assert.match(prompt,/outranks every conflicting source observation/);
+ assert.match(prompt,/never a robotic metal shell/);
+});

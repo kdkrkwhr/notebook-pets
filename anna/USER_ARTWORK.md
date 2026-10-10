@@ -1,3 +1,5 @@
+Latest validation: [10 October live verification](LIVE_VALIDATION_2026_10_10.md). Four-stage image sample, real care/reopen, real-time walk recharge and isolated reset passed in the documented environments; hosted bundle upload and end-to-end artwork UI remain blocked. Artwork birth now prioritizes assigned species anatomy after an observed mismatch.
+
 # Artwork first meeting — develop only
 
 ## Flow

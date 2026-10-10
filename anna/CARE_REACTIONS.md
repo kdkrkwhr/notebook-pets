@@ -1,3 +1,5 @@
+Latest validation: [10 October live verification](LIVE_VALIDATION_2026_10_10.md). Four-stage image sample, real care/reopen, real-time walk recharge and isolated reset passed in the documented environments; hosted bundle upload and end-to-end artwork UI remain blocked. Artwork birth now prioritizes assigned species anatomy after an observed mismatch.
+
 # Automatic care reactions — develop
 
 Successful feed, snack, play, sleep, train, walk, battle, flee, attendance and claimquest actions enqueue a short English/Korean AI response after gameplay commits. Start, reset, status and rejected actions do not trigger it. The pending bubble uses the pet name. Care buttons remain usable while reactions run sequentially in the background. Each event captures its original language and authoritative result; AI never mutates game state.
