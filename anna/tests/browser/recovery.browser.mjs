@@ -325,3 +325,33 @@ test('first-steps guide fits a narrow screen, translates, collapses and respects
  assert.equal(await p.locator('#guide-chat').isDisabled(),true);
  await p.locator('#retry-action').click();await idle(p);assert.equal(await p.locator('#guide-chat').isDisabled(),false);
 });
+
+
+test('care-area retry explains uncertain results and reuses the receipt after refresh without double spending',async t=>{
+ const p=await setup(t);await start(p);await fault(p,{lost:true,delay:150});
+ await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.equal(await p.locator('#retry-care').isVisible(),true);
+ assert.match(await p.locator('#action-result').innerText(),/may already be saved/);
+ assert.equal(await p.locator('[data-action="play"]').isDisabled(),true);
+ await p.locator('#refresh').click();await idle(p);
+ assert.equal(await p.locator('#retry-care').isVisible(),true);
+ await p.locator('#retry-care').evaluate(e=>{e.click();e.click();});await idle(p);
+ const attempts=await calls(p,'feed');assert.equal(attempts.length,2);
+ assert.equal(attempts[0].args.request_id,attempts[1].args.request_id);
+ assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
+ assert.match(await p.locator('#inventory').innerText(),/Food 2/);
+ assert.equal(await p.locator('#retry-care').isVisible(),false);
+ assert.equal(await p.locator('#retry-action').isVisible(),false);
+});
+test('initial creation retains its top-level retry and Korean care retry is localized',async t=>{
+ const p=await setup(t,{lost:true});await start(p);
+ assert.equal(await p.locator('#retry-action').isVisible(),true);
+ assert.equal(await p.locator('#retry-care').isVisible(),false);
+ await p.locator('#retry-action').click();await idle(p);
+ await p.locator('#language').selectOption('ko');await idle(p);await fault(p,{lost:true});
+ await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.match(await p.locator('#action-result').innerText(),/저장되었을 수/);
+ assert.equal(await p.locator('#retry-care').innerText(),'같은 행동 다시 확인하기');
+ await p.locator('#retry-care').click();await idle(p);
+ assert.equal(await p.locator('#retry-care').isVisible(),false);
+});

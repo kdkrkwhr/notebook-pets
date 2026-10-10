@@ -26,6 +26,8 @@ function controls(value){
   document.querySelectorAll('button,input,select').forEach(e=>e.disabled=value);
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingResetRequest||view?.reset_pending))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
   $('#guide-chat').disabled=value||!!(pendingChat||pendingAction||pendingRemoval||pendingResetRequest||view?.reset_pending)||!view?.status;
+  $('#retry-care').hidden=!pendingAction||!view?.status;
+  $('#retry-care').disabled=value||!!(pendingRemoval||pendingResetRequest||view?.reset_pending);
   $('#retry-chat').hidden=!pendingChat;
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage))$('#clean-portraits').disabled=true;
@@ -96,7 +98,7 @@ function forgetCachedData(){
   for(const e of document.querySelectorAll('#game progress'))e.value=0;
   $('#encounter').hidden=true;
   $('#pet-image').onerror=null;$('#pet-image').src='icon.svg';$('#pet-image').alt='';
-  $('#retry-action').hidden=true;$('#retry-chat').hidden=true;text('#draw',tr('draw'));
+  $('#retry-action').hidden=true;$('#retry-care').hidden=true;$('#retry-chat').hidden=true;text('#draw',tr('draw'));
 }
 class PartnerChangedError extends Error {}
 // Pending work belongs to the companion shown when it started. Never merge
@@ -164,7 +166,7 @@ async function act(command,extra={},retry=false){
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
     text('#action-result',message);if(!view.ok)notice(view.msg);
     if(view.ok&&action==='battle')battleScene.show(view,before,portrait,language);
-  }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;}
+  }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',`${problem(error)} ${tr('uncertain')}`);$('#retry-action').hidden=false;}
   finally{controls(false);}
 }
 async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
@@ -315,7 +317,7 @@ $('#privacy').addEventListener('click',()=>$('#privacy-dialog').showModal());
 $('#refresh').addEventListener('click',refresh);
 $('#start-form').addEventListener('submit',e=>{e.preventDefault();act('start',{name:$('#pet-name').value.trim()});});
 document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>act(button.dataset.action)));
-$('#retry-action').addEventListener('click',()=>pendingAction&&act(pendingAction.command,{},true));
+for(const selector of ['#retry-action','#retry-care'])$(selector).addEventListener('click',()=>pendingAction&&act(pendingAction.command,{},true));
 $('#chat-form').addEventListener('submit',chat);
 $('#retry-chat').addEventListener('click',retryChat);
 $('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval)return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
