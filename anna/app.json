@@ -1,7 +1,7 @@
 {
   "slug": "notebuddy",
   "name": "Notebuddy",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "tagline": "One companion. A little care, every day.",
   "description": "Raise one AI companion at a time. Feed, play, train and walk together, talk about your day, and keep an illustrated growth album. Your companion is randomly chosen from 9 species and 8 elements. You can explicitly start over with a new random companion, clearing the old progress, chat and portraits.\n\nEnglish by default, with an optional Korean interface and AI replies. Your companion’s name, progress and conversation history stay the same when you switch languages. Daily quests reset at midnight Korea time (UTC+9).\n\nGame rules are evaluated by the original Notebook Pets Python engine; AI dialogue never awards XP or changes stats. Progress, recent chat and saved portraits use Anna Persistent Storage. Walking encounters include a short 2D battle replay. Growth milestones are levels 1, 10, 30 and 50. Chat and new portraits use your Anna AI allowance. No external API key or ComfyUI installation is required.",
   "category": "entertainment",
@@ -13,7 +13,7 @@
     }
   },
   "logo_url": "https://cdn.anna.partners/production/app-logos/450-notebuddy/20261009063318_3f0871d8.webp",
-  "privacy_url": "https://github.com/kdkrkwhr/notebook-pets/blob/release/anna/PRIVACY.md",
+  "privacy_url": "https://github.com/kdkrkwhr/notebook-pets/blob/anna-v0.2.2/anna/PRIVACY.md",
   "screenshots": [
     "store/01-first-meeting.png",
     "store/02-companion-and-care.png",

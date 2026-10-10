@@ -15,6 +15,7 @@ MAX_SEQUENCE = 9_007_199_254_740_991
 MAX_RECEIPTS = 64
 MAX_RECEIPT_BYTES = 24 * 1024
 MAX_SAVE_BYTES = 48 * 1024  # Below both documented APS defaults (64/256 KiB).
+EPOCH_PATTERN = re.compile(r'nb3:([0-9a-f]{32}):(0|[1-9][0-9]{0,15}):[A-Za-z0-9_-]{1,64}')
 PATTERN = re.compile(r'nb2:(0|[1-9][0-9]{0,15}):[A-Za-z0-9_-]{1,64}')
 
 
@@ -25,17 +26,23 @@ class SaveCapacityError(ValueError):
 def unpack(document):
     if document is None or FORMAT not in document:
         return document
-    if (type(document.get(FORMAT)) is not int or document[FORMAT] != 2 or
+    if (type(document.get(FORMAT)) is not int or document[FORMAT] not in (2, 3) or
             not isinstance(document.get('game'), dict) or
             set(document) != {FORMAT, 'game'}):
         raise ValueError('Invalid save format; original preserved.')
+    request_meta = document['game'].get(META)
+    epoch = request_meta.get('epoch') if isinstance(request_meta, dict) else None
+    if (document[FORMAT] == 3) != (epoch is not None):
+        raise ValueError('Invalid save epoch; original preserved.')
     return document['game']
 
 
 def pack(state):
     # Old adapters pass the whole value into the original engine, whose strict
     # state validation rejects this envelope. They cannot bypass retired IDs.
-    return {FORMAT: 2, 'game': state}
+    request_meta = state.get(META)
+    epoch = request_meta.get('epoch') if isinstance(request_meta, dict) else None
+    return {FORMAT: 3 if epoch else 2, 'game': state}
 
 
 def byte_size(value):
@@ -56,6 +63,8 @@ def metadata(state):
             not 0 <= value['next_sequence'] <= MAX_SEQUENCE or
             not isinstance(value.get('order'), list) or len(value['order']) > MAX_RECEIPTS):
         raise ValueError('Invalid request history; original save preserved.')
+    if 'epoch' in value and (not isinstance(value['epoch'], str) or not re.fullmatch(r'[0-9a-f]{32}', value['epoch'])):
+        raise ValueError('Invalid request epoch; original save preserved.')
     order = value['order']
     if (any(not isinstance(k, str) for k in order) or len(set(order)) != len(order) or
             set(order) != set(state.get('processed_requests', {}))):
@@ -64,15 +73,23 @@ def metadata(state):
 
 
 def prefix(state):
-    return f'nb2:{metadata(state)["next_sequence"]}:'
+    current = metadata(state)
+    if current.get('epoch'):
+        return f'nb3:{current["epoch"]}:{current["next_sequence"]}:'
+    return f'nb2:{current["next_sequence"]}:'
 
 
 def disposition(state, request_id):
     current = metadata(state)
     if event_key(request_id) in (state or {}).get('processed_requests', {}):
         return 'replay'
-    parsed = PATTERN.fullmatch(request_id)
-    if parsed and int(parsed[1]) == current['next_sequence'] < MAX_SEQUENCE:
+    if current.get('epoch'):
+        parsed = EPOCH_PATTERN.fullmatch(request_id)
+        sequence = int(parsed[2]) if parsed and parsed[1] == current['epoch'] else -1
+    else:
+        parsed = PATTERN.fullmatch(request_id)
+        sequence = int(parsed[1]) if parsed else -1
+    if sequence == current['next_sequence'] < MAX_SEQUENCE:
         return 'new'
     return 'expired'
 
@@ -98,6 +115,8 @@ def commit_result(state, previous, request_id, command, name, result):
             raise SaveCapacityError('Action result is too large to save safely.')
         del receipts[order.pop(0)]
     value[META] = {'version': 1, 'next_sequence': current['next_sequence'] + 1, 'order': order}
+    if current.get('epoch'):
+        value[META]['epoch'] = current['epoch']
     if byte_size(pack(value)) > MAX_SAVE_BYTES:
         raise SaveCapacityError('Game save is too large to update safely.')
     return value

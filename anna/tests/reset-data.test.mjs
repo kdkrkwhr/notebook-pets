@@ -23,3 +23,13 @@ test('stale reset cannot clear a new conversation or delete another scope',async
  const f=fixture();f.pending=false;await assert.rejects(finishReset(f,f.call,'id'));assert.deepEqual(f.rows.get(CHAT).value,['old chat']);assert.equal(f.blobs.size,2);
  const g=fixture();g.files.list=async()=>({items:[{path:'outside/a',etag:'a'}]});await assert.rejects(finishReset(g,g.call,'id'));assert.equal(g.finished,0);assert.equal(g.blobs.size,2);
 });
+
+test('only an explicitly pending removed-game restart can replace app tombstones',async()=>{
+ const f=fixture();for(const row of f.rows.values())row.value={_notebuddy_erased:1};
+ await assert.rejects(finishReset(f,f.call,'id'));assert.equal(f.finished,0);
+ const call=f.call;f.call=async args=>({...await call(args),...(args.action==='inspect'?{reset_from_erasure:true}:{})});
+ await finishReset(f,f.call,'id');assert.deepEqual(f.rows.get(CHAT).value,[]);assert.deepEqual(f.rows.get(ART).value,{});assert.equal(f.finished,1);
+ const g=fixture();g.rows.get(CHAT).value={_notebuddy_erased:1};g.rows.get(CHAT).etag=undefined;
+ const inspect=g.call;g.call=async args=>({...await inspect(args),reset_from_erasure:true});
+ await assert.rejects(finishReset(g,g.call,'id'),/Conditional writes/);assert.equal(g.finished,0);
+});

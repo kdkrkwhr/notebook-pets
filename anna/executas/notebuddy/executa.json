@@ -1,7 +1,7 @@
 {
   "slug": "notebuddy-game",
   "name": "Notebuddy Game",
-  "version": "0.1.9",
+  "version": "0.1.12",
   "executa_type": "tool",
   "description": "Authoritative Notebook Pets rules and private, persistent pet progress.",
   "tool_id": "tool-dev-notebuddy",

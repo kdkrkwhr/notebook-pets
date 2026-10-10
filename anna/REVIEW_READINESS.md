@@ -1,3 +1,5 @@
+Incremental candidate 0.2.2 / tool 0.1.12: backports only confirmed restart and its visible Start over button onto deployed 0.2.1. New portrait analysis, artwork birth, care reactions and walk recharge remain on develop and are not included. Deployment verification is pending.
+
 # Anna 심사 준비 · 2026-10-09
 
 사용자는 Anna 측 직접 확인이 어려우므로 공식 문서에 지원이 없는 항목은 기다리지 않고 제출하도록 승인했습니다. 이전 원자적 최초 생성 출시 차단 결정을 대체합니다. 미해결 문제를 해결됐다고 표시하지 않습니다.

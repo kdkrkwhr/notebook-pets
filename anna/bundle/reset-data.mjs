@@ -5,12 +5,14 @@ export async function finishReset(anna,call,id){
     const state=await call({action:'inspect'});
     if(state.erased)throw new ErasedError();
     if(!state.ok||!state.reset_pending||state.reset_id!==id)throw Error('Reset changed; refresh');
+    return state;
   }
   // Read each row before the guard. A post-reset writer changes its ETag,
   // so delayed cleanup cannot replace that writer's committed conversation.
   for(const [key,value] of [[CHAT,[]],[ART,{}]]){
-    const row=await anna.storage.get({key});await guard();
-    if(erased(row.value))throw new ErasedError();
+    const row=await anna.storage.get({key});const state=await guard();
+    if(erased(row.value)&&!state.reset_from_erasure)throw new ErasedError();
+    if(erased(row.value)&&!row.etag)throw Error('Conditional writes required');
     if(row.exists&&!row.etag)throw Error('Conditional writes required');
     await anna.storage.set({key,value,...(row.etag?{if_match:row.etag}:{})});
   }

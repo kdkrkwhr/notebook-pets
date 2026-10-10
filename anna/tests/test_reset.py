@@ -43,7 +43,7 @@ class ResetTests(unittest.IsolatedAsyncioTestCase):
         self.store.document=None
         self.assertEqual((await self.service.reset(self.args))['code'],'reset_unavailable')
         self.store.document=TOMBSTONE
-        self.assertTrue((await self.service.reset(self.args))['erased']);self.assertEqual(self.store.document,TOMBSTONE)
+        self.assertEqual((await self.service.reset({**self.args,'expected_etag':'stale'}))['code'],'reset_changed');self.assertEqual(self.store.document,TOMBSTONE)
 
     async def test_lost_begin_and_finish_replies_do_not_reroll_or_erase_new_progress(self):
         original=self.store.set
@@ -77,3 +77,47 @@ class ResetTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.store.document,self.old)
         self.store.fail=False;self.store.document={'broken':True}
         self.assertEqual((await self.service.reset(self.args))['code'],'reset_unavailable')
+
+    async def test_removed_restart_has_fresh_epoch_and_never_accepts_old_requests(self):
+        from receipts import FORMAT, META
+        self.store.document=copy.deepcopy(TOMBSTONE)
+        preview=await self.service.reset({'action':'inspect'})
+        self.assertTrue(preview['erased']);self.assertTrue(preview['restart_allowed'])
+        self.args['expected_etag']=preview['etag']
+        await self.service.reset(self.args)
+        pending=copy.deepcopy(self.store.document)
+        self.assertTrue((await self.service.reset({'action':'inspect'}))['reset_from_erasure'])
+        self.assertTrue((await self.service.reset(self.args))['reset_pending'])
+        self.assertEqual(pending,self.store.document)
+        self.assertTrue((await self.service.invoke({'command':'status'}))['reset_pending'])
+        await self.finish()
+        self.assertEqual(self.store.document[FORMAT],3)
+        current=await self.service.invoke({'command':'status'})
+        self.assertEqual(current['status']['xp'],0)
+        self.assertNotEqual(current['pet_id'],self.old_id)
+        self.assertTrue(current['request_id_prefix'].startswith('nb3:'))
+        for request in [self.late,'nb2:1:late','nb3:'+'0'*32+':1:late']:
+            result=await self.service.invoke({'command':'feed','request_id':request})
+            self.assertEqual(result['code'],'request_expired')
+        event=current['request_id_prefix']+'new-meal'
+        result=await self.service.invoke({'command':'feed','request_id':event})
+        self.assertTrue(result['ok']);self.assertEqual(result['status']['xp'],10)
+        self.assertTrue((await self.service.invoke({'command':'feed','request_id':event}))['replayed'])
+        self.assertEqual(self.store.document[FORMAT],3)
+        epoch=self.store.value[META]['epoch']
+        preview=await self.service.reset({'action':'inspect'})
+        self.args.update(expected_etag=preview['etag'],reset_id='second-reset-123456')
+        await self.service.reset(self.args);await self.finish()
+        self.assertEqual(self.store.value[META]['epoch'],epoch)
+        self.assertEqual((await self.service.invoke({'command':'feed','request_id':event}))['code'],'request_expired')
+
+    async def test_removed_restart_rejects_stale_preview_competing_reset_and_finish_only(self):
+        self.store.document=copy.deepcopy(TOMBSTONE)
+        self.assertEqual((await self.finish())['code'],'reset_changed')
+        self.assertEqual((await self.service.reset({**self.args,'expected_etag':'stale'}))['code'],'reset_changed')
+        self.assertEqual(self.store.document,TOMBSTONE)
+        await self.service.reset(self.args)
+        candidate=copy.deepcopy(self.store.document)
+        other={**self.args,'reset_id':'competing-12345678'}
+        self.assertEqual((await self.service.reset(other))['code'],'reset_changed')
+        self.assertEqual(self.store.document,candidate)

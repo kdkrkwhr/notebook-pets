@@ -22,3 +22,9 @@ test('APS size and storage quota errors are not presented as AI credit failures'
     assert.doesNotMatch(errorText({code},'en'),/AI allowance/);
   }
 });
+
+test('restarted games use the exact epoch prefix supplied by the server',()=>{
+ const prefix='nb3:'+'a'.repeat(32)+':1:';
+ assert.equal(newAction({request_id_prefix:prefix},'feed',{},()=> 'id').request_id,prefix+'id');
+ for(const value of ['nb3:bad:1:','nb3:'+'a'.repeat(32)+':01:'])assert.throws(()=>newAction({request_id_prefix:value},'feed'));
+});

@@ -139,7 +139,7 @@ test('portrait cleanup confirms intent, retries failures and preserves current a
  assert.deepEqual((await calls(p,'delete')).map(c=>c.path),['portraits/pet/old.png']);assert.equal((await calls(p,'image')).length,0);
 });
 
-async function resetDialog(p){await p.locator('#privacy').click();await p.locator('#reset-game').click();await idle(p);}
+async function resetDialog(p){await p.locator('#reset-game').click();await idle(p);}
 async function confirmReset(p){await p.locator('#reset-name').fill('Fresh buddy');await p.locator('#reset-quiescent').check();await p.locator('#reset-phrase').fill('RESET NOTEBUDDY');await p.locator('#confirm-reset').click();await idle(p);}
 test('new companion reset requires confirmation, preserves cancel, and resumes lost begin plus interrupted cleanup after reopen',async t=>{
  const p=await setup(t);await start(p);await p.locator('[data-action="feed"]').click();await idle(p);
@@ -207,4 +207,18 @@ test('battle supports 360px and reduced motion',async t=>{
  assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth));
  if(process.env.NOTEBUDDY_SCREENSHOT)await p.screenshot({path:process.env.NOTEBUDDY_SCREENSHOT});
  await p.keyboard.press('Escape');assert.equal(await p.locator('#battle-dialog').isVisible(),false);
+});
+
+test('removed game explicitly restarts, resumes cleanup and reopens as a new partner',async t=>{
+ const p=await setup(t,{erased:true});
+ await p.evaluate(()=>{window.hostTest.state.kv={'notebuddy/chat-v1':{_notebuddy_erased:1},'notebuddy/art-v1':{_notebuddy_erased:1}};window.hostTest.state.files={'portraits/old/file.png':'etag'};});
+ assert.equal(await p.locator('#removed').isVisible(),true);
+ await p.locator('#restart-removed').click();assert.match(await p.locator('#reset-dialog').innerText(),/cannot be restored/);
+ await p.locator('#reset-dialog button').first().click();assert.equal((await p.evaluate(()=>window.hostTest.calls.filter(c=>c.method==='reset'&&c.args.action==='begin'))).length,0);
+ await p.locator('#restart-removed').click();await fault(p,{delete:true});await confirmReset(p);
+ assert.equal(await p.locator('#resetting').isVisible(),true);assert.equal(await p.locator('#game').isVisible(),false);
+ await fault(p,{delete:false});await p.locator('#resume-reset').click();await idle(p);
+ assert.equal(await p.locator('#name').innerText(),'Fresh buddy');assert.equal(await p.locator('#removed').isVisible(),false);
+ await p.reload();await idle(p);assert.equal(await p.locator('#name').innerText(),'Fresh buddy');
+ assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']),[]);
 });

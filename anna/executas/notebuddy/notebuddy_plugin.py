@@ -15,7 +15,7 @@ from reset import reset, pending
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.1.9'
+VERSION = '0.1.12'
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
@@ -41,7 +41,7 @@ MANIFEST = {
 MANIFEST['tools'].append({'name': 'privacy', 'description': 'Inspect or irreversibly erase the authenticated user’s existing game. Never invoke erase without an explicit data-removal request and confirmation. Not a reset/reroll. App chat and files require separate UI cleanup. Read inspect first; never automatically replace expected_etag after a conflict.', 'timeout': 60, 'parameters': [{'name': 'action', 'type': 'string', 'required': True, 'enum': ['inspect', 'erase'], 'description': 'inspect is read-only; erase replaces game content with a minimal permanent removal marker.'}, {'name': 'confirmation', 'type': 'string', 'required': False, 'description': 'For erase only: exact user-confirmed phrase DELETE NOTEBUDDY.'}, {'name': 'expected_etag', 'type': 'string', 'required': False, 'description': 'For erase only: etag from the preview the user confirmed. Reuse it on uncertain retries.'}]})
 
 
-MANIFEST['tools'].append({'name':'reset','description':'Explicitly replace an existing companion with a new random companion. Requires user confirmation RESET NOTEBUDDY and a fresh inspect ETag. UI must clean chat and all portraits before finish. Resume a pending reset; never automatically begin a new reset on conflicts. Permanent privacy removal cannot be reset.','timeout':60,'parameters':[
+MANIFEST['tools'].append({'name':'reset','description':'Explicitly replace an existing companion with a new random companion. Requires user confirmation RESET NOTEBUDDY and a fresh inspect ETag. UI must clean chat and all portraits before finish. Resume a pending reset; never automatically begin a new reset on conflicts. A removed game may explicitly start a new companion through reset; deleted records are never recovered.','timeout':60,'parameters':[
  {'name':'action','type':'string','description':'inspect previews the save; begin stages one new pet; finish follows verified UI chat/file cleanup.','required':True,'enum':['inspect','begin','finish']},
  {'name':'confirmation','type':'string','description':'For begin only: exact user-confirmed phrase RESET NOTEBUDDY.','required':False},
  {'name':'expected_etag','type':'string','description':'For begin only: ETag from the preview the user confirmed; never refresh it automatically.','required':False},
@@ -86,7 +86,7 @@ class GameService:
         if name and command != 'start':
             raise ValueError('Only start accepts a name.')
         event = args.get('request_id')
-        if event is not None and (not isinstance(event, str) or not re.fullmatch(r'[A-Za-z0-9:_-]{1,100}', event)):
+        if event is not None and (not isinstance(event, str) or not re.fullmatch(r'[A-Za-z0-9:_-]{1,128}', event)):
             raise ValueError('Invalid request ID.')
         if command not in READ:
             event = event or (context or {}).get('invoke_id')
@@ -106,7 +106,7 @@ class GameService:
                     raise ValueError('Storage must support conditional writes.')
                 if erased(previous):
                     return {'ok': False, 'code': 'data_erased', 'erased': True,
-                            'msg': ('게임 데이터가 삭제되어 더 이상 플레이할 수 없습니다.' if language == 'ko' else 'Your game data was removed. This game can no longer be played.')}
+                            'msg': ('게임 데이터가 삭제되었습니다. 새 친구로 초기화하면 다시 시작할 수 있습니다.' if language == 'ko' else 'Your game data was removed. Start over to meet a new companion.')}
                 if pending(previous):
                     return {'ok':False,'code':'reset_pending','reset_pending':True,'reset_id':previous['reset_id'],'msg':('초기화 정리를 완료해 주세요.' if language=='ko' else 'Finish resetting your saved data.')}
                 previous = unpack(previous)
