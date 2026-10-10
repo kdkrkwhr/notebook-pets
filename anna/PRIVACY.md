@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 10 October 2026. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 10 October 2026. This notice describes Notebuddy 0.3.0. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -13,7 +13,7 @@ Last updated: 10 October 2026. Applies to the Notebuddy app on Anna, maintained 
 
 The app does not request your real name, email, contacts or a separate API key. You choose your companion’s name and anything you type into chat. Avoid entering sensitive personal information. Anna authenticates access to the account’s saved data; Notebuddy’s game commands do not accept another user’s account ID.
 
-## Optional source artwork (develop update, not yet the submitted version)
+## Optional source artwork
 
 Choosing artwork mode sends a normalized PNG copy of your photo or drawing to Anna's LLM service for an image suitability check and a short description of visible features. This check uses your AI allowance, including when no pet is created. Local file checks alone do not send an image. The browser accepts PNG/JPEG/WebP up to 12 MB and 16 megapixels, with minimum dimensions 32 by 32; it resizes to a maximum side of 1024 pixels and re-encodes as PNG instead of uploading the original file or its metadata. Original filenames are not sent in the prompt.
 
@@ -21,7 +21,7 @@ If the check accepts the source, the game assigns random species and element, an
 
 The in-browser editor and uncommitted generated image are held in memory. Closing the page may require reselecting unsaved artwork or making another paid generation request. The app does not automatically regenerate an unfinished custom baby when reopened. Choosing the default appearance does not reroll the companion or erase the saved source file. Existing reset/removal covers these source files and descriptions as well as generated portraits. No new file bucket or browser storage key is introduced.
 
-## Automatic care reactions (develop update)
+## Automatic care reactions
 
 After a successful feed, treat, play, rest, training, walk, battle, walk-away, attendance or quest reward action, the UI queues one short AI reaction. The request includes the pet name, species, element, level, fullness, bond and the actual action outcome (including awarded XP or loot when present). It does not send uploaded artwork or conversation history for this reaction. The reaction uses Anna LLM allowance independently of gameplay, and cannot change rewards or statistics.
 
@@ -31,7 +31,7 @@ A marker is written to the existing chat record before each AI request. An inter
 
 When you send a chat message, the app sends up to 12 recent messages, including that message, and a current companion-status snapshot to Anna’s AI service. The snapshot includes the companion’s name and game status. The service uses these to generate a reply. AI replies do not directly award XP or change game statistics.
 
-In the next develop update, evolution automatically requests a new portrait using your Anna image allowance. The app sends the previous saved portrait (or the matching bundled baby picture) to Anna’s vision-capable LLM to extract visual features. Those features and a fixed identity description are saved in the existing portrait index. Only textual features and growth instructions are sent to the image generator; no reference image URL is included. Analysis and generation each use Anna AI allowance. Saved analysis is reused for retries of the same source portrait. Manual redraws after evolution use the same reference flow. The submitted 0.2.1 version still requires explicit portrait confirmation. The app does not append your chat transcript to that image prompt. The generated image is downloaded and saved in Anna file storage. A bundled baby reference may also be copied to that storage. An unfinished evolution marker is stored in the portrait index before an automatic AI request to prevent automatic repeat requests after reopening. Signed image URLs are not saved in the index.
+Evolution automatically requests a new portrait using your Anna image allowance. The app sends the previous saved portrait (or the matching bundled baby picture) to Anna’s vision-capable LLM to extract visual features. Those features and a fixed identity description are saved in the existing portrait index. Only textual features and growth instructions are sent to the image generator; no reference image URL is included. Analysis and generation each use Anna AI allowance. Saved analysis is reused for retries of the same source portrait. Manual redraws after evolution use the same reference flow. The app does not append your chat transcript to that image prompt. The generated image is downloaded and saved in Anna file storage. A bundled baby reference may also be copied to that storage. An unfinished evolution marker is stored in the portrait index before an automatic AI request to prevent automatic repeat requests after reopening. Signed image URLs are not saved in the index.
 
 These calls use your Anna AI allowance. Anna routes AI requests to its supported providers. Notebuddy does not promise a particular provider, training policy, processing country or retention period on their behalf. Review the terms presented by Anna for your account before sending information you consider private.
 

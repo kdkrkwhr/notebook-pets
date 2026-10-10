@@ -1,3 +1,5 @@
+Current submission preparation: app **0.3.0**, tool **0.1.10**. See [current submission status](REVIEW_READINESS.md) and [candidate notes](NEXT_RELEASE.md); older version and hold instructions below are historical.
+
 # Notebuddy 1.0 출시 기준 · 2026-10-10
 
 ## 판단

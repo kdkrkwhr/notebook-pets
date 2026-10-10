@@ -1,6 +1,6 @@
 [project]
 name = "notebuddy-executa"
-version = "0.1.9"
+version = "0.1.10"
 description = "Anna bridge for the existing Notebook Pets Python engine"
 requires-python = ">=3.11"
 dependencies = ["executa-sdk"]
