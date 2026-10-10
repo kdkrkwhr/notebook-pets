@@ -1,3 +1,5 @@
+Latest change: **0.3.1 / tool 0.1.11** adds explicit new-companion restart after removal. Deleted records are not recovered. See [restart behavior](RESTART_AFTER_REMOVAL.md). Older permanent-no-restart descriptions and the 0.3.0 candidate below are historical; deployed 0.2.1 is unchanged.
+
 # Anna submission — 0.3.0
 
 Prepared on 10 October 2026 at the user's request to submit the current implementation.

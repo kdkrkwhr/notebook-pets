@@ -699,3 +699,17 @@ test('evolution caches analysis across generation failure and keeps original ide
  assert.match(last.prompt,/Fixed identity.*round face and gold ears/);
  assert.match(last.prompt,/from growth stage 2 to 3/);
 });
+
+test('removed game explicitly restarts, resumes cleanup and reopens as a new partner',async t=>{
+ const p=await setup(t,{erased:true});
+ await p.evaluate(()=>{window.hostTest.state.kv={'notebuddy/chat-v1':{_notebuddy_erased:1},'notebuddy/art-v1':{_notebuddy_erased:1}};window.hostTest.state.files={'portraits/old/file.png':'etag'};});
+ assert.equal(await p.locator('#removed').isVisible(),true);
+ await p.locator('#restart-removed').click();assert.match(await p.locator('#reset-dialog').innerText(),/cannot be restored/);
+ await p.locator('#reset-dialog button').first().click();assert.equal((await p.evaluate(()=>window.hostTest.calls.filter(c=>c.method==='reset'&&c.args.action==='begin'))).length,0);
+ await p.locator('#restart-removed').click();await fault(p,{delete:true});await confirmReset(p);
+ assert.equal(await p.locator('#resetting').isVisible(),true);assert.equal(await p.locator('#game').isVisible(),false);
+ await fault(p,{delete:false});await p.locator('#resume-reset').click();await idle(p);
+ assert.equal(await p.locator('#name').innerText(),'Fresh buddy');assert.equal(await p.locator('#removed').isVisible(),false);
+ await p.reload();await idle(p);assert.equal(await p.locator('#name').innerText(),'Fresh buddy');
+ assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']),[]);
+});

@@ -26,6 +26,6 @@ export function errorText(error,language='en'){
 }
 
 export function newAction(view,command,extra={},id=()=>crypto.randomUUID()) {
-  if(!/^nb2:(0|[1-9][0-9]{0,15}):$/.test(view?.request_id_prefix||'')) throw new Error('Refresh the app before choosing an action');
+  if(!/^(?:nb2:|nb3:[0-9a-f]{32}:)(0|[1-9][0-9]{0,15}):$/.test(view?.request_id_prefix||'')) throw new Error('Refresh the app before choosing an action');
   return {...extra,command,request_id:view.request_id_prefix+id()};
 }

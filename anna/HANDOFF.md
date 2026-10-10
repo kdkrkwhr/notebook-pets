@@ -1,3 +1,5 @@
+Latest change: **0.3.1 / tool 0.1.11** adds explicit new-companion restart after removal. Deleted records are not recovered. See [restart behavior](RESTART_AFTER_REMOVAL.md). Older permanent-no-restart descriptions and the 0.3.0 candidate below are historical; deployed 0.2.1 is unchanged.
+
 Current submission preparation: app **0.3.0**, tool **0.1.10**. See [current submission status](REVIEW_READINESS.md) and [candidate notes](NEXT_RELEASE.md); older version and hold instructions below are historical.
 
 Latest validation: [10 October live verification](LIVE_VALIDATION_2026_10_10.md). Four-stage image sample, real care/reopen, real-time walk recharge and isolated reset passed in the documented environments; hosted bundle upload and end-to-end artwork UI remain blocked. Artwork birth now prioritizes assigned species anatomy after an observed mismatch.

@@ -1,3 +1,5 @@
+Latest change: **0.3.1 / tool 0.1.11** adds explicit new-companion restart after removal. Deleted records are not recovered. See [restart behavior](RESTART_AFTER_REMOVAL.md). Older permanent-no-restart descriptions and the 0.3.0 candidate below are historical; deployed 0.2.1 is unchanged.
+
 # Data removal contract — private preview
 
 App/tool 0.1.6. This flow removes existing Notebuddy game content; it is not a reset, reroll or account-wide deletion.

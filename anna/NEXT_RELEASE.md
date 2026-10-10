@@ -1,3 +1,5 @@
+Latest change: **0.3.1 / tool 0.1.11** adds explicit new-companion restart after removal. Deleted records are not recovered. See [restart behavior](RESTART_AFTER_REMOVAL.md). Older permanent-no-restart descriptions and the 0.3.0 candidate below are historical; deployed 0.2.1 is unchanged.
+
 # Notebuddy 0.3.0 submission candidate
 
 Prepared on 10 October 2026. App 0.3.0 requires game tool 0.1.10. The original standalone game VERSION remains 0.2.0; these are separate products/artifacts. This is a preview update, not a claim that all 1.0 release gates passed.

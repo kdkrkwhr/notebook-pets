@@ -395,6 +395,7 @@ async function previewReset(){
     resetPreview=await resetCall({action:'inspect'});
     if(resetPreview.reset_pending){view=resetPreview;render();return;}
     if(!resetPreview.ok||!resetPreview.exists||!resetPreview.etag){notice(tr('resetUnavailable'));return;}
+    text('#reset-dialog [data-i18n=resetWarning]',tr(resetPreview.erased?'restartWarning':'resetWarning'));
     $('#reset-name').value='';$('#reset-phrase').value='';$('#reset-quiescent').checked=false;text('#reset-error','');$('#reset-dialog').showModal();
   }catch(error){notice(problem(error));}finally{controls(false);}
 }
@@ -420,6 +421,7 @@ async function resumeReset(){
   }finally{controls(false);}
 }
 $('#reset-game').addEventListener('click',previewReset);
+$('#restart-removed').addEventListener('click',previewReset);
 $('#resume-reset').addEventListener('click',resumeReset);
 $('#confirm-reset').addEventListener('click',()=>{
   const name=$('#reset-name').value.trim();
