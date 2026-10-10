@@ -1,5 +1,9 @@
 # Incremental Anna updates — 10 October 2026
 
+## Current review status
+
+On 10 October 2026, the owner requested and completed a review-candidate replacement: **0.2.5 is now pending review**. The English listing and four screenshots were updated and verified. The historical entries below describe status at each deployment; their references to candidate 0.2.1 no longer describe the current review. See [submission receipt](REVIEW_025.md).
+
 ## Drawing-only birth candidate 0.2.5
 
 Source: `89298ba`, tag `anna-v0.2.5`, branch `release-prep/anna-drawing-birth`. Adds in-app drawing to 0.2.4 while keeping random start. Photo/file input and its selector are removed, rather than merely hidden. The editor supports color, eraser, undo and clear; blank input is rejected locally. AI refusal is distinct from service failure. Birth generation uses checked textual drawing features and server-assigned species/element. Explicit generation retries retain that companion; received results can retry saving without generating again.
