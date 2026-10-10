@@ -7,7 +7,7 @@ Last updated: 10 October 2026. Applies to the Notebuddy app on Anna, maintained 
 | Data | Purpose and location |
 | --- | --- |
 | Companion name, species, element, progress, inventory, daily activity, growth album milestones and recent action results | Saved in your authenticated Anna account’s Notebuddy Game tool storage, to continue your game and prevent repeat rewards. |
-| Recent conversation | Up to 24 messages are retained by the app in Anna app storage to show your conversation and provide recent context. This limit does not describe Anna or AI-provider logs. |
+| Recent conversation | Up to 24 recent chat entries, including care reactions and their pending/failure markers, are retained by the app in Anna app storage to show your conversation and provide recent context. This limit does not describe Anna or AI-provider logs. |
 | Portrait index and generated portrait files | Saved in Anna app storage and file storage for the growth album. Drawing a replacement changes the displayed portrait; older files are not automatically erased. |
 | Language choice | Saved in this browser’s local storage. It is not synced across devices by Notebuddy. |
 
@@ -20,6 +20,12 @@ Choosing artwork mode sends a normalized PNG copy of your photo or drawing to An
 If the check accepts the source, the game assigns random species and element, and the normalized reference and short visual description are saved in Anna app storage. A fresh file URL and those features are sent to Anna's image service to generate the baby. The app stores both the reference and generated portrait under its portraits prefix. Failed, replaced or abandoned references may remain until reset or removal; the latest source remains indexed. The app does not promise that its AI check detects every unsuitable input or that a provider deletes submitted content after a refusal. Provider logs, backups and billing remain subject to Anna/provider handling.
 
 The in-browser editor and uncommitted generated image are held in memory. Closing the page may require reselecting unsaved artwork or making another paid generation request. The app does not automatically regenerate an unfinished custom baby when reopened. Choosing the default appearance does not reroll the companion or erase the saved source file. Existing reset/removal covers these source files and descriptions as well as generated portraits. No new file bucket or browser storage key is introduced.
+
+## Automatic care reactions (develop update)
+
+After a successful feed, treat, play, rest, training, walk, battle, walk-away, attendance or quest reward action, the UI queues one short AI reaction. The request includes the pet name, species, element, level, fullness, bond and the actual action outcome (including awarded XP or loot when present). It does not send uploaded artwork or conversation history for this reaction. The reaction uses Anna LLM allowance independently of gameplay, and cannot change rewards or statistics.
+
+A marker is written to the existing chat record before each AI request. An interrupted or failed request is not automatically retried on refresh/reopen, and may still have used allowance. A received but unsaved reply remains in memory for an explicit save-only retry. Markers and replies count toward the existing 24-entry retention limit and are covered by the same reset/removal process. Cross-runtime atomic first-row creation and provider exactly-once billing are not guaranteed.
 
 ## AI processing
 

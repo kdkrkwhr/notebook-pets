@@ -18,7 +18,7 @@ Choose **Privacy & data → Start over with a new companion**, enter a new name 
 
 ## Battles and growth
 
-Care results appear below the action buttons. Ordinary AI chat remains available. This version does not include automatic AI reactions to care actions.
+Care results appear below the action buttons. On develop, successful care automatically adds a short AI reaction in chat with a pending indicator. It uses Anna allowance without changing game results. Failed reactions do not undo care, and received replies can retry saving without another AI call.
 
 Walking encounters show opponent artwork. A short 2D scene replays the server's committed battle turns, with HP bars, skip and reduced-motion support. The animation cannot award extra rewards or change the result.
 

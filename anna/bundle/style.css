@@ -16,3 +16,5 @@ select{font:inherit;color:inherit;background:var(--paper);border:1px solid var(-
 .birth-choice{margin:1rem 0}.birth-choice select{display:block;max-width:100%;margin:.5rem 0}.art-source-preview{width:96px;height:96px;object-fit:contain;border:1px solid var(--line,#ddd);border-radius:12px;background:white;margin:.5rem 0}.birth-recovery{margin-bottom:20px;padding:24px}.birth-buttons,.art-tools{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.birth-buttons form{margin:0}#art-dialog{width:min(560px,calc(100vw - 32px));max-height:90vh;overflow:auto}#art-file{max-width:100%}#art-canvas{display:block;width:100%;height:auto;background:white;border:1px solid #bbb;border-radius:12px;touch-action:none;margin:12px 0}.art-tools{margin-top:12px}.art-tools label{display:flex;align-items:center;gap:6px}#art-color{width:42px;height:36px;padding:2px}#art-editor-error,#birth-status,#birth-recovery-status{white-space:pre-line}
 
 .art-tools label{white-space:nowrap;flex-shrink:0}.art-tools input[type="checkbox"]{width:auto;flex:0 0 auto}
+
+.message.reaction-pending{opacity:.72;font-style:italic}

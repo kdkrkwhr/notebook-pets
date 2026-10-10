@@ -50,3 +50,7 @@ Walks now hold up to 5 charges and recover one every 300 seconds, including offl
 ## Artwork first meeting
 
 Optional upload/drawing input, local validation, explicit vision check, referenced baby generation and distinct refusal/check/generation/save failure recovery are implemented on develop. See [USER_ARTWORK.md](USER_ARTWORK.md). Real vision/provider behavior remains unverified; do not ship until the existing image route blocker is resolved and this flow is tested live. Screenshots and the deployed privacy URL must be updated with any candidate that includes this behavior.
+
+## Automatic care reactions · 2026-10-10
+
+Implemented on develop after user approval of per-action Anna allowance. Successful actions queue short reactions with pending/failure/save-only recovery, receipt-based deduplication and companion guards. [CARE_REACTIONS.md](CARE_REACTIONS.md) describes scope and limits. Review candidate/release unchanged.

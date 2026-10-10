@@ -1,4 +1,6 @@
 import {createBattle} from './battle.mjs';
+import {createReactions,reactionEvent} from './reactions.mjs';
+let reactions;
 import {createArtworkEditor} from './birth-art.mjs';
 import {createBirthFlow} from './birth-flow.mjs';
 let birth,artEditor;
@@ -38,6 +40,7 @@ function controls(value){
   $('#retry-care').hidden=!pendingAction||!view?.status;
   $('#retry-care').disabled=value||!!(pendingRemoval||pendingResetRequest||view?.reset_pending);
   $('#retry-chat').hidden=!pendingChat;
+  $('#retry-reaction').hidden=!reactions?.hasUnsaved();
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage||birth?.hasOutput()))$('#clean-portraits').disabled=true;
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
@@ -52,13 +55,17 @@ function translate(){
   text('#draw',tr(pendingImage?'retryImage':'draw'));
 }
 function drawChat(){
-  const container=$('#messages');container.replaceChildren();
-  if(!history.length){const p=document.createElement('p');p.className='message';p.textContent=tr('chatEmpty');container.append(p);}
-  for(const item of history){
+  const container=$('#messages');container.replaceChildren();container.dataset.reactionBusy=String(reactions?.isWorking()||false);
+  const transcript=mergeHistory(history,reactions?.messages()||[]);
+  $('#retry-reaction').hidden=!reactions?.hasUnsaved();
+  if(!transcript.length){const p=document.createElement('p');p.className='message';p.textContent=tr('chatEmpty');container.append(p);}
+  for(const item of transcript){
     const p=document.createElement('div');p.className=`message ${item.role}${item.kind==='activity'?' activity':''}`;
     const label=document.createElement('div');label.className='message-label';
     label.textContent=item.role==='user'?tr('you'):view?.status?.name||tr('friend');
-    p.append(label,document.createTextNode(item.text));container.append(p);
+    const content=item.kind==='reaction'&&item.state!=='done'?tr(item.state==='failed'?'reactionBubbleFailed':reactions?.messages().some(x=>x.id===item.id)?'reactionWorking':'reactionInterrupted',{name:view?.status?.name||tr('friend')}):item.text;
+    if(item.kind==='reaction'){p.dataset.reactionState=item.state;if(item.state==='pending')p.classList.add('reaction-pending');}
+    p.append(label,document.createTextNode(content));container.append(p);
   }
   container.scrollTop=container.scrollHeight;
 }
@@ -120,6 +127,7 @@ function render(){
   drawChat();birth?.render();
 }
 function forgetCachedData(){
+  reactions?.clear();localStatus('reaction');
   birth?.clear();
   battleScene.close();evolutionEffect();localStatus('chat');localStatus('image');
   history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
@@ -189,13 +197,14 @@ async function refresh(){
 async function act(command,extra={},retry=false){
   if(busy||pendingRemoval||(!retry&&pendingAction))return;controls(true);notice();
   if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
-  let evolved=false,started=false;
+  let evolved=false,started=false,reaction=null;
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
     const before=view;const portrait=urls[imageKey(before)];
     const {command:action,...args}=pendingAction;adoptView(await invoke(action,args));pendingAction=null;render();
     evolved=!!(view.ok&&view.stage>1&&((before?.pet_id===view.pet_id&&view.stage>before.stage)||view.xp_result?.evolutions?.length));
     started=view.ok&&action==='start';
+    reaction=reactionEvent(action,args.request_id,view,language);
     let message=view.msg;
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
@@ -203,6 +212,7 @@ async function act(command,extra={},retry=false){
     if(view.ok&&action==='battle')battleScene.show(view,before,portrait,language);
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',`${problem(error)} ${tr('uncertain')}`);$('#retry-action').hidden=false;}
   finally{controls(false);}
+  reactions.enqueue(reaction);
   if(started)await birth.started(view);
   if(evolved){
     if($('#battle-dialog').open)$('#battle-dialog').addEventListener('close',()=>generate(true),{once:true});
@@ -217,7 +227,7 @@ async function chat(event){
   history=mergeHistory(history,additions);drawChat();input.value='';
   try{
     view=await assertActive();render();
-    const response=await anna.llm.complete({messages:history.slice(-12).map(m=>({role:m.role,content:{type:'text',text:m.text}})),systemPrompt:chatPrompt(language,view.status),maxTokens:280,temperature:.7,modelPreferences:{costPriority:1,speedPriority:.8}});
+    const response=await anna.llm.complete({messages:history.filter(m=>m.kind!=='reaction'||m.state==='done').slice(-12).map(m=>({role:m.role,content:{type:'text',text:m.text}})),systemPrompt:chatPrompt(language,view.status),maxTokens:280,temperature:.7,modelPreferences:{costPriority:1,speedPriority:.8}});
     if(typeof response.content?.text!=='string'||!response.content.text.trim())throw new Error('empty response');
     additions.push({id:crypto.randomUUID(),role:'assistant',text:response.content.text,at:Date.now()});history=mergeHistory(history,additions);drawChat();
     pendingChat=additions;await persistChat();
@@ -439,6 +449,8 @@ $('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendi
 $('#confirm-clean-portraits').addEventListener('click',cleanupPortraits);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
 $('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',()=>generate());
+reactions=createReactions({anna:()=>anna,active:assertActive,saved:saved=>{const local=history.filter(item=>item.kind!=='reaction'&&!saved.some(value=>value.id===item.id));history=mergeHistory(saved,[...local,...(pendingChat||[])]);},render:drawChat,feedback:key=>localStatus('reaction',key)});
+$('#retry-reaction').addEventListener('click',async()=>{if(busy||pendingAction||pendingRemoval)return;controls(true);try{await reactions.retrySave();}finally{controls(false);}});
 artEditor=createArtworkEditor({document,tr,locked:()=>busy||!!pendingAction||birth?.hasOutput()});
 birth=createBirthFlow({
   anna:()=>anna,view:()=>view,art:()=>art,language:()=>language,editor:artEditor,

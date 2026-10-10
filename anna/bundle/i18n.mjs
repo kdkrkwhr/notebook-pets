@@ -1,6 +1,14 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  reactionWorking: ["{name} is reacting…", "{name}가 반응하는 중…"],
+  reactionBubbleFailed: ["Your care is complete, but I could not reply this time.", "돌봄은 완료됐지만 이번에는 답하지 못했어요."],
+  reactionInterrupted: ["This care reaction has no saved reply. It will not be generated again automatically.", "이 돌봄 반응의 저장된 답변이 없어요. 자동으로 다시 생성하지 않아요."],
+  reactionFailed: ["Care is saved. The AI reaction could not be completed. Check your connection and Anna allowance; future care can trigger a new reaction.", "돌봄은 저장됐어요. AI 반응을 완료하지 못했어요. 연결·Anna 사용량을 확인해 주세요. 다음 돌봄에는 새 반응을 요청해요."],
+  reactionUnsaved: ["The reaction arrived, but saving is unfinished. Keep this window open and retry saving without another AI request.", "반응은 받았지만 저장하지 못했어요. 창을 열어 둔 채 저장을 재시도하면 AI를 다시 호출하지 않아요."],
+  reactionRetrySave: ["Retry saving care reactions", "돌봄 반응 저장 재시도"],
+  reactionSaved: ["Care reactions saved.", "돌봄 반응을 저장했어요."],
+
   artSetup: ['Create this baby from my artwork…', '내 작품으로 유년기 모습 만들기…'],
   birthChoice: ["How would you like to meet?", "어떻게 만나고 싶나요?"],
   birthRandom: ["Surprise me · Random companion", "랜덤으로 만나기"],
@@ -59,7 +67,7 @@ export const messages = {
   startHelp: ["Random companions start with an included baby picture. Choosing your own artwork uses AI to check the source and create a custom baby portrait. At levels 10, 30 and 50, evolution automatically creates a new portrait from the previous appearance using your Anna image allowance.", "랜덤으로 만나면 기본 유년기 그림이 제공돼요. 내 작품으로 만나면 AI로 참고 이미지를 확인하고 유년기 모습을 생성해요. 10·30·50레벨 진화 시 이전 모습을 참조해 새 그림을 자동 생성하며 Anna 이미지 사용량을 소모해요."],
   firstSteps: ['Your first few minutes together', '친구와 함께하는 첫 몇 분'],
   guideCare: ['Find the care buttons', '돌봄 버튼 보러 가기'],
-  guideCareHelp: ['Try Feed or Play below. Successful care can help your companion grow; each action has its own limits.', '아래에서 밥주기나 놀아주기를 해 보세요. 성공한 돌봄은 성장에 도움이 되며, 행동마다 이용 제한이 있어요.'],
+  guideCareHelp: ['Try Feed or Play below. Successful care helps your companion grow and triggers a short AI chat reaction using your Anna allowance; each action has its own limits.', '아래에서 밥주기나 놀아주기를 해 보세요. 성공한 돌봄에는 Anna 사용량으로 짧은 AI 채팅 반응이 이어져요. 행동마다 이용 제한이 있어요.'],
   guideChat: ['Prepare a hello', '인사말 준비하기'],
   guideChatHelp: ['Optional: prepare a message, then press Send when ready. AI replies use your Anna allowance and do not award game XP.', '선택 사항: 인사말을 준비한 뒤 원할 때 전송하세요. AI 답장은 Anna 사용량을 소모하며 게임 경험치를 지급하지 않아요.'],
   guideHello: ['Hi! It is nice to meet you. How are you feeling today?', '안녕! 만나서 반가워. 오늘 기분은 어때?'],
@@ -130,7 +138,7 @@ export const messages = {
   moodSuggestion: ['How are you feeling?', '오늘 기분은?'], supportSuggestion: ['I could use some encouragement', '응원이 필요해'],
   moodPrompt: ['How are you feeling today?', '오늘 기분이 어때?'], supportPrompt: ['Today was a little tough. Could you cheer me on?', '오늘 조금 힘들었어. 응원해 줄래?'],
   chatLabel: ['A message for your companion', '친구에게 할 말'], chatPlaceholder: ['Tell your companion about your day', '친구에게 한마디 건네 보세요'],
-  send: ['Send message', '메시지 보내기'], chatUsage: ['Chat uses your Anna AI allowance. Your recent conversation is remembered.', '대화는 Anna AI 사용량을 이용해요. 최근 대화를 기억합니다.'],
+  send: ['Send message', '메시지 보내기'], chatUsage: ['Chat and automatic care reactions use your Anna AI allowance. Your recent conversation is remembered.', '대화와 자동 돌봄 반응은 Anna AI 사용량을 이용해요. 최근 대화를 기억합니다.'],
   care: ['Time together', '함께하는 시간'], feed: ['Feed', '밥 주기'], snack: ['Treat', '간식'], play: ['Play', '놀아 주기'], train: ['Train', '훈련'], walk: ['Walk', '산책'], sleep: ['Sleep', '재우기'], attendance: ['Daily gift', '출석 선물'], battle: ['Battle', '배틀하기'], flee: ['Walk away', '지나가기'], claimquest: ['Quest reward', '퀘스트 보상'], start: ['First meeting', '처음 만나기'],
   walkHint: ['+1 every 5 min · Max 5', '5분마다 +1 · 최대 5회'], walkEnergy: ['{charges}/{capacity} · +1 every 5 min', '{charges}/{capacity}회 · 5분마다 +1'],
   feedHint: ['1 food · Every hour', '사료 1 · 1시간 간격'], threeDaily: ['3 times a day', '하루 3번'], hourly: ['Every hour', '1시간 간격'], fiveDaily: ['5 times a day', '하루 5번'], sleepHint: ['Bonus XP tomorrow', '내일 경험치 보너스'], onceDaily: ['Once a day', '하루 한 번'],

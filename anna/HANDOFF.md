@@ -245,3 +245,7 @@ Orca 브라우저의 Anna 대시보드 → Apps → Notebuddy에서 검증했습
 - 이 PC의 WSL 조회가 `REGDB_E_CLASSNOTREG`로 실패하여 Linux 빌드는 GitHub CI에서 수행했습니다. 사용자 OS 설정은 변경하지 않았습니다.
 - 개발 앱 ID 451/452/453과 본 앱 450의 저장은 별개입니다.
 - Orca 캡처·진단 파일은 작업용 workspace에만 있으며 Git에 포함하지 않았습니다. iframe URL에는 임시 인증 토큰이 있으므로 경로만 출력하세요.
+
+## Automatic care reactions · 2026-10-10
+
+Implemented on develop after user approval of per-action Anna allowance. Successful actions queue short reactions with pending/failure/save-only recovery, receipt-based deduplication and companion guards. [CARE_REACTIONS.md](CARE_REACTIONS.md) describes scope and limits. Review candidate/release unchanged.
