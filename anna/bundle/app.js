@@ -25,6 +25,7 @@ function controls(value){
   busy=value;
   document.querySelectorAll('button,input,select').forEach(e=>e.disabled=value);
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingResetRequest||view?.reset_pending))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
+  $('#guide-chat').disabled=value||!!(pendingChat||pendingAction||pendingRemoval||pendingResetRequest||view?.reset_pending)||!view?.status;
   $('#retry-chat').hidden=!pendingChat;
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage))$('#clean-portraits').disabled=true;
@@ -301,6 +302,15 @@ $('#language').addEventListener('change',async()=>{
   $('#game').hidden=true;$('#welcome').hidden=true;text('#connection',tr('connecting'));
   await refresh();if(!saved)notice(tr('languageUnsaved'));
 });
+function guideTarget(selector){
+  const target=$(selector);target.scrollIntoView({block:'center'});target.focus({preventScroll:true});
+}
+$('#guide-care').addEventListener('click',()=>{if(!busy)guideTarget('[data-action="feed"]');});
+$('#guide-chat').addEventListener('click',()=>{
+  if(busy||pendingChat||pendingAction||pendingRemoval||pendingResetRequest||view?.reset_pending||!view?.status)return;
+  const input=$('#chat-input');if(!input.value.trim())input.value=tr('guideHello');guideTarget('#chat-input');
+});
+$('#guide-album').addEventListener('click',()=>{if(!busy)guideTarget('.album-card');});
 $('#privacy').addEventListener('click',()=>$('#privacy-dialog').showModal());
 $('#refresh').addEventListener('click',refresh);
 $('#start-form').addEventListener('submit',e=>{e.preventDefault();act('start',{name:$('#pet-name').value.trim()});});

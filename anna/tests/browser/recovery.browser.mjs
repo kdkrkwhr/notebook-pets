@@ -297,3 +297,31 @@ test('removed portrait references clear cached images even during a URL outage',
  assert.doesNotMatch(await p.locator('#image-caption').innerText(),/AI portrait/);
  assert.equal(await p.locator('#notice').isVisible(),false);
 });
+
+
+test('first visit guides care, optional chat and album without automatic AI calls; progress survives reopen',async t=>{
+ const p=await setup(t);assert.match(await p.locator('.welcome-help').innerText(),/does not generate an AI image/);
+ await start(p);assert.equal(await p.locator('#first-steps').isVisible(),true);
+ await p.locator('#guide-care').click();assert.equal(await p.evaluate(()=>document.activeElement.dataset.action),'feed');
+ assert.equal((await calls(p,'feed')).length,0);
+ await p.keyboard.press('Enter');await idle(p);assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
+ await p.locator('#guide-chat').click();assert.match(await p.locator('#chat-input').inputValue(),/nice to meet/);
+ assert.equal((await calls(p,'llm')).length,0);assert.equal((await calls(p,'image')).length,0);
+ await p.locator('#chat-input').fill('My own hello');await p.locator('#guide-chat').click();assert.equal(await p.locator('#chat-input').inputValue(),'My own hello');
+ await p.locator('#chat-form button').click();await idle(p);
+ await p.locator('#guide-album').click();assert.equal(await p.evaluate(()=>document.activeElement.classList.contains('album-card')),true);
+ assert.equal((await calls(p,'image')).length,0);
+ await p.reload();await idle(p);assert.equal(await p.locator('#name').innerText(),'Recovery buddy');
+ assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');assert.match(await p.locator('#messages').innerText(),/My own hello/);
+});
+test('first-steps guide fits a narrow screen, translates, collapses and respects pending actions',async t=>{
+ const p=await setup(t);await p.setViewportSize({width:360,height:740});await start(p);
+ await p.locator('#language').selectOption('ko');await idle(p);
+ assert.match(await p.locator('#first-steps summary').innerText(),/첫 몇 분/);
+ await p.locator('#guide-chat').click();assert.match(await p.locator('#chat-input').inputValue(),/만나서 반가워/);
+ assert.ok(await p.evaluate(()=>document.documentElement.scrollWidth<=document.documentElement.clientWidth));
+ await p.locator('#first-steps summary').click();assert.equal(await p.locator('#guide-chat').isVisible(),false);
+ await p.locator('#first-steps summary').click();await fault(p,{lost:true});await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.equal(await p.locator('#guide-chat').isDisabled(),true);
+ await p.locator('#retry-action').click();await idle(p);assert.equal(await p.locator('#guide-chat').isDisabled(),false);
+});

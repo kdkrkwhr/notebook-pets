@@ -1,6 +1,16 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  startHelp: ['Start with a name. A starter picture is included; creating your companion does not generate an AI image. Care first, then try an optional chat or portrait using your Anna AI allowance.', '이름을 지으면 기본 그림과 함께 친구를 만나요. 처음 만날 때 AI 그림을 생성하지 않습니다. 먼저 돌봐 주고, 원할 때 Anna AI 사용량으로 대화하거나 새 그림을 만들어 보세요.'],
+  firstSteps: ['Your first few minutes together', '친구와 함께하는 첫 몇 분'],
+  guideCare: ['Find the care buttons', '돌봄 버튼 보러 가기'],
+  guideCareHelp: ['Try Feed or Play below. Successful care can help your companion grow; each action has its own limits.', '아래에서 밥주기나 놀아주기를 해 보세요. 성공한 돌봄은 성장에 도움이 되며, 행동마다 이용 제한이 있어요.'],
+  guideChat: ['Prepare a hello', '인사말 준비하기'],
+  guideChatHelp: ['Optional: prepare a message, then press Send when ready. AI replies use your Anna allowance and do not award game XP.', '선택 사항: 인사말을 준비한 뒤 원할 때 전송하세요. AI 답장은 Anna 사용량을 소모하며 게임 경험치를 지급하지 않아요.'],
+  guideHello: ['Hi! It is nice to meet you. How are you feeling today?', '안녕! 만나서 반가워. 오늘 기분은 어때?'],
+  guideAlbum: ['See the growth album', '성장 앨범 보러 가기'],
+  guideAlbumHelp: ['Meet new growth stages at levels 10, 30 and 50. New AI portraits are optional and use your Anna allowance.', '10·30·50레벨에 새 성장 단계를 만나요. 새 AI 그림은 선택 사항이며 Anna 사용량을 소모해요.'],
+  guideReturn: ['Come back with the same Anna account to continue. Wait for actions and saves to finish before closing the app; if a result is uncertain, use the retry shown on screen.', '같은 Anna 계정으로 돌아오면 이어서 키울 수 있어요. 행동과 저장이 끝난 뒤 창을 닫고, 결과를 확인하지 못했다면 화면에 표시된 재시도를 이용하세요.'],
   partnerChanged: ['Your companion changed in another window. Previous pending work was cleared. Refresh to load the current chat and album.', '다른 창에서 친구가 바뀌어 이전 친구의 대기 작업을 지웠어요. 새로고침하면 현재 대화와 앨범을 불러옵니다.'],
   resetGame: ['Start over with a new companion…', '새 친구로 초기화…'],
   newPetName: ['New companion’s name', '새 친구 이름'],
