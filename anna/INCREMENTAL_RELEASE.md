@@ -1,5 +1,17 @@
 # Incremental Anna updates — 10 October 2026
 
+## Care reaction candidate 0.2.4
+
+Source: `8c7025a`, tag `anna-v0.2.4`, branch `release-prep/anna-care-reactions`. Adds asynchronous AI chat reactions after successful care actions to 0.2.3. Rejected actions do not request a reaction. Game changes remain committed when AI fails; received but unsaved replies support a save-only retry. Reaction reservations prevent automatic regeneration on reload within the retained chat history; this is not a permanent cross-runtime exactly-once guarantee.
+
+Local verification passed: strict manifest, 36 UI unit tests and 26 browser scenarios. Core CI run 38040267250 and Anna Windows/Linux run 38040267127 passed for the exact source commit. Executa remains 0.1.13; the unchanged tested binaries were reused.
+
+Official push completed with working revision 21 and 101 files ready, without a WAF rejection. Cut 0.2.4 created app version 1241 using Executa version 704. Working-draft installation succeeded and the loaded agent reports 0.1.13. The app loaded `/anna-apps/kdkrkwhr/notebuddy/0.0.0-draft/index.html` with Connected status.
+
+Live verification preserved the existing mochi companion. Play was rejected during cooldown without requesting an AI reaction. One walk was then committed: peaceful outcome, +0 XP, XP remained 25/100. Its AI reply arrived successfully and remained in chat after dashboard reload; connection and pet identity also remained intact. This verification consumed one walk charge and an AI request. No reset, image generation or battle was performed.
+
+Status checked after verification: pending_review, unpublished, review candidate still 0.2.1, newest uploaded version 0.2.4. No review cancellation or resubmission was performed. Develop retains its broader feature set through an ancestry-only merge; release remains pinned to the existing review candidate. This successful upload does not establish that the portrait-features.mjs WAF issue is resolved.
+
 ## Walk candidate 0.2.3
 
 Source: `f559932`, tag `anna-v0.2.3`, branch `release-prep/anna-walk-recharge`. Adds only rechargeable walks to reset candidate 0.2.2. Executa 0.1.13 uses a five-charge cap and one charge per 300 seconds, including offline time. Each walk chooses one outcome: quiet 50%, XP 30% (10/20/30), encounter 20%. Pending encounters must still be resolved before another walk. Retrying a committed request neither redraws its outcome nor consumes another charge.
