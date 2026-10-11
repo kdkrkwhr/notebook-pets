@@ -100,6 +100,33 @@ class AdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(self.storage.value, before)
         self.assertEqual(len(response['album']['entries']), 4)
 
+    async def test_drawing_species_and_element_are_applied_once_before_save(self):
+        args = {'command':'start','name':'Snake','request_id':'drawing','birth_species':'reptile','birth_element':'fire'}
+        first = await self.service.invoke(args)
+        self.assertTrue(first['ok'])
+        self.assertEqual(first['species_key'], 'reptile')
+        self.assertEqual(first['element_key'], 'fire')
+        self.assertEqual(self.storage.value['species'], 'reptile')
+        second = await self.service.invoke({**args,'birth_species':'bird','birth_element':'water'})
+        self.assertEqual(second['pet_id'], first['pet_id'])
+        self.assertEqual(second['species_key'], 'reptile')
+        self.assertEqual(second['element_key'], 'fire')
+        other = await self.service.invoke({**args,'request_id':'another','birth_species':'bird'})
+        self.assertFalse(other['ok'])
+        self.assertEqual(self.storage.value['species'], 'reptile')
+
+    async def test_drawing_random_element_and_invalid_traits(self):
+        for bad in [{'birth_species':'snake'}, {'birth_species':'reptile','birth_element':'ice'},
+                    {'birth_element':'fire'}, {'birth_species':None}]:
+            with self.assertRaises(ValueError):
+                await self.service.invoke({'command':'start','request_id':'bad',**bad})
+        first = await self.service.invoke({'command':'start','request_id':'valid','birth_species':'reptile','birth_element':'random'})
+        self.assertTrue(first['ok'])
+        self.assertEqual(first['species_key'], 'reptile')
+        self.assertIn(first['element_key'], ('fire','water','thunder','nature','wind','earth','light','dark'))
+        with self.assertRaises(ValueError):
+            await self.service.invoke({'command':'feed','request_id':'feed','birth_species':'reptile'})
+
     async def test_retried_action_awards_once(self):
         await self.start()
         request = {'command':'feed','request_id':'feed-1'}

@@ -1,10 +1,10 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {reviewDecision,ArtworkError,artworkErrorKey,birthPrompt,sourcePath} from '../bundle/birth-art.mjs';
+import {reviewDecision,ArtworkError,artworkErrorKey,birthPrompt,artworkGrowthPrompt,sourcePath} from '../bundle/birth-art.mjs';
 
 test('art review requires explicit structured approval; failures never default to approval',()=>{
   const response=text=>({content:{text}});
-  assert.equal(reviewDecision(response('{"decision":"allow","features":"round ears"}')),'round ears');
+  assert.deepEqual(reviewDecision(response(JSON.stringify({decision:'allow',features:'round ears',species:'mammal',element:'random',confidence:'clear'}))),{features:'round ears',species:'mammal',element:'random',confidence:'clear'});
   for(const content of ['', 'yes', '{}','{"decision":"allow"}','{"decision":"allow","features":""}'])assert.throws(()=>reviewDecision(response(content)),e=>e.key==='artCheckFailed');
   assert.throws(()=>reviewDecision(response('{"decision":"reject"}')),e=>e.key==='artRejected');
   assert.throws(()=>reviewDecision(response('{"decision":"unclear"}')),e=>e.key==='artUnclear');
@@ -24,9 +24,15 @@ test('birth prompt preserves server chosen traits and only accepts own portrait 
 });
 
 
-test('source artwork cannot override the assigned species anatomy',()=>{
- const prompt=birthPrompt({species_key:'mammal',element_key:'fire',image_prompt:'soft fur, rounded ears, paw pads; small flames'},'a metal robot with jointed arms');
- assert.match(prompt,/Authoritative game anatomy and element design: soft fur/);
- assert.match(prompt,/outranks every conflicting source observation/);
- assert.match(prompt,/never a robotic metal shell/);
+test('drawing anatomy outranks category stereotypes at birth and evolution',()=>{
+ const view={species_key:'reptile',element_key:'fire',stage:3,image_prompt:'four feet'};
+ const prompt=birthPrompt(view,'a long green snake, no legs, blue eyes');
+ assert.match(prompt,/snake stays legless/);assert.match(prompt,/long green snake/);assert.doesNotMatch(prompt,/four feet/);
+ const growth=artworkGrowthPrompt(view,'a long green snake, no legs, blue eyes');
+ assert.match(growth,/mature adult/);assert.match(growth,/never add unrelated anatomy/);assert.match(growth,/no legs/);
+});
+test('unknown classifications fail closed, absent element cue is explicit random',()=>{
+ const base={decision:'allow',features:'snake, no legs',species:'reptile',element:'random',confidence:'clear'};
+ for(const bad of [{species:'snake'},{element:'ice'},{confidence:'maybe'},{features:'x'.repeat(1201)}])assert.throws(()=>reviewDecision({content:{text:JSON.stringify({...base,...bad})}}),ArtworkError);
+ assert.equal(reviewDecision({content:{text:JSON.stringify(base)}}).element,'random');
 });

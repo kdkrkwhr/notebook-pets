@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 11 October 2026. This notice describes Notebuddy 0.3.3. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 11 October 2026. This notice describes Notebuddy 0.3.4. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -30,7 +30,7 @@ A basic story is saved before requesting AI. An unavailable, malformed or interr
 
 Choosing drawing mode sends a 512 by 512 PNG copy of the sketch you draw in the app to Anna's LLM service for an image suitability check and a short description of visible features. This check uses your AI allowance, including when no pet is created. Local blank-canvas checks alone do not send an image. The app does not offer photo/file upload, drag-and-drop import or clipboard image import. Drawing and choosing the preview alone do not call AI; choosing Meet or explicitly continuing creation starts the check and generation flow.
 
-If the check accepts the source, the game assigns random species and element, and the normalized reference and short visual description are saved in Anna app storage. Only the extracted textual features and the assigned game traits are sent to Anna's image service to generate the baby; the source image URL is not sent to the image generator. The app stores both the reference and generated portrait under its portraits prefix. Failed, replaced or abandoned references may remain until reset or removal; the latest source remains indexed. The app does not promise that its AI check detects every unsuitable input or that a provider deletes submitted content after a refusal. Provider logs, backups and billing remain subject to Anna/provider handling.
+If the check accepts the source, AI infers a species from its shape and an element from visible colors or motifs. Species interpretations marked uncertain require user confirmation before creation. No element cue means only the element is chosen randomly. The server validates those categories and applies them only on first creation; retries and replacement artwork do not change an existing companion’s traits. The normalized reference and visual description (up to 1200 characters) are saved in Anna app storage. Only the extracted textual features and the confirmed game traits are sent to Anna's image service to generate the baby; the source image URL is not sent to the image generator. The app stores both the reference and generated portrait under its portraits prefix. Failed, replaced or abandoned references may remain until reset or removal; the latest source remains indexed. The app does not promise that its AI check detects every unsuitable input or that a provider deletes submitted content after a refusal. Provider logs, backups and billing remain subject to Anna/provider handling.
 
 The in-browser editor and uncommitted generated image are held in memory. Closing the page may require reselecting unsaved artwork or making another paid generation request. The app does not automatically regenerate an unfinished custom baby when reopened. Choosing the default appearance does not reroll the companion or erase the saved source file. Existing reset/removal covers these source files and descriptions as well as generated portraits. No new file bucket or browser storage key is introduced.
 
@@ -39,6 +39,8 @@ The in-browser editor and uncommitted generated image are held in memory. Closin
 After a successful feed, treat, play, rest, training, walk, battle, walk-away, attendance or quest reward action, the UI queues one short AI reaction. The request includes the pet name, species, element, level, fullness, bond and the actual action outcome (including awarded XP or loot when present). It does not send uploaded artwork or conversation history for this reaction. The reaction uses Anna LLM allowance independently of gameplay, and cannot change rewards or statistics.
 
 A marker is written to the existing chat record before each AI request. An interrupted or failed request is not automatically retried on refresh/reopen, and may still have used allowance. A received but unsaved reply remains in memory for an explicit save-only retry. Markers and replies count toward the existing 24-entry retention limit and are covered by the same reset/removal process. Cross-runtime atomic first-row creation and provider exactly-once billing are not guaranteed.
+
+The saved original drawing description is also used for later redraws and growth-stage portraits, prioritizing silhouette, limb count and markings. This is text-guided generation, not a promise of pixel-exact copying or direct image-to-image editing. Random starts still choose both species and element randomly.
 
 ## AI processing
 

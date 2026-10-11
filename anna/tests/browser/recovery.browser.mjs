@@ -779,3 +779,20 @@ test('walk story AI failure has a playable fallback; reset clears it',async t=>{
  assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/walk-story-v1']),{});
  assert.equal(await p.locator('#walk-story').isVisible(),false);
 });
+
+
+test('snake drawing determines traits and preserves the legless body in its prompt',async t=>{
+ const p=await setup(t,{artSpecies:'reptile',artElement:'fire',artFeatures:'long green snake, no legs, blue eyes'});await artwork(p);await artStart(p);
+ const born=(await calls(p,'start'))[0].args;assert.equal(born.birth_species,'reptile');assert.equal(born.birth_element,'fire');
+ assert.equal(await p.evaluate(()=>window.hostTest.state.save.species_key),'reptile');
+ const prompt=(await calls(p,'image'))[0].options.prompt;assert.match(prompt,/long green snake, no legs/);assert.match(prompt,/snake stays legless/);
+});
+test('ambiguous classification waits for confirmation; cancel never creates a pet',async t=>{
+ const p=await setup(t,{artConfidence:'uncertain',artSpecies:'monster',artElement:'random'});await artwork(p);await p.locator('#pet-name').fill('Sketch');await p.locator('#start-form button').click();
+ await p.waitForFunction(()=>document.querySelector('#art-traits-dialog').open);
+ assert.equal((await calls(p,'start')).length,0);
+ await p.locator('#art-traits-dialog button[value=cancel]').click();await idle(p);assert.equal(await p.locator('#welcome').isVisible(),true);assert.equal((await calls(p,'image')).length,0);
+ await p.locator('#start-form button').click();await p.waitForFunction(()=>document.querySelector('#art-traits-dialog').open);
+ await p.locator('#art-traits-dialog button[value=accept]').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,1);assert.equal((await calls(p,'start')).length,1);assert.equal((await calls(p,'start'))[0].args.birth_species,'monster');
+});

@@ -1,7 +1,7 @@
 {
   "name": "tool-dev-notebuddy",
   "display_name": "Notebuddy Game",
-  "version": "0.1.14",
+  "version": "0.1.15",
   "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
   "host_capabilities": [
     "aps.kv"
@@ -48,6 +48,40 @@
           "type": "string",
           "required": false,
           "description": "Pet name, only for start. Up to 24 characters."
+        },
+        {
+          "name": "birth_species",
+          "type": "string",
+          "required": false,
+          "enum": [
+            "mammal",
+            "bird",
+            "reptile",
+            "machine",
+            "fairy",
+            "monster",
+            "dragon",
+            "plant",
+            "ghost"
+          ],
+          "description": "Drawing-based first creation only: species inferred from the user artwork. Omit for a random start. Cannot change an existing pet."
+        },
+        {
+          "name": "birth_element",
+          "type": "string",
+          "required": false,
+          "enum": [
+            "fire",
+            "water",
+            "thunder",
+            "nature",
+            "wind",
+            "earth",
+            "light",
+            "dark",
+            "random"
+          ],
+          "description": "Drawing-based first creation only: visible element cues, or random when absent. Requires birth_species."
         },
         {
           "name": "language",
