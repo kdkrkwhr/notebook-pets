@@ -111,3 +111,6 @@ h1,h2,p,label,.actions b,.actions small{word-break:keep-all;overflow-wrap:break-
 @keyframes birth-breathe{50%{transform:scale(1.18);opacity:.45}}
 @media(prefers-reduced-motion:reduce){.birth-recovery[data-working="true"] .birth-orbit span{animation:none}}
 @media(max-width:480px){.birth-recovery{padding:32px 20px}.birth-recovery .birth-buttons{flex-direction:column;align-items:stretch}.birth-orbit{width:88px;height:88px}}
+
+.walk-story{padding:var(--card-space);margin-bottom:var(--section-gap)}
+.walk-story p{line-height:1.7;white-space:pre-line}.walk-story .birth-buttons{margin:20px 0}.walk-story small{display:block;margin-top:16px}.story-ending{border-left:3px solid #a9bb9d;padding:12px 16px;background:#f3f5ef;border-radius:4px}

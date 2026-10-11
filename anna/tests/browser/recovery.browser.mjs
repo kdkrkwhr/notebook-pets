@@ -442,3 +442,28 @@ test('failed drawing stays unrevealed after reload until an explicit default cho
  assert.equal(await p.locator('#birth-recovery').isVisible(),false);
  assert.equal((await calls(p,'image')).length,0);
 });
+
+
+async function quietStoryWalk(p){
+ await fault(p,{walkOutcome:'quiet'});
+ await p.evaluate(()=>{let id='';for(let i=0;i<20;i++){id='story'+i;let hash=0;for(const c of `nb2:${window.hostTest.state.sequence}:${id}`)hash=(Math.imul(hash,31)+c.charCodeAt(0))|0;if(!(hash&1))break;}crypto.randomUUID=()=>id;});
+ await p.locator('[data-action="walk"]').click();
+ await p.waitForFunction(()=>document.querySelector('#story-choices button'));
+}
+test('AI walk story offers two choices, saves ending and reopens without another request',async t=>{
+ const p=await setup(t);await start(p);await quietStoryWalk(p);
+ assert.equal(await p.locator('#story-choices button').count(),2);
+ assert.equal(await p.locator('[data-action="walk"]').isDisabled(),true);
+ const xp=await p.locator('#xp-label').innerText();
+ await p.locator('#story-choices button').first().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ assert.equal(await p.locator('#xp-label').innerText(),xp);assert.equal((await calls(p,'walk')).length,1);assert.equal((await calls(p,'llm')).length,1);
+ await p.reload();await idle(p);assert.equal(await p.locator('#story-ending').isVisible(),true);assert.equal((await calls(p,'llm')).length,0);
+});
+test('walk story AI failure has a playable fallback; reset clears it',async t=>{
+ const p=await setup(t,{llm:true});await start(p);await quietStoryWalk(p);
+ assert.match(await p.locator('#story-status').innerText(),/prepared story/);
+ await p.locator('#story-choices button').last().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ await resetDialog(p);await confirmReset(p);
+ assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/walk-story-v1']),{});
+ assert.equal(await p.locator('#walk-story').isVisible(),false);
+});

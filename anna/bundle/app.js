@@ -1,3 +1,5 @@
+import {createWalkStories,storyEvent} from './walk-stories.mjs';
+let stories;
 import {createArtworkEditor} from './birth-art.mjs';
 import {createBirthFlow} from './birth-flow.mjs';
 let birth,artEditor;
@@ -36,7 +38,7 @@ function controls(value){
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage||birth?.hasOutput()))$('#clean-portraits').disabled=true;
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
   if(!value&&anna&&!pendingRemoval&&!pendingAction&&!pendingResetRequest&&!view?.reset_pending&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
-  birth?.render();
+  birth?.render();stories?.render();
 }
 function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
@@ -113,10 +115,10 @@ function render(){
     const subtitle=document.createElement('small');subtitle.textContent=entry.reached?tr(entry.current?'currentStage':'memoryStage'):tr('futureStage',{level:entry.min_level});
     item.append(frame,title,subtitle);$('#album').append(item);
   }
-  drawChat();birth?.render();
+  drawChat();birth?.render();stories?.render();
 }
 function forgetCachedData(){
-  birth?.clear();
+  birth?.clear();stories?.clear();
   reactions?.clear();reactionFeedback();
   battleScene.close();
   history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
@@ -151,6 +153,7 @@ async function readExtras(){
   if(results[0].status==='fulfilled')history=mergeHistory(results[0].value.value,pendingChat||[]);
   if(results[1].status==='fulfilled')art=results[1].value.value||{};
   if(results.some(r=>r.status==='rejected'))notice(tr('extrasError'));
+  await stories?.load(view);
   urls={};await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)&&!key.endsWith('/birth-source')).map(async([key,entry])=>{try{urls[key]=(await anna.files.download_url({path:entry.path})).get_url;}catch{/* Keep the bundled portrait visible. */}}));
 }
 async function invoke(command,extra={}){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'game',args:{command,...extra,language}}, {timeoutMs:60000}));}
@@ -165,15 +168,16 @@ async function refresh(){
   finally{controls(false);}
 }
 async function act(command,extra={},retry=false){
-  if(busy||pendingRemoval||(!retry&&pendingAction))return;controls(true);notice();
+  if(busy||pendingRemoval||(!retry&&pendingAction)||command==='walk'&&stories?.blocksWalk())return;controls(true);notice();
   if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
-  let started=false,reaction=null;
+  let started=false,reaction=null,walkStory=null;
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
     const before=view;const portrait=urls[imageKey(before)];
     const {command:action,...args}=pendingAction;adoptView(await invoke(action,args));pendingAction=null;render();
     started=view.ok&&action==='start';
-    reaction=reactionEvent(action,args.request_id,view,language);
+    walkStory=storyEvent(action,args.request_id,view,language);
+    reaction=walkStory?null:reactionEvent(action,args.request_id,view,language);
     let message=view.msg;
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
@@ -181,6 +185,7 @@ async function act(command,extra={},retry=false){
     if(view.ok&&action==='battle')battleScene.show(view,before,portrait,language);
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;}
   finally{controls(false);}
+  if(walkStory)void stories.start(walkStory);
   reactions.enqueue(reaction);
   if(started)await birth.started(view);
 }
@@ -378,5 +383,19 @@ document.addEventListener('artwork-selected',()=>birth.selected());
 $('#replace-birth-source').addEventListener('click',()=>artEditor.open());
 $('#retry-birth').addEventListener('click',()=>birth.run());
 $('#default-birth').addEventListener('click',()=>birth.fallback());
+stories=createWalkStories({anna:()=>anna,active:assertActive,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),render:({current,working,feedback})=>{
+  const panel=$('#walk-story');panel.hidden=!view?.status||(!current&&!working&&!feedback);
+  const done=current?.state==='done';
+  text('#story-heading',current?.story.title||tr('storyHeading'));
+  text('#story-scene',current?.story.scene||'');
+  text('#story-status',feedback?tr(feedback):working?tr('storyWorking'):current?.fallback?tr('storyFallback'):'');
+  $('#story-choices').replaceChildren();
+  if(current&&!done&&!working)current.story.choices.forEach((choice,index)=>{
+    const button=document.createElement('button');button.type='button';button.className='quiet';button.textContent=choice.label;button.disabled=busy||!!(pendingAction||pendingRemoval||pendingResetRequest);button.addEventListener('click',()=>stories.choose(index));$('#story-choices').append(button);
+  });
+  text('#story-ending',done?`${current.story.choices[current.choice].label} — ${current.story.choices[current.choice].ending}`:'');$('#story-ending').hidden=!done;
+  if(working||current&&!done)$('[data-action="walk"]').disabled=true;
+  else if(!busy&&!pendingAction&&!pendingRemoval&&!pendingResetRequest&&view?.status)$('[data-action="walk"]').disabled=false;
+}});
 translate();
 await refresh();

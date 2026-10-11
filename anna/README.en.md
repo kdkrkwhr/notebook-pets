@@ -2,7 +2,11 @@
 
 [한국어](README.md) · **English**
 
-One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. This candidate is app **0.2.5**, game tool **0.1.13**. See [deployment verification](INCREMENTAL_RELEASE.md) for actual upload/install results; the review candidate remains separate.
+One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. This candidate is app **0.3.3**, game tool **0.1.14**. See [deployment verification](INCREMENTAL_RELEASE.md) for actual upload/install results; the review candidate remains separate.
+
+## Walk stories
+
+Some peaceful walks open a short AI episode with two choices. One request generates both endings; selection adds no AI usage, XP or items. Finish the current episode before another walk. Reopening restores the latest choice without generating again. AI failure uses a prepared story. Stories are part of reset/removal. New stories use Anna allowance.
 
 ## Draw your first companion
 

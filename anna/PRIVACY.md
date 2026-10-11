@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 11 October 2026. This notice describes Notebuddy 0.2.8. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 11 October 2026. This notice describes Notebuddy 0.3.3. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -9,6 +9,7 @@ Last updated: 11 October 2026. This notice describes Notebuddy 0.2.8. Applies to
 | Companion name, species, element, progress, inventory, daily activity, growth album milestones and recent action results | Saved in your authenticated Anna account’s Notebuddy Game tool storage, to continue your game and prevent repeat rewards. |
 | Recent conversation | Up to 24 chat entries, including care reactions and pending/failure markers, are retained by the app in Anna app storage to show your conversation and provide recent context. This limit does not describe Anna or AI-provider logs. |
 | Portrait index and generated portrait files | Saved in Anna app storage and file storage for the growth album. Drawing a replacement changes the displayed portrait; older files are not automatically erased. |
+| Latest walk story, selected ending and up to 64 recent story request identifiers | Saved in Anna app storage to resume a choice and suppress repeated requests. Starting over or removing saved data clears this record. |
 | Language choice | Saved in this browser’s local storage. It is not synced across devices by Notebuddy. |
 
 The app does not request your real name, email, contacts or a separate API key. You choose your companion’s name and anything you type into chat. Avoid entering sensitive personal information. Anna authenticates access to the account’s saved data; Notebuddy’s game commands do not accept another user’s account ID.
@@ -18,6 +19,12 @@ The app does not request your real name, email, contacts or a separate API key. 
 After a successful feed, treat, play, rest, training, walk, battle, walk-away, attendance or quest reward action, the UI queues one short AI reaction. The request includes the pet name, species, element, level, fullness, bond and the actual action outcome (including awarded XP or loot when present). It does not send uploaded artwork or conversation history for this reaction. The reaction uses Anna LLM allowance independently of gameplay, and cannot change rewards or statistics.
 
 A marker is written to the existing chat record before each AI request. An interrupted or failed request is not automatically retried on refresh/reopen, and may still have used allowance. A received but unsaved reply remains in memory for an explicit save-only retry. Markers and replies count toward the existing 24-entry retention limit and are covered by the same reset/removal process. Cross-runtime atomic first-row creation and provider exactly-once billing are not guaranteed.
+
+## Walk stories
+
+A stable subset of peaceful walks requests a short AI story instead of the separate care reaction. Only the companion name, species, element and selected language are sent. The request prepares two choices and both endings at once. Choosing an ending makes no AI or game-action request and awards no XP or items. The latest story is retained until replaced by a later story; up to 64 request identifiers are retained for retry suppression.
+
+A basic story is saved before requesting AI. An unavailable, malformed or interrupted AI response can be completed using that basic story. Reopening never automatically requests another AI story. The same storage first-creation and provider billing limitations described above apply. Reset and removal include the story record. Story generation uses Anna allowance even when the response fails.
 
 ## Optional source artwork
 
@@ -80,6 +87,6 @@ You can separately clear the app’s browser language preference through your br
 
 ## Technical reference
 
-The current app uses tool key `notebuddy/game-v1`, app keys `notebuddy/chat-v1` and `notebuddy/art-v1`, app files under `portraits/`, and browser key `notebuddy/language-v1`. Older development installations may hold separate records. These identifiers help scope a future authenticated deletion request; users should not post their values publicly.
+The current app uses tool key `notebuddy/game-v1`, app keys `notebuddy/chat-v1`, `notebuddy/art-v1` and `notebuddy/walk-story-v1`, app files under `portraits/`, and browser key `notebuddy/language-v1`. Older development installations may hold separate records. These identifiers help scope a future authenticated deletion request; users should not post their values publicly.
 
 Anna documents the underlying mechanisms in [Persistent Storage](https://anna.partners/developers/reference/executa-persistent-storage.md), [app storage](https://anna.partners/developers/reference/host-api-storage.md) and [app files](https://anna.partners/developers/reference/host-api-files.md). The data practices above describe this app’s current implementation, not a certification of Anna’s compliance or a substitute for Anna’s own policies.
