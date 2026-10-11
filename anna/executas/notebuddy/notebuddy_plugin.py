@@ -15,7 +15,9 @@ from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.1.14'
+VERSION = '0.1.15'
+BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
+BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'
 READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
@@ -30,6 +32,8 @@ MANIFEST = {
             {'name': 'command', 'type': 'string', 'required': True, 'enum': sorted(ALLOWED),
              'description': 'One game action. status reads current progress; start creates your first partner.'},
             {'name': 'name', 'type': 'string', 'required': False, 'description': 'Pet name, only for start. Up to 24 characters.'},
+            {'name':'birth_species','type':'string','required':False,'enum':list(BIRTH_SPECIES),'description':'Drawing-based first creation only: species inferred from the user artwork. Omit for a random start. Cannot change an existing pet.'},
+            {'name':'birth_element','type':'string','required':False,'enum':list(BIRTH_ELEMENTS),'description':'Drawing-based first creation only: visible element cues, or random when absent. Requires birth_species.'},
             {'name': 'language', 'type': 'string', 'required': False, 'enum': ['en', 'ko'],
              'description': 'Response language. Defaults to English. Presentation only; reuse request_id when switching language on a retry.'},
             {'name': 'request_id', 'type': 'string', 'required': False,
@@ -72,7 +76,7 @@ class GameService:
             return await reset(self.storage, SAVE_KEY, args, lambda payload: asyncio.to_thread(evaluate, payload))
 
     async def invoke(self, args, context=None):
-        if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language'}:
+        if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language', 'birth_species', 'birth_element'}:
             raise ValueError('Invalid game arguments.')
         language = args.get('language', 'en')
         if language not in ('en', 'ko'):
@@ -80,6 +84,11 @@ class GameService:
         command = args.get('command')
         if not isinstance(command, str) or command not in ALLOWED:
             raise ValueError('Unsupported game command.')
+        birth_species = args.get('birth_species')
+        birth_element = args.get('birth_element', 'random')
+        if 'birth_species' in args or 'birth_element' in args:
+            if command != 'start' or birth_species not in BIRTH_SPECIES or birth_element not in BIRTH_ELEMENTS:
+                raise ValueError('Invalid drawing birth traits.')
         name = args.get('name', '')
         if not isinstance(name, str) or len(name) > 24 or any(ord(c) < 32 for c in name):
             raise ValueError('Pet names must be at most 24 characters without control characters.')
@@ -115,7 +124,8 @@ class GameService:
                 computed = await asyncio.to_thread(evaluate, {
                     'command': 'status' if mode == 'expired' else command, 'name': name,
                     'request_id': event_key(event) if event and mode != 'expired' else None,
-                    'state': None if awaiting_start else previous})
+                    'state': None if awaiting_start else previous,
+                    'birth_species': birth_species if mode != 'expired' else None, 'birth_element': birth_element})
                 if mode == 'expired' and computed['result'].get('code') != 'invalid_state':
                     computed['result'] = {'ok': False, 'code': 'request_expired', 'msg': ''}
                 committed = previous

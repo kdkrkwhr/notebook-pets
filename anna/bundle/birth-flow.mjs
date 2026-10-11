@@ -10,7 +10,7 @@ export function createBirthFlow(h){
   const source=()=>h.art()?.[sourceKey(h.view()||{})];
   async function checked(selection){
     if(!selection)throw new ArtworkError('artMissing');
-    if(!selection.features){message('artChecking');try{selection.features=await checkArtwork(h.anna(),selection.blob);}catch(error){throw new ArtworkError(artworkErrorKey(error));}}
+    if(!selection.features){message('artChecking');try{selection.assessment=await checkArtwork(h.anna(),selection.blob);selection.features=selection.assessment.features;}catch(error){throw new ArtworkError(artworkErrorKey(error));}}
     return selection;
   }
   async function setSource(snapshot,entry){
@@ -44,7 +44,7 @@ export function createBirthFlow(h){
           record={...record,phase:'ready'};await setSource(snapshot,record);intent=null;h.editor.clear();
         }
         if(!record||!sourcePath(snapshot,record.path)||!['ready','failed','generating'].includes(record.phase))throw new ArtworkError(record?.phase==='rejected'?'artRejected':'artSelectAgain');
-        if(typeof record.features!=='string'||!record.features||record.features.length>600)throw new ArtworkError('artSelectAgain');
+        if(typeof record.features!=='string'||!record.features||record.features.length>1200)throw new ArtworkError('artSelectAgain');
         await guard();
         const path=`portraits/${owner}/${crypto.randomUUID()}.png`;
         // Reserve before requesting an image, so reopening never silently repeats a paid call.
@@ -75,7 +75,7 @@ export function createBirthFlow(h){
     }finally{h.controls(false);render();}
   }
   async function prepare(){
-    try{preparing=true;render();intent=await checked(h.editor.get());return true;}
+    try{preparing=true;render();intent=await checked(h.editor.get());if(intent.assessment?.confidence==='uncertain'&&!await h.confirm(intent.assessment)){intent=null;return false;}return true;}
     catch(error){message(error instanceof ArtworkError?error.key:artworkErrorKey(error));return false;}
     finally{preparing=false;render();}
   }
@@ -92,5 +92,5 @@ export function createBirthFlow(h){
   }
   function clear(){intent=null;owner=null;output=null;phase='';h.editor.clear();h.panel(false,false);h.clearMessage();}
   function selected(){if(h.view()?.stage===1&&!output){owner=h.view().pet_id;intent=h.editor.get();phase='';render();}}
-  return {prepare,started,run,render,clear,fallback,selected,hasOutput:()=>!!output};
+  return {startTraits:()=>intent?.assessment?{birth_species:intent.assessment.species,birth_element:intent.assessment.element}:{},prepare,started,run,render,clear,fallback,selected,hasOutput:()=>!!output};
 }

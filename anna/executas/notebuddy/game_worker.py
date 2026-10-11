@@ -40,6 +40,23 @@ def run(payload):
         arguments = [payload['name']] if command == 'start' and payload.get('name') else []
         result = engine.execute('1', command, arguments, request_id=payload.get('request_id'))
         current = json.loads(save.read_text(encoding='utf-8')) if save.is_file() else None
+        # Only the new local candidate is adjusted before its single APS commit.
+        # Replays and already-created pets never reapply or reroll these traits.
+        species, element = payload.get('birth_species'), payload.get('birth_element', 'random')
+        if species is not None:
+            if command != 'start' or species not in engine.G['species'] or element not in (*engine.G['elements'], 'random'):
+                raise ValueError('Invalid drawing birth traits')
+            if previous is None and current and result.get('ok'):
+                current['species'] = species
+                if element != 'random':
+                    current['element'] = element
+                result.update(species=engine.G['species'][species]['name_kr'],
+                              element=engine.G['elements'][current['element']]['name_kr'],
+                              image_key=art.describe(current)['key'], image=art.describe(current))
+                request = payload.get('request_id')
+                if request in current.get('processed_requests', {}):
+                    current['processed_requests'][request]['result'] = result.copy()
+                atomic_write_json(save, current)
         status = engine.execute('1', 'status') if current else None
         album = engine.execute('1', 'album').get('album') if current else None
         view = {'status': status, 'album': album}

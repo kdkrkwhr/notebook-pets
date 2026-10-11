@@ -1,6 +1,6 @@
 import {createWalkStories,storyEvent} from './walk-stories.mjs';
 let stories;
-import {createArtworkEditor} from './birth-art.mjs';
+import {createArtworkEditor,artworkGrowthPrompt} from './birth-art.mjs';
 import {createBirthFlow} from './birth-flow.mjs';
 let birth,artEditor;
 import {createReactions,reactionEvent} from './reactions.mjs';
@@ -240,7 +240,8 @@ async function generate(){
   try{
     if(!pendingImage){
       const snapshot=await assertActive();
-      const generated=await anna.image.generate({prompt:`${snapshot.image_prompt}. One single friendly virtual pet, full body centered with generous margins, plain white background, soft painted game character illustration, smooth warm shading, delicate warm outlines, pastel colors. No text, lettering, notebook, desk, scenery, panels, photorealism or 3D rendering.`,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
+      const originalFeatures=art[`${snapshot.pet_id}/birth-source`]?.features;
+      const generated=await anna.image.generate({prompt:typeof originalFeatures==='string'&&originalFeatures?artworkGrowthPrompt(snapshot,originalFeatures):`${snapshot.image_prompt}. One single friendly virtual pet, full body centered with generous margins, plain white background, soft painted game character illustration, smooth warm shading, delicate warm outlines, pastel colors. No text, lettering, notebook, desk, scenery, panels, photorealism or 3D rendering.`,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
       const url=generated.images?.[0]?.url;if(!url)throw new Error('no image');
       pendingImage={key:imageKey(snapshot),url,path:`portraits/${snapshot.pet_id}/${crypto.randomUUID()}.png`};
     }
@@ -340,7 +341,7 @@ $('#start-form').addEventListener('submit',async e=>{
     controls(true);let accepted=false;try{accepted=await birth.prepare();}finally{controls(false);}
     if(!accepted)return;
   }else birth.clear();
-  await act('start',{name});
+  await act('start',{name,...birth.startTraits()});
 });
 document.querySelectorAll('[data-action]').forEach(button=>button.addEventListener('click',()=>act(button.dataset.action)));
 $('#retry-action').addEventListener('click',()=>pendingAction&&act(pendingAction.command,{},true));
@@ -365,6 +366,12 @@ birth=createBirthFlow({
   reload:async()=>{await readExtras();render();},
   clearMessage:()=>{birthNotice=null;for(const id of ['#birth-status','#birth-recovery-status']){text(id,'');$(id).hidden=true;}},
   message:birthMessage,
+  confirm:assessment=>new Promise(resolve=>{
+    const dialog=$('#art-traits-dialog');
+    text('#art-traits-summary',tr('artTraitsSummary',{species:tr('species_'+assessment.species),element:tr('element_'+assessment.element)}));
+    dialog.returnValue='';dialog.querySelectorAll('button').forEach(b=>b.disabled=false);
+    dialog.addEventListener('close',()=>resolve(dialog.returnValue==='accept'),{once:true});dialog.showModal();
+  }),
   panel:(visible,pending)=>{
     const panel=$('#birth-recovery');panel.hidden=!visible;panel.dataset.working=String(busy);
     panel.setAttribute('aria-busy',String(visible&&busy));
