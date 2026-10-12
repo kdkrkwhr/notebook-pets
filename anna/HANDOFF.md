@@ -1,4 +1,27 @@
-Latest UI candidate: **0.3.2 / tool 0.1.11** exposes Start over directly in the game. See [current behavior](RESTART_AFTER_REMOVAL.md). Anna deployment remains blocked; installed/review version unchanged.
+# Anna 작업 인계 · 2026-10-12
+
+## 사진 업로드 · 0.3.5 테스트 배포 완료
+
+직접 그리기와 PNG·JPEG·WebP 파일 선택을 같은 분석 → 종족·속성 결정 → 이미지 생성 → 앨범 저장 흐름으로 연결했습니다. 원본은 기기에서 최대 1024픽셀 PNG로 변환하며, 미리보기만으로는 AI를 호출하지 않습니다. 사람 사진도 캐릭터 참고로 허용하도록 프롬프트를 바꾸고 영어·한국어 안내, 후보 소개글과 개인정보 문서를 수정했습니다. 게임 도구는 0.1.15 그대로입니다.
+
+2026-10-12: 단위 테스트 49개, 브라우저 56개, strict manifest 검증 통과. 사진 업로드 관련 검사와 브라우저 종료 모두 정상 완료했습니다. 0.3.5 고정 버전 ID 1298, working revision 33을 업로드·설치했고 실행 도구 0.1.15를 확인했습니다. 심사는 0.3.4 대기를 유지하며 해당 소개글·개인정보 URL도 복원·검증했습니다. 기존 펫 데이터는 변경하지 않았습니다.
+
+다음은 실제 Anna 사진 선택 → 분석 → 생성 → 저장 → 재접속 검증입니다. 실제 모델 닮은 정도와 모바일 파일 선택은 자동 테스트로 보장하지 않습니다. [RELEASE_035.md](RELEASE_035.md)를 확인하세요.
+
+## 기존 0.3.4 심사 접수 기록
+
+- 현재 심사 대상: 앱 **0.3.4** (ID 450, version ID 1282) / 게임 도구 **0.1.15** (Executa 1193, version 711). 서버 상태는 **pending_review**입니다.
+- 0.3.4 소개글, 해당 릴리스의 개인정보 링크, 스크린샷 4장을 `apps sync-meta`로 반영한 뒤 `apps submit-review notebuddy`를 다시 실행했습니다. 서버 재조회에서 소개글·태그라인·개인정보 URL이 로컬 `app.json`과 일치하고 심사 대상이 0.3.4임을 확인했습니다.
+- 같은 후보의 재요청은 Anna에서 멱등 처리되므로 새 심사 순번이나 기간 재시작을 뜻하지 않습니다. [상세 반영 기록](RELEASE_034.md)을 확인하세요.
+- `release`를 집에서 작업한 `origin/release`의 `1a1eae3`까지 동기화하고 의존성·생성 자산을 준비했습니다. JavaScript 49개, 브라우저 47개, Python 54개 및 strict manifest 검증이 통과했습니다.
+- 동기화 전 로컬 수정은 `codex: preserve Oct 8 Anna changes before home-work sync 2026-10-12` stash와 `.local/pre-home-sync-2026-10-12.patch`에 보관했습니다. 구버전 수정이므로 자동 재적용하지 마세요.
+- 다음 확인은 Anna 심사 결과와 실제 모델의 그림 분류·닮은 정도 및 산책 이야기입니다. 이번 메타데이터 반영으로 실사용 검증까지 완료된 것은 아닙니다.
+
+아래는 이전 배포·복구 이력입니다. 현재 버전과 심사 상태는 위 기록을 따릅니다.
+
+---
+
+Current incremental candidate: 0.2.3 / tool 0.1.13 adds only rechargeable walks to the verified reset-only 0.2.2. Upload and live verification pending.
 
 Latest change: **0.3.1 / tool 0.1.11** adds explicit new-companion restart after removal. Deleted records are not recovered. See [restart behavior](RESTART_AFTER_REMOVAL.md). Older permanent-no-restart descriptions and the 0.3.0 candidate below are historical; deployed 0.2.1 is unchanged.
 
