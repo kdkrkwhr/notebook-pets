@@ -8,9 +8,9 @@ One companion. A little care, every day. This private Anna app reuses the origin
 
 Some peaceful walks open a short AI episode with two choices. One request generates both endings; selection adds no AI usage, XP or items. Finish the current episode before another walk. Reopening restores the latest choice without generating again. AI failure uses a prepared story. Stories are part of reset/removal. New stories use Anna allowance.
 
-## Draw your first companion
+## Create from a drawing or photo (local 0.3.5 candidate)
 
-Choose a random companion or **From my drawing**. Draw directly on the canvas; photo and file uploads are not offered. **Meet** starts an AI drawing check that infers species from body shape and element from visible colors or motifs, followed by baby portrait generation. Only the element is random when cues are absent; uncertain species interpretations require confirmation. Original silhouette, limb count, face and markings take priority over generic anatomy, including later redraws and growth portraits. Both steps use Anna allowance. A failed generation can be retried for the same companion.
+Choose a random companion or **From a drawing or photo**. Draw on the canvas or select a PNG, JPEG or WebP file (up to 12 MiB and 16 megapixels, at least 32 pixels per side). Your device resizes the longest side to at most 1024 pixels and re-encodes the image as PNG without original metadata. Selection and preview do not call AI. See the [work and deployment record](RELEASE_035.md). **Meet** starts an AI image check that infers species from body shape and element from visible colors or motifs, followed by baby portrait generation. Only the element is random when cues are absent; uncertain species interpretations require confirmation. Original silhouette, limb count, face and markings take priority over generic anatomy, including later redraws and growth portraits. Both steps use Anna allowance. A failed generation can be retried for the same companion.
 
 ## Languages and saved progress
 
@@ -22,7 +22,7 @@ Localization happens after the original engine commits an action. Changing langu
 
 ## Start over
 
-Choose **Start over**, confirm `RESET NOTEBUDDY`, then choose a name and Random or Drawing on the first-meeting screen. This replaces the pet and clears progress, chat and portraits. Random starts redraw both traits; drawing starts infer them from the artwork. Close other windows and stop pending requests first. Interrupted cleanup can resume; no AI portrait is generated automatically. **Remove my saved data** permanently deletes the existing records. After removal, an explicit confirmed start-over can create a new companion; deleted records cannot be restored.
+Choose **Start over**, confirm `RESET NOTEBUDDY`, then choose a name and a random companion or a drawing/photo on the first-meeting screen. This replaces the pet and clears progress, chat and portraits. Random starts redraw both traits; reference starts infer them from the drawing or photo. Close other windows and stop pending requests first. Interrupted cleanup can resume; no AI portrait is generated automatically. **Remove my saved data** permanently deletes the existing records. After removal, an explicit confirmed start-over can create a new companion; deleted records cannot be restored.
 
 ## Battles and growth
 

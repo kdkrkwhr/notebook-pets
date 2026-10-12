@@ -11,6 +11,7 @@ async function setup(t,faults={}){
  const browser=await chromium.launch(process.env.ANNA_BROWSER_CHANNEL?{channel:process.env.ANNA_BROWSER_CHANNEL}:process.platform==='win32'?{channel:'msedge'}:{});
  t.after(()=>browser.close());
  const page=await browser.newPage({viewport:{width:1120,height:800}});
+ page.setDefaultTimeout(15000);
  let failModule=!!faults.appLoad;
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await page.route('**/*',async route=>{
@@ -305,13 +306,122 @@ test('artwork first meeting validates source then saves a referenced baby; reope
  await p.reload();await idle(p);assert.equal((await calls(p,'image')).length,0);
  assert.match(await p.locator('#image-caption').innerText(),/portrait/i);
 });
-test('drawing-only editor rejects blank input locally and exposes no upload controls',async t=>{
+test('editor defaults to drawing and rejects blank input without AI',async t=>{
  const p=await setup(t);await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();
- assert.equal(await p.locator('input[type=file]').count(),0);assert.equal(await p.locator('#art-input-kind').count(),0);
+ assert.equal(await p.locator('#art-input-mode').inputValue(),'draw');assert.equal(await p.locator('#art-file').isVisible(),false);
  assert.equal(await p.locator('#art-canvas').isVisible(),true);
  await p.locator('#art-use').click();await p.waitForFunction(()=>document.querySelector('#art-editor-error').textContent.includes('clear shape'));
  assert.equal((await calls(p,'llm')).length,0);assert.equal((await calls(p,'start')).length,0);
  await p.locator('#art-dialog form button').click();assert.equal((await calls(p,'image')).length,0);
+});
+
+// Fixtures contain only synthetic colored shapes, never personal photos.
+async function imageFile(p,{mime='image/png',width=1600,height=800,blank=false}={}){
+ const data=await p.evaluate(({mime,width,height,blank})=>{
+  const c=document.createElement('canvas');c.width=width;c.height=height;const ctx=c.getContext('2d');
+  ctx.fillStyle='#fff';ctx.fillRect(0,0,width,height);
+  if(!blank){ctx.fillStyle='#526e51';ctx.fillRect(width/4,height/4,width/2,height/2);}
+  return c.toDataURL(mime).split(',')[1];
+ },{mime,width,height,blank});
+ return {name:'private-reference.'+mime.split('/')[1],mimeType:mime,buffer:Buffer.from(data,'base64')};
+}
+async function photoEditor(p){
+ await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();await p.locator('#art-input-mode').selectOption('file');
+}
+async function choosePhoto(p,file){
+ await p.locator('#art-file').setInputFiles(file);
+ await p.waitForFunction(()=>!document.querySelector('#art-use').disabled);
+ await p.locator('#art-use').click();await p.waitForFunction(()=>!document.querySelector('#art-dialog').open);
+}
+for(const mime of ['image/png','image/jpeg','image/webp'])test(`${mime} reference stays local until Meet and is normalized before one analysis and generation`,async t=>{
+ const p=await setup(t,{artSpecies:'mammal',artElement:'random',artFeatures:'a human with black hair and a grey hoodie, cropped torso'});
+ await photoEditor(p);assert.equal(await p.locator('#art-use').isDisabled(),true);
+ await p.locator('#art-file').setInputFiles(await imageFile(p,{mime}));
+ await p.waitForFunction(()=>document.querySelector('#art-file-preview').naturalWidth===1024);
+ assert.deepEqual(await p.locator('#art-file-preview').evaluate(e=>[e.naturalWidth,e.naturalHeight]),[1024,512]);
+ assert.equal((await calls(p,'llm')).length,0);assert.equal((await calls(p,'finalize')).length,0);assert.equal((await calls(p,'start')).length,0);
+ await p.locator('#art-use').click();await p.waitForFunction(()=>!document.querySelector('#art-dialog').open);
+ assert.equal((await calls(p,'llm')).length,0);await artStart(p);
+ const checks=await calls(p,'llm');assert.equal(checks.length,1);
+ const source=checks[0].messages[0].content.find(x=>x.type==='image');assert.equal(source.mimeType,'image/png');
+ assert.deepEqual([...Buffer.from(source.data.split(',')[1],'base64').subarray(0,8)],[137,80,78,71,13,10,26,10]);
+ const generated=await calls(p,'image');assert.equal(generated.length,1);
+ assert.match(generated[0].options.prompt,/human with black hair/);assert.match(generated[0].options.prompt,/Human references stay human/);
+ assert.equal(generated[0].options.reference_image_urls,undefined);assert.equal((await calls(p,'start')).length,1);
+ const saved=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']);
+ assert.equal(saved['isolated-fixture/birth-source'].phase,'done');assert.match(saved['isolated-fixture/birth-source'].features,/grey hoodie/);
+ assert.doesNotMatch(JSON.stringify(saved),/private-reference/);
+ await p.reload();await idle(p);assert.equal((await calls(p,'llm')).length,0);assert.equal((await calls(p,'image')).length,0);
+ assert.equal(await p.locator('#name').innerText(),'My artwork buddy');
+});
+test('invalid file types, corrupt data, dimensions and blank files fail locally and keep the previous selection',async t=>{
+ const p=await setup(t);await artwork(p);const before=await p.locator('#birth-art-choice .art-source-preview').getAttribute('src');
+ await p.locator('#choose-art').click();await p.locator('#art-input-mode').selectOption('file');
+ const cases=[
+  [{name:'spoof.png',mimeType:'image/png',buffer:Buffer.from('<svg/>')},/PNG, JPEG or WebP/],
+  [{name:'corrupt.png',mimeType:'image/png',buffer:Buffer.from([137,80,78,71,13,10,26,10])},/could not read/],
+  [{name:'large.jpg',mimeType:'image/jpeg',buffer:Buffer.alloc(12*1024*1024+1)},/12 MiB/],
+  [await imageFile(p,{width:31,height:100}),/32 × 32/],
+  [await imageFile(p,{width:4001,height:4000}),/16 megapixels/],
+  [await imageFile(p,{blank:true,width:64,height:64}),/clear shape/]
+ ];
+ for(const [file,error] of cases){
+  await p.locator('#art-file').setInputFiles(file);
+  await p.waitForFunction(()=>document.querySelector('#art-editor-error').textContent.length>0);
+  assert.match(await p.locator('#art-editor-error').innerText(),error);assert.equal(await p.locator('#art-use').isDisabled(),true);
+  assert.equal(await p.locator('#art-file-preview').isVisible(),false);
+ }
+ assert.equal((await calls(p,'llm')).length,0);assert.equal((await calls(p,'start')).length,0);
+ await p.locator('#art-dialog form button').click();
+ assert.equal(await p.locator('#birth-art-choice .art-source-preview').getAttribute('src'),before);
+ await artStart(p);assert.equal((await calls(p,'image')).length,1);
+});
+for(const action of ['cancel','change mode'])test(`late image decoding cannot restore an upload after ${action}`,async t=>{
+ const p=await setup(t);const file=await imageFile(p);await photoEditor(p);
+ await p.evaluate(()=>{
+  const decode=window.createImageBitmap;window.createImageBitmap=async(...args)=>{
+   await new Promise(resolve=>{window.releaseDecode=resolve;});
+   const bitmap=await decode(...args);window.decodeFinished=true;return bitmap;
+  };
+  const encode=HTMLCanvasElement.prototype.toBlob;HTMLCanvasElement.prototype.toBlob=function(callback,...args){
+   return encode.call(this,blob=>{callback(blob);window.encodeFinished=true;},...args);
+  };
+ });
+ await p.locator('#art-file').setInputFiles(file);await p.waitForFunction(()=>window.releaseDecode);
+ assert.equal(await p.locator('#art-use').isDisabled(),true);
+ if(action==='cancel')await p.locator('#art-dialog form button').click();else await p.locator('#art-input-mode').selectOption('draw');
+ await p.evaluate(()=>window.releaseDecode());await p.waitForFunction(()=>window.decodeFinished&&window.encodeFinished);
+ if(action==='cancel')await p.locator('#choose-art').click();else await p.locator('#art-input-mode').selectOption('file');
+ assert.equal(await p.locator('#art-file-preview').isVisible(),false);assert.equal(await p.locator('#art-use').isDisabled(),true);
+ assert.equal(await p.locator('#birth-art-choice .art-source-preview').isVisible(),false);
+ assert.equal((await calls(p,'llm')).length,0);assert.equal((await calls(p,'start')).length,0);
+});
+test('a replacement photo is reanalyzed after cancelling uncertain traits',async t=>{
+ const p=await setup(t,{artConfidence:'uncertain'});await photoEditor(p);await choosePhoto(p,await imageFile(p));
+ await p.locator('#pet-name').fill('Photo buddy');await p.locator('#start-form button').click();
+ await p.waitForFunction(()=>document.querySelector('#art-traits-dialog').open);await p.locator('#art-traits-dialog button[value=cancel]').click();await idle(p);
+ assert.equal((await calls(p,'start')).length,0);
+ await fault(p,{artConfidence:'clear',artSpecies:'bird',artFeatures:'a blue bird'});
+ await p.locator('#choose-art').click();await choosePhoto(p,await imageFile(p,{width:100,height:200}));await artStart(p);
+ assert.equal((await calls(p,'llm')).length,2);assert.equal((await calls(p,'image')).length,1);
+ assert.match((await calls(p,'image'))[0].options.prompt,/blue bird/);
+ assert.equal((await calls(p,'start'))[0].args.birth_species,'bird');
+});
+test('photo portrait save failure retries received output without another analysis or generation',async t=>{
+ const p=await setup(t,{birthUpload:true});await photoEditor(p);await choosePhoto(p,await imageFile(p));await artStart(p);
+ assert.match(await p.locator('#birth-recovery-status').innerText(),/saving is unfinished/);
+ await p.locator('#retry-birth').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,1);assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'start')).length,1);
+ assert.equal(await p.locator('#birth-recovery').isVisible(),false);
+});
+test('photo picker and preview fit the narrow Korean interface',async t=>{
+ const p=await setup(t);await p.setViewportSize({width:360,height:640});await p.locator('#language').selectOption('ko');await idle(p);await photoEditor(p);
+ await p.locator('#art-file').setInputFiles(await imageFile(p,{width:800,height:1600}));
+ await p.waitForFunction(()=>document.querySelector('#art-file-preview').naturalHeight===1024);
+ assert.match(await p.locator('#art-file-help').innerText(),/사진|이미지/);
+ assert.equal(await p.evaluate(()=>{const d=document.querySelector('#art-dialog');return d.scrollWidth<=d.clientWidth&&d.getBoundingClientRect().height<=window.innerHeight;}),true);
+ await p.locator('#art-use').click();await p.waitForFunction(()=>!document.querySelector('#art-dialog').open);await artStart(p);
+ assert.equal((await calls(p,'image')).length,1);
 });
 test('drawing with undo produces a source and works in a narrow Korean UI',async t=>{
  const p=await setup(t);await p.setViewportSize({width:360,height:800});await p.locator('#language').selectOption('ko');await idle(p);

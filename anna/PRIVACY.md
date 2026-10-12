@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 11 October 2026. This notice describes Notebuddy 0.3.4. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 12 October 2026. This notice describes the Notebuddy 0.3.5 source candidate; the submitted 0.3.4 version keeps its versioned notice. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -9,6 +9,7 @@ Last updated: 11 October 2026. This notice describes Notebuddy 0.3.4. Applies to
 | Companion name, species, element, progress, inventory, daily activity, growth album milestones and recent action results | Saved in your authenticated Anna account’s Notebuddy Game tool storage, to continue your game and prevent repeat rewards. |
 | Recent conversation | Up to 24 chat entries, including care reactions and pending/failure markers, are retained by the app in Anna app storage to show your conversation and provide recent context. This limit does not describe Anna or AI-provider logs. |
 | Portrait index and generated portrait files | Saved in Anna app storage and file storage for the growth album. Drawing a replacement changes the displayed portrait; older files are not automatically erased. |
+| Normalized reference drawing/photo and extracted visual features | The PNG reference (longest side at most 1024 pixels) and up to 1200 characters of visible features are saved in Anna file/app storage to create and later redraw the companion. Original filenames and source image metadata are not saved by this app. |
 | Latest walk story, selected ending and up to 64 recent story request identifiers | Saved in Anna app storage to resume a choice and suppress repeated requests. Starting over or removing saved data clears this record. |
 | Language choice | Saved in this browser’s local storage. It is not synced across devices by Notebuddy. |
 
@@ -28,14 +29,16 @@ A basic story is saved before requesting AI. An unavailable, malformed or interr
 
 ## Optional source artwork
 
-Choosing drawing mode sends a 512 by 512 PNG copy of the sketch you draw in the app to Anna's LLM service for an image suitability check and a short description of visible features. This check uses your AI allowance, including when no pet is created. Local blank-canvas checks alone do not send an image. The app does not offer photo/file upload, drag-and-drop import or clipboard image import. Drawing and choosing the preview alone do not call AI; choosing Meet or explicitly continuing creation starts the check and generation flow.
+You can draw on a 512 by 512 canvas or select a PNG, JPEG or WebP photo/image file (up to 12 MiB and 16 million pixels, at least 32 pixels per side). The browser decodes the image, scales its longest side to at most 1024 pixels, flattens transparency onto white and re-encodes it as PNG. Original filenames and source metadata such as EXIF are not copied. Image content itself can still contain personal information. The file picker and preview stay on your device and do not call AI or upload a file. No drag-and-drop or clipboard-image import is offered.
+
+Choosing Meet or explicitly continuing creation sends that normalized image to Anna's LLM service for an image suitability check and a short description of visible features. This uses your Anna allowance, including when no companion is created. Local format, size and blank-image checks alone do not send an image. People are valid references for stylized human-shaped companions; the model is instructed to focus on the foreground subject, ignore background people and scenery, and avoid identification or sensitive-trait inference. This is an instruction to the model, not an anonymization guarantee. Avoid sensitive information in your reference images.
 
 If the check accepts the source, AI infers a species from its shape and an element from visible colors or motifs. Species interpretations marked uncertain require user confirmation before creation. No element cue means only the element is chosen randomly. The server validates those categories and applies them only on first creation; retries and replacement artwork do not change an existing companion’s traits. The normalized reference and visual description (up to 1200 characters) are saved in Anna app storage. Only the extracted textual features and the confirmed game traits are sent to Anna's image service to generate the baby; the source image URL is not sent to the image generator. The app stores both the reference and generated portrait under its portraits prefix. Failed, replaced or abandoned references may remain until reset or removal; the latest source remains indexed. The app does not promise that its AI check detects every unsuitable input or that a provider deletes submitted content after a refusal. Provider logs, backups and billing remain subject to Anna/provider handling.
 
 The in-browser editor and uncommitted generated image are held in memory. Closing the page may require reselecting unsaved artwork or making another paid generation request. The app does not automatically regenerate an unfinished custom baby when reopened. Choosing the default appearance does not reroll the companion or erase the saved source file. Existing reset/removal covers these source files and descriptions as well as generated portraits. No new file bucket or browser storage key is introduced.
 
 
-The saved original drawing description is also used for later redraws and growth-stage portraits, prioritizing silhouette, limb count and markings. This is text-guided generation, not a promise of pixel-exact copying or direct image-to-image editing. Random starts still choose both species and element randomly.
+The saved original drawing/photo description is also used for later redraws and growth-stage portraits, prioritizing silhouette, limb count and markings. This is text-guided generation, not a promise of pixel-exact copying or direct image-to-image editing. Random starts still choose both species and element randomly.
 
 ## AI processing
 
@@ -65,7 +68,7 @@ There is no atomic transaction between the album index and file deletion. The cl
 
 ### Start over with a new companion
 
-For an active game, choose **Start over** at the bottom of the game screen. After removal, it is available on the ended-game screen. Close other windows and stop pending requests, check the box, and type **RESET NOTEBUDDY**. Confirmation clears the current companion, progress, chat and portraits and returns to the first-meeting screen. Choose the name and Random or Drawing there afterward. No new companion or AI image is created by reset itself. Cancel before confirmation changes nothing.
+For an active game, choose **Start over** at the bottom of the game screen. After removal, it is available on the ended-game screen. Close other windows and stop pending requests, check the box, and type **RESET NOTEBUDDY**. Confirmation clears the current companion, progress, chat and portraits and returns to the first-meeting screen. Choose the name and a random companion or a drawing/photo there afterward. No new companion or AI image is created by reset itself. Cancel before confirmation changes nothing.
 
 A minimal welcome marker is staged once; repeated reset requests do not create a companion. Legacy clients that explicitly supply a name retain the previous staged-companion behavior. If cleanup is interrupted, use **Continue reset**; after reopening, Refresh shows any pending reset. Play is blocked until the cleanup flow finishes. An already-finished reset retry does not clear new progress again. A minimal reset ID and a fresh action namespace remain associated with the welcome marker and subsequent game to reject delayed old actions. Neither contains the old companion’s name or chat. Reset is not Anna-account erasure and does not erase platform/provider logs, backups or instantly revoke download URLs.
 
