@@ -1,6 +1,6 @@
 # Notebuddy 0.3.5 — photo references
 
-Local source candidate, 2026-10-12. The most recently verified Anna review submission is still app **0.3.4**, version ID 1282. This feature has not been uploaded, cut, installed or submitted for review. Game tool **0.1.15** and the storage schema are unchanged.
+Test deployment completed, 2026-10-12. Anna working revision **33** is ready and installed as **0.0.0-draft**; immutable app **0.3.5** is version ID **1298**. The review candidate remains **0.3.4**, version ID 1282; its shared listing was restored and verified. 0.3.5 has not been submitted for review. Game tool **0.1.15** and the storage schema are unchanged.
 
 ## Behavior
 
@@ -13,16 +13,16 @@ Local source candidate, 2026-10-12. The most recently verified Anna review submi
 
 ## Validation
 
-- JavaScript unit checks: 49 passed before the final growth-prompt wording adjustment.
+- JavaScript unit checks: 49 passed after the final growth-prompt wording adjustment.
 - Strict Anna manifest validation passed.
-- Full browser validation is **unfinished**. The initial connection assertions passed, but the installed Edge and Chrome processes hung during teardown. Diagnostic launcher changes were removed; the normal test harness is retained with a 15-second page-operation timeout. The new upload cases have not yet produced a completed test run. Resume them before deployment; this commit is not a fully validated release.
+- Full browser validation: all 56 tests passed on Windows Edge, including PNG/JPEG/WebP normalization, local rejection, cancel/decode races, replacement analysis, save-only retry and narrow Korean layout. The process exited normally.
 
 Browser tests use synthetic references and mocked Anna APIs; they cannot establish live model quality or Anna mobile file-picker compatibility. The earlier one-photo Anna analysis/generation experiment used a provisional photo-enabled prompt and does not substitute for an installed 0.3.5 check.
 
-## Before Anna deployment
+## Deployment and remaining live validation
 
-1. Publish the reviewed source and an immutable `anna-release-v0.3.5` tag containing `anna/PRIVACY.md`. Change `app.json`'s `privacy_url` to that tag and verify the page is accessible. Until then the local manifest retains the already-public 0.3.4 notice URL; do not sync this mixed candidate metadata to Anna.
-2. Reuse the verified game tool 0.1.15 package, push/finalize the new UI, and cut an immutable private 0.3.5 version. Preserve the pending 0.3.4 listing while testing.
+1. Published source and immutable `anna-release-v0.3.5` tag, updated the privacy URL and verified public document access.
+2. Pushed and finalized revision 33, cut version 1298 and installed the working draft. Reused verified tool 0.1.15 / Executa version 711 packages; confirmed running version 0.1.15 and agent_loaded=true. Review 0.3.4 and its listing remain unchanged.
 3. In the installed Anna app, check desktop/mobile file selection and a real drawing/photo analysis → generated portrait → save → reopen flow. Verify the preview, AI allowance messages, source deletion and retry behavior; local tests do not test Anna's host picker or provider output.
 4. Only after that validation, update the listing/screenshots and submit the intended candidate for review. A source commit alone does not update an installed Anna app.
 
