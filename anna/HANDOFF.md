@@ -1,3 +1,16 @@
+# Anna 작업 인계 · 2026-10-12
+
+- 현재 심사 대상: 앱 **0.3.4** (ID 450, version ID 1282) / 게임 도구 **0.1.15** (Executa 1193, version 711). 서버 상태는 **pending_review**입니다.
+- 0.3.4 소개글, 해당 릴리스의 개인정보 링크, 스크린샷 4장을 `apps sync-meta`로 반영한 뒤 `apps submit-review notebuddy`를 다시 실행했습니다. 서버 재조회에서 소개글·태그라인·개인정보 URL이 로컬 `app.json`과 일치하고 심사 대상이 0.3.4임을 확인했습니다.
+- 같은 후보의 재요청은 Anna에서 멱등 처리되므로 새 심사 순번이나 기간 재시작을 뜻하지 않습니다. [상세 반영 기록](RELEASE_034.md)을 확인하세요.
+- `release`를 집에서 작업한 `origin/release`의 `1a1eae3`까지 동기화하고 의존성·생성 자산을 준비했습니다. JavaScript 49개, 브라우저 47개, Python 54개 및 strict manifest 검증이 통과했습니다.
+- 동기화 전 로컬 수정은 `codex: preserve Oct 8 Anna changes before home-work sync 2026-10-12` stash와 `.local/pre-home-sync-2026-10-12.patch`에 보관했습니다. 구버전 수정이므로 자동 재적용하지 마세요.
+- 다음 확인은 Anna 심사 결과와 실제 모델의 그림 분류·닮은 정도 및 산책 이야기입니다. 이번 메타데이터 반영으로 실사용 검증까지 완료된 것은 아닙니다.
+
+아래는 이전 배포·복구 이력입니다. 현재 버전과 심사 상태는 위 기록을 따릅니다.
+
+---
+
 Current incremental candidate: 0.2.3 / tool 0.1.13 adds only rechargeable walks to the verified reset-only 0.2.2. Upload and live verification pending.
 
 Incremental candidate 0.2.2 / tool 0.1.12: backports only confirmed restart and its visible Start over button onto deployed 0.2.1. New portrait analysis, artwork birth, care reactions and walk recharge remain on develop and are not included. Deployment verification is pending.
