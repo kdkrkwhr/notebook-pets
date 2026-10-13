@@ -12,6 +12,7 @@ from datetime import date, datetime, timedelta
 from runtime import KST, MISSING, GameError, atomic_write_json, game_clock, game_date, read_json, store_lock, validate_user_id
 import art
 import dungeons
+import journeys
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "data", "game_data.json")
@@ -80,6 +81,7 @@ def validate_state(st, uid):
     try:
         require(isinstance(st, dict) and st["user_id"] == uid)
         dungeons.validate(st)
+        journeys.validate(st)
         require(type(st["version"]) is int and st["version"] in (2, 3, 4))
         require(isinstance(st["name"], str))
         if "pet_id" in st:
@@ -232,6 +234,7 @@ def check_limit(st, key):
     return True, ""
 
 def mark(st, key):
+    journeys.record(st, key)
     lim = G["commands"].get(key, {}).get("daily_limit")
     quest_actions = {item["command"] for item in G["daily_quest"]["requirements"]}
     if lim is not None or key in quest_actions:
@@ -333,6 +336,7 @@ def cmd_status(st):
                level=st["level"], xp=st["xp"], xp_next=xp_needed(st["level"]),
                stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"), image=art.describe(st),
                walk_choice=copy.deepcopy(st.get("_walk_choice")), record=st["record"], walk_energy={k: v for k, v in walk_energy(st).items() if k != "updated_at"}, quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
+               memories=journeys.context(st), journey=copy.deepcopy(st.get("journey", {}).get("current")),
                dungeons=dungeons.view(st, today(), type_mult),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
 
@@ -398,7 +402,7 @@ def walk_energy(st, now=None):
 
 
 def cmd_walk(st, interactive=False):
-    if st.get('_walk_choice'):
+    if st.get('_walk_choice') or journeys.pending(st):
         return out(False, 'Choose how to finish your walk first.', code='walk_choice_pending')
     if st.get("_wild") is not None:
         return out(False, "만난 몬스터가 기다리고 있어. 배틀·도망 중 하나를 먼저 선택해.",
@@ -414,6 +418,8 @@ def cmd_walk(st, interactive=False):
     reward = random.choice(rules["xp_rewards"]) if outcome == "xp" else 0
     if interactive and outcome == 'xp':
         st['_walk_choice'] = {'choice_id': uuid.uuid4().hex, 'reward': reward}
+    if interactive and outcome == 'quiet':
+        journeys.begin(st)
     x = add_xp(st, 0 if interactive else reward)
     encounter = None
     if outcome == "encounter":
@@ -429,18 +435,24 @@ def cmd_walk(st, interactive=False):
     return r
 
 def cmd_walk_choice(st, collect, token):
+    current = st.get('journey', {}).get('current')
+    if current and current['choice_id'] == token:
+        result = journeys.resolve(st, token, 0 if collect else 1)
+        save_state(st)
+        return out(True, 'Your shared experience became a memory.', journey_result=result)
     pending = st.get('_walk_choice')
     if not pending or token != pending['choice_id']:
         return out(False, 'This walk choice is no longer pending.', code='walk_choice_stale')
     reward = pending['reward'] if collect else 0
     st.pop('_walk_choice')
+    journeys.record(st, 'collect' if collect else 'leave')
     result = add_xp(st, reward)
     save_state(st)
     return out(True, 'Walk choice complete.', xp_result=result)
 
 
 def cmd_explore(st, key):
-    if st.get('_walk_choice'):
+    if st.get('_walk_choice') or journeys.pending(st):
         return out(False, 'Finish the pending walk first.', code='walk_choice_pending')
     state = dungeons.daily(st, today())
     ex = state.get('expedition', {})
@@ -524,6 +536,7 @@ def cmd_dungeon_choice(st, choice, token):
         state['expedition'] = {}
     state['last_run'] = run
     st['dungeons'] = state
+    journeys.record(st, choice)
     save_state(st)
     return out(True, 'Stage completed.', dungeon_run=copy.deepcopy(run))
 
@@ -532,6 +545,7 @@ def cmd_flee(st):
     if st.get("_wild") is None:
         return out(False, "떠날 조우가 없어.", code="no_encounter")
     st["_wild"] = None
+    journeys.record(st, 'flee')
     save_state(st)
     return out(True, "야생 몬스터와 헤어졌어. 다시 산책할 수 있어.")
 

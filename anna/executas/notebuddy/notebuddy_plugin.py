@@ -15,7 +15,7 @@ from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.4.1'
+VERSION = '0.5.0'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'
@@ -31,7 +31,7 @@ MANIFEST = {
         'parameters': [
             {'name': 'command', 'type': 'string', 'required': True, 'enum': sorted(ALLOWED),
              'description': 'One game action. status reads current progress; start creates your first partner.'},
-            {'name': 'choice_id', 'type': 'string', 'required': False, 'description': 'Required for dungeon_safe/dungeon_risk/walk_collect/walk_leave: use the exact pending choice_id from status. Never choose for the user without their selection.'},
+            {'name': 'choice_id', 'type': 'string', 'required': False, 'description': 'Required for dungeon_safe/dungeon_risk/walk_collect/walk_leave: use the exact pending choice_id from status.walk_choice or status.journey (first=walk_collect, second=walk_leave), or the dungeon choice. Never choose for the user without their selection.'},
             {'name': 'name', 'type': 'string', 'required': False, 'description': 'Pet name, only for start. Up to 24 characters.'},
             {'name':'birth_species','type':'string','required':False,'enum':list(BIRTH_SPECIES),'description':'Drawing-based first creation only: species inferred from the user artwork. Omit for a random start. Cannot change an existing pet.'},
             {'name':'birth_element','type':'string','required':False,'enum':list(BIRTH_ELEMENTS),'description':'Drawing-based first creation only: visible element cues, or random when absent. Requires birth_species.'},

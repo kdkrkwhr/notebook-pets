@@ -74,7 +74,9 @@ const runtime={
   if(['walk','walk_begin'].includes(a.command)&&faults.walkOutcome==='quiet'){extra.walk_outcome='quiet';state.save.status.encounter=null;}
   if(['walk','walk_begin'].includes(a.command)&&!['quiet','xp'].includes(faults.walkOutcome))state.save.status.encounter={species_key:'dragon',element_key:'fire',species:'Dragon',element:'Fire',level:1};
   if(a.command==='walk_begin'&&faults.walkOutcome==='xp'){extra.walk_outcome='xp';state.save.status.walk_choice={choice_id:'a'.repeat(32),reward:20};state.save.status.encounter=null;}
-  if(['walk_collect','walk_leave'].includes(a.command)){const reward=a.command==='walk_collect'?state.save.status.walk_choice.reward:0;state.save.status.xp+=reward;extra.xp_result={gained:reward};state.save.status.walk_choice=null;}
+  if(faults.journey&&a.command==='walk_begin'){state.save.status.journey={choice_id:'b'.repeat(32),arc:'trail',chapter:1,prepared:true,basis:['feed','train','walk'],previous_choice:1,state:'pending',choice:null,coins:0,intimacy:0};}
+  if(faults.journey&&['walk_collect','walk_leave'].includes(a.command)){const j=state.save.status.journey;if(j.state!=='done'){Object.assign(j,{state:'done',choice:a.command==='walk_collect'?0:1,intimacy:3});state.save.status.intimacy+=3;}extra.journey_result=clone(j);}
+  if(!faults.journey&&['walk_collect','walk_leave'].includes(a.command)){const reward=a.command==='walk_collect'?state.save.status.walk_choice.reward:0;state.save.status.xp+=reward;extra.xp_result={gained:reward};state.save.status.walk_choice=null;}
   if(a.command==='battle'){
    extra={...extra,opponent:state.save.status.encounter,outcome:'win',max_hp_me:10,max_hp_enemy:10,hp_me:6,hp_enemy:0,
     turns:[{round:1,hp_me:8,hp_enemy:5},{round:2,hp_me:6,hp_enemy:0}],xp_result:{gained:10}};

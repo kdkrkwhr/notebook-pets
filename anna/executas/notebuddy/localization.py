@@ -87,6 +87,8 @@ def _message(value, command, language):
         if run['outcome']=='win':
             return f'스테이지 완료 · 코인 +{coins}. 다음 입장은 산책 포인트 1개입니다.' if index else f'Stage complete · +{coins} coins. Next stage costs 1 walk charge.'
         return f'탐험 종료 · 코인 +{coins}. 첫 스테이지부터 다시 도전할 수 있어요.' if index else f'Expedition ended · +{coins} coins. Retry from the first stage.'
+    if value.get('journey_result'):
+        return '함께한 경험이 다음 이야기로 이어져요.' if index else 'Your shared experience shapes the next chapter.'
     if command == 'walk_collect':
         return '발견한 것을 살펴보며 경험을 쌓았어요.' if index else 'You explored your discovery and gained experience.'
     if command == 'walk_leave':

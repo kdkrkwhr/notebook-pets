@@ -19,7 +19,7 @@ export function createStoryDialog(h){
    const button=d.createElement('button');button.type='button';button.className='story-choice';button.textContent=choice.label;button.disabled=h.locked();button.onclick=()=>h.choose(index);$('#story-choices').append(button);
   });
   if(choosing)for(const action of ['collect','leave']){const button=d.createElement('button');button.type='button';button.className='story-choice';button.textContent=h.tr(action==='collect'?'walkCollect':'walkLeave',{xp:choice.reward});button.disabled=h.locked();button.onclick=()=>h.act('walk_'+action,{choice_id:choice.choice_id});$('#story-choices').append(button);}
-  $('#story-ending').textContent=story&&done?current.story.choices[current.choice].ending:'';$('#story-ending').hidden=!story||!done;
+  $('#story-ending').textContent=story&&done?current.story.choices[current.choice].ending+(current.result?' '+current.result:''):'';$('#story-ending').hidden=!story||!done;
   $('#encounter').hidden=!encounter||battle||story;
   $('#story-done').hidden=battle||mode==='loading'||story&&!done||encounter||choosing;
   $('#story-done').textContent=h.tr('storyDone');

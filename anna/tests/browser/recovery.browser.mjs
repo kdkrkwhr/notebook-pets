@@ -919,3 +919,27 @@ test('realistic APS key order lets a generated walk choice reach its ending with
  await p.locator('#story-done').click();await p.reload();await idle(p);
  assert.equal(await p.locator('#walk-story').isVisible(),false);assert.equal(await p.locator('#story-resume').isVisible(),false);
 });
+
+test('cumulative walk choices commit to game state, recover on reload and never auto-open',async t=>{
+ const p=await setup(t,{walkOutcome:'quiet',journey:true});await start(p);
+ await p.locator('[data-action="walk"]').click();
+ await p.waitForFunction(()=>document.querySelectorAll('#story-choices button').length===2);
+ assert.match(await p.locator('#story-choices').innerText(),/markers/i);
+ await p.locator('#story-choices button').first().click();
+ await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ assert.match(await p.locator('#story-ending').innerText(),/Closeness \+3/);
+ assert.equal((await calls(p,'walk_collect')).length,1);
+ const intimacy=await p.evaluate(()=>window.hostTest.state.save.status.intimacy);
+ await p.reload();await idle(p);assert.equal(await p.locator('dialog[open]').count(),0);
+ assert.equal(await p.locator('#story-resume').isVisible(),false);
+ assert.equal(await p.evaluate(()=>window.hostTest.state.save.status.intimacy),intimacy);
+});
+test('missing cached prose resumes authoritative pending chapter without another walk',async t=>{
+ const p=await setup(t,{walkOutcome:'quiet',journey:true});await start(p);
+ await p.locator('[data-action="walk"]').click();await p.waitForFunction(()=>document.querySelectorAll('#story-choices button').length===2);
+ await p.evaluate(()=>{const s=JSON.parse(localStorage.getItem('test-host'));delete s.kv['notebuddy/walk-story-v1'];localStorage.setItem('test-host',JSON.stringify(s));});
+ await p.reload();await idle(p);assert.equal(await p.locator('dialog[open]').count(),0);
+ await p.locator('#story-resume').click();await p.locator('#story-choices button').last().click();
+ await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ assert.equal((await calls(p,'walk_begin')).length,0);assert.equal((await calls(p,'walk_leave')).length,1);
+});

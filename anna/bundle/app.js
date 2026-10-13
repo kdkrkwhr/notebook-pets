@@ -431,7 +431,17 @@ $('#replace-birth-source').addEventListener('click',()=>artEditor.open());
 $('#retry-birth').addEventListener('click',()=>birth.run());
 $('#default-birth').addEventListener('click',()=>birth.fallback());
 storyDialog=createStoryDialog({document,view:()=>view,tr,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),choose:index=>stories.choose(index),closeBattle:()=>battleScene.close(),busy:()=>busy,retryPending:()=>!!pendingAction&&['walk_begin','walk_collect','walk_leave','battle','flee'].includes(pendingAction.command),retry:()=>$('#retry-action').click(),act,openDungeon:id=>{$('#dungeon-list').querySelector(`[data-dungeon="${id}"]`)?.click();}});
-stories=createWalkStories({anna:()=>anna,active:assertActive,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),render:state=>storyDialog.render(state)});
+stories=createWalkStories({anna:()=>anna,active:assertActive,language:()=>language,resolve:async(event,index)=>{
+  const before=await assertActive();
+  if(before.pet_id!==event.pet_id)throw new PartnerChangedError();
+  const current=before.status?.journey;
+  if(current?.choice_id!==event.id)throw Error('Story changed');
+  if(current.state==='done'){adoptView(before);render();return before;}
+  const action=newAction(before,index===0?'walk_collect':'walk_leave',{choice_id:event.id});
+  const {command,...args}=action;const result=await invoke(command,args);
+  if(!result.ok)throw Error(result.msg);
+  adoptView(result);render();return result;
+},locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),render:state=>storyDialog.render(state)});
 pixels=createPixelPet({anna:()=>anna,art:()=>art,assertActive,upload:uploadPortrait,
   saved:value=>{art=value;},message:key=>{pixelNotice=key;renderPixel();}});
 dungeons=createDungeons({document,view:()=>view,language:()=>language,
