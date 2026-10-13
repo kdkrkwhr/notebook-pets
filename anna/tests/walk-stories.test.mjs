@@ -1,11 +1,12 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {createWalkStories,storyEvent,basicStory,parseStory} from '../bundle/walk-stories.mjs';
+import {createWalkStories,storyEvent,basicStory,parseStory,sameStory} from '../bundle/walk-stories.mjs';
 import {TOMBSTONE} from '../bundle/data.mjs';
 const event={id:'walk-1',pet_id:'pet',name:'Buddy',species:'Fairy',element:'Nature',language:'en'};
 function fixture(){
  const f={row:{exists:false},pet:'pet',ai:0,failAI:false,failSave:false,states:[]};
- const storage={get:async()=>structuredClone(f.row),set:async({value,if_match})=>{
+ const reorder=v=>Array.isArray(v)?v.map(reorder):v&&typeof v==='object'?Object.fromEntries(Object.entries(v).reverse().map(([k,x])=>[k,reorder(x)])):v;
+ const storage={get:async()=>f.reorderReads?reorder(structuredClone(f.row)):structuredClone(f.row),set:async({value,if_match})=>{
   if(f.failSave)throw Error('offline');
   if(if_match!==f.row.etag)throw {code:-32023};
   f.row={exists:true,etag:String(Number(f.row.etag||0)+1),value:structuredClone(value)};
@@ -58,4 +59,22 @@ test('reset or removal during generation cannot write the old pet story',async()
   if(remove)f.row={exists:true,etag:'9',value:TOMBSTONE};else{f.pet='new';f.flow.clear();f.row={exists:true,etag:'9',value:{}};}
   release();await work;assert.deepEqual(f.row.value,remove?TOMBSTONE:{});
  }
+});
+
+test('APS object key reordering never blocks a just-generated story choice',async()=>{
+ const f=fixture();f.reorderReads=true;await f.flow.start(event);
+ await f.flow.choose(1);
+ assert.equal(f.row.value.current.state,'done');assert.equal(f.row.value.current.choice,1);
+ assert.equal(f.ai,1);assert.equal(f.states.at(-1).feedback,'');
+ await f.flow.choose(0);assert.equal(f.row.value.current.choice,1);
+});
+test('story identity ignores object key order but protects text and choice order',()=>{
+ const a=basicStory('en'),b={choices:a.choices.map(c=>({ending:c.ending,label:c.label})),scene:a.scene,title:a.title};
+ assert.notEqual(JSON.stringify(a),JSON.stringify(b));assert.equal(sameStory(a,b),true);
+ assert.equal(sameStory(a,{...b,choices:[...b.choices].reverse()}),false);
+ assert.equal(sameStory(a,{...b,scene:'changed'}),false);
+});
+test('a replaced story with the same ID is still rejected before saving the choice',async()=>{
+ const f=fixture();await f.flow.start(event);f.row.value.current.story.scene='Changed in another window';
+ await f.flow.choose(0);assert.equal(f.row.value.current.state,'ready');assert.equal(f.states.at(-1).feedback,'storySaveFailed');
 });

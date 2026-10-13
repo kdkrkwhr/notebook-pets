@@ -909,3 +909,13 @@ test('closing while battle is pending does not reopen and a later walk hides old
  await fault(p,{walkOutcome:'xp',delay:0});await p.locator('[data-action="walk"]').click();await idle(p);
  assert.equal(await p.locator('#battle-dialog').isVisible(),false);assert.equal(await p.locator('#story-choices button').count(),2);
 });
+
+test('realistic APS key order lets a generated walk choice reach its ending without reload',async t=>{
+ const p=await setup(t,{reorderStorage:true});await start(p);await quietStoryWalk(p);
+ await p.locator('#story-choices button').first().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ assert.equal(await p.locator('#story-choices button').count(),0);
+ assert.doesNotMatch(await p.locator('#story-status').innerText(),/save|refresh/i);
+ assert.equal((await calls(p,'walk')).length,1);assert.equal((await calls(p,'llm')).length,1);
+ await p.locator('#story-done').click();await p.reload();await idle(p);
+ assert.equal(await p.locator('#walk-story').isVisible(),false);assert.equal(await p.locator('#story-resume').isVisible(),false);
+});
