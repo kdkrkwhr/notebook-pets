@@ -73,12 +73,16 @@ def _message(value, command, language):
         # Never translate names or use a locale-dependent name in saved command arguments.
         name = (value.get('status') or {}).get('name', '')
         return f'{name}, 반가워요!' if index else f'Welcome, {name}!'
-    if command.startswith('explore_'):
-        run = value.get('dungeon_run', {})
-        coins = run.get('coins_awarded', 0)
-        if run.get('outcome') == 'win':
+    if value.get('dungeon_visit'):
+        return '갈림길에 도착하면 경로를 선택해 주세요. 입장 포인트는 이미 사용했어요.' if index else 'Choose a route at the checkpoint. This stage entry is already paid.'
+    if value.get('dungeon_run'):
+        run = value['dungeon_run']
+        coins = run.get('coins_awarded',0)
+        if run.get('complete'):
             return f'던전 클리어! 코인 +{coins}' if index else f'Dungeon cleared! +{coins} coins'
-        return '보스를 넘지 못했어요. 산책 횟수 1개로 다시 도전할 수 있어요.' if index else 'The boss held its ground. Retry with one walk charge.'
+        if run['outcome']=='win':
+            return f'스테이지 완료 · 코인 +{coins}. 다음 입장은 산책 포인트 1개입니다.' if index else f'Stage complete · +{coins} coins. Next stage costs 1 walk charge.'
+        return f'탐험 종료 · 코인 +{coins}. 첫 스테이지부터 다시 도전할 수 있어요.' if index else f'Expedition ended · +{coins} coins. Retry from the first stage.'
     if command == 'walk':
         return {'quiet': ('A peaceful walk. Nothing unusual happened.', '별일 없이 느긋하게 산책했어요.'),
                 'xp': ('You discovered XP on your walk!', '산책 중 경험치를 발견했어요!'),

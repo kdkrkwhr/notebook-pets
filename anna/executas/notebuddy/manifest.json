@@ -1,7 +1,7 @@
 {
   "name": "tool-dev-notebuddy",
   "display_name": "Notebuddy Game",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
   "host_capabilities": [
     "aps.kv"
@@ -28,6 +28,8 @@
             "attendance",
             "battle",
             "claimquest",
+            "dungeon_risk",
+            "dungeon_safe",
             "explore_dreamforest",
             "explore_hellgate",
             "explore_icekingdom",
@@ -45,6 +47,12 @@
             "walk"
           ],
           "description": "One game action. status reads current progress; start creates your first partner."
+        },
+        {
+          "name": "choice_id",
+          "type": "string",
+          "required": false,
+          "description": "Required for dungeon_safe/dungeon_risk: use the exact choice_id of the pending dungeon expedition. Never choose for the user without their selection."
         },
         {
           "name": "name",

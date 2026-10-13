@@ -26,7 +26,7 @@ export function createDungeons(h){
       if(!entry||remaining(entry)<=0){card.remove();continue;}
       card.querySelector('.dungeon-countdown').textContent=countdown(entry);
     }
-    $('#dungeon-section').hidden=!$('#dungeon-list').childElementCount&&!state.last_run;
+    $('#dungeon-section').hidden=!$('#dungeon-list').childElementCount&&!state.last_run&&!state.expedition?.id;
     if(dialog.open){
       $('#dungeon-countdown').hidden=!!run;
       if(!run){
@@ -49,10 +49,32 @@ export function createDungeons(h){
     $('#dungeon-boss-hp').parentElement.hidden=active.room.kind==='rest';
     $('#dungeon-hp-text').textContent=active.room.kind==='rest'?`${Math.ceil(frame.hp_me)} / ${run.max_hp_me}`:`${Math.ceil(frame.hp_me)} / ${run.max_hp_me} · ${Math.ceil(frame.hp_enemy)} / ${combat?.max_hp_enemy||0}`;
   }
+  function choiceUI(){
+    const ex=h.view()?.status?.dungeons?.expedition;
+    const visible=!!run?.pending&&elapsed>=WALK_MS;
+    $('#dungeon-choice').hidden=!visible;
+    if(!visible)return;
+    $('#dungeon-choice-title').textContent=tr('dungeonEvent_'+run.event);
+    $('#dungeon-choice-hint').textContent=tr(run.event==='sanctuary'?'dungeonRestChoice':'dungeonRiskHint');
+    $('#dungeon-safe').textContent=tr(run.event==='sanctuary'?'dungeonHeal':'dungeonSafe');
+    $('#dungeon-risk').textContent=tr(run.event==='sanctuary'?'dungeonSearch':'dungeonRisk');
+    for(const id of ['#dungeon-safe','#dungeon-risk'])$(id).disabled=h.locked()||ex?.choice_id!==run.choice_id;
+  }
+  function visit(ex){
+    if(!ex||ex.phase!=='choice')return;
+    const saved={pending:true,event:ex.event,choice_id:ex.choice_id,dungeon_id:ex.dungeon_id,room_count:ex.room_count,max_hp_me:ex.max_hp,hp_me:ex.hp,rooms:[{index:ex.index,kind:'rest',enemy:null,start_hp:ex.hp,hp_me:ex.hp}],turns:[]};
+    preview(ex.dungeon_id,saved);$('#dungeon-enter').hidden=true;$('#dungeon-hp').hidden=false;
+    $('#dungeon-entry-hint').textContent=tr('dungeonPaid');$('#dungeon-skip').hidden=true;$('#dungeon-fast').hidden=true;
+    if(reduced())elapsed=WALK_MS;
+    choiceUI();
+  }
   function finish(){
     stop();finished=true;elapsed=totalDuration(run);health(run);scene.draw({elapsed,run,finished,reduced:reduced()});
     $('#dungeon-phase').textContent=tr(`battle_${run.outcome}`);$('#dungeon-room').textContent=tr('dungeonRoom',{current:journey(run,elapsed,true).index+1,total:run.room_count||1});$('#dungeon-pause').hidden=true;
-    $('#dungeon-result').textContent=tr(run.coins_awarded?'dungeonReward':'dungeonRetry',{coins:run.coins_awarded});
+    $('#dungeon-result').textContent=run.format==='stage-v1'?tr(run.complete?'dungeonReward':run.outcome==='win'?'dungeonStageDone':'dungeonStageLost',{coins:run.coins_awarded,damage:run.trap_damage}):tr(run.coins_awarded?'dungeonReward':'dungeonRetry',{coins:run.coins_awarded});
+    const next=h.view()?.status?.dungeons?.expedition;
+    $('#dungeon-enter').hidden=!(next?.phase==='next'&&next.dungeon_id===selected);
+    $('#dungeon-enter').textContent=tr('dungeonNextEntry');$('#dungeon-enter').disabled=h.locked();
     $('#dungeon-skip').textContent=tr('close');$('#dungeon-fast').hidden=true;
   }
   function tick(now){
@@ -63,14 +85,16 @@ export function createDungeons(h){
       const active=journey(run,elapsed);
       if(active.done){finish();return;}
       $('#dungeon-room').textContent=tr('dungeonRoom',{current:active.index+1,total:active.total});
-      $('#dungeon-phase').textContent=tr(paused?'dungeonPaused':active.phase==='rest'?'dungeonRest':active.phase==='exit'?'dungeonNext':active.phase==='battle'?'battlePlaying':'dungeonMoving');
+      $('#dungeon-phase').textContent=tr(active.phase==='choice'?'dungeonChoose':paused?'dungeonPaused':active.phase==='rest'?'dungeonRest':active.phase==='exit'?'dungeonNext':active.phase==='battle'?'battlePlaying':'dungeonMoving');
       $('#dungeon-boss-name').textContent=tr(active.room.kind==='rest'?'dungeonRest':active.room.enemy==='guardian'?'boss_'+selected:'enemy_'+active.room.enemy);
       health(active.frame||{hp_me:active.room.start_hp,hp_enemy:active.room.combat?.max_hp_enemy||0});
     }
+    choiceUI();
     scene.draw({elapsed:run?elapsed:ambient,run,finished,reduced:reduced()});
     if(!reduced()||run&&!finished)raf=requestAnimationFrame(tick);
   }
   function preview(key,saved=null){
+    $('#dungeon-choice').hidden=true;
     const ticket=++previewTicket;
     stop();selected=key;run=saved;finished=false;elapsed=0;ambient=0;artReady=false;paused=false;
     portrait();
@@ -99,7 +123,7 @@ export function createDungeons(h){
   function render(){
     const view=h.view(),state=view?.status?.dungeons;
     const entries=state?.entries?.filter(entry=>entry.discovered&&DUNGEON_IDS.includes(entry.id)&&remaining(entry)>0)||[];
-    $('#dungeon-section').hidden=!entries.length&&!state?.last_run;
+    $('#dungeon-section').hidden=!entries.length&&!state?.last_run&&!state?.expedition?.id;
     $('#dungeon-list').replaceChildren();
     if(!state)return;
     $('#dungeon-coins').textContent=tr('dungeonCoins',{coins:state.coins});
@@ -110,19 +134,23 @@ export function createDungeons(h){
       const name=document.createElement('strong');name.textContent=tr(`dungeon_${entry.id}`);
       const status=document.createElement('span');status.textContent=tr(entry.cleared?'dungeonCleared':entry.discovered?'dungeonFound':'dungeonLocked');
       const timer=document.createElement('span');timer.className='dungeon-countdown';timer.textContent=countdown(entry);
-      card.append(canvas,name,status,timer);card.addEventListener('click',()=>preview(entry.id));$('#dungeon-list').append(card);
+      card.append(canvas,name,status,timer);card.addEventListener('click',()=>state.expedition?.phase==='choice'?visit(state.expedition):preview(entry.id));$('#dungeon-list').append(card);
     }
+    if(state.expedition?.phase==='choice'&&!entries.some(e=>e.id===state.expedition.dungeon_id)){const resume=document.createElement('button');resume.textContent=tr('dungeonContinuePaid');resume.disabled=h.locked();resume.onclick=()=>visit(state.expedition);$('#dungeon-list').append(resume);}
     $('#dungeon-replay').hidden=!state.last_run;$('#dungeon-replay').disabled=h.locked();
     if(dialog.open&&!run){
       const entry=entries.find(value=>value.id===selected);if(!entry){updateTimers();return;}
       const favorable=entry.habitat_species.map(value=>tr('species_'+value)).join(' · ');
       $('#dungeon-details').textContent=tr('dungeonDetails',{element:tr('element_'+entry.boss_element),multiplier:entry.attack_multiplier,bonus:entry.bonus_percent,species:favorable,coins:entry.reward});
       $('#dungeon-enter').hidden=false;$('#dungeon-enter').disabled=!artReady||h.locked()||!entry.discovered||entry.cleared||!!view.status.encounter;
-      $('#dungeon-enter').textContent=tr(entry.cleared?'dungeonCleared':!entry.discovered?'dungeonLocked':'dungeonEnter');
+      $('#dungeon-enter').textContent=tr(state.expedition?.phase==='next'?'dungeonNextEntry':entry.cleared?'dungeonCleared':!entry.discovered?'dungeonLocked':'dungeonEnter');
       $('#dungeon-entry-hint').textContent=tr(view.status.encounter?'dungeonEncounter':'dungeonEntryHint');
     }
-    updateTimers();
+    if(finished&&run){const next=state.expedition;$('#dungeon-enter').hidden=!(next?.phase==='next'&&next.dungeon_id===selected);$('#dungeon-enter').disabled=h.locked()||!entries.some(e=>e.id===selected);}
+    if(dialog.open&&view.ok===false)$('#dungeon-result').textContent=view.msg||'';
+    choiceUI();updateTimers();
   }
+  for(const choice of ['safe','risk'])$('#dungeon-'+choice).addEventListener('click',()=>{if(run?.pending&&elapsed>=WALK_MS&&!h.locked())h.act('dungeon_'+choice,{choice_id:run.choice_id});});
   $('#dungeon-enter').addEventListener('click',()=>{const entry=h.view()?.status?.dungeons?.entries.find(e=>e.id===selected);if(artReady&&!h.locked()&&entry?.discovered&&!entry.cleared&&remaining(entry)>0)h.act(`explore_${selected}`);});
   $('#dungeon-replay').addEventListener('click',()=>{if(!h.locked())show(h.view()?.status?.dungeons?.last_run);});
   $('#dungeon-skip').addEventListener('click',()=>finished?dialog.close():finish());
@@ -133,5 +161,5 @@ export function createDungeons(h){
   document.defaultView.setInterval(updateTimers,1000);
   document.addEventListener('visibilitychange',updateTimers);
   document.defaultView.addEventListener('resize',()=>{if(dialog.open)scene.draw({elapsed:run?elapsed:ambient,run,finished,reduced:reduced()});});
-  return {render,show,close(){stop();dialog.close();selected=null;run=null;}};
+  return {render,show,visit,close(){stop();dialog.close();selected=null;run=null;}};
 }

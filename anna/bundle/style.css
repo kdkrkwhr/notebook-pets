@@ -174,3 +174,9 @@ h1,h2,p,label,.actions b,.actions small{word-break:keep-all;overflow-wrap:break-
 #dungeon-explorer[hidden]{display:none!important}
 #dungeon-room{display:block;font-size:17px;color:#ffe1a0;margin:8px 0 4px;font-variant-numeric:tabular-nums}
 @media(max-width:560px){#dungeon-room{font-size:14px}.dungeon-sidebar .birth-buttons{gap:4px}.dungeon-sidebar button{padding:8px}.dungeon-scene-hud{max-width:calc(100% - 145px)}}
+
+.dungeon-choice{padding:16px;border:1px solid #c9ae73;border-radius:12px;background:#202e35;color:#fff1d2}.dungeon-choice h3{margin:0 0 8px}.dungeon-choice p{line-height:1.6}.dungeon-choice button{min-height:44px}.dungeon-choice[hidden]{display:none}
+
+.dungeon-sidebar{flex-wrap:wrap;max-height:48%;overflow-y:auto}.dungeon-choice{flex:1 1 100%;order:-1}.dungeon-choice .birth-buttons{justify-content:flex-start;margin-top:12px}.dungeon-choice p{font-size:13px}@media(max-width:560px){.dungeon-choice{padding:10px}.dungeon-choice h3{font-size:15px}.dungeon-choice p{font-size:12px}}
+
+#dungeon-dialog .dungeon-choice button{background:#31464d;color:#fff0d0;border-color:#ba9c64}#dungeon-dialog .dungeon-choice button:hover{background:#435e65}#dungeon-dialog .dungeon-choice button:disabled{opacity:.55}

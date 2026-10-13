@@ -14,36 +14,42 @@ class DungeonStorageTests(unittest.IsolatedAsyncioTestCase):
                 'discovered':['hellgate','icekingdom','dreamforest'], 'cleared':[], 'misses':0, 'last_run':None}
         self.storage.value['training_bonus'] = {'atk':100,'def':100,'hp':100}
 
-    async def test_lost_result_replays_after_process_restart_without_double_cost(self):
-        args = {'command':'explore_hellgate','request_id':prefix(self.storage.value)+'entry'}
-        first = await GameService(self.storage).invoke(args)
+
+    async def test_lost_entry_and_choice_replay_without_double_cost(self):
+        args={'command':'explore_hellgate','request_id':prefix(self.storage.value)+'entry'}
+        first=await GameService(self.storage).invoke(args)
         self.assertTrue(first['ok'],first)
-        self.assertEqual(first['dungeon_run']['coins_awarded'],10)
-        before = copy.deepcopy(self.storage.document)
-        second = await GameService(self.storage).invoke({**args,'language':'ko'})
-        self.assertTrue(second['replayed'])
-        self.assertEqual(first['dungeon_run'],second['dungeon_run'])
+        before=copy.deepcopy(self.storage.document)
+        again=await GameService(self.storage).invoke({**args,'language':'ko'})
+        self.assertEqual(first['dungeon_visit'],again['dungeon_visit'])
         self.assertEqual(self.storage.document,before)
-        self.assertEqual(second['status']['walk_energy']['charges'],4)
-        self.assertIn('코인 +10',second['msg'])
+        choice={'command':'dungeon_safe','choice_id':first['dungeon_visit']['choice_id'],'request_id':prefix(self.storage.value)+'choice'}
+        result=await GameService(self.storage).invoke(choice)
+        self.assertTrue(result['ok'],result)
+        before=copy.deepcopy(self.storage.document)
+        replay=await GameService(self.storage).invoke(choice)
+        self.assertTrue(replay['replayed'])
+        self.assertEqual(result['dungeon_run'],replay['dungeon_run'])
+        self.assertEqual(self.storage.document,before)
+        self.assertEqual(result['status']['walk_energy']['charges'],4)
         self.assertLess(byte_size(self.storage.document),MAX_SAVE_BYTES)
 
-    async def test_failed_storage_never_grants_coins_or_spends_charge(self):
-        before = copy.deepcopy(self.storage.document)
-        self.storage.fail = True
-        with self.assertRaises(Exception):
-            await self.client.invoke({'command':'explore_icekingdom','request_id':'entry'})
+    async def test_failed_storage_preserves_charge_and_pending_choice(self):
+        before=copy.deepcopy(self.storage.document);self.storage.fail=True
+        with self.assertRaises(Exception):await self.client.invoke({'command':'explore_icekingdom','request_id':'entry'})
+        self.assertEqual(self.storage.document,before);self.storage.fail=False
+        first=await self.client.invoke({'command':'explore_icekingdom','request_id':'entry'})
+        before=copy.deepcopy(self.storage.document);self.storage.fail=True
+        with self.assertRaises(Exception):await self.client.invoke({'command':'dungeon_risk','choice_id':first['dungeon_visit']['choice_id'],'request_id':'choice'})
         self.assertEqual(self.storage.document,before)
-        self.storage.fail = False
-        result = await self.client.invoke({'command':'explore_icekingdom','request_id':'entry'})
-        self.assertEqual(result['status']['dungeons']['coins'],10)
 
-    async def test_dungeon_state_is_private_and_newly_cleared_entry_is_rejected(self):
-        await self.client.invoke({'command':'explore_dreamforest','request_id':'entry'})
-        result = await self.client.invoke({'command':'explore_dreamforest','request_id':'again'})
-        self.assertEqual(result['code'],'dungeon_cleared')
-        self.assertEqual(result['status']['walk_energy']['charges'],4)
-        other = await GameClient(MemoryAPS()).invoke({'command':'start','name':'Other','request_id':'birth'})
-        self.assertEqual(other['status']['dungeons']['coins'],0)
-        self.assertIsNone(other['status']['dungeons']['last_run'])
-        self.assertFalse(any(x['discovered'] for x in other['status']['dungeons']['entries']))
+    async def test_choices_are_private_and_stale_tokens_cannot_affect_next_stage(self):
+        first=await self.client.invoke({'command':'explore_dreamforest','request_id':'entry'})
+        token=first['dungeon_visit']['choice_id']
+        await self.client.invoke({'command':'dungeon_safe','choice_id':token,'request_id':'choice'})
+        await self.client.invoke({'command':'explore_dreamforest','request_id':'next'})
+        stale=await self.client.invoke({'command':'dungeon_risk','choice_id':token,'request_id':'stale'})
+        self.assertEqual(stale['code'],'dungeon_choice_stale')
+        self.assertEqual(stale['status']['walk_energy']['charges'],3)
+        other=await GameClient(MemoryAPS()).invoke({'command':'start','name':'Other','request_id':'birth'})
+        self.assertFalse(other['status']['dungeons']['expedition'])

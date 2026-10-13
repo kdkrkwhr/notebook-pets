@@ -419,61 +419,90 @@ def cmd_walk(st):
     return r
 
 def cmd_explore(st, key):
-    day = today()
-    state = dungeons.daily(st, day)
+    state = dungeons.daily(st, today())
+    ex = state.get('expedition', {})
+    if ex and ex['phase'] == 'choice':
+        return out(True, 'Choose a route to continue.', dungeon_visit=copy.deepcopy(ex))
     if key in state['cleared']:
-        return out(False, '오늘 이 던전의 보상을 이미 받았어요.', code='dungeon_cleared')
+        return out(False, 'Already cleared.', code='dungeon_cleared')
     if key not in state['discovered']:
-        return out(False, '산책으로 던전을 먼저 발견해 주세요.', code='dungeon_locked')
+        return out(False, 'Discover this dungeon first.', code='dungeon_locked')
+    if ex and ex['dungeon_id'] != key:
+        return out(False, 'Finish your current expedition first.', code='dungeon_pending')
     if st.get('_wild') is not None:
-        return out(False, '기다리는 몬스터와 먼저 배틀하거나 헤어져 주세요.', code='encounter_pending')
+        return out(False, 'Resolve the waiting encounter.', code='encounter_pending')
     energy = walk_energy(st)
     if not energy['charges']:
-        return out(False, '산책 횟수를 충전하고 있어요.', code='walk_recharging')
-    bonus = dungeons.BONUS_PERCENT if st['species'] in dungeons.CATALOG[key]['species'] else 0
+        return out(False, 'Walk energy is recharging.', code='walk_recharging')
+    if not ex:
+        bonus = dungeons.BONUS_PERCENT if st['species'] in dungeons.CATALOG[key]['species'] else 0
+        maximum = stat_total(st)['hp']
+        maximum += max(1, round(maximum * bonus / 100)) if bonus else 0
+        boss_date = dungeons.discovery_day(state, key)
+        ex = {'id':uuid.uuid4().hex, 'dungeon_id':key, 'boss_date':boss_date,
+              'index':0, 'room_count':len(dungeons.room_plan(key,boss_date)),
+              'hp':float(maximum), 'max_hp':maximum, 'bonus_percent':bonus}
+    room = dungeons.room_plan(key, ex['boss_date'])[ex['index']]
+    ex.update(phase='choice', choice_id=uuid.uuid4().hex,
+              event='sanctuary' if room['kind']=='rest' else 'fork' if ex['index']%2==0 else 'trap')
+    st['walk_energy'] = {'charges':energy['charges']-1, 'updated_at':energy['updated_at']}
+    state['expedition'] = ex
+    st['dungeons'] = state
+    save_state(st)
+    return out(True, 'Stage entered. Choose your route.', dungeon_visit=copy.deepcopy(ex))
+
+
+def cmd_dungeon_choice(st, choice, token):
+    state = dungeons.daily(st, today())
+    ex = state.get('expedition', {})
+    if not ex or ex['phase'] != 'choice' or token != ex['choice_id']:
+        return out(False, 'This choice is no longer pending. Refresh.', code='dungeon_choice_stale')
+    # An already paid stage remains resolvable after expiry. Further entry does not.
+    key, index = ex['dungeon_id'], ex['index']
+    room = dungeons.room_plan(key, ex['boss_date'])[index]
     fighter = copy.deepcopy(st)
     fighter['training_bonus'] = dict(st.get('training_bonus', {}))
-    if bonus:
+    if ex['bonus_percent']:
         for stat, value in stat_total(st).items():
-            fighter['training_bonus'][stat] = fighter['training_bonus'].get(stat, 0) + max(1, round(value * bonus / 100))
-    boss_date = dungeons.discovery_day(state, key)
-    element = dungeons.boss_element(key, boss_date)
-    # Same base stats in all regions. Normal battle limits, XP and records are separate.
-    opponent = {'species_key': 'mammal', 'element_key': element, 'level': st['level']}
-    plan = dungeons.room_plan(key, boss_date)
-    rooms = []
-    max_hp = stat_total(fighter)['hp']
-    hp = float(max_hp)
-    for room in plan:
-        entry = {**room, 'start_hp': round(hp, 2)}
-        if room['kind'] == 'rest':
-            hp = min(max_hp, hp + max_hp * .5)
-            entry['hp_me'] = round(hp, 2)
-        else:
-            # Only dungeon opponents carry these private simulation settings.
-            enemy = {**opponent, '_dungeon_hp': hp,
-                     '_dungeon_scale': 1 if room['kind'] == 'boss' else .32 + room['index'] * .04}
-            combat = simulate_battle(fighter, enemy)
-            entry['combat'] = combat
-            hp = combat['hp_me']
-        rooms.append(entry)
-        if room['kind'] != 'rest' and combat['outcome'] != 'win':
-            break
-    won = combat['outcome'] == 'win'
-    reward = dungeons.REWARD if won else 0
-    run = {'id': uuid.uuid4().hex, 'dungeon_id': key, 'date': day, 'boss_date': boss_date,
-           'boss_element': element, 'bonus_percent': bonus, 'coins_awarded': reward,
-           'room_count': len(plan), 'rooms': rooms, **combat}
-    st['walk_energy'] = {'charges': energy['charges'] - 1, 'updated_at': energy['updated_at']}
-    st['coins'] = st.get('coins', 0) + reward
-    if won:
-        state['cleared'].append(key)
-        state['discovered'].remove(key)
-        state['expires_at'].pop(key)
+            fighter['training_bonus'][stat] = fighter['training_bonus'].get(stat, 0) + max(1, round(value * ex['bonus_percent'] / 100))
+    # Keep expedition HP consistent even if care/training changed stats between stages.
+    fighter['training_bonus']['hp'] = fighter['training_bonus'].get('hp',0) + ex['max_hp'] - stat_total(fighter)['hp']
+    trap_hit = choice=='risk' and room['kind']!='rest' and random.random()<.5
+    damage = round(ex['max_hp']*.15, 2) if trap_hit else 0
+    hp = max(min(1, ex['hp']), round(ex['hp']-damage,2))
+    damage = round(ex['hp']-hp,2)
+    route_coins = 2 if choice=='risk' and (room['kind']=='rest' or not trap_hit) else 0
+    entry = {**room, 'start_hp':hp}
+    if room['kind']=='rest':
+        hp = round(min(ex['max_hp'], hp+ex['max_hp']*(.2 if choice=='risk' else .5)),2)
+        entry['hp_me'] = hp
+        combat = {'outcome':'win', 'hp_me':hp,'max_hp_me':ex['max_hp'], 'hp_enemy':0,'max_hp_enemy':0,'turns':[],'rounds':0}
+    else:
+        opponent = {'species_key':'mammal','element_key':dungeons.boss_element(key,ex['boss_date']),
+                    'level':st['level'], '_dungeon_hp':hp, '_dungeon_scale':1 if room['kind']=='boss' else .32+index*.04}
+        combat = simulate_battle(fighter,opponent)
+        entry['combat'] = combat
+    complete = room['kind']=='boss' and combat['outcome']=='win'
+    reward = route_coins + (dungeons.REWARD if complete else 0)
+    run = {**combat, 'format':'stage-v1', 'id':uuid.uuid4().hex,'dungeon_id':key,'date':today(),
+           'boss_date':ex['boss_date'],'boss_element':dungeons.boss_element(key,ex['boss_date']),
+           'bonus_percent':ex['bonus_percent'], 'room_count':ex['room_count'], 'rooms':[entry],
+           'choice':choice,'event':ex['event'],'trap_damage':damage,'route_coins':route_coins,
+           'coins_awarded':reward,'complete':complete}
+    st['coins'] = st.get('coins',0)+reward
+    if complete:
+        if key not in state['cleared']: state['cleared'].append(key)
+        if key in state['discovered']: state['discovered'].remove(key)
+        state['expires_at'].pop(key,None)
+    if combat['outcome']=='win' and not complete and key in state['discovered']:
+        ex.update(phase='next',index=index+1,hp=combat['hp_me'])
+        state['expedition'] = ex
+    else:
+        state['expedition'] = {}
     state['last_run'] = run
     st['dungeons'] = state
     save_state(st)
-    return out(True, '던전 탐험 완료.', dungeon_run=copy.deepcopy(run))
+    return out(True, 'Stage completed.', dungeon_run=copy.deepcopy(run))
 
 
 def cmd_flee(st):
@@ -657,7 +686,7 @@ def cmd_rank():
     return out(True, "", ranking=ranks[:10])
 
 def cmd_help():
-    return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + list(dungeons.COMMANDS) + ["status", "quests", "claimquest", "album", "titles", "rank", "help"])
+    return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + list(dungeons.COMMANDS) + sorted(dungeons.CHOICES) + ["status", "quests", "claimquest", "album", "titles", "rank", "help"])
 
 # ---------- main ----------
 ALIASES = {
@@ -669,7 +698,7 @@ ALIASES = {
     "도망": "flee",
     "퀘스트": "quests", "일일퀘스트": "quests", "퀘스트보상": "claimquest",
 }
-COMMANDS = set(G["commands"]) | set(dungeons.COMMANDS) | {"status", "quests", "claimquest", "album", "titles", "rank", "help", "owner", "clearowner", "reset"}
+COMMANDS = set(G["commands"]) | set(dungeons.COMMANDS) | dungeons.CHOICES | {"status", "quests", "claimquest", "album", "titles", "rank", "help", "owner", "clearowner", "reset"}
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
 READ_COMMANDS = frozenset({"status", "quests", "album", "titles", "rank", "help"})
 
@@ -693,7 +722,12 @@ def dispatch_player(actor_id, command, arguments):
         "album": lambda: cmd_album(st), "titles": lambda: cmd_titles(st),
         "quests": lambda: cmd_quests(st), "claimquest": lambda: cmd_claimquest(st),
     }
-    result = cmd_explore(st, dungeons.COMMANDS[command]) if command in dungeons.COMMANDS else table[command]()
+    if command in dungeons.COMMANDS:
+        result = cmd_explore(st, dungeons.COMMANDS[command])
+    elif command in dungeons.CHOICES:
+        result = cmd_dungeon_choice(st, command.removeprefix('dungeon_'), arguments[0])
+    else:
+        result = table[command]()
     if result["ok"] and command in {item["command"] for item in G["daily_quest"]["requirements"]}:
         result["quest"] = daily_quest(st)
     return result
@@ -769,6 +803,9 @@ def execute(actor_id, command, arguments=(), *, request_id=None):
             if command == "owner" and not arguments:
                 raise GameError("invalid_arguments", "소유주로 등록할 사용자 ID가 필요합니다.")
             target = validate_user_id(arguments[0] if arguments else actor_id)
+        elif command in dungeons.CHOICES:
+            if len(arguments) != 1 or re.fullmatch(r'[a-f0-9]{32}', arguments[0]) is None:
+                raise GameError('invalid_arguments', 'A current dungeon choice_id is required.')
         elif command != "start" and arguments:
             raise GameError("invalid_arguments", "이 명령에는 추가 인자가 필요하지 않습니다.")
         name = " ".join(arguments[1:] if command in {"owner", "reset"} else arguments)

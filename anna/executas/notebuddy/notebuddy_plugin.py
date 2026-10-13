@@ -15,7 +15,7 @@ from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.3.0'
+VERSION = '0.4.0'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'
@@ -31,6 +31,7 @@ MANIFEST = {
         'parameters': [
             {'name': 'command', 'type': 'string', 'required': True, 'enum': sorted(ALLOWED),
              'description': 'One game action. status reads current progress; start creates your first partner.'},
+            {'name': 'choice_id', 'type': 'string', 'required': False, 'description': 'Required for dungeon_safe/dungeon_risk: use the exact choice_id of the pending dungeon expedition. Never choose for the user without their selection.'},
             {'name': 'name', 'type': 'string', 'required': False, 'description': 'Pet name, only for start. Up to 24 characters.'},
             {'name':'birth_species','type':'string','required':False,'enum':list(BIRTH_SPECIES),'description':'Drawing-based first creation only: species inferred from the user artwork. Omit for a random start. Cannot change an existing pet.'},
             {'name':'birth_element','type':'string','required':False,'enum':list(BIRTH_ELEMENTS),'description':'Drawing-based first creation only: visible element cues, or random when absent. Requires birth_species.'},
@@ -76,7 +77,7 @@ class GameService:
             return await reset(self.storage, SAVE_KEY, args, lambda payload: asyncio.to_thread(evaluate, payload))
 
     async def invoke(self, args, context=None):
-        if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language', 'birth_species', 'birth_element'}:
+        if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language', 'birth_species', 'birth_element', 'choice_id'}:
             raise ValueError('Invalid game arguments.')
         language = args.get('language', 'en')
         if language not in ('en', 'ko'):
@@ -94,6 +95,12 @@ class GameService:
             raise ValueError('Pet names must be at most 24 characters without control characters.')
         if name and command != 'start':
             raise ValueError('Only start accepts a name.')
+        choice_id = args.get('choice_id')
+        if command in ('dungeon_safe', 'dungeon_risk'):
+            if not isinstance(choice_id, str) or not re.fullmatch(r'[a-f0-9]{32}', choice_id):
+                raise ValueError('A current dungeon choice_id is required.')
+        elif choice_id is not None:
+            raise ValueError('Only dungeon choices accept choice_id.')
         event = args.get('request_id')
         if event is not None and (not isinstance(event, str) or not re.fullmatch(r'[A-Za-z0-9:_-]{1,128}', event)):
             raise ValueError('Invalid request ID.')
@@ -124,7 +131,7 @@ class GameService:
                 computed = await asyncio.to_thread(evaluate, {
                     'command': 'status' if mode == 'expired' else command, 'name': name,
                     'request_id': event_key(event) if event and mode != 'expired' else None,
-                    'state': None if awaiting_start else previous,
+                    'state': None if awaiting_start else previous, 'choice_id':choice_id,
                     'birth_species': birth_species if mode != 'expired' else None, 'birth_element': birth_element})
                 if mode == 'expired' and computed['result'].get('code') != 'invalid_state':
                     computed['result'] = {'ok': False, 'code': 'request_expired', 'msg': ''}
@@ -134,7 +141,7 @@ class GameService:
                 if mode == 'new' and isinstance(computed.get('state'), dict):
                     try:
                         candidate = commit_result(computed['state'], previous, event,
-                                                  command, name, computed['result'])
+                                                  command, name, computed['result'], choice_id=choice_id)
                     except SaveCapacityError:
                         computed = await asyncio.to_thread(evaluate, {'command': 'status', 'state': None if awaiting_start else previous})
                         computed['result'] = {'ok': False, 'code': 'save_capacity', 'msg': ''}

@@ -42,7 +42,27 @@ const runtime={
   let extra={replayed:false};
   state.save.status.dungeons??={date:'2026-10-13',coins:0,entries:dungeonEntries(),last_run:null};
   if(a.command==='walk'&&faults.walkDiscovery!==false){const entries=state.save.status.dungeons.entries,now=Date.now()/1000;if(!entries.some(e=>e.discovered&&!e.cleared&&e.expires_at>now)){const entry=entries.find(e=>!e.cleared&&(!e.discovered||e.expires_at<=now));if(entry){entry.discovered=true;entry.expires_at=now+86400;extra.dungeon_discovered=entry.id;}}}
-  if(a.command.startsWith('explore_')){
+  if(faults.stageChoices&&a.command.startsWith('explore_')){
+     const stateDungeon=state.save.status.dungeons,id=a.command.slice(8);
+     let ex=stateDungeon.expedition;
+     if(!ex||ex.phase!=='choice'){
+      const index=ex?.index||0;
+      ex={id:'fixture',dungeon_id:id,phase:'choice',choice_id:String(index+1).padStart(32,'0'),index,room_count:3,hp:12,max_hp:12,event:index===1?'trap':'fork'};
+      stateDungeon.expedition=ex;
+     }
+     extra.dungeon_visit=clone(ex);
+    }
+    if(faults.stageChoices&&a.command.startsWith('dungeon_')){
+     const d=state.save.status.dungeons,ex=d.expedition;
+     if(ex?.phase==='choice'&&ex.choice_id===a.choice_id){
+      const combat={outcome:'win',rounds:2,max_hp_me:12,max_hp_enemy:10,hp_me:8,hp_enemy:0,turns:[{hp_me:10,hp_enemy:5},{hp_me:8,hp_enemy:0}]};
+      const complete=ex.index===2,coins=complete?10:0;
+      const run={...combat,id:'fixture-run',format:'stage-v1',dungeon_id:ex.dungeon_id,choice:a.command.slice(8),event:ex.event,trap_damage:0,route_coins:0,coins_awarded:coins,complete,room_count:3,rooms:[{index:ex.index,kind:complete?'boss':'battle',enemy:complete?'guardian':ex.index?'bat':'slime',start_hp:12,combat}]};
+      d.last_run=run;d.coins+=coins;d.expedition=complete?{}:{...ex,index:ex.index+1,phase:'next'};extra.dungeon_run=run;
+      if(complete)d.entries.find(e=>e.id===ex.dungeon_id).discovered=false;
+     }
+    }
+    if(!faults.stageChoices&&a.command.startsWith('explore_')){
    const id=a.command.slice(8),entry=state.save.status.dungeons.entries.find(x=>x.id===id);
    const run={id:'mock-expedition',date:'2026-10-13',dungeon_id:id,outcome:faults.dungeonLose?'lose':'win',coins_awarded:faults.dungeonLose?0:10,boss_element:entry.boss_element,bonus_percent:10,max_hp_me:12,max_hp_enemy:10,hp_me:8,hp_enemy:0,turns:[{hp_me:10,hp_enemy:5},{hp_me:8,hp_enemy:0}]};
    if(faults.multiRooms){

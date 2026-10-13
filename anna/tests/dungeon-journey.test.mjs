@@ -18,3 +18,15 @@ test('timeline retains legacy replay and visits rest then boss without requestin
  const phases=new Set();for(let t=0;t<totalDuration(run);t+=100)phases.add(journey(run,t).phase);
  assert.ok(phases.has('rest'));assert.ok(phases.has('exit'));assert.equal(journey(run,totalDuration(run)).done,true);assert.equal(journey(run,totalDuration(run),true).index,2);
 });
+
+
+test('both selectable branches stay on floor, meet their checkpoint and reach the same combat location',()=>{
+ for(let index=0;index<6;index++){
+  for(const choice of ['safe','risk']){
+   assert.deepEqual(routePoint(1,index,false,choice,'approach'),routePoint(0,index,false,choice,'branch'));
+   for(let step=0;step<=100;step++){const p=routePoint(step/100,index,false,choice,'branch');assert.ok(layout(index).floor.has(`${Math.floor(p[0]/TILE)},${Math.floor(p[1]/TILE)}`));}
+  }
+  assert.deepEqual(routePoint(1,index,false,'safe','branch'),routePoint(1,index,false,'risk','branch'));
+  assert.notDeepEqual(routePoint(.5,index,false,'safe','branch'),routePoint(.5,index,false,'risk','branch'));
+ }
+});

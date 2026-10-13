@@ -12,7 +12,7 @@ import tempfile
 
 ALLOWED = frozenset({'start', 'status', 'feed', 'snack', 'play', 'sleep', 'train',
                      'walk', 'battle', 'flee', 'attendance', 'quests', 'claimquest',
-                     'album', 'titles', 'help', 'explore_hellgate', 'explore_icekingdom', 'explore_dreamforest'})
+                     'album', 'titles', 'help', 'explore_hellgate', 'explore_icekingdom', 'explore_dreamforest', 'dungeon_safe', 'dungeon_risk'})
 
 
 def run(payload):
@@ -38,6 +38,8 @@ def run(payload):
             previous = engine.migrate_state(previous, '1')
             atomic_write_json(save, previous)
         arguments = [payload['name']] if command == 'start' and payload.get('name') else []
+        if command in ('dungeon_safe', 'dungeon_risk'):
+            arguments = [payload.get('choice_id', '')]
         result = engine.execute('1', command, arguments, request_id=payload.get('request_id'))
         current = json.loads(save.read_text(encoding='utf-8')) if save.is_file() else None
         # Only the new local candidate is adjusted before its single APS commit.

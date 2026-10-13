@@ -1,3 +1,13 @@
+# Interactive stages · 0.6.0 / tool 0.4.0
+
+Current rules and deployment status: [0.6.0 release](RELEASE_060.md).
+
+Every stage costs one walk charge. Automatic movement pauses at a fork or trap, then the user's safe/risky route choice determines trap damage and route coins before combat. Sanctuary stages offer healing versus coins. Closing preserves a paid choice; entry into the next stage requires a separate action and charge. Fields have branches, loops and visible hazards; enemies have unique silhouettes. Existing results are replay-only historical records.
+
+The sections below describe earlier versions, not current stage pricing.
+
+---
+
 # Room-based dungeons · 0.5.0 / tool 0.3.0
 
 Each discovery deterministically selects 3–6 rooms from its region and discovery date. Retry attempts keep that layout. Combat rooms contain different pixel enemy types; layouts of four or more rooms include one sanctuary before the late encounters. HP carries across rooms and the sanctuary restores up to 50% of maximum HP. A loss or draw ends the attempt. Each dungeon fight has a maximum of eight simultaneous rounds, then the existing relative-HP tiebreak applies. Ordinary battles still use their existing round limit.

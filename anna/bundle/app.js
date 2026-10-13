@@ -204,7 +204,8 @@ async function act(command,extra={},retry=false){
     text('#action-result',message);if(!view.ok)notice(view.msg);
     if(view.ok&&action==='battle')battleScene.show(view,before,portrait,language);
     if(view.ok&&view.dungeon_discovered)text('#action-result',`${message} · ${tr('dungeonDiscovered',{name:tr('dungeon_'+view.dungeon_discovered)})}`);
-    if(view.ok&&view.dungeon_run)dungeons.show(view.dungeon_run);
+    if(view.ok&&view.dungeon_visit)dungeons.visit(view.dungeon_visit);
+    else if(view.ok&&view.dungeon_run)dungeons.show(view.dungeon_run);
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;}
   finally{controls(false);}
   if(walkStory)void stories.start(walkStory);

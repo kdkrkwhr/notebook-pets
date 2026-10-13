@@ -796,3 +796,41 @@ test('directional avatar has distinct front back and side frames, with no new AI
  });
  assert.equal(new Set(result).size,4);assert.equal((await calls(p,'image')).length,0);
 });
+
+
+test('paid checkpoint stops, resumes after reload and accepts an explicit route before next paid stage',async t=>{
+ const p=await setup(t,{walkOutcome:'quiet',stageChoices:true});await start(p);await p.locator('[data-action="walk"]').click();await idle(p);
+ await p.locator('[data-dungeon="hellgate"]').click();await p.locator('#dungeon-enter').click();await idle(p);
+ await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.phase==='choice',null,{timeout:20000});
+ const camera=await p.locator('#dungeon-map').getAttribute('data-camera');
+ assert.equal(await p.locator('#dungeon-choice').isVisible(),true);assert.equal((await calls(p,'dungeon_safe')).length,0);
+ await p.waitForTimeout(300);assert.equal(await p.locator('#dungeon-map').getAttribute('data-camera'),camera);
+ if(process.env.ANNA_STAGE_CAPTURE)await p.locator('#dungeon-dialog').screenshot({path:process.env.ANNA_STAGE_CAPTURE});
+ await p.reload();await idle(p);await p.emulateMedia({reducedMotion:'reduce'});
+ await p.locator('[data-dungeon="hellgate"]').click();assert.equal(await p.locator('#dungeon-choice').isVisible(),true);
+ assert.equal((await calls(p,'explore_hellgate')).length,0);
+ await p.locator('#dungeon-safe').click();await idle(p);
+ assert.equal((await calls(p,'dungeon_safe')).length,1);assert.match(await p.locator('#dungeon-enter').innerText(),/Next stage/);
+ assert.equal((await calls(p,'explore_hellgate')).length,0);
+ await p.locator('#dungeon-enter').click();await idle(p);assert.equal(await p.locator('#dungeon-choice').isVisible(),true);
+ assert.match(await p.locator('#dungeon-choice-title').innerText(),/trapped/);
+ await p.setViewportSize({width:360,height:780});
+ const bounds=await p.locator('#dungeon-choice').boundingBox();assert.ok(bounds.width<=360);
+ assert.equal(await p.locator('#dungeon-risk').isVisible(),true);
+ if(process.env.ANNA_STAGE_CAPTURE)await p.locator('#dungeon-dialog').screenshot({path:process.env.ANNA_STAGE_CAPTURE.replace('.png','-mobile.png')});
+ await p.locator('#dungeon-risk').click();await idle(p);assert.equal((await calls(p,'dungeon_risk')).length,1);
+});
+
+test('enemy silhouettes are distinct in monochrome and animate independently of the pet rig',async t=>{
+ const p=await setup(t);
+ const result=await p.evaluate(async()=>{
+  const {drawEnemy,ENEMY_KINDS}=await import('./dungeon-enemies.mjs');
+  const canvas=document.createElement('canvas');canvas.width=160;canvas.height=150;const c=canvas.getContext('2d');
+  return ENEMY_KINDS.map(kind=>{
+   const frames=[0,150].map(elapsed=>{c.clearRect(0,0,160,150);drawEnemy(c,80,130,{kind,elapsed});const data=c.getImageData(0,0,160,150).data;return Array.from(data).filter((v,i)=>i%4===3).map(v=>v?1:0).join('');});
+   return {kind,frames};
+  });
+ });
+ assert.equal(new Set(result.map(r=>r.frames[0])).size,4);
+ for(const r of result)assert.notEqual(r.frames[0],r.frames[1],r.kind+' animates');
+});
