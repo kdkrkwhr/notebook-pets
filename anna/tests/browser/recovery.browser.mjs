@@ -136,7 +136,8 @@ test('dungeon countdown expires while open and saved replay survives expiry',asy
  await p.evaluate(()=>{window.hostTest.state.save.status.dungeons.entries[0].expires_at=Date.now()/1000+4;});
  await p.locator('#refresh').click();await idle(p);
  await p.locator('[data-dungeon="hellgate"]').click();assert.match(await p.locator('#dungeon-countdown').innerText(),/Closes in 00:00:0/);
- await p.waitForFunction(()=>document.querySelector('#dungeon-enter').disabled);
+ await p.waitForFunction(()=>document.querySelector('#dungeon-countdown').textContent.includes('Time is up'));
+ assert.equal(await p.locator('#dungeon-enter').isDisabled(),true);
  assert.match(await p.locator('#dungeon-countdown').innerText(),/Time is up/);
  assert.equal(await p.locator('[data-dungeon]').count(),0);
  assert.equal((await calls(p,'explore_hellgate')).length,0);
