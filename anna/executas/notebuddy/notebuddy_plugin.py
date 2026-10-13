@@ -15,7 +15,7 @@ from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.4.0'
+VERSION = '0.4.1'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'
@@ -31,7 +31,7 @@ MANIFEST = {
         'parameters': [
             {'name': 'command', 'type': 'string', 'required': True, 'enum': sorted(ALLOWED),
              'description': 'One game action. status reads current progress; start creates your first partner.'},
-            {'name': 'choice_id', 'type': 'string', 'required': False, 'description': 'Required for dungeon_safe/dungeon_risk: use the exact choice_id of the pending dungeon expedition. Never choose for the user without their selection.'},
+            {'name': 'choice_id', 'type': 'string', 'required': False, 'description': 'Required for dungeon_safe/dungeon_risk/walk_collect/walk_leave: use the exact pending choice_id from status. Never choose for the user without their selection.'},
             {'name': 'name', 'type': 'string', 'required': False, 'description': 'Pet name, only for start. Up to 24 characters.'},
             {'name':'birth_species','type':'string','required':False,'enum':list(BIRTH_SPECIES),'description':'Drawing-based first creation only: species inferred from the user artwork. Omit for a random start. Cannot change an existing pet.'},
             {'name':'birth_element','type':'string','required':False,'enum':list(BIRTH_ELEMENTS),'description':'Drawing-based first creation only: visible element cues, or random when absent. Requires birth_species.'},
@@ -96,11 +96,11 @@ class GameService:
         if name and command != 'start':
             raise ValueError('Only start accepts a name.')
         choice_id = args.get('choice_id')
-        if command in ('dungeon_safe', 'dungeon_risk'):
+        if command in ('dungeon_safe', 'dungeon_risk', 'walk_collect', 'walk_leave'):
             if not isinstance(choice_id, str) or not re.fullmatch(r'[a-f0-9]{32}', choice_id):
-                raise ValueError('A current dungeon choice_id is required.')
+                raise ValueError('A current choice_id is required.')
         elif choice_id is not None:
-            raise ValueError('Only dungeon choices accept choice_id.')
+            raise ValueError('Only walk and dungeon choices accept choice_id.')
         event = args.get('request_id')
         if event is not None and (not isinstance(event, str) or not re.fullmatch(r'[A-Za-z0-9:_-]{1,128}', event)):
             raise ValueError('Invalid request ID.')

@@ -27,7 +27,7 @@ let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendi
 let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetRequest=null;
 const tr=(key,values)=>t(language,key,values);
 const problem=error=>errorText(error,language);
-const battleScene=createBattle(document);
+const battleScene=createBattle(document,()=>storyDialog.close(),()=>storyDialog.battleFinished());
 let dungeons,pixels,pixelNotice='';
 $('#draw-evolved').addEventListener('click',()=>$('#draw').click());
 
@@ -190,8 +190,13 @@ async function refresh(){
   finally{controls(false);}
 }
 async function act(command,extra={},retry=false){
-  if(busy||pendingRemoval||(!retry&&pendingAction)||command==='walk'&&stories?.blocksWalk())return;controls(true);notice();
-  if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));controls(false);return;}}
+  if(busy||pendingRemoval||(!retry&&pendingAction))return;
+  if(command==='walk'&&!retry&&storyDialog.hasPending()){storyDialog.resume();return;}
+  if(command==='walk')command='walk_begin';
+  const outing=['walk_begin','walk_collect','walk_leave','battle','flee'].includes(command);
+  if(outing)storyDialog.loading();
+  controls(true);notice();
+  if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));if(outing)storyDialog.result(tr('refreshAction'));controls(false);return;}}
   let started=false,reaction=null,walkStory=null;
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
@@ -204,11 +209,12 @@ async function act(command,extra={},retry=false){
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
     text('#action-result',message);if(!view.ok)notice(view.msg);
-    if(view.ok&&action==='battle')battleScene.show(view,before,portrait,language);
+    if(view.ok&&action==='battle'){storyDialog.battle();battleScene.show(view,before,portrait,language);}
     if(view.ok&&view.dungeon_discovered)text('#action-result',`${message} · ${tr('dungeonDiscovered',{name:tr('dungeon_'+view.dungeon_discovered)})}`);
+    if(outing&&!(view.ok&&action==='battle'))storyDialog.result($('#action-result').textContent);
     if(view.ok&&view.dungeon_visit)dungeons.visit(view.dungeon_visit);
     else if(view.ok&&view.dungeon_run)dungeons.show(view.dungeon_run);
-  }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;}
+  }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;if(outing)storyDialog.result(`${problem(error)} ${tr('uncertain')}`);}
   finally{controls(false);}
   if(walkStory){storyDialog.begin();void stories.start(walkStory);}
   reactions.enqueue(reaction);
@@ -424,7 +430,7 @@ document.addEventListener('artwork-selected',()=>birth.selected());
 $('#replace-birth-source').addEventListener('click',()=>artEditor.open());
 $('#retry-birth').addEventListener('click',()=>birth.run());
 $('#default-birth').addEventListener('click',()=>birth.fallback());
-storyDialog=createStoryDialog({document,view:()=>view,tr,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),choose:index=>stories.choose(index)});
+storyDialog=createStoryDialog({document,view:()=>view,tr,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),choose:index=>stories.choose(index),closeBattle:()=>battleScene.close(),busy:()=>busy,retryPending:()=>!!pendingAction&&['walk_begin','walk_collect','walk_leave','battle','flee'].includes(pendingAction.command),retry:()=>$('#retry-action').click(),act,openDungeon:id=>{$('#dungeon-list').querySelector(`[data-dungeon="${id}"]`)?.click();}});
 stories=createWalkStories({anna:()=>anna,active:assertActive,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),render:state=>storyDialog.render(state)});
 pixels=createPixelPet({anna:()=>anna,art:()=>art,assertActive,upload:uploadPortrait,
   saved:value=>{art=value;},message:key=>{pixelNotice=key;renderPixel();}});

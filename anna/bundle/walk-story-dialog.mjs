@@ -1,29 +1,49 @@
-// Presentation only: closing never repeats a walk or generates a second story.
+// Rendering saved state never opens a dialog. Only an explicit outing/resume does.
 export function createStoryDialog(h){
  const d=h.document,$=id=>d.querySelector(id),dialog=$('#walk-story');
- let dismissed=false,last={current:null,working:false,feedback:''};
- const close=()=>{dismissed=true;dialog.close();render(last);($('#story-resume').hidden?$('[data-action="walk"]'):$('#story-resume')).focus();};
+ let mode='result',message='',last={current:null,working:false,feedback:''};
+ const pending=()=>last.working||!!last.current&&last.current.state!=='done';
+ const close=()=>{dialog.close();h.closeBattle?.();render(last);($('#story-resume').hidden?$('[data-action="walk"]'):$('#story-resume')).focus();};
  function open(){if(!dialog.open&&!d.querySelector('dialog[open]')){dialog.showModal();$('#story-heading').focus();}}
  function render(state){
-  last=state;const {working,feedback}=state;
-  const current=working&&state.current?.state==='done'?null:state.current,done=current?.state==='done';
-  const active=!!h.view()?.status,pending=working||!!current&&!done;
-  if(!active){dismissed=false;if(dialog.open)dialog.close();$('#story-resume').hidden=true;return;}
-  $('#story-heading').textContent=current?.story.title||h.tr('storyHeading');
-  $('#story-scene').textContent=current?.story.scene||'';
-  $('#story-status').textContent=feedback?h.tr(feedback):working?h.tr('storyWorking'):current?.fallback?h.tr('storyFallback'):'';
+  last=state;
+  if(!h.view()?.status){dialog.close();$('#story-resume').hidden=true;return;}
+  const current=state.working&&state.current?.state==='done'?null:state.current,done=current?.state==='done';
+  const story=mode==='story',battle=mode.startsWith('battle'),encounter=!!h.view()?.status?.encounter,choice=h.view()?.status?.walk_choice;
+  const choosing=!!choice&&mode!=='loading';
+  $('#story-heading').textContent=story?(current?.story.title||h.tr('storyHeading')):h.tr(battle?'battleHeading':'walk');
+  $('#story-scene').textContent=story?current?.story.scene||'':choosing?h.tr('walkXPScene',{xp:choice.reward}):message;
+  $('#story-status').textContent=story?(state.feedback?h.tr(state.feedback):state.working?h.tr('storyWorking'):current?.fallback?h.tr('storyFallback'):''):'';
   $('#story-choices').replaceChildren();
-  if(current&&!done&&!working)current.story.choices.forEach((choice,index)=>{
+  if(story&&current&&!done&&!state.working)current.story.choices.forEach((choice,index)=>{
    const button=d.createElement('button');button.type='button';button.className='story-choice';button.textContent=choice.label;button.disabled=h.locked();button.onclick=()=>h.choose(index);$('#story-choices').append(button);
   });
-  $('#story-ending').textContent=done?current.story.choices[current.choice].ending:'';$('#story-ending').hidden=!done;
-  $('#story-done').hidden=!done;$('#story-done').textContent=h.tr('storyDone');
-  if(pending&&!dismissed)open();
-  $('#story-resume').hidden=!pending||dialog.open;$('#story-resume').disabled=h.locked();
-  $('[data-action="walk"]').disabled=h.locked()||pending;
+  if(choosing)for(const action of ['collect','leave']){const button=d.createElement('button');button.type='button';button.className='story-choice';button.textContent=h.tr(action==='collect'?'walkCollect':'walkLeave',{xp:choice.reward});button.disabled=h.locked();button.onclick=()=>h.act('walk_'+action,{choice_id:choice.choice_id});$('#story-choices').append(button);}
+  $('#story-ending').textContent=story&&done?current.story.choices[current.choice].ending:'';$('#story-ending').hidden=!story||!done;
+  $('#encounter').hidden=!encounter||battle||story;
+  $('#story-done').hidden=battle||mode==='loading'||story&&!done||encounter||choosing;
+  $('#story-done').textContent=h.tr('storyDone');
+  $('#story-usage').hidden=!story;
+  $('.story-footer').hidden=!story&&$('#story-done').hidden;
+  const discovery=h.view()?.status?.dungeons?.entries?.find(e=>e.discovered&&!e.cleared&&e.expires_at>Date.now()/1000);
+  $('#walk-discovery').hidden=!discovery||mode==='loading'||battle&&mode!=='battleDone'||story&&!done||encounter||choosing;
+  if(discovery){$('#walk-discovery-text').textContent=h.tr('dungeonDiscovered',{name:h.tr('dungeon_'+discovery.id)});$('#walk-dungeon').onclick=()=>{close();h.openDungeon(discovery.id);};}
+  $('#walk-retry').hidden=!h.retryPending();$('#walk-retry').disabled=h.busy();
+  $('#story-resume').hidden=dialog.open||!(pending()||encounter||choice);$('#story-resume').disabled=h.locked();
+  $('[data-action="walk"]').disabled=h.locked();
  }
  $('#story-close').onclick=close;$('#story-done').onclick=close;
  dialog.addEventListener('cancel',e=>{e.preventDefault();close();});
- $('#story-resume').onclick=()=>{dismissed=false;open();render(last);};
- return {render,begin(){dismissed=false;},clear(){dismissed=false;last={current:null,working:false,feedback:''};dialog.close();$('#story-resume').hidden=true;}};
+ $('#walk-retry').onclick=()=>h.retry();
+ const resume=()=>{h.closeBattle?.();mode=pending()?'story':'result';message='';render(last);open();render(last);};
+ $('#story-resume').onclick=resume;
+ return {render,resume,close,
+  hasPending:()=>pending()||!!h.view()?.status?.encounter||!!h.view()?.status?.walk_choice,
+  loading(){h.closeBattle?.();mode='loading';message=h.tr('working');render(last);open();},
+  result(value){mode='result';message=value;render(last);},
+  battle(){mode='battle';message='';render(last);},
+  battleFinished(){mode='battleDone';render(last);},
+  begin(){mode='story';render(last);},
+  clear(){mode='result';message='';last={current:null,working:false,feedback:''};dialog.close();$('#story-resume').hidden=true;}
+ };
 }

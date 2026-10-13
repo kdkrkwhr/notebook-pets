@@ -38,10 +38,10 @@ const runtime={
   if(faults.delay)await new Promise(r=>setTimeout(r,faults.delay));
   if(receipts.has(a.request_id))return {...clone(receipts.get(a.request_id)),replayed:true};
   if(a.command==='start'){state.save=create(a.name);if(a.birth_species){state.save.species_key=a.birth_species;state.save.status.species=a.birth_species;}if(a.birth_element&&a.birth_element!=='random'){state.save.element_key=a.birth_element;state.save.status.element=a.birth_element;}}
-  else {state.save.status.xp+=10;state.save.inventory.normal_feed-=a.command==='feed'?1:0;}
+  else {state.save.status.xp+=['walk_begin','walk_collect','walk_leave'].includes(a.command)?0:10;state.save.inventory.normal_feed-=a.command==='feed'?1:0;}
   let extra={replayed:false};
   state.save.status.dungeons??={date:'2026-10-13',coins:0,entries:dungeonEntries(),last_run:null};
-  if(a.command==='walk'&&faults.walkDiscovery!==false){const entries=state.save.status.dungeons.entries,now=Date.now()/1000;if(!entries.some(e=>e.discovered&&!e.cleared&&e.expires_at>now)){const entry=entries.find(e=>!e.cleared&&(!e.discovered||e.expires_at<=now));if(entry){entry.discovered=true;entry.expires_at=now+86400;extra.dungeon_discovered=entry.id;}}}
+  if(['walk','walk_begin'].includes(a.command)&&faults.walkDiscovery!==false){const entries=state.save.status.dungeons.entries,now=Date.now()/1000;if(!entries.some(e=>e.discovered&&!e.cleared&&e.expires_at>now)){const entry=entries.find(e=>!e.cleared&&(!e.discovered||e.expires_at<=now));if(entry){entry.discovered=true;entry.expires_at=now+86400;extra.dungeon_discovered=entry.id;}}}
   if(faults.stageChoices&&a.command.startsWith('explore_')){
      const stateDungeon=state.save.status.dungeons,id=a.command.slice(8);
      let ex=stateDungeon.expedition;
@@ -71,8 +71,10 @@ const runtime={
    }
    state.save.status.dungeons.last_run=run;state.save.status.dungeons.coins+=run.coins_awarded;entry.cleared=!faults.dungeonLose;if(entry.cleared)entry.discovered=false;extra.dungeon_run=run;
   }
-  if(a.command==='walk'&&faults.walkOutcome==='quiet'){extra.walk_outcome='quiet';state.save.status.encounter=null;}
-  if(a.command==='walk'&&faults.walkOutcome!=='quiet')state.save.status.encounter={species_key:'dragon',element_key:'fire',species:'Dragon',element:'Fire',level:1};
+  if(['walk','walk_begin'].includes(a.command)&&faults.walkOutcome==='quiet'){extra.walk_outcome='quiet';state.save.status.encounter=null;}
+  if(['walk','walk_begin'].includes(a.command)&&!['quiet','xp'].includes(faults.walkOutcome))state.save.status.encounter={species_key:'dragon',element_key:'fire',species:'Dragon',element:'Fire',level:1};
+  if(a.command==='walk_begin'&&faults.walkOutcome==='xp'){extra.walk_outcome='xp';state.save.status.walk_choice={choice_id:'a'.repeat(32),reward:20};state.save.status.encounter=null;}
+  if(['walk_collect','walk_leave'].includes(a.command)){const reward=a.command==='walk_collect'?state.save.status.walk_choice.reward:0;state.save.status.xp+=reward;extra.xp_result={gained:reward};state.save.status.walk_choice=null;}
   if(a.command==='battle'){
    extra={...extra,opponent:state.save.status.encounter,outcome:'win',max_hp_me:10,max_hp_enemy:10,hp_me:6,hp_enemy:0,
     turns:[{round:1,hp_me:8,hp_enemy:5},{round:2,hp_me:6,hp_enemy:0}],xp_result:{gained:10}};

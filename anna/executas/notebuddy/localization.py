@@ -14,6 +14,8 @@ LABELS = {
     '밥 주기': 'Feed', '훈련': 'Train', '산책': 'Walk',
 }
 ERRORS = {
+    'walk_choice_pending': ('Finish your pending walk choice first.', '진행 중인 산책 선택을 먼저 마쳐 주세요.'),
+    'walk_choice_stale': ('This choice has already ended. Refresh to check.', '이미 끝난 선택이에요. 새로고침해 확인해 주세요.'),
     'dungeon_locked': ('Discover this dungeon on a walk today first.', '산책으로 오늘의 던전을 먼저 발견해 주세요.'),
     'dungeon_cleared': ('You already cleared this dungeon today. Discover it again tomorrow.', '오늘 이 던전의 보상을 이미 받았어요. 내일 다시 발견해 주세요.'),
     'walk_recharging': ('Walks are recharging: one every 5 minutes, up to 5.', '산책 횟수 충전 중이에요. 5분마다 1회, 최대 5회까지 충전돼요.'),
@@ -33,6 +35,8 @@ ERRORS = {
     'attendance_claimed': ("You already collected today’s gift.", '오늘의 출석 선물은 이미 받았어요.'),
 }
 LEGACY_ERRORS = {
+    'walk_choice_pending': ('Finish your pending walk choice first.', '진행 중인 산책 선택을 먼저 마쳐 주세요.'),
+    'walk_choice_stale': ('This choice has already ended. Refresh to check.', '이미 끝난 선택이에요. 새로고침해 확인해 주세요.'),
     'walk_recharging': ('Walks are recharging: one every 5 minutes, up to 5.', '산책 횟수 충전 중이에요. 5분마다 1회, 최대 5회까지 충전돼요.'),
     'request_expired': ('This request is no longer current. It was not run again. Refresh and check your companion before choosing another action.', '이전 요청을 다시 실행하지 않았어요. 상태를 새로고침하고 친구를 확인한 뒤 다음 행동을 선택해 주세요.'),
     'save_capacity': ('This action was not saved because the game data is too large. Your previous progress is safe. Please contact support.', '게임 저장 용량이 커서 이번 행동을 저장하지 못했어요. 기존 진행도는 보존됩니다. 지원팀에 문의해 주세요.'),
@@ -83,7 +87,11 @@ def _message(value, command, language):
         if run['outcome']=='win':
             return f'스테이지 완료 · 코인 +{coins}. 다음 입장은 산책 포인트 1개입니다.' if index else f'Stage complete · +{coins} coins. Next stage costs 1 walk charge.'
         return f'탐험 종료 · 코인 +{coins}. 첫 스테이지부터 다시 도전할 수 있어요.' if index else f'Expedition ended · +{coins} coins. Retry from the first stage.'
-    if command == 'walk':
+    if command == 'walk_collect':
+        return '발견한 것을 살펴보며 경험을 쌓았어요.' if index else 'You explored your discovery and gained experience.'
+    if command == 'walk_leave':
+        return '발견한 것을 그대로 두고 편안히 돌아왔어요.' if index else 'You left the discovery untouched and headed home.'
+    if command in ('walk', 'walk_begin'):
         return {'quiet': ('A peaceful walk. Nothing unusual happened.', '별일 없이 느긋하게 산책했어요.'),
                 'xp': ('You discovered XP on your walk!', '산책 중 경험치를 발견했어요!'),
                 'encounter': ('You met a monster on your walk!', '산책 중 몬스터를 만났어요!')}.get(value.get('walk_outcome'), SUCCESS['walk'])[index]

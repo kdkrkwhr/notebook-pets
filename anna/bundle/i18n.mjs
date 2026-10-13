@@ -1,6 +1,9 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  walkXPScene:['Your companion spots an unfamiliar trail. Explore it together to gain {xp} base XP, or leave it untouched and head home. No extra walk charge is used.','친구가 낯선 흔적을 발견했어요. 함께 살펴보면 기본 경험치 {xp}를 얻어요. 그대로 두고 돌아갈 수도 있어요. 추가 산책 포인트는 쓰지 않아요.'],
+  walkCollect:['Explore together (+{xp} base XP)','함께 살펴보기 (기본 XP +{xp})'],walkLeave:['Leave it untouched (no XP)','그대로 두고 돌아가기 (XP 없음)'],
+  walkDungeon:['Look inside the discovered dungeon','발견한 던전 살펴보기'],walkDungeonHint:['Preview is free. Entering each stage costs 1 walk charge. You can also return home and visit later.','미리보기는 무료이며 스테이지마다 산책 포인트 1개를 써요. 집으로 돌아간 뒤 나중에 방문해도 돼요.'],
   storyResume:['Continue walk','산책 이어가기'], storyDone:['Return to my companion','친구에게 돌아가기'],
   dungeonEvent_fork:['A fork in the path','갈림길을 만났어요'], dungeonEvent_trap:['A trapped passage','함정이 있는 통로예요'], dungeonEvent_sanctuary:['A quiet sanctuary','조용한 쉼터예요'],
   dungeonChoose:['Waiting for your choice','선택을 기다리고 있어요'],

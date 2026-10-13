@@ -19,6 +19,7 @@ test('only a stable subset of successful quiet walks qualify',()=>{
  assert.equal(storyEvent('walk','x',{...result,ok:false,walk_outcome:'quiet'},'en'),null);
  const events=Array.from({length:100},(_,i)=>storyEvent('walk','walk'+i,{...result,walk_outcome:'quiet'},'en'));
  assert.equal(events.filter(Boolean).length,50);
+ for(let i=0;i<10;i++)assert.ok(storyEvent('walk_begin','walk'+i,{...result,walk_outcome:'quiet'},'en'));
  assert.deepEqual(storyEvent('walk','walk0',{...result,walk_outcome:'quiet'},'en'),events[0]);
 });
 test('untrusted output requires exactly two bounded complete branches',()=>{

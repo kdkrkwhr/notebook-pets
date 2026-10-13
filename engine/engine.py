@@ -107,6 +107,12 @@ def validate_state(st, uid):
             if key not in ("date", "sleep_buff"):
                 require(type(value) is int and value >= 0)
         require(st["daily"].get("quest_claimed", 0) in (0, 1))
+        if st.get('_walk_choice') is not None:
+            choice = st['_walk_choice']
+            require(isinstance(choice, dict) and set(choice) == {'choice_id', 'reward'})
+            require(isinstance(choice['choice_id'], str) and re.fullmatch(r'[a-f0-9]{32}', choice['choice_id']) is not None)
+            require(type(choice['reward']) is int and choice['reward'] in G['commands']['walk']['xp_rewards'])
+            require(st.get('_wild') is None)
         if "walk_energy" in st:
             energy = st["walk_energy"]
             require(isinstance(energy, dict))
@@ -326,7 +332,7 @@ def cmd_status(st):
                element=G["elements"][st["element"]]["name_kr"], stage_label=dict((s["stage"], s["label"]) for s in G["stages"])[st["stage"]],
                level=st["level"], xp=st["xp"], xp_next=xp_needed(st["level"]),
                stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"), image=art.describe(st),
-               record=st["record"], walk_energy={k: v for k, v in walk_energy(st).items() if k != "updated_at"}, quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
+               walk_choice=copy.deepcopy(st.get("_walk_choice")), record=st["record"], walk_energy={k: v for k, v in walk_energy(st).items() if k != "updated_at"}, quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
                dungeons=dungeons.view(st, today(), type_mult),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
 
@@ -391,7 +397,9 @@ def walk_energy(st, now=None):
             "recharge_seconds": interval, "next_in_seconds": remaining}
 
 
-def cmd_walk(st):
+def cmd_walk(st, interactive=False):
+    if st.get('_walk_choice'):
+        return out(False, 'Choose how to finish your walk first.', code='walk_choice_pending')
     if st.get("_wild") is not None:
         return out(False, "만난 몬스터가 기다리고 있어. 배틀·도망 중 하나를 먼저 선택해.",
                    code="encounter_pending", encounter=st["_wild"])
@@ -404,7 +412,9 @@ def cmd_walk(st):
     roll = random.random()
     outcome = "encounter" if roll < rules["encounter_chance"] else ("xp" if roll < rules["encounter_chance"] + rules["xp_chance"] else "quiet")
     reward = random.choice(rules["xp_rewards"]) if outcome == "xp" else 0
-    x = add_xp(st, reward)
+    if interactive and outcome == 'xp':
+        st['_walk_choice'] = {'choice_id': uuid.uuid4().hex, 'reward': reward}
+    x = add_xp(st, 0 if interactive else reward)
     encounter = None
     if outcome == "encounter":
         wsp = random.choice(list(G["species"].keys())); wel = random.choice(list(G["elements"].keys()))
@@ -418,7 +428,20 @@ def cmd_walk(st):
     r = out(True, messages[outcome], walk_outcome=outcome, walk_energy=walk_energy(st), xp_result=x, encounter=bool(encounter), wild=encounter, dungeon_discovered=discovered)
     return r
 
+def cmd_walk_choice(st, collect, token):
+    pending = st.get('_walk_choice')
+    if not pending or token != pending['choice_id']:
+        return out(False, 'This walk choice is no longer pending.', code='walk_choice_stale')
+    reward = pending['reward'] if collect else 0
+    st.pop('_walk_choice')
+    result = add_xp(st, reward)
+    save_state(st)
+    return out(True, 'Walk choice complete.', xp_result=result)
+
+
 def cmd_explore(st, key):
+    if st.get('_walk_choice'):
+        return out(False, 'Finish the pending walk first.', code='walk_choice_pending')
     state = dungeons.daily(st, today())
     ex = state.get('expedition', {})
     if ex and ex['phase'] == 'choice':
@@ -698,7 +721,7 @@ ALIASES = {
     "도망": "flee",
     "퀘스트": "quests", "일일퀘스트": "quests", "퀘스트보상": "claimquest",
 }
-COMMANDS = set(G["commands"]) | set(dungeons.COMMANDS) | dungeons.CHOICES | {"status", "quests", "claimquest", "album", "titles", "rank", "help", "owner", "clearowner", "reset"}
+COMMANDS = {"walk_begin", "walk_collect", "walk_leave"} | set(G["commands"]) | set(dungeons.COMMANDS) | dungeons.CHOICES | {"status", "quests", "claimquest", "album", "titles", "rank", "help", "owner", "clearowner", "reset"}
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
 READ_COMMANDS = frozenset({"status", "quests", "album", "titles", "rank", "help"})
 
@@ -716,6 +739,9 @@ def dispatch_player(actor_id, command, arguments):
         "status": lambda: cmd_status(st), "feed": lambda: cmd_care(st, "feed"),
         "play": lambda: cmd_care(st, "play"), "snack": lambda: cmd_care(st, "snack"),
         "sleep": lambda: cmd_care(st, "sleep"), "train": lambda: cmd_train(st),
+        "walk_begin": lambda: cmd_walk(st, interactive=True),
+        "walk_collect": lambda: cmd_walk_choice(st, True, arguments[0] if arguments else ''),
+        "walk_leave": lambda: cmd_walk_choice(st, False, arguments[0] if arguments else ''),
         "walk": lambda: cmd_walk(st), "battle": lambda: cmd_battle(st),
         "flee": lambda: cmd_flee(st),
         "attendance": lambda: cmd_attendance(st),
@@ -803,9 +829,9 @@ def execute(actor_id, command, arguments=(), *, request_id=None):
             if command == "owner" and not arguments:
                 raise GameError("invalid_arguments", "소유주로 등록할 사용자 ID가 필요합니다.")
             target = validate_user_id(arguments[0] if arguments else actor_id)
-        elif command in dungeons.CHOICES:
+        elif command in dungeons.CHOICES | {"walk_collect", "walk_leave"}:
             if len(arguments) != 1 or re.fullmatch(r'[a-f0-9]{32}', arguments[0]) is None:
-                raise GameError('invalid_arguments', 'A current dungeon choice_id is required.')
+                raise GameError('invalid_arguments', 'A current choice_id is required.')
         elif command != "start" and arguments:
             raise GameError("invalid_arguments", "이 명령에는 추가 인자가 필요하지 않습니다.")
         name = " ".join(arguments[1:] if command in {"owner", "reset"} else arguments)

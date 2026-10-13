@@ -203,3 +203,6 @@ h1,h2,p,label,.actions b,.actions small{word-break:keep-all;overflow-wrap:break-
 .has-pet .intro{display:none}#refresh{width:40px;min-width:40px;padding:0;font-size:0}#refresh::before{content:'↻';font-size:20px}
 @media(min-width:761px){.main-grid .chat-card{grid-row:1;max-height:640px}.main-grid .care-card{grid-column:1 / -1;grid-row:2}.main-grid .actions{grid-template-columns:repeat(7,minmax(0,1fr))}}
 @media(min-width:761px) and (max-width:1000px){.main-grid .actions{grid-template-columns:repeat(4,minmax(0,1fr))}}
+
+/* Walk encounters and battle playback share the outing dialog. */
+#walk-story #battle-dialog{width:100%;max-width:100%;padding:0 24px 20px}#walk-story #battle-heading{display:none}#walk-discovery small{display:block;margin-top:10px}#walk-story .encounter{margin:0 24px 24px}#walk-discovery{margin:0 24px 24px}#walk-retry{margin:0 24px 24px}

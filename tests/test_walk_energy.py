@@ -81,3 +81,32 @@ class WalkEnergyTests(unittest.TestCase):
     def test_invalid_energy_is_rejected(self):
         for energy in [{'charges':6,'updated_at':1},{'charges':True,'updated_at':1},{'charges':1,'updated_at':float('nan')}]:
             with self.assertRaises(engine.GameError): self.seed(walk_energy=energy)
+
+    def test_interactive_xp_is_reserved_until_a_choice_and_replays_once(self):
+        self.seed()
+        with patch.object(engine.random,'random',return_value=.3), patch.object(engine.random,'choice',return_value=20):
+            first=engine.execute('123','walk_begin',request_id='entry')
+        self.assertEqual(first['xp_result']['gained'],0)
+        status=engine.execute('123','status');token=status['walk_choice']['choice_id']
+        self.assertEqual(status['walk_choice']['reward'],20)
+        self.assertEqual(engine.execute('123','walk_begin')['code'],'walk_choice_pending')
+        result=engine.execute('123','walk_collect',[token],request_id='collect')
+        self.assertEqual(result['xp_result']['gained'],20)
+        before=(self.state/'123.json').read_bytes()
+        self.assertEqual(engine.execute('123','walk_collect',[token],request_id='collect'),result)
+        self.assertEqual((self.state/'123.json').read_bytes(),before)
+        self.assertEqual(engine.execute('123','walk_leave',[token])['code'],'walk_choice_stale')
+        self.assertEqual(engine.execute('123','status')['walk_energy']['charges'],4)
+
+    def test_interactive_xp_can_be_declined_without_xp_or_extra_energy(self):
+        self.seed()
+        with patch.object(engine.random,'random',return_value=.3):engine.execute('123','walk_begin')
+        token=engine.execute('123','status')['walk_choice']['choice_id']
+        result=engine.execute('123','walk_leave',[token])
+        self.assertEqual(result['xp_result']['gained'],0)
+        self.assertIsNone(engine.execute('123','status')['walk_choice'])
+        self.assertEqual(engine.execute('123','status')['walk_energy']['charges'],4)
+
+    def test_invalid_walk_choice_rejected(self):
+        for value in [{'choice_id':'bad','reward':20},{'choice_id':'a'*32,'reward':10000}]:
+            with self.assertRaises(engine.GameError):self.seed(_walk_choice=value)

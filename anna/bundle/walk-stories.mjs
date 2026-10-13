@@ -1,10 +1,10 @@
 import {STORY,erased,ErasedError} from './data.mjs';
 
 export function storyEvent(command,id,result,language){
-  if(command!=='walk'||!result?.ok||result.walk_outcome!=='quiet'||!id||!result.pet_id)return null;
+  if(!['walk','walk_begin'].includes(command)||!result?.ok||result.walk_outcome!=='quiet'||!id||!result.pet_id)return null;
   // Stable selection on retries: about half of quiet walks, no reward changes.
   let hash=0;for(const c of id)hash=(Math.imul(hash,31)+c.charCodeAt(0))|0;
-  if((hash&1)!==0)return null;
+  if(command==='walk'&&(hash&1)!==0)return null;
   return {id,pet_id:result.pet_id,language:language==='ko'?'ko':'en',name:result.status.name,species:result.status.species,element:result.status.element};
 }
 export function basicStory(language){

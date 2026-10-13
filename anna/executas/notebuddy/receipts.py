@@ -99,7 +99,7 @@ def commit_result(state, previous, request_id, command, name, result, choice_id=
     value = copy.deepcopy(state)
     key = event_key(request_id)
     receipts = value.setdefault('processed_requests', {})
-    receipts[key] = {'command': command, 'arguments': [choice_id] if command in ('dungeon_safe','dungeon_risk') else [name] if command == 'start' and name else [],
+    receipts[key] = {'command': command, 'arguments': [choice_id] if command in ('dungeon_safe','dungeon_risk','walk_collect','walk_leave') else [name] if command == 'start' and name else [],
                      'result': copy.deepcopy(result)}
     current = metadata(previous)
     # APS JSON objects need not preserve insertion order. New receipts have an
