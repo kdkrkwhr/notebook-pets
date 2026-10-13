@@ -90,8 +90,8 @@ test('dungeon discovery, automatic movement, skip and reopened replay keep one r
  assert.ok(size.width>=size.vw*.9&&size.height>=size.vh*.9);assert.ok(size.map>620,JSON.stringify(size));
  await p.locator('#dungeon-enter').click();await idle(p);
  assert.equal(await p.locator('#dungeon-dialog').isVisible(),true);
- const first=await p.locator('#dungeon-explorer').evaluate(e=>e.style.top);
- await p.waitForFunction(before=>document.querySelector('#dungeon-explorer').style.top!==before,first);
+ const first=await p.locator('#dungeon-map').getAttribute('data-camera');
+ await p.waitForFunction(before=>document.querySelector('#dungeon-map').dataset.camera!==before,first);
  await p.locator('#dungeon-skip').click();assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
  await p.locator('#dungeon-skip').click();assert.equal((await calls(p,'explore_hellgate')).length,1);
  await p.reload();await idle(p);assert.match(await p.locator('#dungeon-coins').innerText(),/10/);
@@ -760,4 +760,39 @@ test('ambiguous classification waits for confirmation; cancel never creates a pe
  await p.locator('#start-form button').click();await p.waitForFunction(()=>document.querySelector('#art-traits-dialog').open);
  await p.locator('#art-traits-dialog button[value=accept]').click();await idle(p);
  assert.equal((await calls(p,'llm')).length,1);assert.equal((await calls(p,'start')).length,1);assert.equal((await calls(p,'start'))[0].args.birth_species,'monster');
+});
+
+
+test('six-room expedition visits distinct rooms, pauses and replays without spending again',async t=>{
+ const p=await setup(t,{walkOutcome:'quiet',multiRooms:true});await start(p);
+ await p.locator('[data-action="walk"]').click();await idle(p);
+ await p.locator('[data-dungeon="hellgate"]').click();await p.locator('#dungeon-enter').click();await idle(p);
+ await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.art==='ready');
+ await p.locator('#dungeon-pause').click();
+ const paused=await p.locator('#dungeon-map').getAttribute('data-camera');
+ await p.waitForFunction(()=>document.querySelector('#dungeon-phase').textContent.includes('paused'));
+ assert.equal(await p.locator('#dungeon-map').getAttribute('data-camera'),paused);
+ await p.locator('#dungeon-pause').click();await p.locator('#dungeon-fast').click();
+ for(let room=2;room<=6;room++){
+   await p.waitForFunction(n=>document.querySelector('#dungeon-map').dataset.room===String(n),room,{timeout:15000});
+   assert.match(await p.locator('#dungeon-room').innerText(),new RegExp('Room '+room+' / 6'));
+ }
+ await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.phase==='finished');
+ assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
+ assert.equal((await calls(p,'explore_hellgate')).length,1);
+ await p.locator('#dungeon-close').click();await p.reload();await idle(p);
+ await p.locator('#dungeon-replay').click();await p.locator('#dungeon-skip').click();
+ assert.match(await p.locator('#dungeon-room').innerText(),/6 \/ 6/);
+ assert.equal((await calls(p,'explore_hellgate')).length,0);
+ assert.equal((await calls(p,'image')).length,0);
+});
+
+test('directional avatar has distinct front back and side frames, with no new AI call',async t=>{
+ const p=await setup(t);await start(p);
+ const result=await p.evaluate(async()=>{
+  const {drawAvatar}=await import('./dungeon-avatar.mjs');
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=96;const c=canvas.getContext('2d');
+  return ['up','down','left','right'].map(direction=>{c.clearRect(0,0,96,96);drawAvatar(c,48,82,{species:'dragon',direction,frame:1});return canvas.toDataURL();});
+ });
+ assert.equal(new Set(result).size,4);assert.equal((await calls(p,'image')).length,0);
 });

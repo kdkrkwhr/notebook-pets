@@ -15,7 +15,7 @@ from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.2.2'
+VERSION = '0.3.0'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'

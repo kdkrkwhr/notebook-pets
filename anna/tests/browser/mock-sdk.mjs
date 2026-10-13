@@ -45,6 +45,10 @@ const runtime={
   if(a.command.startsWith('explore_')){
    const id=a.command.slice(8),entry=state.save.status.dungeons.entries.find(x=>x.id===id);
    const run={id:'mock-expedition',date:'2026-10-13',dungeon_id:id,outcome:faults.dungeonLose?'lose':'win',coins_awarded:faults.dungeonLose?0:10,boss_element:entry.boss_element,bonus_percent:10,max_hp_me:12,max_hp_enemy:10,hp_me:8,hp_enemy:0,turns:[{hp_me:10,hp_enemy:5},{hp_me:8,hp_enemy:0}]};
+   if(faults.multiRooms){
+     const combat=clone(run);delete combat.rooms;
+     run.room_count=6;run.rooms=Array.from({length:6},(_,index)=>({index,kind:index===5?'boss':index===3?'rest':'battle',enemy:index===5?'guardian':index===3?null:['slime','bat','beetle','sentinel'][index%4],start_hp:index?8:12,...(index===3?{hp_me:12}:{combat:clone(combat)})}));
+   }
    state.save.status.dungeons.last_run=run;state.save.status.dungeons.coins+=run.coins_awarded;entry.cleared=!faults.dungeonLose;if(entry.cleared)entry.discovered=false;extra.dungeon_run=run;
   }
   if(a.command==='walk'&&faults.walkOutcome==='quiet'){extra.walk_outcome='quiet';state.save.status.encounter=null;}

@@ -1,3 +1,17 @@
+# Room-based dungeons · 0.5.0 / tool 0.3.0
+
+Each discovery deterministically selects 3–6 rooms from its region and discovery date. Retry attempts keep that layout. Combat rooms contain different pixel enemy types; layouts of four or more rooms include one sanctuary before the late encounters. HP carries across rooms and the sanctuary restores up to 50% of maximum HP. A loss or draw ends the attempt. Each dungeon fight has a maximum of eight simultaneous rounds, then the existing relative-HP tiebreak applies. Ordinary battles still use their existing round limit.
+
+Entry costs one walk charge for the entire expedition. Only winning the last guardian yields the existing 10-coin reward and closes the discovery. One result, all room outcomes, cost and reward commit together. Closing, pausing, skipping and replaying are presentation controls; they do not change a saved result. Existing single-boss records play as one room, without rewriting the save.
+
+The renderer uses a shared tile layout for floors, corridors, doors and routes. Room orientation changes between stages, and the camera follows the companion. The avatar has front, rear and side views with alternating steps, using species anatomy and locally sampled portrait colors. This is a simplified procedural avatar, not new AI-generated views of the exact custom drawing. Original portraits and pixel assets are preserved. A failed color sample uses a neutral palette. No additional AI call is made.
+
+Manual movement, branching reward choices and individually authored directional sprites for each custom pet remain outside this implementation. Playback takes roughly a minute or more for a complete expedition, depending on room count and rounds; defeat can end earlier. 3x, pause and skip are available. Reduced-motion users receive the final result directly.
+
+See [0.5.0 validation and deployment](RELEASE_050.md). Earlier implementation notes follow for historical context.
+
+---
+
 # Scrolling RPG dungeons · 0.4.2 / tool 0.2.2
 
 2026-10-13 사용자 요청으로 던전이 진행 중이면 클리어 또는 만료 전까지 다른 던전이 발견되지 않도록 변경했다. 발견 후 24시간 유지, 남은 시간 표시, 확대 화면을 유지한다. 실제 Anna 배포 및 계정 검증은 [배포 기록](RELEASE_042.md)에 기록한다. 심사 중인 0.3.4는 별개다.

@@ -1,6 +1,13 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  dungeonRoom: ['Room {current} / {total}', '{current} / {total}번 방'],
+  dungeonRoomCount: ['{total} rooms · One expedition', '{total}개 방 · 하나의 탐험'],
+  dungeonRest: ['Sanctuary · Recovering HP', '쉼터 · 체력 회복 중'],
+  dungeonNext: ['Gate unlocked · Moving to the next room', '문이 열렸어요 · 다음 방으로 이동'],
+  dungeonPause: ['Pause', '잠시 멈추기'], dungeonResume: ['Continue', '계속 보기'], dungeonPaused: ['Playback paused', '탐험 연출을 잠시 멈췄어요'],
+  enemy_slime: ['Wandering Slime', '떠도는 슬라임'], enemy_bat: ['Cave Bat', '동굴 박쥐'],
+  enemy_beetle: ['Shell Beetle', '갑옷 딱정벌레'], enemy_sentinel: ['Ancient Sentinel', '고대 파수꾼'],
   dungeonHeading: ['Little pixel adventures', '작은 픽셀 모험'],
   dungeonIntro: ['While a dungeon is open, no other dungeon can be discovered. Clear it or wait until it expires, then walks have a 25% chance to reveal the next one. Coins are saved for future cosmetics.', '진행 중인 던전이 있으면 다른 던전은 발견되지 않아요. 클리어하거나 시간이 만료된 뒤, 산책마다 25% 확률로 다음 던전을 발견해요. 코인은 추후 꾸미기에 사용할 수 있어요.'],
   dungeonCoins: ['{coins} coins', '{coins} 코인'],

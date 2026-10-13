@@ -1,11 +1,12 @@
 import {t} from './i18n.mjs';
 import {createDungeonScene,paintDungeon,WALK_MS,ROUND_MS} from './dungeon-scene.mjs';
+import {journey,totalDuration} from './dungeon-journey.mjs';
 export {routePosition} from './dungeon-scene.mjs';
 export const DUNGEON_IDS=['hellgate','icekingdom','dreamforest'];
 
 export function createDungeons(h){
   const document=h.document,$=id=>document.querySelector(id),dialog=$('#dungeon-dialog');
-  let selected=null,run=null,raf=null,elapsed=0,lastTime=0,speed=1,finished=false,artReady=false,ambient=0,previewTicket=0;
+  let selected=null,run=null,raf=null,elapsed=0,lastTime=0,speed=1,finished=false,artReady=false,ambient=0,previewTicket=0,paused=false;
   const scene=createDungeonScene($('#dungeon-map'),$('#dungeon-explorer'));
   const reduced=()=>document.defaultView.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let clockState=null,serverTime=0,receivedAt=0;
@@ -37,47 +38,46 @@ export function createDungeons(h){
   }
   const stop=()=>{if(raf!==null)cancelAnimationFrame(raf);raf=null;$('#dungeon-explorer').classList.remove('walking');};
   function portrait(){
-    const img=$('#dungeon-explorer');img.src=h.pixelUrl()||h.portraitUrl();img.alt=h.view()?.status?.name||'';
+    const img=$('#dungeon-explorer');img.crossOrigin='anonymous';img.src=h.pixelUrl()||h.portraitUrl();img.alt=h.view()?.status?.name||'';
     img.onerror=()=>{img.onerror=null;img.src=h.portraitUrl();};
   }
   function health(frame){
     if(!run)return;
-    $('#dungeon-your-hp').max=run.max_hp_me;$('#dungeon-boss-hp').max=run.max_hp_enemy;
+    const active=journey(run,finished?totalDuration(run):elapsed,finished);const combat=active.room.combat;
+    $('#dungeon-your-hp').max=run.max_hp_me;$('#dungeon-boss-hp').max=combat?.max_hp_enemy||1;
     $('#dungeon-your-hp').value=frame.hp_me;$('#dungeon-boss-hp').value=frame.hp_enemy;
-    $('#dungeon-hp-text').textContent=`${Math.ceil(frame.hp_me)} / ${run.max_hp_me} · ${Math.ceil(frame.hp_enemy)} / ${run.max_hp_enemy}`;
+    $('#dungeon-hp-text').textContent=`${Math.ceil(frame.hp_me)} / ${run.max_hp_me} · ${Math.ceil(frame.hp_enemy)} / ${combat?.max_hp_enemy||0}`;
   }
   function finish(){
-    stop();finished=true;health(run);scene.draw({elapsed,run,finished,reduced:reduced()});
-    $('#dungeon-phase').textContent=tr(`battle_${run.outcome}`);
+    stop();finished=true;elapsed=totalDuration(run);health(run);scene.draw({elapsed,run,finished,reduced:reduced()});
+    $('#dungeon-phase').textContent=tr(`battle_${run.outcome}`);$('#dungeon-room').textContent=tr('dungeonRoom',{current:journey(run,elapsed,true).index+1,total:run.room_count||1});$('#dungeon-pause').hidden=true;
     $('#dungeon-result').textContent=tr(run.coins_awarded?'dungeonReward':'dungeonRetry',{coins:run.coins_awarded});
     $('#dungeon-skip').textContent=tr('close');$('#dungeon-fast').hidden=true;
   }
   function tick(now){
     if(!dialog.open)return stop();
     const delta=document.hidden?0:Math.min(100,Math.max(0,now-lastTime));lastTime=now;
-    if(run&&!finished&&artReady)elapsed+=delta*speed;else ambient+=delta;
+    if(run&&!finished&&artReady&&!paused)elapsed+=delta*speed;else ambient+=delta;
     if(run&&!finished){
-      const progress=Math.min(1,elapsed/WALK_MS);
-      if(progress<1)$('#dungeon-phase').textContent=tr(progress<.35?'dungeonMoving':progress<.65?'dungeonCache':'dungeonApproach');
-      else{
-        $('#dungeon-phase').textContent=tr('battlePlaying');
-        const index=Math.floor((elapsed-WALK_MS)/ROUND_MS),phase=((elapsed-WALK_MS)%ROUND_MS)/ROUND_MS;
-        if(index>=run.turns.length){finish();return;}
-        health(phase>=.55?run.turns[index]:index?run.turns[index-1]:{hp_me:run.max_hp_me,hp_enemy:run.max_hp_enemy});
-      }
+      const active=journey(run,elapsed);
+      if(active.done){finish();return;}
+      $('#dungeon-room').textContent=tr('dungeonRoom',{current:active.index+1,total:active.total});
+      $('#dungeon-phase').textContent=tr(paused?'dungeonPaused':active.phase==='rest'?'dungeonRest':active.phase==='exit'?'dungeonNext':active.phase==='battle'?'battlePlaying':'dungeonMoving');
+      $('#dungeon-boss-name').textContent=tr(active.room.kind==='rest'?'dungeonRest':active.room.enemy==='guardian'?'boss_'+selected:'enemy_'+active.room.enemy);
+      health(active.frame||{hp_me:active.room.start_hp,hp_enemy:active.room.combat?.max_hp_enemy||0});
     }
     scene.draw({elapsed:run?elapsed:ambient,run,finished,reduced:reduced()});
     if(!reduced()||run&&!finished)raf=requestAnimationFrame(tick);
   }
   function preview(key,saved=null){
     const ticket=++previewTicket;
-    stop();selected=key;run=saved;finished=false;elapsed=0;ambient=0;artReady=false;
+    stop();selected=key;run=saved;finished=false;elapsed=0;ambient=0;artReady=false;paused=false;
     portrait();
-    void scene.load(key).then(ok=>{if(ticket!==previewTicket||!dialog.open)return;artReady=ok;if(!ok){stop();$('#dungeon-phase').textContent=tr('dungeonArtFailed');}render();scene.draw({elapsed,run,finished,reduced:reduced()});});
+    void scene.load(key,{species:h.view()?.species_key}).then(ok=>{if(ticket!==previewTicket||!dialog.open)return;artReady=ok;if(!ok){stop();$('#dungeon-phase').textContent=tr('dungeonArtFailed');}render();scene.draw({elapsed,run,finished,reduced:reduced()});});
     $('#dungeon-heading').textContent=tr(`dungeon_${key}`);
     $('#dungeon-boss-name').textContent=tr(`boss_${key}`);
     $('#dungeon-phase').textContent=tr(`dungeonScene_${key}`);
-    $('#dungeon-result').textContent='';$('#dungeon-hp').hidden=true;
+    $('#dungeon-result').textContent='';$('#dungeon-pause').hidden=true;$('#dungeon-pause').textContent=tr('dungeonPause');$('#dungeon-room').textContent=tr('dungeonRoomCount',{total:h.view()?.status?.dungeons?.entries.find(e=>e.id===key)?.room_count||'3–6'});$('#dungeon-hp').hidden=true;
     $('#dungeon-countdown').hidden=false;
     $('#dungeon-skip').hidden=true;$('#dungeon-fast').hidden=true;
     if(!dialog.open)dialog.showModal();render();lastTime=performance.now();raf=requestAnimationFrame(tick);
@@ -85,7 +85,7 @@ export function createDungeons(h){
   function show(saved){
     if(!saved||!DUNGEON_IDS.includes(saved.dungeon_id)||!Array.isArray(saved.turns))return;
     preview(saved.dungeon_id,saved);elapsed=0;speed=1;finished=false;
-    $('#dungeon-enter').hidden=true;$('#dungeon-hp').hidden=false;
+    $('#dungeon-enter').hidden=true;$('#dungeon-hp').hidden=false;$('#dungeon-pause').hidden=false;
     $('#dungeon-countdown').hidden=true;
     $('#dungeon-entry-hint').textContent=tr('dungeonSaved');
     $('#dungeon-skip').hidden=false;$('#dungeon-skip').textContent=tr('battleSkip');
@@ -126,6 +126,7 @@ export function createDungeons(h){
   $('#dungeon-replay').addEventListener('click',()=>{if(!h.locked())show(h.view()?.status?.dungeons?.last_run);});
   $('#dungeon-skip').addEventListener('click',()=>finished?dialog.close():finish());
   $('#dungeon-fast').addEventListener('click',()=>{speed=speed===1?3:1;$('#dungeon-fast').textContent=tr(speed===1?'dungeonFast':'dungeonNormal');});
+  $('#dungeon-pause').addEventListener('click',()=>{paused=!paused;$('#dungeon-pause').textContent=tr(paused?'dungeonResume':'dungeonPause');});
   $('#dungeon-close').addEventListener('click',()=>dialog.close());
   dialog.addEventListener('close',stop);dialog.addEventListener('cancel',stop);
   document.defaultView.setInterval(updateTimers,1000);

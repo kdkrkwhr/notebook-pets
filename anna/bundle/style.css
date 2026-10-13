@@ -169,3 +169,8 @@ h1,h2,p,label,.actions b,.actions small{word-break:keep-all;overflow-wrap:break-
 @media(max-width:760px){#dungeon-dialog>.section-heading{padding:10px 12px;gap:10px}#dungeon-dialog h2{font-size:18px}.dungeon-countdown{font-size:10px;max-width:40%}.dungeon-sidebar{padding:10px 12px;flex-wrap:wrap;gap:8px}.dungeon-sidebar .birth-buttons{gap:6px}.dungeon-sidebar button{padding:9px 12px;font-size:11px}.dungeon-scene-hud{left:13px;top:16px;max-width:calc(100% - 145px)}#dungeon-phase{font-size:11px}#dungeon-result{max-width:100%;font-size:11px}#dungeon-hp{left:3%;right:3%;bottom:10px;padding:8px 10px}.dungeon-health{gap:14px;font-size:10px}.dungeon-briefing{font-size:11px}}
 @media(max-width:560px){.dungeon-section{padding:18px}.dungeon-list{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}.dungeon-card strong,.dungeon-card>span{margin-left:8px;margin-right:8px}.dungeon-card strong{font-size:13px}.dungeon-card>span{font-size:11px}.pixel-companion{gap:12px}}
 @media(prefers-reduced-motion:reduce){.dungeon-card:hover:not(:disabled){transform:none}}
+
+/* The room renderer owns the animated avatar; the source image is never overlaid. */
+#dungeon-explorer[hidden]{display:none!important}
+#dungeon-room{display:block;font-size:17px;color:#ffe1a0;margin:8px 0 4px;font-variant-numeric:tabular-nums}
+@media(max-width:560px){#dungeon-room{font-size:14px}.dungeon-sidebar .birth-buttons{gap:4px}.dungeon-sidebar button{padding:8px}.dungeon-scene-hud{max-width:calc(100% - 145px)}}

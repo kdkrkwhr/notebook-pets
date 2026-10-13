@@ -237,3 +237,61 @@ class DungeonTests(unittest.TestCase):
         for expiry in (True, -1, float('inf'), 'soon', 253402214400):
             with self.assertRaises(engine.GameError):
                 self.seed(dungeons={'date':engine.today(),'discovered':['hellgate'],'cleared':[],'misses':0,'expires_at':{'hellgate':expiry}})
+
+
+    def test_room_plans_are_stable_and_cover_three_to_six_rooms(self):
+        from datetime import timedelta, date
+        counts = set()
+        for offset in range(40):
+            day = (date(2026, 10, 1) + timedelta(days=offset)).isoformat()
+            plan = dungeons.room_plan('hellgate', day)
+            self.assertEqual(plan, dungeons.room_plan('hellgate', day))
+            counts.add(len(plan))
+            self.assertEqual(plan[-1]['kind'], 'boss')
+            self.assertEqual(sum(p['kind']=='rest' for p in plan), int(len(plan)>=4))
+        self.assertEqual(counts, {3,4,5,6})
+
+    def test_rooms_carry_hp_restore_at_sanctuary_and_reward_only_final_clear(self):
+        self.opened(training_bonus={'atk':100,'def':100,'hp':100})
+        first = engine.execute('123','explore_hellgate',request_id='rooms')
+        run = first['dungeon_run']
+        self.assertEqual(len(run['rooms']), run['room_count'])
+        hp = run['max_hp_me']
+        for room in run['rooms']:
+            self.assertEqual(room['start_hp'], hp)
+            if room['kind']=='rest':
+                self.assertGreaterEqual(room['hp_me'], hp)
+                hp=room['hp_me']
+            else:
+                self.assertLessEqual(len(room['combat']['turns']),8)
+                hp=room['combat']['hp_me']
+        self.assertEqual(run['coins_awarded'],10)
+        self.assertEqual(run['rooms'][-1]['enemy'],'guardian')
+        dungeons.validate(engine.load_state('123'))
+        before=copy.deepcopy(engine.load_state('123'))
+        self.assertEqual(engine.execute('123','explore_hellgate',request_id='rooms'),first)
+        self.assertEqual(engine.load_state('123'),before)
+
+    def test_room_loss_stops_before_remaining_rooms_without_reward(self):
+        self.opened()
+        original=engine.simulate_battle
+        def lose(*args):
+            combat=original(*args, rng=random.Random(42))
+            combat['outcome']='lose'
+            return combat
+        with patch.object(engine,'simulate_battle',side_effect=lose) as mock:
+            result=engine.execute('123','explore_hellgate')['dungeon_run']
+        self.assertEqual(mock.call_count,1)
+        self.assertEqual(len(result['rooms']),1)
+        self.assertEqual(result['coins_awarded'],0)
+        self.assertGreater(result['room_count'],len(result['rooms']))
+        dungeons.validate(engine.load_state('123'))
+
+    def test_legacy_run_remains_readable_and_invalid_room_plan_is_rejected(self):
+        self.opened(training_bonus={'atk':100,'def':100})
+        engine.execute('123','explore_hellgate')
+        state=engine.load_state('123')
+        bad=copy.deepcopy(state);bad['dungeons']['last_run']['rooms'][0]['index']=6
+        with self.assertRaises(ValueError): dungeons.validate(bad)
+        state['dungeons']['last_run'].pop('rooms');state['dungeons']['last_run'].pop('room_count')
+        dungeons.validate(state)

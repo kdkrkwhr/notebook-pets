@@ -1,5 +1,6 @@
 """Small daily dungeon catalog and bounded exploration state. No AI decisions."""
 import copy
+import hashlib
 from datetime import date, datetime, timedelta, timezone
 import math
 import time
@@ -62,12 +63,24 @@ def view(st, day, type_mult):
     return {'date': day, 'server_now': now, 'coins': st.get('coins', 0), 'last_run': state.get('last_run'),
             'entries': [{'id': key, 'discovered': key in state['discovered'],
                          'cleared': key in state['cleared'], 'cost': 1, 'reward': REWARD,
+                         'room_count': len(room_plan(key, discovery_day(state, key))),
                          'expires_at': state['expires_at'][key],
                          'boss_element': boss_element(key, discovery_day(state, key)),
                          'attack_multiplier': type_mult(st['element'], boss_element(key, discovery_day(state, key))),
                          'habitat_species': value['species'],
                          'bonus_percent': BONUS_PERCENT if st['species'] in value['species'] else 0}
                         for key, value in CATALOG.items() if key in state['discovered']]}
+
+
+def room_plan(key, day):
+    """Stable 3–6 room layout for this discovery; retries do not reroll its length."""
+    count = 3 + hashlib.sha256(f'{key}:{day}'.encode()).digest()[0] % 4
+    enemies = ['slime', 'bat', 'beetle', 'sentinel']
+    rooms = []
+    for index in range(count):
+        kind = 'boss' if index == count - 1 else 'rest' if count >= 4 and index == count - 3 else 'battle'
+        rooms.append({'index': index, 'kind': kind, 'enemy': 'guardian' if kind == 'boss' else None if kind == 'rest' else enemies[sum(r['kind']=='battle' for r in rooms) % 4]})
+    return rooms
 
 
 def validate(st):
@@ -111,3 +124,26 @@ def validate(st):
         require(isinstance(frame, dict))
         for field in ('hp_me', 'hp_enemy'):
             require(type(frame[field]) in (int, float) and math.isfinite(frame[field]) and frame[field] >= 0)
+
+    if 'rooms' in run:
+        plan = room_plan(run['dungeon_id'], run.get('boss_date', run['date']))
+        require(type(run.get('room_count')) is int and run['room_count'] == len(plan))
+        rooms = run['rooms']
+        require(isinstance(rooms, list) and 1 <= len(rooms) <= len(plan))
+        require(run['outcome'] != 'win' or len(rooms) == len(plan))
+        expected_hp = run['max_hp_me']
+        for index, room in enumerate(rooms):
+            require(isinstance(room, dict))
+            require(all(room.get(k) == v for k, v in plan[index].items()))
+            require(type(room.get('start_hp')) in (int, float) and math.isfinite(room['start_hp']) and 0 <= room['start_hp'] <= run['max_hp_me'])
+            require(room['start_hp'] == expected_hp)
+            if room['kind'] == 'rest':
+                require(type(room.get('hp_me')) in (int, float) and math.isfinite(room['hp_me']) and room['start_hp'] <= room['hp_me'] <= run['max_hp_me'])
+            else:
+                combat = room.get('combat')
+                require(isinstance(combat, dict))
+                validate({'dungeons': {**state, 'last_run': {**{k:v for k,v in run.items() if k not in ('rooms', 'room_count')}, **combat, 'coins_awarded': REWARD if combat['outcome']=='win' else 0}}})
+                require(combat['max_hp_me'] == run['max_hp_me'])
+                require(index == len(rooms)-1 or combat['outcome'] == 'win')
+            expected_hp = room['hp_me'] if room['kind']=='rest' else room['combat']['hp_me']
+        require(rooms[-1]['kind'] != 'rest' and rooms[-1]['combat']['outcome'] == run['outcome'])

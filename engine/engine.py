@@ -440,11 +440,30 @@ def cmd_explore(st, key):
     element = dungeons.boss_element(key, boss_date)
     # Same base stats in all regions. Normal battle limits, XP and records are separate.
     opponent = {'species_key': 'mammal', 'element_key': element, 'level': st['level']}
-    combat = simulate_battle(fighter, opponent)
+    plan = dungeons.room_plan(key, boss_date)
+    rooms = []
+    max_hp = stat_total(fighter)['hp']
+    hp = float(max_hp)
+    for room in plan:
+        entry = {**room, 'start_hp': round(hp, 2)}
+        if room['kind'] == 'rest':
+            hp = min(max_hp, hp + max_hp * .5)
+            entry['hp_me'] = round(hp, 2)
+        else:
+            # Only dungeon opponents carry these private simulation settings.
+            enemy = {**opponent, '_dungeon_hp': hp,
+                     '_dungeon_scale': 1 if room['kind'] == 'boss' else .32 + room['index'] * .04}
+            combat = simulate_battle(fighter, enemy)
+            entry['combat'] = combat
+            hp = combat['hp_me']
+        rooms.append(entry)
+        if room['kind'] != 'rest' and combat['outcome'] != 'win':
+            break
     won = combat['outcome'] == 'win'
     reward = dungeons.REWARD if won else 0
     run = {'id': uuid.uuid4().hex, 'dungeon_id': key, 'date': day, 'boss_date': boss_date,
-           'boss_element': element, 'bonus_percent': bonus, 'coins_awarded': reward, **combat}
+           'boss_element': element, 'bonus_percent': bonus, 'coins_awarded': reward,
+           'room_count': len(plan), 'rooms': rooms, **combat}
     st['walk_energy'] = {'charges': energy['charges'] - 1, 'updated_at': energy['updated_at']}
     st['coins'] = st.get('coins', 0) + reward
     if won:
@@ -470,6 +489,8 @@ def battle_damage(st, w, rng=None):
     rng = rng or random
     my_t = stat_total(st)
     enemy_t = stat_total({"species": w["species_key"], "level": w["level"]})
+    if '_dungeon_scale' in w:
+        enemy_t = {k:max(1, v*w['_dungeon_scale']) for k,v in enemy_t.items()}
     bers = berserk(st)
     sp = G["species"][st["species"]]
     rules = G["commands"]["battle"]
@@ -490,11 +511,13 @@ def simulate_battle(st, w, rng=None):
     """Bounded simultaneous rounds; HP is local to this battle, never persisted."""
     my_max = stat_total(st)["hp"]
     enemy_max = stat_total({"species": w["species_key"], "level": w["level"]})["hp"]
-    my_hp, enemy_hp = float(my_max), float(enemy_max)
+    enemy_max = max(1, round(enemy_max * w.get('_dungeon_scale', 1), 2))
+    my_hp, enemy_hp = float(w.get('_dungeon_hp', my_max)), float(enemy_max)
     total_me = total_enemy = 0.0
     turns = []
     dodges_me = dodges_enemy = 0
-    for rounds in range(1, G["commands"]["battle"]["max_rounds"] + 1):
+    max_rounds = 8 if "_dungeon_scale" in w else G["commands"]["battle"]["max_rounds"]
+    for rounds in range(1, max_rounds + 1):
         outgoing, incoming, enemy_dodged, dodged = battle_damage(st, w, rng)
         outgoing, incoming = min(enemy_hp, outgoing), min(my_hp, incoming)
         enemy_hp, my_hp = max(0.0, enemy_hp - outgoing), max(0.0, my_hp - incoming)
