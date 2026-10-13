@@ -2,8 +2,11 @@
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
   dungeonHeading: ['Little pixel adventures', '작은 픽셀 모험'],
-  dungeonIntro: ['Each walk has a 25% chance to reveal a new dungeon. Only discovered places appear here. Coins are saved for future cosmetics.', '산책할 때마다 25% 확률로 새로운 던전을 발견해요. 발견한 장소만 여기에 나타나요. 코인은 추후 꾸미기에 사용할 수 있어요.'],
+  dungeonIntro: ['While a dungeon is open, no other dungeon can be discovered. Clear it or wait until it expires, then walks have a 25% chance to reveal the next one. Coins are saved for future cosmetics.', '진행 중인 던전이 있으면 다른 던전은 발견되지 않아요. 클리어하거나 시간이 만료된 뒤, 산책마다 25% 확률로 다음 던전을 발견해요. 코인은 추후 꾸미기에 사용할 수 있어요.'],
   dungeonCoins: ['{coins} coins', '{coins} 코인'],
+  dungeonAuto: ['AUTO EXPEDITION', '자동 탐험'],
+  dungeonBriefing: ['Expedition briefing', '탐험 정보'],
+  dungeonArtFailed: ['The scene could not load. Close and reopen to retry.', '탐험 화면을 불러오지 못했어요. 닫고 다시 열어 주세요.'],
   dungeonDate: ['Discovered dungeons stay open for 24 hours. Clear rewards reset at midnight Korea time.', '발견한 던전은 24시간 동안 열려요. 클리어 보상은 한국 시간 자정에 초기화돼요.'],
   dungeonCountdown: ['Closes in {time}', '입장 가능 시간 {time}'],
   dungeonExpired: ['Time is up · Discover again on a walk', '입장 시간 종료 · 산책에서 다시 발견해 주세요'],
@@ -18,7 +21,7 @@ export const messages = {
   dungeonEntryHint: ['One charge per attempt. Normal battle limits are separate. This boss keeps its element until the dungeon closes.', '도전마다 산책 횟수 1개를 사용해요. 일반 배틀 횟수와는 별개이며 만료 전까지 보스 속성이 유지돼요.'],
   dungeonEncounter: ['Finish your waiting encounter first: Battle or Walk away.', '기다리는 친구와 먼저 배틀하거나 지나가기를 선택해 주세요.'],
   dungeonMoving: ['Following the old path…', '오래된 길을 따라 걸어가요…'],
-  dungeonCache: ['A quiet cache marks the path. The boss holds the reward.', '길가의 작은 보관함을 지나가요. 보상은 보스를 넘어야 얻을 수 있어요.'],
+  dungeonCache: ['Through the silent sanctuary…', '고요한 성소를 지나가요…'],
   dungeonApproach: ['Your companion is approaching the guardian…', '친구가 수호자에게 다가가요…'],
   dungeonSaved: ['This expedition has been saved. Skipping or closing keeps its result.', '이번 탐험은 저장됐어요. 건너뛰거나 닫아도 결과가 유지돼요.'],
   dungeonReward: ['First clear! +{coins} coins saved.', '첫 클리어! 코인 {coins}개를 받았어요.'],

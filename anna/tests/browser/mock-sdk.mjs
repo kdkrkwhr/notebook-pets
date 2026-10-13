@@ -41,11 +41,11 @@ const runtime={
   else {state.save.status.xp+=10;state.save.inventory.normal_feed-=a.command==='feed'?1:0;}
   let extra={replayed:false};
   state.save.status.dungeons??={date:'2026-10-13',coins:0,entries:dungeonEntries(),last_run:null};
-  if(a.command==='walk'&&faults.walkDiscovery!==false){const entry=state.save.status.dungeons.entries[0];entry.discovered=true;entry.expires_at??=Date.now()/1000+86400;extra.dungeon_discovered='hellgate';}
+  if(a.command==='walk'&&faults.walkDiscovery!==false){const entries=state.save.status.dungeons.entries,now=Date.now()/1000;if(!entries.some(e=>e.discovered&&!e.cleared&&e.expires_at>now)){const entry=entries.find(e=>!e.cleared&&(!e.discovered||e.expires_at<=now));if(entry){entry.discovered=true;entry.expires_at=now+86400;extra.dungeon_discovered=entry.id;}}}
   if(a.command.startsWith('explore_')){
    const id=a.command.slice(8),entry=state.save.status.dungeons.entries.find(x=>x.id===id);
    const run={id:'mock-expedition',date:'2026-10-13',dungeon_id:id,outcome:faults.dungeonLose?'lose':'win',coins_awarded:faults.dungeonLose?0:10,boss_element:entry.boss_element,bonus_percent:10,max_hp_me:12,max_hp_enemy:10,hp_me:8,hp_enemy:0,turns:[{hp_me:10,hp_enemy:5},{hp_me:8,hp_enemy:0}]};
-   state.save.status.dungeons.last_run=run;state.save.status.dungeons.coins+=run.coins_awarded;entry.cleared=!faults.dungeonLose;extra.dungeon_run=run;
+   state.save.status.dungeons.last_run=run;state.save.status.dungeons.coins+=run.coins_awarded;entry.cleared=!faults.dungeonLose;if(entry.cleared)entry.discovered=false;extra.dungeon_run=run;
   }
   if(a.command==='walk'&&faults.walkOutcome==='quiet'){extra.walk_outcome='quiet';state.save.status.encounter=null;}
   if(a.command==='walk'&&faults.walkOutcome!=='quiet')state.save.status.encounter={species_key:'dragon',element_key:'fire',species:'Dragon',element:'Fire',level:1};

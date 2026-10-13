@@ -2,6 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {clearWhiteBorder,currentPixel,pixelKey,pixelSource} from '../bundle/pixel-pet.mjs';
 import {routePosition} from '../bundle/dungeon.mjs';
+import {WORLD,cameraAt} from '../bundle/dungeon-scene.mjs';
 
 test('pixel background removal preserves enclosed white features and colored edges',()=>{
   const data=new Uint8ClampedArray(5*5*4).fill(255);
@@ -24,5 +25,5 @@ test('pixel portraits never attach to a different pet, stage or replaced portrai
 
 test('exploration path remains within the map and clamps replay position',()=>{
   assert.deepEqual(routePosition(-1),routePosition(0));assert.deepEqual(routePosition(2),routePosition(1));
-  for(let i=0;i<=100;i++){const [x,y]=routePosition(i/100);assert.ok(x>=8&&x<=312&&y>=8&&y<=248);}
+  for(let i=0;i<=100;i++){const [x,y]=routePosition(i/100);assert.ok(x>=0&&x<=WORLD.width&&y>=0&&y<=WORLD.height);const camera=cameraAt([x,y],1000,560);assert.ok(camera.x-500/camera.zoom>=0&&camera.x+500/camera.zoom<=WORLD.width);}
 });

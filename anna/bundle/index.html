@@ -65,16 +65,15 @@
   <dialog id="reset-dialog" aria-labelledby="reset-heading"><form method="dialog"><h2 id="reset-heading" data-i18n="resetGame"></h2><p data-i18n="resetWarning"></p><label class="erase-checkbox"><input id="reset-quiescent" type="checkbox"><span data-i18n="eraseQuiescent"></span></label><label for="reset-phrase" data-i18n="resetPhrase"></label><input id="reset-phrase" autocomplete="off" spellcheck="false" aria-describedby="reset-error"><p id="reset-error" role="alert"></p><div class="inline"><button class="quiet" data-i18n="cancel">Cancel</button><button id="confirm-reset" class="danger" type="button" data-i18n="confirmReset"></button></div></form></dialog>
   <dialog id="battle-dialog" aria-labelledby="battle-heading"><h2 id="battle-heading" data-i18n="battleHeading"></h2><div class="battle-scene"><div class="fighter"><strong id="battle-own-name"></strong><progress id="battle-own-hp" data-i18n-aria="yourHP"></progress><img id="battle-own" alt=""></div><span class="versus">VS</span><div class="fighter enemy"><strong id="battle-enemy-name"></strong><progress id="battle-enemy-hp" data-i18n-aria="opponentHP"></progress><img id="battle-enemy" alt=""></div></div><p id="battle-hp-text" class="muted"></p><p id="battle-status" role="status" aria-live="polite"></p><p id="battle-reward" class="muted"></p><button id="battle-skip" type="button" class="primary" data-i18n="battleSkip"></button></dialog>
   <dialog id="dungeon-dialog" aria-labelledby="dungeon-heading">
-    <div class="section-heading"><div><p class="eyebrow">PIXEL EXPEDITION</p><h2 id="dungeon-heading"></h2></div><button id="dungeon-close" type="button" class="quiet" data-i18n-aria="close">×</button></div>
+    <div class="section-heading"><div><p class="eyebrow">BEYOND THE NOTEBOOK</p><h2 id="dungeon-heading"></h2></div><p id="dungeon-countdown" class="dungeon-countdown"></p><button id="dungeon-close" type="button" class="quiet" data-i18n-aria="close">×</button></div>
     <div class="dungeon-experience">
       <div class="dungeon-scene-column">
-        <p id="dungeon-phase" role="status" aria-live="polite"></p>
-        <div class="dungeon-map-area"><div class="dungeon-stage"><canvas id="dungeon-map" width="320" height="256" data-i18n-aria="dungeonMap"></canvas><img id="dungeon-explorer" alt=""></div></div>
+        <div class="dungeon-map-area"><div class="dungeon-stage"><canvas id="dungeon-map" width="960" height="540" data-i18n-aria="dungeonMap"></canvas><img id="dungeon-explorer" alt=""></div><div class="dungeon-scene-hud"><span data-i18n="dungeonAuto"></span><p id="dungeon-phase" role="status" aria-live="polite"></p></div>
         <div id="dungeon-hp" hidden><div class="dungeon-health"><div><span data-i18n="yourHP"></span><progress id="dungeon-your-hp" max="1" value="1" data-i18n-aria="yourHP"></progress></div><div><span id="dungeon-boss-name"></span><progress id="dungeon-boss-hp" max="1" value="1" data-i18n-aria="opponentHP"></progress></div></div><p id="dungeon-hp-text" class="muted small"></p></div>
+        </div>
       </div>
       <div class="dungeon-sidebar">
-        <p id="dungeon-countdown" class="dungeon-countdown"></p>
-        <p id="dungeon-details" class="small"></p><p id="dungeon-entry-hint" class="muted small"></p>
+        <details class="dungeon-briefing"><summary data-i18n="dungeonBriefing"></summary><p id="dungeon-details" class="small"></p><p id="dungeon-entry-hint" class="muted small"></p></details>
         <p id="dungeon-result" role="status" aria-live="polite"></p>
         <div class="birth-buttons"><button id="dungeon-enter" class="primary" type="button" data-i18n="dungeonEnter"></button><button id="dungeon-fast" type="button" class="quiet" data-i18n="dungeonFast" hidden></button><button id="dungeon-skip" type="button" class="primary" data-i18n="battleSkip" hidden></button></div>
       </div>

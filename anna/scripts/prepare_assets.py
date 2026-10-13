@@ -24,6 +24,10 @@ for record in records:
 (ART / 'starters-v1').mkdir(parents=True, exist_ok=True)
 for name in sorted(expected):
     shutil.copy2(starters / name, ART / 'starters-v1' / name)
+# The game environments are bundled locally; entering a dungeon never generates art.
+(ART / 'dungeons-v2').mkdir(parents=True, exist_ok=True)
+for name in ['hellgate.png', 'icekingdom.png', 'dreamforest.png', 'guardians.png']:
+    shutil.copy2(ROOT / 'assets' / 'dungeons-v2' / name, ART / 'dungeons-v2' / name)
 # Remove obsolete generated starter copies, never personal storage or source art.
 for path in ART.glob('*_stage1.png'):
     path.unlink()
@@ -35,4 +39,4 @@ for directory, names in [('engine', ['engine.py', 'runtime.py', 'art.py', 'dunge
     (CORE / directory).mkdir(parents=True, exist_ok=True)
     for name in names:
         shutil.copy2(ROOT / directory / name, CORE / directory / name)
-print('Prepared game rules and', len(list(ART.rglob('*.png'))), 'character images.')
+print('Prepared game rules and', len(list(ART.rglob('*.png'))), 'game images.')

@@ -23,7 +23,8 @@ def daily(st, day, now=None):
     # Old discoveries keep their original midnight deadline; reading never rewrites a save.
     legacy_end = (datetime.fromisoformat(saved.get('date', day)).replace(tzinfo=KST) + timedelta(days=1)).timestamp()
     expiries = {key: saved.get('expires_at', {}).get(key, legacy_end) for key in saved.get('discovered', [])}
-    expiries = {key: end for key, end in expiries.items() if end > now}
+    # Retire completed discoveries before resetting daily rewards at midnight.
+    expiries = {key: end for key, end in expiries.items() if end > now and key not in saved.get('cleared', [])}
     return {'date': day, 'discovered': list(expiries), 'expires_at': expiries,
             'cleared': list(saved.get('cleared', [])) if saved.get('date') == day else [],
             'misses': 0, 'last_run': copy.deepcopy(saved.get('last_run'))}
@@ -44,7 +45,7 @@ def discover(st, day, rng):
     state = daily(st, day, now)
     remaining = [key for key in CATALOG if key not in state['discovered'] and key not in state['cleared']]
     found = None
-    if remaining:
+    if not state['discovered'] and remaining:
         if rng.random() < DISCOVERY_CHANCE:
             found = remaining[rng.randrange(len(remaining))]
             state['discovered'].append(found)

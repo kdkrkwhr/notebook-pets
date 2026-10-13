@@ -421,10 +421,10 @@ def cmd_walk(st):
 def cmd_explore(st, key):
     day = today()
     state = dungeons.daily(st, day)
-    if key not in state['discovered']:
-        return out(False, '산책으로 오늘의 던전을 먼저 발견해 주세요.', code='dungeon_locked')
     if key in state['cleared']:
         return out(False, '오늘 이 던전의 보상을 이미 받았어요.', code='dungeon_cleared')
+    if key not in state['discovered']:
+        return out(False, '산책으로 던전을 먼저 발견해 주세요.', code='dungeon_locked')
     if st.get('_wild') is not None:
         return out(False, '기다리는 몬스터와 먼저 배틀하거나 헤어져 주세요.', code='encounter_pending')
     energy = walk_energy(st)
@@ -449,6 +449,8 @@ def cmd_explore(st, key):
     st['coins'] = st.get('coins', 0) + reward
     if won:
         state['cleared'].append(key)
+        state['discovered'].remove(key)
+        state['expires_at'].pop(key)
     state['last_run'] = run
     st['dungeons'] = state
     save_state(st)
