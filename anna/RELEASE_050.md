@@ -8,7 +8,7 @@ Results, room outcomes, one walk charge and any final reward commit atomically u
 
 ## Validation
 
-Final source `e1c136e` passed Windows and Linux [Anna CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38367288510) and [engine CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38367288746). Engine: 177 tests; Anna storage/protocol: 57; JavaScript: 54; browser: 67. The original 0.4.2 DOM movement test was updated to observe the canvas camera because the animated companion now renders on canvas. Focused final mobile/six-room checks also passed locally.
+Final source `e1c136e` passed Windows and Linux [Anna CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38367288746) and [engine CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38367288510). Engine: 177 tests; Anna storage/protocol: 57; JavaScript: 54; browser: 67. The original 0.4.2 DOM movement test was updated to observe the canvas camera because the animated companion now renders on canvas. Focused final mobile/six-room checks also passed locally.
 
 The uploaded Windows/Linux tool packages came from successful Anna CI 38354060986 (`2e9eb54`). The final two-file UI polish changed only room indicator placement and sanctuary HP labels; tool source is identical. Final-source CI also built both packages successfully.
 
