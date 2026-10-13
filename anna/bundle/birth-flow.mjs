@@ -61,6 +61,7 @@ export function createBirthFlow(h){
       if(!pending.uploaded){await h.upload(pending.path,pending.blob);pending.uploaded=true;}
       await guard();
       await h.save(old=>({...old,[pending.key]:{path:pending.path,at:Date.now()},[sourceKey(snapshot)]:{...pending.source,phase:'done'}}));
+      message('artFinishingFriend');
       await h.portraitSaved?.(snapshot,pending.blob);
       await h.reload();output=null;intent=null;h.editor.clear();message('artSaved');render();
     }catch(error){

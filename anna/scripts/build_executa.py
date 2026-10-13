@@ -35,6 +35,16 @@ created = worker({'command':'start','name':'Build test','request_id':'build-birt
 cared = worker({'command':'feed','state':created['state'],'request_id':'build-feed'})
 assert cared['view']['status']['xp'] == 10
 assert cared['state']['pet_id'] == created['state']['pet_id']
+profile = {'appearance':'round fictional friend','source':'starter',
+           'traits':{'curiosity':1,'warmth':0,'energy':0,'caution':0},
+           'summary':{'en':'A curious round friend','ko':'호기심 많은 둥근 친구'},
+           'voice':{'en':'Gentle short words','ko':'짧고 다정한 말'},
+           'habit':{'en':'Tilts their head','ko':'고개를 갸웃해요'}}
+personal = worker({'command':'personality','profile':json.dumps(profile),
+                   'state':cared['state'],'request_id':'build-personality'})
+assert personal['view']['status']['personality']['origin'] == profile
+assert personal['state']['xp'] == cared['state']['xp']
+
 protocol = subprocess.run([str(binary)], input='\n'.join(json.dumps({'jsonrpc':'2.0','id':i,'method':method}) for i,method in [(1,'initialize'),(2,'describe')])+'\n',
                           capture_output=True, text=True, encoding='utf-8', timeout=30, check=True)
 frames = [json.loads(line) for line in protocol.stdout.splitlines()]

@@ -103,3 +103,10 @@ You can separately clear the app’s browser language preference through your br
 The current app uses tool key `notebuddy/game-v1`, app keys `notebuddy/chat-v1`, `notebuddy/art-v1` and `notebuddy/walk-story-v1`, app files under `portraits/`, and browser key `notebuddy/language-v1`. Older development installations may hold separate records. These identifiers help scope a future authenticated deletion request; users should not post their values publicly.
 
 Anna documents the underlying mechanisms in [Persistent Storage](https://anna.partners/developers/reference/executa-persistent-storage.md), [app storage](https://anna.partners/developers/reference/host-api-storage.md) and [app files](https://anna.partners/developers/reference/host-api-files.md). The data practices above describe this app’s current implementation, not a certification of Anna’s compliance or a substitute for Anna’s own policies.
+
+
+### Personality and shared experiences / 성격과 함께한 경험
+
+The private game save includes the fictional pet's initial personality (inspired by its name and visual observations), speaking style, harmless habit, and bounded interaction memories. Later actions gradually change its expression. This is fictional characterization, not an assessment of a real person. AI receives these recorded facts for chat, care reactions and walk scenes. Initial personality creation uses Anna AI; an existing custom portrait may also be analyzed when visual observations are unavailable. Refreshing does not automatically retry paid generation. An incomplete personality draft is stored separately and is cleared by the app's reset and data-removal flows.
+
+개인 게임 저장에는 이름·외형 특징에서 만든 가상 펫의 초기 성격, 말투, 작은 습관과 제한된 상호작용 기억이 포함됩니다. 이후 행동이 성격 표현을 조금씩 바꿉니다. 실제 인물의 성격을 판정하는 기능이 아닙니다. 대화·돌봄 반응·산책 장면에 이 기록을 AI 문맥으로 전달합니다. 최초 성격 생성에는 Anna AI를 사용하며, 외형 특징이 없는 기존 개인 그림은 필요할 때 분석합니다. 새로고침은 유료 생성을 자동 재시도하지 않습니다. 미완료 성격 초안도 초기화와 데이터 삭제에 포함됩니다.

@@ -73,6 +73,8 @@ def _message(value, command, language):
             value['daily_limit'] = int(match[1])
             return f'오늘의 {match[1]}회를 모두 사용했어요.' if index else f'All {match[1]} daily uses are complete. Try again after midnight Korea time (UTC+9).'
         return '행동을 완료하지 못했어요. 상태를 새로고침하고 다시 확인해 주세요.' if index else 'Could not complete this action. Refresh your status and check again.'
+    if command == 'personality':
+        return '친구의 성격을 기억했어요.' if index else 'Your companion’s personality is saved.'
     if command == 'start':
         # Never translate names or use a locale-dependent name in saved command arguments.
         name = (value.get('status') or {}).get('name', '')

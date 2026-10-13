@@ -108,3 +108,24 @@ class JourneyTests(unittest.TestCase):
         before=engine.execute('123','status')['memories']
         self.assertFalse(engine.execute('123','feed')['ok'])
         self.assertEqual(before,engine.execute('123','status')['memories'])
+
+    def test_habits_cannot_starve_new_arcs_and_variants_rotate(self):
+        st=self.seed();seen=[];variants=[]
+        for _ in range(18):
+            for chapter in range(3):
+                journeys.record(st,'train');journeys.record(st,'feed')
+                j=journeys.begin(st)
+                if chapter==0:seen.append(j['arc']);variants.append(j['variant'])
+                journeys.resolve(st,j['choice_id'],0)
+        self.assertEqual(set(seen[:6]),set(journeys.ARCS))
+        self.assertTrue(all(seen[i] not in seen[max(0,i-2):i] for i in range(len(seen))))
+        for arc in journeys.ARCS:self.assertEqual([v for a,v in zip(seen,variants) if a==arc],[0,1,2])
+
+    def test_evidence_reports_only_actual_contributors_not_missing_activities(self):
+        self.seed();j=self.walk();self.choose(j,1);engine.execute('123','feed');j=self.walk()
+        self.assertTrue(j['prepared']);self.assertEqual(j['evidence']['actions'],['feed'])
+        self.assertEqual(j['evidence']['missing'],['train']);self.assertTrue(j['evidence']['support_used'])
+
+    def test_offer_evidence_is_frozen_while_later_actions_accumulate(self):
+        self.seed();j=self.walk();engine.execute('123','feed');engine.execute('123','train')
+        self.assertEqual(engine.execute('123','status')['journey'],j)

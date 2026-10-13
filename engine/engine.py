@@ -13,6 +13,7 @@ from runtime import KST, MISSING, GameError, atomic_write_json, game_clock, game
 import art
 import dungeons
 import journeys
+import personality
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "data", "game_data.json")
@@ -82,6 +83,7 @@ def validate_state(st, uid):
         require(isinstance(st, dict) and st["user_id"] == uid)
         dungeons.validate(st)
         journeys.validate(st)
+        personality.validate(st)
         require(type(st["version"]) is int and st["version"] in (2, 3, 4))
         require(isinstance(st["name"], str))
         if "pet_id" in st:
@@ -336,9 +338,14 @@ def cmd_status(st):
                level=st["level"], xp=st["xp"], xp_next=xp_needed(st["level"]),
                stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"), image=art.describe(st),
                walk_choice=copy.deepcopy(st.get("_walk_choice")), record=st["record"], walk_energy={k: v for k, v in walk_energy(st).items() if k != "updated_at"}, quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
-               memories=journeys.context(st), journey=copy.deepcopy(st.get("journey", {}).get("current")),
+               personality=personality.view(st), memories=journeys.context(st), journey=copy.deepcopy(st.get("journey", {}).get("current")),
                dungeons=dungeons.view(st, today(), type_mult),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
+
+def cmd_personality(st, raw):
+    result = personality.establish(st, raw)
+    save_state(st)
+    return out(True, 'Your companion has found their voice.', personality=result)
 
 def cmd_titles(st):
     return out(True, "", titles=titles(st), record=st["record"])
@@ -735,7 +742,7 @@ ALIASES = {
     "도망": "flee",
     "퀘스트": "quests", "일일퀘스트": "quests", "퀘스트보상": "claimquest",
 }
-COMMANDS = {"walk_begin", "walk_collect", "walk_leave"} | set(G["commands"]) | set(dungeons.COMMANDS) | dungeons.CHOICES | {"status", "quests", "claimquest", "album", "titles", "rank", "help", "owner", "clearowner", "reset"}
+COMMANDS = {"personality", "walk_begin", "walk_collect", "walk_leave"} | set(G["commands"]) | set(dungeons.COMMANDS) | dungeons.CHOICES | {"status", "quests", "claimquest", "album", "titles", "rank", "help", "owner", "clearowner", "reset"}
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
 READ_COMMANDS = frozenset({"status", "quests", "album", "titles", "rank", "help"})
 
@@ -750,6 +757,7 @@ def dispatch_player(actor_id, command, arguments):
         return out(False, "!공책시작 으로 먼저 몬스터를 만들어.", code="not_started")
     fresh_daily(st)
     table = {
+        "personality": lambda: cmd_personality(st, arguments[0]),
         "status": lambda: cmd_status(st), "feed": lambda: cmd_care(st, "feed"),
         "play": lambda: cmd_care(st, "play"), "snack": lambda: cmd_care(st, "snack"),
         "sleep": lambda: cmd_care(st, "sleep"), "train": lambda: cmd_train(st),
@@ -846,10 +854,13 @@ def execute(actor_id, command, arguments=(), *, request_id=None):
         elif command in dungeons.CHOICES | {"walk_collect", "walk_leave"}:
             if len(arguments) != 1 or re.fullmatch(r'[a-f0-9]{32}', arguments[0]) is None:
                 raise GameError('invalid_arguments', 'A current choice_id is required.')
+        elif command == 'personality':
+            if len(arguments)!=1 or len(arguments[0])>4096:
+                raise GameError('invalid_arguments', 'A bounded personality profile is required.')
         elif command != "start" and arguments:
             raise GameError("invalid_arguments", "이 명령에는 추가 인자가 필요하지 않습니다.")
         name = " ".join(arguments[1:] if command in {"owner", "reset"} else arguments)
-        if len(name) > 80 or any(ord(ch) < 32 for ch in name):
+        if command != "personality" and (len(name) > 80 or any(ord(ch) < 32 for ch in name)):
             raise GameError("invalid_arguments", "이름은 제어문자 없이 80자 이내로 입력해 주세요.")
         with store_lock(STATE_DIR), game_clock():
             # Explicit admin commands can recover broken access settings.

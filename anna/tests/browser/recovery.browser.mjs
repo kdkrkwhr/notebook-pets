@@ -924,7 +924,7 @@ test('cumulative walk choices commit to game state, recover on reload and never 
  const p=await setup(t,{walkOutcome:'quiet',journey:true});await start(p);
  await p.locator('[data-action="walk"]').click();
  await p.waitForFunction(()=>document.querySelectorAll('#story-choices button').length===2);
- assert.match(await p.locator('#story-choices').innerText(),/markers/i);
+ assert.match(await p.locator('#story-choices').innerText(),/preparations/i);
  await p.locator('#story-choices button').first().click();
  await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
  assert.match(await p.locator('#story-ending').innerText(),/Closeness \+3/);
@@ -942,4 +942,35 @@ test('missing cached prose resumes authoritative pending chapter without another
  await p.locator('#story-resume').click();await p.locator('#story-choices button').last().click();
  await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
  assert.equal((await calls(p,'walk_begin')).length,0);assert.equal((await calls(p,'walk_leave')).length,1);
+});
+
+test('name and appearance initialize a personality once and all conversation uses it',async t=>{
+ const p=await setup(t);await start(p);
+ await p.waitForFunction(()=>window.hostTest.state.save.status.personality);
+ assert.equal((await calls(p,'personality')).length,1);assert.equal((await calls(p,'personality-llm')).length,1);
+ await p.locator('#personality-details summary').click();
+ assert.match(await p.locator('#personality-summary').innerText(),/name and round face/);
+ assert.equal(await p.locator('#personality-traits .badge').count(),4);
+ await p.locator('[data-action="feed"]').click();await idle(p);
+ const prompts=await p.evaluate(()=>window.hostTest.calls.filter(c=>c.method==='llm').map(c=>c.prompt));assert.match(prompts.at(-1),/Short gentle sentences/);
+ await p.reload();await idle(p);assert.equal((await calls(p,'personality-llm')).length,0);assert.equal((await calls(p,'personality')).length,0);
+ await p.locator('#language').selectOption('ko');await idle(p);await p.locator('#personality-details summary').click();assert.match(await p.locator('#personality-summary').innerText(),/둥근 얼굴/);
+});
+test('personality generation failure leaves game playable and only explicit retry spends again',async t=>{
+ const p=await setup(t,{personalityMalformed:true});await start(p);
+ await p.waitForFunction(()=>document.querySelector('#personality-status').textContent.includes('Could not finish'));
+ assert.equal(await p.locator('[data-action="feed"]').isEnabled(),true);
+ await p.reload();await idle(p);assert.equal((await calls(p,'personality-llm')).length,0);
+ await fault(p,{personalityMalformed:false});await p.locator('#personality-details summary').click();await p.locator('#meet-personality').click();await idle(p);
+ await p.waitForFunction(()=>window.hostTest.state.save.status.personality);assert.equal((await calls(p,'personality-llm')).length,1);
+});
+test('walk influence remains visible independently of AI scene and survives reload',async t=>{
+ const p=await setup(t,{walkOutcome:'quiet',journey:true});await start(p);await p.locator('[data-action="walk"]').click();
+ await p.waitForFunction(()=>document.querySelectorAll('#story-choices button').length===2);
+ assert.match(await p.locator('#story-influence').innerText(),/feeding.*earlier safe choice/);
+ assert.doesNotMatch(await p.locator('#story-influence').innerText(),/training/);
+ await p.reload();await idle(p);assert.equal(await p.locator('dialog[open]').count(),0);
+ await p.locator('#story-resume').click();assert.equal(await p.locator('#story-influence').isVisible(),true);
+ await p.locator('#story-choices button').last().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ assert.match(await p.locator('#story-influence').innerText(),/regardless of preparation/);
 });

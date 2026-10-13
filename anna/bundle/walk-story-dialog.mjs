@@ -1,3 +1,4 @@
+import {journeyInfluence} from './journey-stories.mjs';
 // Rendering saved state never opens a dialog. Only an explicit outing/resume does.
 export function createStoryDialog(h){
  const d=h.document,$=id=>d.querySelector(id),dialog=$('#walk-story');
@@ -13,6 +14,8 @@ export function createStoryDialog(h){
   const choosing=!!choice&&mode!=='loading';
   $('#story-heading').textContent=story?(current?.story.title||h.tr('storyHeading')):h.tr(battle?'battleHeading':'walk');
   $('#story-scene').textContent=story?current?.story.scene||'':choosing?h.tr('walkXPScene',{xp:choice.reward}):message;
+  const influence=story?journeyInfluence(current?.journey,h.language?.()||current?.language||'en'):'';
+  $('#story-influence').textContent=influence;$('#story-influence').hidden=!influence;
   $('#story-status').textContent=story?(state.feedback?h.tr(state.feedback):state.working?h.tr('storyWorking'):current?.fallback?h.tr('storyFallback'):''):'';
   $('#story-choices').replaceChildren();
   if(story&&current&&!done&&!state.working)current.story.choices.forEach((choice,index)=>{

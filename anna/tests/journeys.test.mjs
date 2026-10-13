@@ -1,7 +1,7 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {createWalkStories,storyPrompt} from '../bundle/walk-stories.mjs';
-import {journeyStory} from '../bundle/journey-stories.mjs';
+import {journeyStory,journeyInfluence} from '../bundle/journey-stories.mjs';
 const j={choice_id:'a'.repeat(32),arc:'trail',chapter:0,prepared:true,basis:['feed','train','walk'],previous_choice:null,state:'pending',choice:null,coins:0,intimacy:0};
 function fixture(){
  const f={view:{pet_id:'p',status:{journey:structuredClone(j)}},row:{},ai:0,resolves:0,rewards:0,failSave:false};
@@ -56,4 +56,15 @@ test('previous safe route changes the next available approach',()=>{
  const first=journeyStory({...j,chapter:1,previous_choice:0},'en');
  const second=journeyStory({...j,chapter:1,previous_choice:1},'en');
  assert.notEqual(first.choices[0].label,second.choices[0].label);
+});
+
+test('all six arcs and locations have distinct chapter endings and explain only actual evidence',()=>{
+ const titles=new Set();
+ for(const arc of ['trail','garden','shelter','river','workshop','market'])for(let chapter=0;chapter<3;chapter++)for(let variant=0;variant<3;variant++){
+  const s=journeyStory({...j,arc,chapter,variant},'en');titles.add(s.title);assert.notEqual(s.choices[0].ending,s.choices[1].ending);
+ }
+ assert.equal(titles.size,54);
+ const evidence={actions:['feed'],missing:['train'],support_used:true};
+ const text=journeyInfluence({...j,chapter:1,previous_choice:1,evidence},'en');assert.match(text,/feeding/);assert.match(text,/earlier safe choice/);assert.doesNotMatch(text,/training/);
+ assert.equal(journeyInfluence(j,'en'),'');
 });

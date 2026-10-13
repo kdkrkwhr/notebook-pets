@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {CHAT,ART,STORY,TOMBSTONE,ErasedError,mergeSaved,removeAppData} from '../bundle/data.mjs';
+import {CHAT,ART,STORY,PERSONA,TOMBSTONE,ErasedError,mergeSaved,removeAppData} from '../bundle/data.mjs';
 function fixture(){
  const rows=new Map([[CHAT,{value:[{text:'private'}],etag:'1',exists:true}],[ART,{value:{portrait:'private'},etag:'1',exists:true}]]);
  const blobs=new Map([['portraits/a/old.png','1'],['portraits/a/new.png','2'],['unrelated/file','3']]);
@@ -13,7 +13,7 @@ test('cleanup requires server removal, clears sensitive values and only deletes 
  const f=fixture();await assert.rejects(removeAppData(f,async()=>({ok:true,erased:false})));
  assert.equal(f.rows.get(CHAT).value[0].text,'private');assert.equal(f.deleted.length,0);
  assert.deepEqual(await removeAppData(f,removed),{checked:true});
- assert.deepEqual(f.rows.get(CHAT).value,TOMBSTONE);assert.deepEqual(f.rows.get(ART).value,TOMBSTONE);assert.deepEqual(f.rows.get(STORY).value,TOMBSTONE);
+ assert.deepEqual(f.rows.get(CHAT).value,TOMBSTONE);assert.deepEqual(f.rows.get(ART).value,TOMBSTONE);assert.deepEqual(f.rows.get(STORY).value,TOMBSTONE);assert.deepEqual(f.rows.get(PERSONA).value,TOMBSTONE);
  assert.equal(f.deleted.length,2);assert.ok(f.blobs.has('unrelated/file'));
  await removeAppData(f,removed);assert.equal(f.deleted.length,2);
 });

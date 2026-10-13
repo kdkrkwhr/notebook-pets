@@ -206,3 +206,9 @@ h1,h2,p,label,.actions b,.actions small{word-break:keep-all;overflow-wrap:break-
 
 /* Walk encounters and battle playback share the outing dialog. */
 #walk-story #battle-dialog{width:100%;max-width:100%;padding:0 24px 20px}#walk-story #battle-heading{display:none}#walk-discovery small{display:block;margin-top:10px}#walk-story .encounter{margin:0 24px 24px}#walk-discovery{margin:0 24px 24px}#walk-retry{margin:0 24px 24px}
+
+.personality-details { margin-top: 1rem; border-top: 1px solid var(--line, #e5e5da); padding-top: .85rem; }
+.personality-details summary { cursor: pointer; font-weight: 600; }
+.personality-details p { margin: .65rem 0; line-height: 1.65; overflow-wrap: anywhere; }
+.personality-traits { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: .7rem; }
+.story-influence { padding: .8rem 1rem; margin: .8rem 0; background: #eef3e8; border-left: 3px solid #78956d; border-radius: .5rem; line-height: 1.7; }

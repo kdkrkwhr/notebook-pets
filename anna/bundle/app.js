@@ -1,3 +1,6 @@
+import {createPersonality,axes as personalityAxes} from './personality.mjs';
+import {checkArtwork} from './birth-art.mjs';
+let persona,personalityFeedback='',personalityWorking=false;
 import {createStoryDialog} from './walk-story-dialog.mjs';
 import {createWalkStories,storyEvent} from './walk-stories.mjs';
 let stories,storyDialog;
@@ -42,7 +45,7 @@ function controls(value){
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage||birth?.hasOutput()||pixels?.hasPending()))$('#clean-portraits').disabled=true;
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
   if(!value&&anna&&!pendingRemoval&&!pendingAction&&!pendingResetRequest&&!view?.reset_pending&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
-  birth?.render();stories?.render();dungeons?.render();renderPixel();
+  birth?.render();stories?.render();dungeons?.render();renderPixel();renderPersonality();
 }
 function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
@@ -106,6 +109,7 @@ function render(){
   if(view?.erased)forgetCachedData();
   $('#welcome').hidden=resetting||!!s||view?.code!=='not_started';$('#game').hidden=!s;
   if(!s){birth?.render();return;}
+  renderPersonality();
   text('#name',s.name);text('#pet-type',`${s.species} · ${s.element}`);text('#mood',`◌ ${s.mood}`);
   renderWalkEnergy();
   text('#title',s.title);text('#level',`Lv. ${s.level}`);text('#stage-label',s.stage_label);
@@ -136,9 +140,10 @@ function render(){
     const subtitle=document.createElement('small');subtitle.textContent=entry.reached?tr(entry.current?'currentStage':'memoryStage'):tr('futureStage',{level:entry.min_level});
     item.append(frame,title,subtitle);$('#album').append(item);
   }
-  drawChat();birth?.render();stories?.render();dungeons?.render();renderPixel();
+  drawChat();birth?.render();stories?.render();dungeons?.render();renderPixel();renderPersonality();
 }
 function forgetCachedData(){
+  persona?.clear();
   pixels?.clear();pixelNotice='';dungeons?.close();$('#pixel-pet').removeAttribute('src');$('#pixel-pet').hidden=true;
   birth?.clear();stories?.clear();storyDialog?.clear();
   reactions?.clear();reactionFeedback();
@@ -221,7 +226,7 @@ async function act(command,extra={},retry=false){
   if(started){
     await birth.started(view);
     const source=art[`${view?.pet_id}/birth-source`];
-    if(view?.status&&(!source||['done','abandoned'].includes(source.phase)))await preparePixel();
+    if(view?.status&&(!source||['done','abandoned'].includes(source.phase))){await setupPersonality(true);await preparePixel();}
   }
 }
 async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
@@ -402,7 +407,7 @@ birth=createBirthFlow({
   locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest||pendingImage),
   controls,assertActive,upload:uploadPortrait,isPartnerChanged:error=>error instanceof PartnerChangedError,
   save:async merge=>{art=await saveMerged(ART,merge);return art;},
-  portraitSaved:(snapshot,blob)=>pixels.sync(snapshot,blob),
+  portraitSaved:async(snapshot,blob)=>{await setupPersonality(true);await pixels.sync(snapshot,blob);},
   reload:async()=>{await readExtras();render();},
   clearMessage:()=>{birthNotice=null;for(const id of ['#birth-status','#birth-recovery-status']){text(id,'');$(id).hidden=true;}},
   message:birthMessage,
@@ -430,7 +435,7 @@ document.addEventListener('artwork-selected',()=>birth.selected());
 $('#replace-birth-source').addEventListener('click',()=>artEditor.open());
 $('#retry-birth').addEventListener('click',()=>birth.run());
 $('#default-birth').addEventListener('click',()=>birth.fallback());
-storyDialog=createStoryDialog({document,view:()=>view,tr,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),choose:index=>stories.choose(index),closeBattle:()=>battleScene.close(),busy:()=>busy,retryPending:()=>!!pendingAction&&['walk_begin','walk_collect','walk_leave','battle','flee'].includes(pendingAction.command),retry:()=>$('#retry-action').click(),act,openDungeon:id=>{$('#dungeon-list').querySelector(`[data-dungeon="${id}"]`)?.click();}});
+storyDialog=createStoryDialog({document,language:()=>language,view:()=>view,tr,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),choose:index=>stories.choose(index),closeBattle:()=>battleScene.close(),busy:()=>busy,retryPending:()=>!!pendingAction&&['walk_begin','walk_collect','walk_leave','battle','flee'].includes(pendingAction.command),retry:()=>$('#retry-action').click(),act,openDungeon:id=>{$('#dungeon-list').querySelector(`[data-dungeon="${id}"]`)?.click();}});
 stories=createWalkStories({anna:()=>anna,active:assertActive,language:()=>language,resolve:async(event,index)=>{
   const before=await assertActive();
   if(before.pet_id!==event.pet_id)throw new PartnerChangedError();
@@ -447,5 +452,46 @@ pixels=createPixelPet({anna:()=>anna,art:()=>art,assertActive,upload:uploadPortr
 dungeons=createDungeons({document,view:()=>view,language:()=>language,
   locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),act,pixelUrl,
   portraitUrl:()=>view?urls[imageKey(view)]||starter(view):'icon.svg'});
+
+function renderPersonality(){
+ const p=view?.status?.personality,box=$('#personality-details');if(!box)return;
+ $('#personality-heading').textContent=tr(personalityWorking?'personalityWorking':'personalityHeading');
+ $('#personality-summary').textContent=p?.origin.summary[language]||tr('personalityIntro');
+ $('#personality-voice').textContent=p?`${p.origin.voice[language]} · ${p.origin.habit[language]}`:'';
+ $('#personality-traits').replaceChildren();
+ if(p)for(const axis of personalityAxes){
+  const value=p.values[axis],span=document.createElement('span');span.className='badge';
+  span.textContent=tr(`trait_${axis}_${value<45?'low':value>55?'high':'mid'}`);$('#personality-traits').append(span);
+ }
+ const changes=Object.entries(p?.changes||{}).map(([axis,change])=>tr('personalityChange',{actions:change.actions.map(a=>tr('memory_'+a)).join(' · '),trait:tr('axis_'+axis),direction:tr(change.amount>0?'more':'less')}));
+ $('#personality-growth').textContent=changes.join(' ')||tr(p?'personalityStable':'personalityUsage');
+ $('#personality-status').textContent=personalityWorking?tr('personalityWorking'):personalityFeedback?tr(personalityFeedback):'';
+ $('#meet-personality').hidden=!!p;$('#meet-personality').disabled=busy||personalityWorking||!!pendingAction||!!pendingRemoval||!!pendingResetRequest;
+}
+async function setupPersonality(automatic=false){
+ if(!view?.status||busy&&!automatic||pendingAction||pendingRemoval||pendingResetRequest)return;
+ const wasBusy=busy;controls(true);try{await persona.run(automatic);render();}finally{controls(wasBusy);renderPersonality();}
+}
+$('#meet-personality').onclick=()=>setupPersonality();
+persona=createPersonality({anna:()=>anna,active:assertActive,
+ render:state=>{personalityWorking=state.working;personalityFeedback=state.feedback;renderPersonality();},
+ saved:next=>{adoptView(next);render();},
+ features:async snapshot=>{
+  const saved=(await anna.storage.get({key:ART})).value||{};
+  const reference=saved[`${snapshot.pet_id}/birth-source`];
+  if(reference?.phase==='done'&&reference.features)return {appearance:reference.features,source:'reference'};
+  const portrait=saved[imageKey(snapshot)];
+  if(portrait?.path){
+   const url=(await anna.files.download_url({path:portrait.path})).get_url;
+   const response=await fetch(url);if(!response.ok)throw Error('Portrait unavailable');
+   const result=await checkArtwork(anna,await response.blob());return {appearance:result.features,source:'portrait'};
+  }
+  const response=await fetch('starter-features.json');if(!response.ok)throw Error('Starter observations unavailable');
+  const sources=await response.json(),appearance=sources[`${snapshot.species_key}_${snapshot.element_key}_stage1.png`];
+  if(!appearance)throw Error('Starter observations unavailable');return {appearance,source:'starter'};
+ },
+ commit:async(snapshot,profile)=>{const {command,...args}=newAction(snapshot,'personality',{profile});return invoke(command,args);}
+});
+
 translate();
 await refresh();

@@ -1,9 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {finishReset} from '../bundle/reset-data.mjs';
-import {CHAT,ART,STORY} from '../bundle/data.mjs';
+import {CHAT,ART,STORY,PERSONA} from '../bundle/data.mjs';
 function fixture(){
- const rows=new Map([[CHAT,{value:['old chat'],etag:'1'}],[ART,{value:{old:'portrait'},etag:'1'}],[STORY,{value:{current:'old story'},etag:'1'}]]);
+ const rows=new Map([[CHAT,{value:['old chat'],etag:'1'}],[ART,{value:{old:'portrait'},etag:'1'}],[STORY,{value:{current:'old story'},etag:'1'}],[PERSONA,{value:{output:'old private draft'},etag:'1'}]]);
  const blobs=new Map([['portraits/old/a.png','a'],['portraits/old/b.png','b']]);
  const f={rows,blobs,pending:true,finished:0};
  f.storage={get:async({key})=>structuredClone(rows.get(key)),set:async({key,value,if_match})=>{const row=rows.get(key);if(row.etag!==if_match)throw Error('conflict');rows.set(key,{value,etag:String(+row.etag+1)});}};
@@ -13,7 +13,7 @@ function fixture(){
 }
 test('reset clears old app records and portraits before finishing, without permanent removal markers',async()=>{
  const f=fixture();await finishReset(f,f.call,'id');assert.equal(f.finished,1);assert.equal(f.blobs.size,0);
- assert.deepEqual(f.rows.get(CHAT).value,[]);assert.deepEqual(f.rows.get(ART).value,{});assert.deepEqual(f.rows.get(STORY).value,{});
+ assert.deepEqual(f.rows.get(CHAT).value,[]);assert.deepEqual(f.rows.get(ART).value,{});assert.deepEqual(f.rows.get(STORY).value,{});assert.deepEqual(f.rows.get(PERSONA).value,{});
 });
 test('reset cleanup interruption remains pending and can resume',async()=>{
  const f=fixture(),del=f.files.delete;let first=true;f.files.delete=async args=>{if(first){first=false;throw Error('offline');}return del(args);};
@@ -28,7 +28,7 @@ test('only an explicitly pending removed-game restart can replace app tombstones
  const f=fixture();for(const row of f.rows.values())row.value={_notebuddy_erased:1};
  await assert.rejects(finishReset(f,f.call,'id'));assert.equal(f.finished,0);
  const call=f.call;f.call=async args=>({...await call(args),...(args.action==='inspect'?{reset_from_erasure:true}:{})});
- await finishReset(f,f.call,'id');assert.deepEqual(f.rows.get(CHAT).value,[]);assert.deepEqual(f.rows.get(ART).value,{});assert.deepEqual(f.rows.get(STORY).value,{});assert.equal(f.finished,1);
+ await finishReset(f,f.call,'id');assert.deepEqual(f.rows.get(CHAT).value,[]);assert.deepEqual(f.rows.get(ART).value,{});assert.deepEqual(f.rows.get(STORY).value,{});assert.deepEqual(f.rows.get(PERSONA).value,{});assert.equal(f.finished,1);
  const g=fixture();g.rows.get(CHAT).value={_notebuddy_erased:1};g.rows.get(CHAT).etag=undefined;
  const inspect=g.call;g.call=async args=>({...await inspect(args),reset_from_erasure:true});
  await assert.rejects(finishReset(g,g.call,'id'),/Conditional writes/);assert.equal(g.finished,0);
