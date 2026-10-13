@@ -46,7 +46,8 @@ export function createDungeons(h){
     const active=journey(run,finished?totalDuration(run):elapsed,finished);const combat=active.room.combat;
     $('#dungeon-your-hp').max=run.max_hp_me;$('#dungeon-boss-hp').max=combat?.max_hp_enemy||1;
     $('#dungeon-your-hp').value=frame.hp_me;$('#dungeon-boss-hp').value=frame.hp_enemy;
-    $('#dungeon-hp-text').textContent=`${Math.ceil(frame.hp_me)} / ${run.max_hp_me} · ${Math.ceil(frame.hp_enemy)} / ${combat?.max_hp_enemy||0}`;
+    $('#dungeon-boss-hp').parentElement.hidden=active.room.kind==='rest';
+    $('#dungeon-hp-text').textContent=active.room.kind==='rest'?`${Math.ceil(frame.hp_me)} / ${run.max_hp_me}`:`${Math.ceil(frame.hp_me)} / ${run.max_hp_me} · ${Math.ceil(frame.hp_enemy)} / ${combat?.max_hp_enemy||0}`;
   }
   function finish(){
     stop();finished=true;elapsed=totalDuration(run);health(run);scene.draw({elapsed,run,finished,reduced:reduced()});

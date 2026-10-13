@@ -70,8 +70,8 @@ export function createDungeonScene(canvas,explorer){
    c.fillStyle=THEMES[key].tile;for(const cell of map.floor){const [x,y]=cell.split(',').map(Number);c.fillRect(mx+x/32*mw,my+y/24*mh,mw/32+1,mh/24+1);}
    c.fillStyle='#ffe6ad';c.fillRect(mx+hero[0]/WORLD.width*mw-2,my+hero[1]/WORLD.height*mh-2,4,4);
    c.fillStyle=unlocked?'#b4edb4':'#de9a8e';const door=worldPoint(map.exit);c.fillRect(mx+door[0]/WORLD.width*mw-2,my+door[1]/WORLD.height*mh-2,4,4);
-   const count=state.total,gap=24,start=width/2-(count-1)*gap/2;
-   for(let i=0;i<count;i++){c.fillStyle=i<index?'#9bb897':i===index?'#ffdb91':'#33464c';c.fillRect(start+i*gap-6,18,12,12);}
+   const count=state.total,gap=16,start=mx+mw/2-(count-1)*gap/2;
+   for(let i=0;i<count;i++){c.fillStyle=i<index?'#9bb897':i===index?'#ffdb91':'#33464c';c.fillRect(start+i*gap-4,my+mh+12,8,8);}
    canvas.dataset.camera=`${camera.x.toFixed(1)},${camera.y.toFixed(1)}`;canvas.dataset.phase=finished?'finished':phase;canvas.dataset.room=String(index+1);canvas.dataset.direction=direction;canvas.dataset.walkFrame=String(frame);
   }
  };
