@@ -2,6 +2,7 @@
 import copy
 import random
 import unittest
+from datetime import datetime
 from unittest.mock import patch
 import test_p0
 import engine
@@ -17,30 +18,42 @@ class DungeonTests(unittest.TestCase):
         return self.seed(dungeons={'date': engine.today(), 'discovered': list(dungeons.CATALOG),
                                   'cleared': [], 'misses': 0, 'last_run': None}, **changes)
 
-    def test_old_saves_read_without_mutation_and_first_walk_finds_one(self):
+    def test_old_saves_read_without_mutation_and_walk_discovery_replays_once(self):
         self.seed()
         before = (self.state/'123.json').read_bytes()
         state = engine.execute('123', 'status')['dungeons']
         self.assertEqual(state['coins'], 0)
-        self.assertEqual(sum(e['discovered'] for e in state['entries']), 0)
+        self.assertEqual(state['entries'], [])
         self.assertEqual((self.state/'123.json').read_bytes(), before)
         with patch.object(engine.random, 'random', return_value=.9):
+            missed = engine.execute('123', 'walk', request_id='miss')
+        self.assertIsNone(missed['dungeon_discovered'])
+        self.assertEqual(engine.execute('123', 'status')['dungeons']['entries'], [])
+        with patch.object(engine.random, 'random', side_effect=[.9, .2499]):
             first = engine.execute('123', 'walk', request_id='discover')
         self.assertIn(first['dungeon_discovered'], dungeons.CATALOG)
+        entries = engine.execute('123', 'status')['dungeons']['entries']
+        self.assertEqual([e['id'] for e in entries], [first['dungeon_discovered']])
         saved = copy.deepcopy(engine.load_state('123'))
-        self.assertEqual(engine.execute('123', 'walk', request_id='discover'), first)
+        with patch.object(engine.random, 'random', side_effect=AssertionError('Discovery rerolled')):
+            self.assertEqual(engine.execute('123', 'walk', request_id='discover'), first)
         self.assertEqual(engine.load_state('123'), saved)
 
-    def test_three_walk_pity_and_no_duplicate_discoveries(self):
+    def test_discovery_has_no_guarantee_even_for_legacy_miss_counter(self):
         st = self.seed()
-        with patch.object(engine.random, 'random', return_value=.99):
+        st['dungeons'] = {'date':engine.today(),'discovered':[],'cleared':[], 'misses':2,'last_run':None}
+        with patch.object(engine.random, 'random', return_value=.25):
             discoveries = [dungeons.discover(st, engine.today(), engine.random) for _ in range(8)]
-        found = [x for x in discoveries if x]
-        self.assertEqual(len(found), 3)
-        self.assertEqual(len(set(found)), 3)
-        self.assertIsNone(discoveries[1])
-        self.assertIsNotNone(discoveries[3])
-        self.assertIsNotNone(discoveries[6])
+        self.assertEqual(discoveries, [None]*8)
+        dungeons.validate(st)
+
+    def test_successful_rolls_find_each_dungeon_only_once(self):
+        st = self.seed()
+        with patch.object(engine.random, 'random', return_value=.2499):
+            found = [dungeons.discover(st, engine.today(), engine.random) for _ in range(4)]
+        self.assertEqual(set(found[:3]), set(dungeons.CATALOG))
+        self.assertIsNone(found[3])
+        dungeons.validate(st)
 
     def test_entry_guards_never_spend_a_charge(self):
         self.seed()
@@ -92,13 +105,48 @@ class DungeonTests(unittest.TestCase):
     def test_midnight_resets_discoveries_but_keeps_coins_and_replay(self):
         self.opened(training_bonus={'atk':100, 'def':100})
         result = engine.execute('123', 'explore_icekingdom', request_id='old-day')
-        with patch.object(engine, 'today', return_value='2099-01-01'):
+        with patch.object(engine, 'today', return_value='2099-01-01'), patch.object(engine.time, 'time', return_value=datetime(2099,1,1,tzinfo=dungeons.KST).timestamp()):
             status = engine.execute('123', 'status')['dungeons']
             self.assertEqual(status['coins'], 10)
             self.assertFalse(any(e['discovered'] for e in status['entries']))
             self.assertEqual(status['last_run'], result['dungeon_run'])
             self.assertEqual(engine.execute('123', 'explore_icekingdom', request_id='old-day'), result)
             self.assertEqual(engine.execute('123', 'explore_icekingdom')['code'], 'dungeon_locked')
+
+    def test_discovery_lasts_24_hours_across_midnight_and_expiry_spends_nothing(self):
+        found_at = datetime(2026,10,13,23,30,tzinfo=dungeons.KST).timestamp()
+        st = self.seed(training_bonus={'atk':100,'def':100})
+        with patch.object(engine.time, 'time', return_value=found_at), patch.object(engine.random, 'random', return_value=0):
+            key = dungeons.discover(st, '2026-10-13', engine.random)
+        engine.save_state(st)
+        self.assertEqual(st['dungeons']['expires_at'][key], found_at+86400)
+        with patch.object(engine.time, 'time', return_value=found_at+3600), patch.object(engine, 'today', return_value='2026-10-14'):
+            status = engine.execute('123', 'status')['dungeons']
+            self.assertEqual(len(status['entries']), 1)
+            self.assertEqual(status['entries'][0]['boss_element'], dungeons.boss_element(key,'2026-10-13'))
+            result = engine.execute('123', 'explore_'+key, request_id='after-midnight')
+            self.assertTrue(result['ok'],result)
+            self.assertEqual(result['dungeon_run']['boss_element'], status['entries'][0]['boss_element'])
+        before = (self.state/'123.json').read_bytes()
+        with patch.object(engine.time, 'time', return_value=found_at+86400), patch.object(engine, 'today', return_value='2026-10-14'):
+            status = engine.execute('123', 'status')['dungeons']
+            self.assertEqual(status['entries'], [])
+            self.assertEqual(status['coins'], 10)
+            self.assertEqual(status['last_run'], result['dungeon_run'])
+            self.assertEqual(engine.execute('123', 'explore_'+key)['code'], 'dungeon_locked')
+            self.assertEqual(engine.execute('123', 'explore_'+key, request_id='after-midnight'), result)
+        self.assertEqual((self.state/'123.json').read_bytes(), before)
+
+    def test_expired_discovery_can_be_found_again_but_daily_rewards_cannot_repeat(self):
+        now = engine.time.time()
+        st = self.opened()
+        st['dungeons']['expires_at'] = {key:now-1 for key in dungeons.CATALOG}
+        st['dungeons']['cleared'] = ['hellgate']
+        with patch.object(engine.random, 'random', return_value=0):
+            found = [dungeons.discover(st,engine.today(),engine.random) for _ in range(3)]
+        self.assertEqual(set(found), {'icekingdom','dreamforest',None})
+        self.assertEqual(st['dungeons']['cleared'], ['hellgate'])
+        dungeons.validate(st)
 
     def test_habitat_stats_are_temporary_and_element_preview_matches_battle(self):
         for key, config in dungeons.CATALOG.items():
@@ -122,3 +170,6 @@ class DungeonTests(unittest.TestCase):
             with self.assertRaises(engine.GameError): self.seed(coins=value)
         for state in [None, {}, {'date':engine.today(),'discovered':['other'],'cleared':[],'misses':0}]:
             with self.assertRaises(engine.GameError): self.seed(dungeons=state)
+        for expiry in (True, -1, float('inf'), 'soon', 253402214400):
+            with self.assertRaises(engine.GameError):
+                self.seed(dungeons={'date':engine.today(),'discovered':['hellgate'],'cleared':[],'misses':0,'expires_at':{'hellgate':expiry}})

@@ -436,13 +436,14 @@ def cmd_explore(st, key):
     if bonus:
         for stat, value in stat_total(st).items():
             fighter['training_bonus'][stat] = fighter['training_bonus'].get(stat, 0) + max(1, round(value * bonus / 100))
-    element = dungeons.boss_element(key, day)
+    boss_date = dungeons.discovery_day(state, key)
+    element = dungeons.boss_element(key, boss_date)
     # Same base stats in all regions. Normal battle limits, XP and records are separate.
     opponent = {'species_key': 'mammal', 'element_key': element, 'level': st['level']}
     combat = simulate_battle(fighter, opponent)
     won = combat['outcome'] == 'win'
     reward = dungeons.REWARD if won else 0
-    run = {'id': uuid.uuid4().hex, 'dungeon_id': key, 'date': day,
+    run = {'id': uuid.uuid4().hex, 'dungeon_id': key, 'date': day, 'boss_date': boss_date,
            'boss_element': element, 'bonus_percent': bonus, 'coins_awarded': reward, **combat}
     st['walk_energy'] = {'charges': energy['charges'] - 1, 'updated_at': energy['updated_at']}
     st['coins'] = st.get('coins', 0) + reward

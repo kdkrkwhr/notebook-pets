@@ -10,7 +10,7 @@ const fixtureCanvas=document.createElement('canvas');fixtureCanvas.width=fixture
 const fixtureContext=fixtureCanvas.getContext('2d');fixtureContext.fillStyle='white';fixtureContext.fillRect(0,0,64,64);fixtureContext.fillStyle='#607d68';fixtureContext.fillRect(14,10,36,46);fixtureContext.fillStyle='#253b35';fixtureContext.fillRect(21,25,5,5);fixtureContext.fillRect(38,25,5,5);
 const portrait=fixtureCanvas.toDataURL('image/png');
 const dungeonEntries=()=>['hellgate','icekingdom','dreamforest'].map(id=>({id,discovered:false,cleared:false,cost:1,reward:10,boss_element:id==='icekingdom'?'water':id==='hellgate'?'fire':'nature',attack_multiplier:1,habitat_species:['fairy'],bonus_percent:10}));
-function view(){return state.save?{ok:true,msg:'Saved',request_id_prefix:`nb2:${state.sequence}:`,...clone(state.save)}:{ok:false,code:'not_started',request_id_prefix:'nb2:0:',msg:'Meet your companion'};}
+function view(){if(state.save?.status?.dungeons)state.save.status.dungeons.server_now=Date.now()/1000;return state.save?{ok:true,msg:'Saved',request_id_prefix:`nb2:${state.sequence}:`,...clone(state.save)}:{ok:false,code:'not_started',request_id_prefix:'nb2:0:',msg:'Meet your companion'};}
 function create(name){return {pet_id:'isolated-fixture',stage:1,species_key:'fairy',element_key:'nature',image_prompt:'test companion',inventory:{normal_feed:3,rare_feed:0},album:{entries:[{stage:1,label:'Baby',reached:true,current:true,min_level:1}]},status:{name,species:'Fairy',element:'Nature',mood:'happy',title:'A little friend',level:1,stage_label:'Baby',xp:0,xp_next:100,satiety:70,intimacy:10,stats:{hp:10,atk:5,def:5},record:{win:0,lose:0},quest:{date:'2026-10-09',ready:false,claimed:false,reward:{xp:10,rare_feed:1},tasks:[]}}};}
 const receipts=new Map();
 const runtime={
@@ -41,7 +41,7 @@ const runtime={
   else {state.save.status.xp+=10;state.save.inventory.normal_feed-=a.command==='feed'?1:0;}
   let extra={replayed:false};
   state.save.status.dungeons??={date:'2026-10-13',coins:0,entries:dungeonEntries(),last_run:null};
-  if(a.command==='walk'){state.save.status.dungeons.entries[0].discovered=true;extra.dungeon_discovered='hellgate';}
+  if(a.command==='walk'&&faults.walkDiscovery!==false){const entry=state.save.status.dungeons.entries[0];entry.discovered=true;entry.expires_at??=Date.now()/1000+86400;extra.dungeon_discovered='hellgate';}
   if(a.command.startsWith('explore_')){
    const id=a.command.slice(8),entry=state.save.status.dungeons.entries.find(x=>x.id===id);
    const run={id:'mock-expedition',date:'2026-10-13',dungeon_id:id,outcome:faults.dungeonLose?'lose':'win',coins_awarded:faults.dungeonLose?0:10,boss_element:entry.boss_element,bonus_percent:10,max_hp_me:12,max_hp_enemy:10,hp_me:8,hp_enemy:0,turns:[{hp_me:10,hp_enemy:5},{hp_me:8,hp_enemy:0}]};

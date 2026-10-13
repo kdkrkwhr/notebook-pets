@@ -133,13 +133,24 @@ h1,h2,p,label,.actions b,.actions small{word-break:keep-all;overflow-wrap:break-
 .pixel-preview{width:80px;height:80px;flex-shrink:0;display:grid;place-items:center;background:#293b40;border:3px solid #c1b8a8;border-radius:8px;color:#ebdfbf;font-size:32px}
 .pixel-preview img{width:72px;height:72px;object-fit:contain;image-rendering:pixelated}
 .pixel-companion p{margin:6px 0}.pixel-companion button{font-size:12px}
-#dungeon-dialog{width:min(620px,calc(100vw - 24px));max-width:620px;padding:22px;box-sizing:border-box}
-.dungeon-stage{position:relative;overflow:hidden;border-radius:12px;border:4px solid #443c4b;background:#152a32}
+#dungeon-dialog{width:96vw;max-width:none;height:94dvh;max-height:94dvh;padding:22px;box-sizing:border-box;overflow:auto}
+#dungeon-dialog[open]{display:flex;flex-direction:column;gap:14px}
+#dungeon-dialog>.section-heading{margin:0;flex-shrink:0}
+.dungeon-experience{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:24px;flex:1;min-height:0}
+.dungeon-scene-column{display:flex;flex-direction:column;gap:10px;min-width:0;min-height:0}
+.dungeon-map-area{display:grid;place-items:center;flex:1;min-height:180px;container-type:size;background:#141923;border-radius:14px;overflow:hidden}
+.dungeon-stage{position:relative;width:min(100cqw,125cqh);box-sizing:border-box;overflow:hidden;border-radius:12px;border:4px solid #443c4b;background:#152a32}
+.dungeon-sidebar{display:flex;flex-direction:column;gap:16px;min-width:0;overflow:auto}
+.dungeon-sidebar p,.dungeon-scene-column p{margin:0}
+.dungeon-sidebar .birth-buttons{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto}
+.dungeon-countdown{font-variant-numeric:tabular-nums;font-weight:600;color:#645575}
+.dungeon-card .dungeon-countdown{color:#645575}
 #dungeon-map{display:block;width:100%;height:auto;image-rendering:pixelated}
 #dungeon-explorer{position:absolute;width:12%;height:auto;image-rendering:pixelated;transform:translate(-50%,-88%);filter:drop-shadow(0 3px 0 #0006);pointer-events:none}
 #dungeon-explorer.walking{animation:pixel-step .32s steps(2,end) infinite}
 @keyframes pixel-step{50%{transform:translate(-50%,calc(-88% - 2px)) rotate(-2deg)}}
 .dungeon-health{display:grid;grid-template-columns:1fr 1fr;gap:18px;font-size:12px}.dungeon-health progress{width:100%;margin-top:6px}
 #dungeon-phase{min-height:24px}#dungeon-result{font-weight:600}
-@media(max-width:560px){.dungeon-section{padding:18px}.dungeon-list{gap:8px}.dungeon-card strong,.dungeon-card>span{margin-left:8px;margin-right:8px}.dungeon-card strong{font-size:13px}.dungeon-card>span{font-size:11px}#dungeon-dialog{padding:14px}.pixel-companion{gap:12px}}
+@media(max-width:760px){.dungeon-experience{display:flex;flex-direction:column;gap:14px;min-height:0}.dungeon-scene-column{flex:1;min-height:240px}.dungeon-sidebar{flex-shrink:0;gap:8px;overflow:visible}.dungeon-sidebar .birth-buttons{margin-top:2px}.dungeon-sidebar .small{font-size:11px}#dungeon-dialog{padding:14px;gap:10px}}
+@media(max-width:560px){.dungeon-section{padding:18px}.dungeon-list{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}.dungeon-card strong,.dungeon-card>span{margin-left:8px;margin-right:8px}.dungeon-card strong{font-size:13px}.dungeon-card>span{font-size:11px}.pixel-companion{gap:12px}}
 @media(prefers-reduced-motion:reduce){#dungeon-explorer.walking{animation:none}.dungeon-card:hover:not(:disabled){transform:none}}

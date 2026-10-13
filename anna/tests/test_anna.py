@@ -136,6 +136,8 @@ class AdapterTests(unittest.IsolatedAsyncioTestCase):
         self.assertTrue(first['ok'], first)
         self.assertFalse(first["replayed"])
         self.assertTrue(again["replayed"])
+        for response in (first, again):
+            self.assertIsInstance(response['status']['dungeons'].pop('server_now'), (int, float))
         self.assertEqual({**first, "replayed": True}, again)
         self.assertEqual(self.storage.value, before)
         self.assertEqual(self.storage.writes, 2)

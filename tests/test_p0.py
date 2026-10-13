@@ -262,6 +262,8 @@ class RuntimeTests(unittest.TestCase):
         results = self.parallel([["engine/engine.py", "status", "123"],
                                  ["engine/engine.py", "123", "상태"]])
         self.assertTrue(all(r["ok"] for r in results))
+        for result in results:
+            self.assertIsInstance(result['dungeons'].pop('server_now'), (int, float))
         self.assertEqual(results[0], results[1])
 
 
