@@ -6,6 +6,8 @@ let birth,artEditor;
 import {createReactions,reactionEvent} from './reactions.mjs';
 let reactions;
 import {createBattle} from './battle.mjs';
+import {createDungeons} from './dungeon.mjs';
+import {createPixelPet,currentPixel,pixelKey} from './pixel-pet.mjs';
 import { AnnaAppRuntime } from '/static/anna-apps/_sdk/latest/index.js';
 import {unwrap,starter,imageKey,mergeHistory,errorText,newAction} from './model.mjs';
 import {t,loadLanguage,saveLanguage,translateDocument,chatPrompt} from './i18n.mjs';
@@ -25,6 +27,7 @@ let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetReque
 const tr=(key,values)=>t(language,key,values);
 const problem=error=>errorText(error,language);
 const battleScene=createBattle(document);
+let dungeons,pixels,pixelNotice='';
 $('#draw-evolved').addEventListener('click',()=>$('#draw').click());
 
 function notice(message=''){ $('#notice').textContent=message;$('#notice').hidden=!message; }
@@ -35,10 +38,10 @@ function controls(value){
   $('#retry-chat').hidden=!pendingChat;
   $('#retry-reaction').hidden=!reactions?.hasUnsaved();
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
-  if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage||birth?.hasOutput()))$('#clean-portraits').disabled=true;
+  if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage||birth?.hasOutput()||pixels?.hasPending()))$('#clean-portraits').disabled=true;
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
   if(!value&&anna&&!pendingRemoval&&!pendingAction&&!pendingResetRequest&&!view?.reset_pending&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
-  birth?.render();stories?.render();
+  birth?.render();stories?.render();dungeons?.render();renderPixel();
 }
 function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
@@ -64,6 +67,22 @@ function drawChat(){
   container.scrollTop=container.scrollHeight;
 }
 function previousPortrait(v){for(let stage=v.stage-1;stage>=1;stage--){const url=urls[imageKey(v,stage)];if(url)return url;}return starter(v);}
+function pixelUrl(){return view?.status&&currentPixel(view,art)?urls[pixelKey(view)]:null;}
+function renderPixel(){
+  const url=pixelUrl(),img=$('#pixel-pet');img.hidden=!url;$('#pixel-empty').hidden=!!url;
+  if(url){img.src=url;img.alt=view.status.name;}
+  else img.removeAttribute('src');
+  text('#pixel-status',tr(pixelNotice||(url?'pixelReady':'pixelMissing')));
+  $('#prepare-pixel').hidden=!!url&&pixelNotice!=='pixelFailed';
+  $('#prepare-pixel').disabled=busy||!view?.status||!!(pendingAction||pendingRemoval||pendingResetRequest||pendingImage)||birth?.hasOutput();
+}
+async function preparePixel(){
+  if(busy||pendingAction||pendingRemoval||pendingResetRequest||pendingImage||birth?.hasOutput()||!view?.status)return;
+  controls(true);
+  try{const snapshot=await assertActive();await pixels.sync(snapshot);await readExtras();render();}
+  catch{pixelNotice='pixelFailed';renderPixel();}
+  finally{controls(false);}
+}
 let walkSnapshot=null,walkSnapshotAt=0;
 function renderWalkEnergy(){
   const energy=view?.status?.walk_energy;
@@ -115,9 +134,10 @@ function render(){
     const subtitle=document.createElement('small');subtitle.textContent=entry.reached?tr(entry.current?'currentStage':'memoryStage'):tr('futureStage',{level:entry.min_level});
     item.append(frame,title,subtitle);$('#album').append(item);
   }
-  drawChat();birth?.render();stories?.render();
+  drawChat();birth?.render();stories?.render();dungeons?.render();renderPixel();
 }
 function forgetCachedData(){
+  pixels?.clear();pixelNotice='';dungeons?.close();$('#pixel-pet').removeAttribute('src');$('#pixel-pet').hidden=true;
   birth?.clear();stories?.clear();
   reactions?.clear();reactionFeedback();
   battleScene.close();
@@ -183,11 +203,17 @@ async function act(command,extra={},retry=false){
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
     text('#action-result',message);if(!view.ok)notice(view.msg);
     if(view.ok&&action==='battle')battleScene.show(view,before,portrait,language);
+    if(view.ok&&view.dungeon_discovered)text('#action-result',`${message} · ${tr('dungeonDiscovered',{name:tr('dungeon_'+view.dungeon_discovered)})}`);
+    if(view.ok&&view.dungeon_run)dungeons.show(view.dungeon_run);
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;}
   finally{controls(false);}
   if(walkStory)void stories.start(walkStory);
   reactions.enqueue(reaction);
-  if(started)await birth.started(view);
+  if(started){
+    await birth.started(view);
+    const source=art[`${view?.pet_id}/birth-source`];
+    if(view?.status&&(!source||['done','abandoned'].includes(source.phase)))await preparePixel();
+  }
 }
 async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
 async function chat(event){
@@ -218,7 +244,7 @@ async function retryChat(){
   controls(true);notice();try{await persistChat();}finally{controls(false);}
 }
 async function cleanupPortraits(){
-  if(busy||pendingAction||pendingRemoval||pendingImage||birth?.hasOutput())return;
+  if(busy||pendingAction||pendingRemoval||pendingImage||birth?.hasOutput()||pixels?.hasPending())return;
   if(!$('#portraits-quiescent').checked){text('#portraits-error',tr('portraitsConfirm'));return;}
   $('#portraits-dialog').close();controls(true);notice();
   try{
@@ -249,7 +275,10 @@ async function generate(){
     const p=pendingImage;
     if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw new Error('image download');p.blob=await response.blob();}
     if(!p.uploaded){const upload=await anna.files.upload_init({path:p.path,content_type:p.blob.type||'image/png',size:p.blob.size});const result=await fetch(upload.put_url,{method:'PUT',headers:upload.headers,body:p.blob});if(!result.ok)throw new Error('image upload');await anna.files.upload_finalize({path:p.path,size:p.blob.size});p.uploaded=true;}
-    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));urls[p.key]=(await anna.files.download_url({path:p.path})).get_url;pendingImage=null;render();notice(tr('imageSaved'));
+    const active=await assertActive();
+    if(p.key!==imageKey(active)){pendingImage=null;throw new PartnerChangedError();}
+    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));urls[p.key]=(await anna.files.download_url({path:p.path})).get_url;pendingImage=null;
+    await pixels.sync(active,p.blob);await readExtras();render();notice(tr('imageSaved'));
   }catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else notice(pendingImage?tr('imagePending'):tr('imageFailed',{error:problem(error)}));}
   finally{text('#draw',tr(pendingImage?'retryImage':'draw'));controls(false);}
 }
@@ -334,6 +363,7 @@ $('#language').addEventListener('change',async()=>{
 });
 $('#privacy').addEventListener('click',()=>$('#privacy-dialog').showModal());
 $('#refresh').addEventListener('click',refresh);
+$('#prepare-pixel').addEventListener('click',preparePixel);
 $('#start-form').addEventListener('submit',async e=>{
   e.preventDefault();if(busy||pendingAction||pendingRemoval)return;
   const name=$('#pet-name').value.trim();$('#pet-name').value=name;if(!$('#start-form').reportValidity())return;
@@ -347,7 +377,7 @@ document.querySelectorAll('[data-action]').forEach(button=>button.addEventListen
 $('#retry-action').addEventListener('click',()=>pendingAction&&act(pendingAction.command,{},true));
 $('#chat-form').addEventListener('submit',chat);
 $('#retry-chat').addEventListener('click',retryChat);
-$('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval||birth?.hasOutput())return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
+$('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval||birth?.hasOutput()||pixels?.hasPending())return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
 $('#confirm-clean-portraits').addEventListener('click',cleanupPortraits);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
 $('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
@@ -363,6 +393,7 @@ birth=createBirthFlow({
   locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest||pendingImage),
   controls,assertActive,upload:uploadPortrait,isPartnerChanged:error=>error instanceof PartnerChangedError,
   save:async merge=>{art=await saveMerged(ART,merge);return art;},
+  portraitSaved:(snapshot,blob)=>pixels.sync(snapshot,blob),
   reload:async()=>{await readExtras();render();},
   clearMessage:()=>{birthNotice=null;for(const id of ['#birth-status','#birth-recovery-status']){text(id,'');$(id).hidden=true;}},
   message:birthMessage,
@@ -404,5 +435,10 @@ stories=createWalkStories({anna:()=>anna,active:assertActive,locked:()=>busy||!!
   if(working||current&&!done)$('[data-action="walk"]').disabled=true;
   else if(!busy&&!pendingAction&&!pendingRemoval&&!pendingResetRequest&&view?.status)$('[data-action="walk"]').disabled=false;
 }});
+pixels=createPixelPet({anna:()=>anna,art:()=>art,assertActive,upload:uploadPortrait,
+  saved:value=>{art=value;},message:key=>{pixelNotice=key;renderPixel();}});
+dungeons=createDungeons({document,view:()=>view,language:()=>language,
+  locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),act,pixelUrl,
+  portraitUrl:()=>view?urls[imageKey(view)]||starter(view):'icon.svg'});
 translate();
 await refresh();

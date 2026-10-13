@@ -36,6 +36,72 @@ async function fault(p,value){await p.evaluate(v=>Object.assign(window.hostTest.
 async function start(p){await p.locator('#pet-name').fill('Recovery buddy');await p.locator('#start-form button').click();await idle(p);}
 async function calls(p,method){return p.evaluate(m=>window.hostTest.calls.filter(x=>x.args?.command===m||x.method===m),method);}
 
+test('pixel companion is saved at birth without AI, and conversion produces a transparent 64px PNG',async t=>{
+ const p=await setup(t);await start(p);
+ await p.waitForFunction(()=>window.hostTest.state.kv['notebuddy/art-v1']?.['isolated-fixture/pixel-stage-1']);
+ assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
+ assert.equal(await p.locator('#pixel-pet').isVisible(),true);
+ const result=await p.evaluate(async()=>{
+  const {pixelatePortrait}=await import('./pixel-pet.mjs');
+  const response=await fetch(document.querySelector('#pet-image').src),blob=await pixelatePortrait(await response.blob()),bitmap=await createImageBitmap(blob);
+  const canvas=document.createElement('canvas');canvas.width=bitmap.width;canvas.height=bitmap.height;
+  const context=canvas.getContext('2d');context.drawImage(bitmap,0,0);const data=context.getImageData(0,0,64,64).data;
+  return {width:bitmap.width,height:bitmap.height,type:blob.type,corner:data[3],opaque:Array.from(data).filter((v,i)=>i%4===3&&v===255).length};
+ });
+ assert.deepEqual([result.width,result.height,result.type,result.corner],[64,64,'image/png',0]);assert.ok(result.opaque>100);
+ await p.reload();await idle(p);assert.equal(await p.locator('#pixel-pet').isVisible(),true);assert.equal((await calls(p,'finalize')).length,0);
+});
+
+test('pixel save failure preserves the companion and retries without paid generation',async t=>{
+ const p=await setup(t,{pixelUpload:true});await start(p);
+ assert.equal(await p.locator('#name').innerText(),'Recovery buddy');assert.match(await p.locator('#pixel-status').innerText(),/unfinished/);
+ await p.locator('#prepare-pixel').click();await idle(p);
+ assert.equal(await p.locator('#pixel-pet').isVisible(),true);
+ const uploads=(await calls(p,'finalize')).filter(x=>x.path.includes('/pixel-'));
+ assert.equal(uploads.length,2);assert.equal(uploads[0].path,uploads[1].path);
+ assert.equal((await calls(p,'image')).length,0);
+});
+
+test('dungeon discovery, automatic movement, skip and reopened replay keep one result',async t=>{
+ const p=await setup(t,{walkOutcome:'quiet'});await start(p);await p.locator('[data-action="walk"]').click();await idle(p);
+ await p.locator('[data-dungeon="hellgate"]').click();assert.equal(await p.locator('#dungeon-enter').isEnabled(),true);
+ await p.locator('#dungeon-enter').click();await idle(p);
+ assert.equal(await p.locator('#dungeon-dialog').isVisible(),true);
+ const first=await p.locator('#dungeon-explorer').evaluate(e=>e.style.top);
+ await p.waitForFunction(before=>document.querySelector('#dungeon-explorer').style.top!==before,first);
+ await p.locator('#dungeon-skip').click();assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
+ await p.locator('#dungeon-skip').click();assert.equal((await calls(p,'explore_hellgate')).length,1);
+ await p.reload();await idle(p);assert.match(await p.locator('#dungeon-coins').innerText(),/10/);
+ await p.locator('#dungeon-replay').click();await p.locator('#dungeon-skip').click();
+ assert.equal((await calls(p,'explore_hellgate')).length,0);
+ assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
+});
+
+test('lost dungeon response exposes same-request retry and a mobile reduced-motion replay',async t=>{
+ const p=await setup(t,{walkOutcome:'quiet'});await start(p);await p.locator('[data-action="walk"]').click();await idle(p);
+ await p.setViewportSize({width:360,height:780});await p.emulateMedia({reducedMotion:'reduce'});
+ await p.locator('#language').selectOption('ko');await idle(p);await fault(p,{lost:true});
+ await p.locator('[data-dungeon="hellgate"]').click();await p.locator('#dungeon-enter').click();await idle(p);
+ await p.locator('#dungeon-close').click();await p.locator('#retry-action').click();await idle(p);
+ const requests=await calls(p,'explore_hellgate');assert.equal(requests.length,2);assert.equal(requests[0].args.request_id,requests[1].args.request_id);
+ assert.match(await p.locator('#dungeon-result').innerText(),/코인 10/);
+ assert.equal(await p.locator('#dungeon-skip').innerText(),'닫기');
+ const width=await p.evaluate(()=>({client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));assert.ok(width.scroll<=width.client);
+ if(process.env.ANNA_DUNGEON_CAPTURE){
+  await p.locator('#dungeon-dialog').screenshot({path:process.env.ANNA_DUNGEON_CAPTURE});
+  for(const id of ['hellgate','icekingdom','dreamforest']){
+   await p.locator('#dungeon-close').click();await p.locator(`[data-dungeon="${id}"]`).click();
+   await p.evaluate(async()=>{
+    const {pixelatePortrait}=await import('./pixel-pet.mjs');
+    const source=await fetch('assets/starters-v1/fairy_nature_stage1.png');
+    document.querySelector('#dungeon-explorer').src=URL.createObjectURL(await pixelatePortrait(await source.blob()));
+   });
+   await p.locator('#dungeon-explorer').evaluate(e=>e.decode());
+   await p.locator('#dungeon-dialog').screenshot({path:process.env.ANNA_DUNGEON_CAPTURE.replace('.png',`-${id}.png`)});
+  }
+ }
+});
+
 test('initial connection failure recovers using Refresh',async t=>{
  const p=await setup(t,{connect:true});assert.match(await p.locator('#connection').innerText(),/Check/);
  await p.locator('#refresh').click();await idle(p);

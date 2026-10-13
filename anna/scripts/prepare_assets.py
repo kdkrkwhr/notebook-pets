@@ -30,7 +30,7 @@ for path in ART.glob('*_stage1.png'):
 for path in (ROOT / 'assets' / 'anchored_evolution').glob('*.png'):
     if not path.name.endswith('_stage1.png'):
         shutil.copy2(path, ART / path.name)
-for directory, names in [('engine', ['engine.py', 'runtime.py', 'art.py']),
+for directory, names in [('engine', ['engine.py', 'runtime.py', 'art.py', 'dungeons.py']),
                           ('data', ['game_data.json', 'image_prompts.json'])]:
     (CORE / directory).mkdir(parents=True, exist_ok=True)
     for name in names:

@@ -4,6 +4,10 @@
 
 One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. The review candidate is app **0.3.4**, game tool **0.1.15**, with status **pending_review**. On 2026-10-12, its listing and privacy link were updated and review was requested again. See the [submission record](RELEASE_034.md); approval and publication are still pending.
 
+## Next candidate: pixel dungeons
+
+Source candidate **0.4.0 / tool 0.2.0** adds Hellgate, Ice Kingdom and Dream Forest. Discover them on walks, enter with one charge, watch automatic exploration and a boss battle, and collect 10 coins per daily first clear. Coins have no shop yet. A 64×64 pixel version is locally prepared at birth and after a newly saved portrait, with a preparation button for existing companions; no additional AI request is made. See [scope and rules](DUNGEONS.md). Source implementation is separate from Anna deployment and review.
+
 ## Walk stories
 
 Some peaceful walks open a short AI episode with two choices. One request generates both endings; selection adds no AI usage, XP or items. Finish the current episode before another walk. Reopening restores the latest choice without generating again. AI failure uses a prepared story. Stories are part of reset/removal. New stories use Anna allowance.

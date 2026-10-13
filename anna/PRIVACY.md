@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 12 October 2026. This notice describes the Notebuddy 0.3.5 source candidate; the submitted 0.3.4 version keeps its versioned notice. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 13 October 2026. This notice describes the Notebuddy 0.4.0 source candidate; previously submitted versions keep their versioned notices. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -9,6 +9,8 @@ Last updated: 12 October 2026. This notice describes the Notebuddy 0.3.5 source 
 | Companion name, species, element, progress, inventory, daily activity, growth album milestones and recent action results | Saved in your authenticated Anna account’s Notebuddy Game tool storage, to continue your game and prevent repeat rewards. |
 | Recent conversation | Up to 24 chat entries, including care reactions and pending/failure markers, are retained by the app in Anna app storage to show your conversation and provide recent context. This limit does not describe Anna or AI-provider logs. |
 | Portrait index and generated portrait files | Saved in Anna app storage and file storage for the growth album. Drawing a replacement changes the displayed portrait; older files are not automatically erased. |
+| Pixel companion images and source-portrait paths | A 64×64 PNG is prepared locally from a completed portrait or bundled starter and saved in the same private portrait index/file storage for dungeon exploration. No AI request is made for conversion. |
+| Dungeon discoveries, daily clears, coins and latest expedition result | Stored with private game progress. Results and charges are committed together before animation; replaying or skipping cannot grant another reward. The latest result remains available across a daily reset until replaced. |
 | Normalized reference drawing/photo and extracted visual features | The PNG reference (longest side at most 1024 pixels) and up to 1200 characters of visible features are saved in Anna file/app storage to create and later redraw the companion. Original filenames and source image metadata are not saved by this app. |
 | Latest walk story, selected ending and up to 64 recent story request identifiers | Saved in Anna app storage to resume a choice and suppress repeated requests. Starting over or removing saved data clears this record. |
 | Language choice | Saved in this browser’s local storage. It is not synced across devices by Notebuddy. |
@@ -39,6 +41,12 @@ The in-browser editor and uncommitted generated image are held in memory. Closin
 
 
 The saved original drawing/photo description is also used for later redraws and growth-stage portraits, prioritizing silhouette, limb count and markings. This is text-guided generation, not a promise of pixel-exact copying or direct image-to-image editing. Random starts still choose both species and element randomly.
+
+## Pixel companions and dungeon exploration
+
+The app prepares a pixel companion after first creation and after a newly saved portrait. Existing companions have a preparation button. Conversion downsamples the existing image, simplifies colors and removes near-white pixels connected to its outer border. It does not identify people, infer body parts, generate new poses, or send the image to another AI provider. Portraits with complex or non-white backgrounds may retain some background. The original remains unchanged if conversion or storage fails; a retry makes no AI call.
+
+Derived PNGs and their source paths use the existing `portraits/` prefix and `notebuddy/art-v1` index, separated by companion and growth stage. Reset, removal and unused-portrait cleanup include these images. A replacement pixel image can leave an unreferenced file until cleanup, just like a replaced portrait. Dungeon maps and automatic movement use bundled code and the saved image, with no per-expedition image-generation request. Dungeon discoveries and rewards reset at midnight Korea time; accumulated coins and the last replay remain. There is no background/offline auto-farming.
 
 ## AI processing
 

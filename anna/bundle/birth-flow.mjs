@@ -61,6 +61,7 @@ export function createBirthFlow(h){
       if(!pending.uploaded){await h.upload(pending.path,pending.blob);pending.uploaded=true;}
       await guard();
       await h.save(old=>({...old,[pending.key]:{path:pending.path,at:Date.now()},[sourceKey(snapshot)]:{...pending.source,phase:'done'}}));
+      await h.portraitSaved?.(snapshot,pending.blob);
       await h.reload();output=null;intent=null;h.editor.clear();message('artSaved');render();
     }catch(error){
       if(error instanceof ErasedError){clear();message('removedHeading');}
@@ -87,6 +88,7 @@ export function createBirthFlow(h){
       const record=(await h.anna().storage.get({key:ART})).value?.[sourceKey(snapshot)];
       if(record)await setSource(snapshot,{...record,phase:'abandoned'});
       intent=null;output=null;h.editor.clear();message('artDefaultChosen');await h.reload();
+      await h.portraitSaved?.(snapshot);await h.reload();
     }catch(error){message('artSourceFailed',{error:errorText(error,h.language())});}
     finally{h.controls(false);render();}
   }

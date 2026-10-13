@@ -11,6 +11,7 @@ from contextvars import ContextVar
 from datetime import date, datetime, timedelta
 from runtime import KST, MISSING, GameError, atomic_write_json, game_clock, game_date, read_json, store_lock, validate_user_id
 import art
+import dungeons
 
 BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(BASE, "data", "game_data.json")
@@ -78,6 +79,7 @@ def validate_state(st, uid):
             raise ValueError("Invalid save field")
     try:
         require(isinstance(st, dict) and st["user_id"] == uid)
+        dungeons.validate(st)
         require(type(st["version"]) is int and st["version"] in (2, 3, 4))
         require(isinstance(st["name"], str))
         if "pet_id" in st:
@@ -325,6 +327,7 @@ def cmd_status(st):
                level=st["level"], xp=st["xp"], xp_next=xp_needed(st["level"]),
                stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"), image=art.describe(st),
                record=st["record"], walk_energy={k: v for k, v in walk_energy(st).items() if k != "updated_at"}, quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
+               dungeons=dungeons.view(st, today(), type_mult),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
 
 def cmd_titles(st):
@@ -409,10 +412,47 @@ def cmd_walk(st):
         encounter = {"species": G["species"][wsp]["name_kr"], "element": G["elements"][wel]["name_kr"],
                      "species_key": wsp, "element_key": wel, "level": wlv}
         st["_wild"] = encounter
+    discovered = dungeons.discover(st, today(), random)
     save_state(st)
     messages = {"quiet": "별일 없이 느긋하게 산책했어요.", "xp": "산책 중 경험치를 발견했어요!", "encounter": "산책 중 몬스터를 만났어요!"}
-    r = out(True, messages[outcome], walk_outcome=outcome, walk_energy=walk_energy(st), xp_result=x, encounter=bool(encounter), wild=encounter)
+    r = out(True, messages[outcome], walk_outcome=outcome, walk_energy=walk_energy(st), xp_result=x, encounter=bool(encounter), wild=encounter, dungeon_discovered=discovered)
     return r
+
+def cmd_explore(st, key):
+    day = today()
+    state = dungeons.daily(st, day)
+    if key not in state['discovered']:
+        return out(False, '산책으로 오늘의 던전을 먼저 발견해 주세요.', code='dungeon_locked')
+    if key in state['cleared']:
+        return out(False, '오늘 이 던전의 보상을 이미 받았어요.', code='dungeon_cleared')
+    if st.get('_wild') is not None:
+        return out(False, '기다리는 몬스터와 먼저 배틀하거나 헤어져 주세요.', code='encounter_pending')
+    energy = walk_energy(st)
+    if not energy['charges']:
+        return out(False, '산책 횟수를 충전하고 있어요.', code='walk_recharging')
+    bonus = dungeons.BONUS_PERCENT if st['species'] in dungeons.CATALOG[key]['species'] else 0
+    fighter = copy.deepcopy(st)
+    fighter['training_bonus'] = dict(st.get('training_bonus', {}))
+    if bonus:
+        for stat, value in stat_total(st).items():
+            fighter['training_bonus'][stat] = fighter['training_bonus'].get(stat, 0) + max(1, round(value * bonus / 100))
+    element = dungeons.boss_element(key, day)
+    # Same base stats in all regions. Normal battle limits, XP and records are separate.
+    opponent = {'species_key': 'mammal', 'element_key': element, 'level': st['level']}
+    combat = simulate_battle(fighter, opponent)
+    won = combat['outcome'] == 'win'
+    reward = dungeons.REWARD if won else 0
+    run = {'id': uuid.uuid4().hex, 'dungeon_id': key, 'date': day,
+           'boss_element': element, 'bonus_percent': bonus, 'coins_awarded': reward, **combat}
+    st['walk_energy'] = {'charges': energy['charges'] - 1, 'updated_at': energy['updated_at']}
+    st['coins'] = st.get('coins', 0) + reward
+    if won:
+        state['cleared'].append(key)
+    state['last_run'] = run
+    st['dungeons'] = state
+    save_state(st)
+    return out(True, '던전 탐험 완료.', dungeon_run=copy.deepcopy(run))
+
 
 def cmd_flee(st):
     if st.get("_wild") is None:
@@ -591,7 +631,7 @@ def cmd_rank():
     return out(True, "", ranking=ranks[:10])
 
 def cmd_help():
-    return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + ["status", "quests", "claimquest", "album", "titles", "rank", "help"])
+    return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + list(dungeons.COMMANDS) + ["status", "quests", "claimquest", "album", "titles", "rank", "help"])
 
 # ---------- main ----------
 ALIASES = {
@@ -603,7 +643,7 @@ ALIASES = {
     "도망": "flee",
     "퀘스트": "quests", "일일퀘스트": "quests", "퀘스트보상": "claimquest",
 }
-COMMANDS = set(G["commands"]) | {"status", "quests", "claimquest", "album", "titles", "rank", "help", "owner", "clearowner", "reset"}
+COMMANDS = set(G["commands"]) | set(dungeons.COMMANDS) | {"status", "quests", "claimquest", "album", "titles", "rank", "help", "owner", "clearowner", "reset"}
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
 READ_COMMANDS = frozenset({"status", "quests", "album", "titles", "rank", "help"})
 
@@ -627,7 +667,7 @@ def dispatch_player(actor_id, command, arguments):
         "album": lambda: cmd_album(st), "titles": lambda: cmd_titles(st),
         "quests": lambda: cmd_quests(st), "claimquest": lambda: cmd_claimquest(st),
     }
-    result = table[command]()
+    result = cmd_explore(st, dungeons.COMMANDS[command]) if command in dungeons.COMMANDS else table[command]()
     if result["ok"] and command in {item["command"] for item in G["daily_quest"]["requirements"]}:
         result["quest"] = daily_quest(st)
     return result

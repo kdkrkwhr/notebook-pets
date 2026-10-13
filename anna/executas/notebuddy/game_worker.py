@@ -12,7 +12,7 @@ import tempfile
 
 ALLOWED = frozenset({'start', 'status', 'feed', 'snack', 'play', 'sleep', 'train',
                      'walk', 'battle', 'flee', 'attendance', 'quests', 'claimquest',
-                     'album', 'titles', 'help'})
+                     'album', 'titles', 'help', 'explore_hellgate', 'explore_icekingdom', 'explore_dreamforest'})
 
 
 def run(payload):

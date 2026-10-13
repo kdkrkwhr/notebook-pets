@@ -14,6 +14,8 @@ LABELS = {
     '밥 주기': 'Feed', '훈련': 'Train', '산책': 'Walk',
 }
 ERRORS = {
+    'dungeon_locked': ('Discover this dungeon on a walk today first.', '산책으로 오늘의 던전을 먼저 발견해 주세요.'),
+    'dungeon_cleared': ('You already cleared this dungeon today. Discover it again tomorrow.', '오늘 이 던전의 보상을 이미 받았어요. 내일 다시 발견해 주세요.'),
     'walk_recharging': ('Walks are recharging: one every 5 minutes, up to 5.', '산책 횟수 충전 중이에요. 5분마다 1회, 최대 5회까지 충전돼요.'),
     'request_expired': ('This request is no longer current. It was not run again. Refresh and check your companion before choosing another action.', '이전 요청을 다시 실행하지 않았어요. 상태를 새로고침하고 친구를 확인한 뒤 다음 행동을 선택해 주세요.'),
     'save_capacity': ('This action was not saved because the game data is too large. Your previous progress is safe. Please contact support.', '게임 저장 용량이 커서 이번 행동을 저장하지 못했어요. 기존 진행도는 보존됩니다. 지원팀에 문의해 주세요.'),
@@ -71,6 +73,12 @@ def _message(value, command, language):
         # Never translate names or use a locale-dependent name in saved command arguments.
         name = (value.get('status') or {}).get('name', '')
         return f'{name}, 반가워요!' if index else f'Welcome, {name}!'
+    if command.startswith('explore_'):
+        run = value.get('dungeon_run', {})
+        coins = run.get('coins_awarded', 0)
+        if run.get('outcome') == 'win':
+            return f'던전 클리어! 코인 +{coins}' if index else f'Dungeon cleared! +{coins} coins'
+        return '보스를 넘지 못했어요. 산책 횟수 1개로 다시 도전할 수 있어요.' if index else 'The boss held its ground. Retry with one walk charge.'
     if command == 'walk':
         return {'quiet': ('A peaceful walk. Nothing unusual happened.', '별일 없이 느긋하게 산책했어요.'),
                 'xp': ('You discovered XP on your walk!', '산책 중 경험치를 발견했어요!'),
