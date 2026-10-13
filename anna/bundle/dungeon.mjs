@@ -26,7 +26,7 @@ export function createDungeons(h){
       if(!entry||remaining(entry)<=0){card.remove();continue;}
       card.querySelector('.dungeon-countdown').textContent=countdown(entry);
     }
-    $('#dungeon-section').hidden=!$('#dungeon-list').childElementCount&&!state.last_run&&!state.expedition?.id;
+    $('#dungeon-section').hidden=!$('#dungeon-list').childElementCount&&!state.expedition?.id;
     if(dialog.open){
       $('#dungeon-countdown').hidden=!!run;
       if(!run){
@@ -123,11 +123,10 @@ export function createDungeons(h){
   function render(){
     const view=h.view(),state=view?.status?.dungeons;
     const entries=state?.entries?.filter(entry=>entry.discovered&&DUNGEON_IDS.includes(entry.id)&&remaining(entry)>0)||[];
-    $('#dungeon-section').hidden=!entries.length&&!state?.last_run&&!state?.expedition?.id;
+    $('#dungeon-section').hidden=!entries.length&&!state?.expedition?.id;
     $('#dungeon-list').replaceChildren();
     if(!state)return;
     $('#dungeon-coins').textContent=tr('dungeonCoins',{coins:state.coins});
-    $('#dungeon-date').textContent=tr('dungeonDate',{date:state.date});
     for(const entry of entries){
       const card=document.createElement('button');card.type='button';card.className=`dungeon-card ${entry.id}`;card.dataset.dungeon=entry.id;card.disabled=h.locked();
       const canvas=document.createElement('canvas');canvas.setAttribute('aria-hidden','true');paintDungeon(canvas,entry.id);
@@ -137,7 +136,6 @@ export function createDungeons(h){
       card.append(canvas,name,status,timer);card.addEventListener('click',()=>state.expedition?.phase==='choice'?visit(state.expedition):preview(entry.id));$('#dungeon-list').append(card);
     }
     if(state.expedition?.phase==='choice'&&!entries.some(e=>e.id===state.expedition.dungeon_id)){const resume=document.createElement('button');resume.textContent=tr('dungeonContinuePaid');resume.disabled=h.locked();resume.onclick=()=>visit(state.expedition);$('#dungeon-list').append(resume);}
-    $('#dungeon-replay').hidden=!state.last_run;$('#dungeon-replay').disabled=h.locked();
     if(dialog.open&&!run){
       const entry=entries.find(value=>value.id===selected);if(!entry){updateTimers();return;}
       const favorable=entry.habitat_species.map(value=>tr('species_'+value)).join(' · ');
@@ -152,7 +150,6 @@ export function createDungeons(h){
   }
   for(const choice of ['safe','risk'])$('#dungeon-'+choice).addEventListener('click',()=>{if(run?.pending&&elapsed>=WALK_MS&&!h.locked())h.act('dungeon_'+choice,{choice_id:run.choice_id});});
   $('#dungeon-enter').addEventListener('click',()=>{const entry=h.view()?.status?.dungeons?.entries.find(e=>e.id===selected);if(artReady&&!h.locked()&&entry?.discovered&&!entry.cleared&&remaining(entry)>0)h.act(`explore_${selected}`);});
-  $('#dungeon-replay').addEventListener('click',()=>{if(!h.locked())show(h.view()?.status?.dungeons?.last_run);});
   $('#dungeon-skip').addEventListener('click',()=>finished?dialog.close():finish());
   $('#dungeon-fast').addEventListener('click',()=>{speed=speed===1?3:1;$('#dungeon-fast').textContent=tr(speed===1?'dungeonFast':'dungeonNormal');});
   $('#dungeon-pause').addEventListener('click',()=>{paused=!paused;$('#dungeon-pause').textContent=tr(paused?'dungeonResume':'dungeonPause');});

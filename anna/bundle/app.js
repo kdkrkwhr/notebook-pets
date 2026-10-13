@@ -1,5 +1,6 @@
+import {createStoryDialog} from './walk-story-dialog.mjs';
 import {createWalkStories,storyEvent} from './walk-stories.mjs';
-let stories;
+let stories,storyDialog;
 import {createArtworkEditor,artworkGrowthPrompt} from './birth-art.mjs';
 import {createBirthFlow} from './birth-flow.mjs';
 let birth,artEditor;
@@ -95,6 +96,7 @@ function renderWalkEnergy(){
 }
 setInterval(renderWalkEnergy,1000);
 function render(){
+  document.body.classList.toggle('has-pet',!!view?.status);
   const resetting=!!(view?.reset_pending||pendingResetRequest);
   $('#resetting').hidden=!resetting;
   if(resetting)forgetCachedData();
@@ -138,7 +140,7 @@ function render(){
 }
 function forgetCachedData(){
   pixels?.clear();pixelNotice='';dungeons?.close();$('#pixel-pet').removeAttribute('src');$('#pixel-pet').hidden=true;
-  birth?.clear();stories?.clear();
+  birth?.clear();stories?.clear();storyDialog?.clear();
   reactions?.clear();reactionFeedback();
   battleScene.close();
   history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
@@ -208,7 +210,7 @@ async function act(command,extra={},retry=false){
     else if(view.ok&&view.dungeon_run)dungeons.show(view.dungeon_run);
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;}
   finally{controls(false);}
-  if(walkStory)void stories.start(walkStory);
+  if(walkStory){storyDialog.begin();void stories.start(walkStory);}
   reactions.enqueue(reaction);
   if(started){
     await birth.started(view);
@@ -422,20 +424,8 @@ document.addEventListener('artwork-selected',()=>birth.selected());
 $('#replace-birth-source').addEventListener('click',()=>artEditor.open());
 $('#retry-birth').addEventListener('click',()=>birth.run());
 $('#default-birth').addEventListener('click',()=>birth.fallback());
-stories=createWalkStories({anna:()=>anna,active:assertActive,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),render:({current,working,feedback})=>{
-  const panel=$('#walk-story');panel.hidden=!view?.status||(!current&&!working&&!feedback);
-  const done=current?.state==='done';
-  text('#story-heading',current?.story.title||tr('storyHeading'));
-  text('#story-scene',current?.story.scene||'');
-  text('#story-status',feedback?tr(feedback):working?tr('storyWorking'):current?.fallback?tr('storyFallback'):'');
-  $('#story-choices').replaceChildren();
-  if(current&&!done&&!working)current.story.choices.forEach((choice,index)=>{
-    const button=document.createElement('button');button.type='button';button.className='quiet';button.textContent=choice.label;button.disabled=busy||!!(pendingAction||pendingRemoval||pendingResetRequest);button.addEventListener('click',()=>stories.choose(index));$('#story-choices').append(button);
-  });
-  text('#story-ending',done?`${current.story.choices[current.choice].label} — ${current.story.choices[current.choice].ending}`:'');$('#story-ending').hidden=!done;
-  if(working||current&&!done)$('[data-action="walk"]').disabled=true;
-  else if(!busy&&!pendingAction&&!pendingRemoval&&!pendingResetRequest&&view?.status)$('[data-action="walk"]').disabled=false;
-}});
+storyDialog=createStoryDialog({document,view:()=>view,tr,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),choose:index=>stories.choose(index)});
+stories=createWalkStories({anna:()=>anna,active:assertActive,locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),render:state=>storyDialog.render(state)});
 pixels=createPixelPet({anna:()=>anna,art:()=>art,assertActive,upload:uploadPortrait,
   saved:value=>{art=value;},message:key=>{pixelNotice=key;renderPixel();}});
 dungeons=createDungeons({document,view:()=>view,language:()=>language,

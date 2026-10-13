@@ -27,6 +27,8 @@ async function setup(t,faults={}){
   try{await route.fulfill({body:await readFile(new URL(file,bundle)),contentType:file.endsWith('.js')||file.endsWith('.mjs')?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.png')?'image/png':file.endsWith('.svg')?'image/svg+xml':'text/html'});}catch{await route.fulfill({status:404,body:''});}
  });
  await page.addInitScript(f=>{if(!sessionStorage.getItem('test-initialized')){sessionStorage.setItem('test-initialized','1');sessionStorage.setItem('test-faults',JSON.stringify(f));}},faults);
+ // Keep incidental quiet walks story-free; quietStoryWalk explicitly selects an eligible receipt.
+ await page.addInitScript(()=>{const original=crypto.randomUUID.bind(crypto);crypto.randomUUID=()=>{for(let i=0;i<100;i++){const id=original();let hash=0;for(const c of `nb2:${window.hostTest?.state.sequence||0}:${id}`)hash=(Math.imul(hash,31)+c.charCodeAt(0))|0;if(hash&1)return id;}return original();};});
  if(faults.clock)await page.clock.install();
  await page.goto('https://notebuddy.test');if(faults.appLoad)await page.waitForFunction(()=>!document.querySelector('#notice').hidden);else await idle(page);
  t.after(()=>assert.deepEqual(errors,[],'No uncaught browser errors'));
@@ -83,7 +85,7 @@ test('undiscovered dungeons stay hidden through care, missed walks and reload',a
  await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon]').count(),1);
 });
 
-test('dungeon discovery, automatic movement, skip and reopened replay keep one result',async t=>{
+test('dungeon completion saves results without adding a history panel',async t=>{
  const p=await setup(t,{walkOutcome:'quiet'});await start(p);await p.locator('[data-action="walk"]').click();await idle(p);
  await p.locator('[data-dungeon="hellgate"]').click();await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.art==='ready');assert.equal(await p.locator('#dungeon-enter').isEnabled(),true);
  const size=await p.evaluate(()=>{const d=document.querySelector('#dungeon-dialog').getBoundingClientRect(),m=document.querySelector('#dungeon-map').getBoundingClientRect();return {width:d.width,height:d.height,map:m.width,vw:innerWidth,vh:innerHeight};});
@@ -95,9 +97,8 @@ test('dungeon discovery, automatic movement, skip and reopened replay keep one r
  await p.locator('#dungeon-skip').click();assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
  await p.locator('#dungeon-skip').click();assert.equal((await calls(p,'explore_hellgate')).length,1);
  await p.reload();await idle(p);assert.match(await p.locator('#dungeon-coins').innerText(),/10/);
- await p.locator('#dungeon-replay').click();await p.locator('#dungeon-skip').click();
+ assert.equal(await p.locator('#dungeon-replay').count(),0);assert.equal(await p.locator('#dungeon-section').isVisible(),false);
  assert.equal((await calls(p,'explore_hellgate')).length,0);
- assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
 });
 
 test('dungeon camera follows the route into combat and completes without another action',async t=>{
@@ -119,7 +120,6 @@ test('dungeon camera follows the route into combat and completes without another
  assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
  assert.equal((await calls(p,'explore_hellgate')).length,1);assert.equal((await calls(p,'image')).length,0);
  assert.equal(await p.locator('#dungeon-boss-hp').evaluate(e=>e.value),0);
- if(process.env.ANNA_RPG_CAPTURE){await p.setViewportSize({width:360,height:780});await p.locator('#dungeon-close').click();await p.locator('#dungeon-replay').click();await p.locator('#dungeon-fast').click();await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.phase==='battle');await p.locator('#dungeon-dialog').screenshot({path:process.env.ANNA_RPG_CAPTURE+'-mobile.png'});}
 });
 
 test('unavailable dungeon art blocks entry without spending a charge',async t=>{
@@ -130,7 +130,7 @@ test('unavailable dungeon art blocks entry without spending a charge',async t=>{
  assert.equal((await calls(p,'explore_hellgate')).length,0);
 });
 
-test('dungeon countdown expires while open and saved replay survives expiry',async t=>{
+test('dungeon countdown expires and old saved results do not expose an expired entry',async t=>{
  const p=await setup(t);await start(p);await p.locator('[data-action="walk"]').click();await idle(p);
  await p.locator('[data-action="flee"]').click();await idle(p);
  await p.evaluate(()=>{window.hostTest.state.save.status.dungeons.entries[0].expires_at=Date.now()/1000+4;});
@@ -148,9 +148,7 @@ test('dungeon countdown expires while open and saved replay survives expiry',asy
  await p.locator('#dungeon-close').click();
  await p.evaluate(()=>{window.hostTest.state.save.status.dungeons.entries[0].expires_at=Date.now()/1000-1;});
  await p.locator('#refresh').click();await idle(p);assert.equal(await p.locator('[data-dungeon]').count(),0);
- await p.locator('#dungeon-replay').click();assert.equal(await p.locator('#dungeon-dialog').isVisible(),true);
- assert.equal(await p.locator('#dungeon-countdown').isVisible(),false);
- await p.locator('#dungeon-skip').click();assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
+ assert.equal(await p.locator('#dungeon-replay').count(),0);assert.equal(await p.locator('#dungeon-section').isVisible(),false);
  assert.equal((await calls(p,'explore_hellgate')).length,1);
 });
 
@@ -167,7 +165,7 @@ test('an open dungeon blocks new discoveries until a clear; closing or losing ke
  assert.deepEqual(await p.locator('[data-dungeon]').evaluateAll(es=>es.map(e=>e.dataset.dungeon)),['hellgate']);
  await fault(p,{dungeonLose:false});await p.locator('[data-dungeon="hellgate"]').click();await p.locator('#dungeon-enter').click();await idle(p);
  await p.locator('#dungeon-close').click();assert.equal(await p.locator('[data-dungeon]').count(),0);
- assert.equal(await p.locator('#dungeon-replay').isVisible(),true);
+ assert.equal(await p.locator('#dungeon-replay').count(),0);
  await walk();
  assert.deepEqual(await p.locator('[data-dungeon]').evaluateAll(es=>es.map(e=>e.dataset.dungeon)),['icekingdom']);
  await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),0);
@@ -727,20 +725,20 @@ async function quietStoryWalk(p){
  await p.locator('[data-action="walk"]').click();
  await p.waitForFunction(()=>document.querySelector('#story-choices button'));
 }
-test('AI walk story offers two choices, saves ending and reopens without another request',async t=>{
+test('AI walk dialog saves its ending and completed stories stay off the home screen',async t=>{
  const p=await setup(t);await start(p);await quietStoryWalk(p);
  assert.equal(await p.locator('#story-choices button').count(),2);
  assert.equal(await p.locator('[data-action="walk"]').isDisabled(),true);
  const xp=await p.locator('#xp-label').innerText();
  await p.locator('#story-choices button').first().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
  assert.equal(await p.locator('#xp-label').innerText(),xp);assert.equal((await calls(p,'walk')).length,1);assert.equal((await calls(p,'llm')).length,1);
- await p.reload();await idle(p);assert.equal(await p.locator('#story-ending').isVisible(),true);assert.equal((await calls(p,'llm')).length,0);
+ await p.locator('#story-done').click();await p.reload();await idle(p);assert.equal(await p.locator('#walk-story').isVisible(),false);assert.equal(await p.locator('#story-resume').isVisible(),false);assert.equal((await calls(p,'llm')).length,0);
 });
 test('walk story AI failure has a playable fallback; reset clears it',async t=>{
  const p=await setup(t,{llm:true});await start(p);await quietStoryWalk(p);
  assert.match(await p.locator('#story-status').innerText(),/prepared story/);
  await p.locator('#story-choices button').last().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
- await resetDialog(p);await confirmReset(p);
+ await p.locator('#story-done').click();await resetDialog(p);await confirmReset(p);
  assert.deepEqual(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/walk-story-v1']),{});
  assert.equal(await p.locator('#walk-story').isVisible(),false);
 });
@@ -763,7 +761,7 @@ test('ambiguous classification waits for confirmation; cancel never creates a pe
 });
 
 
-test('six-room expedition visits distinct rooms, pauses and replays without spending again',async t=>{
+test('legacy six-room result visits distinct rooms and pauses without spending again',async t=>{
  const p=await setup(t,{walkOutcome:'quiet',multiRooms:true});await start(p);
  await p.locator('[data-action="walk"]').click();await idle(p);
  await p.locator('[data-dungeon="hellgate"]').click();await p.locator('#dungeon-enter').click();await idle(p);
@@ -781,8 +779,7 @@ test('six-room expedition visits distinct rooms, pauses and replays without spen
  assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
  assert.equal((await calls(p,'explore_hellgate')).length,1);
  await p.locator('#dungeon-close').click();await p.reload();await idle(p);
- await p.locator('#dungeon-replay').click();await p.locator('#dungeon-skip').click();
- assert.match(await p.locator('#dungeon-room').innerText(),/6 \/ 6/);
+ assert.equal(await p.locator('#dungeon-section').isVisible(),false);assert.equal(await p.locator('#dungeon-replay').count(),0);
  assert.equal((await calls(p,'explore_hellgate')).length,0);
  assert.equal((await calls(p,'image')).length,0);
 });
@@ -833,4 +830,30 @@ test('enemy silhouettes are distinct in monochrome and animate independently of 
  });
  assert.equal(new Set(result.map(r=>r.frames[0])).size,4);
  for(const r of result)assert.notEqual(r.frames[0],r.frames[1],r.kind+' animates');
+});
+
+test('walk modal closes with Escape, resumes without AI or XP, and restores a pending choice after reload',async t=>{
+ const p=await setup(t);await start(p);await quietStoryWalk(p);
+ assert.equal(await p.locator('#walk-story').evaluate(e=>e.tagName),'DIALOG');
+ assert.equal(await p.locator('#walk-story').isVisible(),true);
+ const xp=await p.locator('#xp-label').innerText();
+ await p.keyboard.press('Escape');assert.equal(await p.locator('#walk-story').isVisible(),false);
+ assert.equal(await p.locator('#story-resume').isVisible(),true);
+ await p.locator('#story-resume').click();assert.equal(await p.locator('#walk-story').isVisible(),true);
+ assert.equal((await calls(p,'llm')).length,1);assert.equal((await calls(p,'walk')).length,1);
+ await p.reload();await idle(p);assert.equal(await p.locator('#walk-story').isVisible(),true);
+ assert.equal((await calls(p,'llm')).length,0);assert.equal((await calls(p,'walk')).length,0);
+ await p.setViewportSize({width:360,height:780});
+ const size=await p.locator('#walk-story').boundingBox();assert.ok(size.width<=360&&size.height<=780);
+ await p.locator('#story-choices button').first().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ assert.equal(await p.locator('#xp-label').innerText(),xp);
+ await p.locator('#story-done').click();assert.equal(await p.locator('#story-resume').isVisible(),false);
+});
+
+test('mobile puts care before chat and keeps completed adventure history off the home screen',async t=>{
+ const p=await setup(t);await start(p);await p.setViewportSize({width:360,height:780});
+ const order=await p.evaluate(()=>['.pet-card','.care-card','.chat-card'].map(s=>document.querySelector(s).getBoundingClientRect().top));
+ assert.ok(order[0]<order[1]&&order[1]<order[2]);assert.equal(await p.locator('#dungeon-replay').count(),0);
+ assert.equal(await p.locator('#dungeon-section').isVisible(),false);assert.equal(await p.locator('#walk-story').isVisible(),false);
+ const width=await p.evaluate(()=>({client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));assert.ok(width.scroll<=width.client);
 });
