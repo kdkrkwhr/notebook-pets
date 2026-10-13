@@ -4,15 +4,17 @@
 
 One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. The review candidate is app **0.3.4**, game tool **0.1.15**, with status **pending_review**. On 2026-10-12, its listing and privacy link were updated and review was requested again. See the [submission record](RELEASE_034.md); approval and publication are still pending.
 
-## Next candidate: pixel dungeons
+## Test app: connected dungeon rooms
 
-Source candidate **0.4.0 / tool 0.2.0** adds Hellgate, Ice Kingdom and Dream Forest. Discover them on walks, enter with one charge, watch automatic exploration and a boss battle, and collect 10 coins per daily first clear. Coins have no shop yet. A 64×64 pixel version is locally prepared at birth and after a newly saved portrait, with a preparation button for existing companions; no additional AI request is made. See [scope and rules](DUNGEONS.md). Source implementation is separate from Anna deployment and review.
+Installed test app **0.5.0 / tool 0.3.0** includes Hellgate, Ice Kingdom and Dream Forest. Walks can discover one unfinished dungeon at a time, open for 24 hours. Entry costs one walk charge for a 3–6 room expedition. Meet different enemies, carry HP between rooms, recover at sanctuaries in longer layouts, and clear the final guardian for 10 coins per region per Korea calendar day. Movement follows the visible corridors and gates. Pause, 3x playback, skip and saved replay do not change rewards.
+
+Four-direction animated pixel avatars use species anatomy and portrait colors, without an additional AI call. They simplify the original appearance and do not reproduce every custom detail. Original portraits and stored 64×64 images are preserved. Existing single-boss expeditions remain replayable as one room; new entries use multiple rooms. See [rules](DUNGEONS.md) and the [verified deployment record](RELEASE_050.md). The public review candidate remains 0.3.4.
 
 ## Walk stories
 
 Some peaceful walks open a short AI episode with two choices. One request generates both endings; selection adds no AI usage, XP or items. Finish the current episode before another walk. Reopening restores the latest choice without generating again. AI failure uses a prepared story. Stories are part of reset/removal. New stories use Anna allowance.
 
-## Create from a drawing or photo (local 0.3.5 candidate)
+## Create from a drawing or photo
 
 Choose a random companion or **From a drawing or photo**. Draw on the canvas or select a PNG, JPEG or WebP file (up to 12 MiB and 16 megapixels, at least 32 pixels per side). Your device resizes the longest side to at most 1024 pixels and re-encodes the image as PNG without original metadata. Selection and preview do not call AI. See the [work and deployment record](RELEASE_035.md). **Meet** starts an AI image check that infers species from body shape and element from visible colors or motifs, followed by baby portrait generation. Only the element is random when cues are absent; uncertain species interpretations require confirmation. Original silhouette, limb count, face and markings take priority over generic anatomy, including later redraws and growth portraits. Both steps use Anna allowance. A failed generation can be retried for the same companion.
 
