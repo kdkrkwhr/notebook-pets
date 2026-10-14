@@ -71,5 +71,6 @@
 - 착용 조합을 바꾸는 것만으로 AI를 호출하지 않는다. 사용자가 ‘새 모습 만들기’를 요청할 때 생성한다.
 - 원본 캐릭터의 실루엣·팔다리·얼굴·색·무늬를 우선하고 현재 성장 단계, 아바타 순으로 반영한다.
 - 2026-10-12 Anna 참조 이미지 편집 테스트는 제공자 오류로 실패했다. 특징 분석 후 새로 생성하는 현재 흐름과 직접 이미지 편집의 지원 여부는 별개다. 원본을 유지하는 아바타 편집은 지원 경로 재검증과 시각 검토가 필요하다.
+- 2026-10-14 확인: [이미지 입력 답변](https://forum.anna.partners/t/developer-feedback-image-inputs-to-llm-complete-may-not-be-reaching-the-model-and-the-documentation-is-less-explicit-than-for-agent-session/322/2)은 `llm.complete` 등의 이미지 블록 누락과 host `1.1.0-beta.169` 수정 안내다. 현재 `checkArtwork`의 이미지 블록 형식은 안내와 일치한다. `image.edit`의 제공자 경로가 고쳐졌다는 근거는 아니며, [별도 편집 오류 문의](https://forum.anna.partners/t/image-edit-fails-with-provider-errors-readerror-and-fal-ai-image-to-image-404/400)에는 확인한 시점에 답변이 없다. 이번 확인에서는 추가 유료 편집 요청을 하지 않았다.
 
 던전 기획의 최초 원본은 사용자가 제공한 `DUNGEON_AVATAR_SPEC.md`다. 기존 예시 던전 3종을 이번에 합의한 지옥문·얼음왕국·몽환의 숲으로 대체하고, 이 문서를 현재 콘셉트와 순서의 기준으로 사용한다.
