@@ -28,27 +28,31 @@ export function clearWhiteBorder(data,width,height){
   return data;
 }
 
+export function pixelCanvas(bitmap){
+  if(!bitmap.width||!bitmap.height||bitmap.width*bitmap.height>16000000)throw Error('Invalid portrait dimensions');
+  const source=document.createElement('canvas');
+  const scale=Math.min(1,256/Math.max(bitmap.width,bitmap.height));
+  source.width=Math.max(1,Math.round(bitmap.width*scale));source.height=Math.max(1,Math.round(bitmap.height*scale));
+  const ctx=source.getContext('2d',{willReadFrequently:true});ctx.drawImage(bitmap,0,0,source.width,source.height);
+  const frame=ctx.getImageData(0,0,source.width,source.height);clearWhiteBorder(frame.data,source.width,source.height);ctx.putImageData(frame,0,0);
+  let left=source.width,top=source.height,right=-1,bottom=-1;
+  for(let y=0;y<source.height;y++)for(let x=0;x<source.width;x++)if(frame.data[(y*source.width+x)*4+3]>32){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}
+  if(right<left)throw Error('Empty portrait');
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=PIXEL_SIZE;
+  const output=canvas.getContext('2d');
+  const width=right-left+1,height=bottom-top+1,ratio=(PIXEL_SIZE-8)/Math.max(width,height);
+  const w=Math.max(1,Math.round(width*ratio)),h=Math.max(1,Math.round(height*ratio));
+  output.imageSmoothingEnabled=false;
+  output.drawImage(source,left,top,width,height,Math.floor((PIXEL_SIZE-w)/2),PIXEL_SIZE-4-h,w,h);
+  const pixels=output.getImageData(0,0,PIXEL_SIZE,PIXEL_SIZE);
+  for(let i=0;i<pixels.data.length;i+=4){for(let c=0;c<3;c++)pixels.data[i+c]=Math.round(pixels.data[i+c]/17)*17;pixels.data[i+3]=pixels.data[i+3]<96?0:255;}
+  output.putImageData(pixels,0,0);
+  return canvas;
+}
 export async function pixelatePortrait(blob){
   const bitmap=await createImageBitmap(blob);
   try{
-    if(!bitmap.width||!bitmap.height||bitmap.width*bitmap.height>16000000)throw Error('Invalid portrait dimensions');
-    const source=document.createElement('canvas');
-    const scale=Math.min(1,256/Math.max(bitmap.width,bitmap.height));
-    source.width=Math.max(1,Math.round(bitmap.width*scale));source.height=Math.max(1,Math.round(bitmap.height*scale));
-    const ctx=source.getContext('2d',{willReadFrequently:true});ctx.drawImage(bitmap,0,0,source.width,source.height);
-    const frame=ctx.getImageData(0,0,source.width,source.height);clearWhiteBorder(frame.data,source.width,source.height);ctx.putImageData(frame,0,0);
-    let left=source.width,top=source.height,right=-1,bottom=-1;
-    for(let y=0;y<source.height;y++)for(let x=0;x<source.width;x++)if(frame.data[(y*source.width+x)*4+3]>32){left=Math.min(left,x);right=Math.max(right,x);top=Math.min(top,y);bottom=Math.max(bottom,y);}
-    if(right<left)throw Error('Empty portrait');
-    const canvas=document.createElement('canvas');canvas.width=canvas.height=PIXEL_SIZE;
-    const output=canvas.getContext('2d');
-    const width=right-left+1,height=bottom-top+1,ratio=(PIXEL_SIZE-8)/Math.max(width,height);
-    const w=Math.max(1,Math.round(width*ratio)),h=Math.max(1,Math.round(height*ratio));
-    output.imageSmoothingEnabled=false;
-    output.drawImage(source,left,top,width,height,Math.floor((PIXEL_SIZE-w)/2),PIXEL_SIZE-4-h,w,h);
-    const pixels=output.getImageData(0,0,PIXEL_SIZE,PIXEL_SIZE);
-    for(let i=0;i<pixels.data.length;i+=4){for(let c=0;c<3;c++)pixels.data[i+c]=Math.round(pixels.data[i+c]/17)*17;pixels.data[i+3]=pixels.data[i+3]<96?0:255;}
-    output.putImageData(pixels,0,0);
+    const canvas=pixelCanvas(bitmap);
     return await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(Error('Pixel conversion failed')),'image/png'));
   }finally{bitmap.close();}
 }

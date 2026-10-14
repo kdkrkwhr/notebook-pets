@@ -38,8 +38,7 @@ export function createDungeons(h){
   }
   const stop=()=>{if(raf!==null)cancelAnimationFrame(raf);raf=null;$('#dungeon-explorer').classList.remove('walking');};
   function portrait(){
-    const img=$('#dungeon-explorer');img.crossOrigin='anonymous';img.src=h.pixelUrl()||h.portraitUrl();img.alt=h.view()?.status?.name||'';
-    img.onerror=()=>{img.onerror=null;img.src=h.portraitUrl();};
+    const img=$('#dungeon-explorer');img.crossOrigin='anonymous';img.onerror=null;img.src=h.pixelUrl()||h.portraitUrl();img.alt=h.view()?.status?.name||'';
   }
   function health(frame){
     if(!run)return;
@@ -98,7 +97,7 @@ export function createDungeons(h){
     const ticket=++previewTicket;
     stop();selected=key;run=saved;finished=false;elapsed=0;ambient=0;artReady=false;paused=false;
     portrait();
-    void scene.load(key,{species:h.view()?.species_key}).then(ok=>{if(ticket!==previewTicket||!dialog.open)return;artReady=ok;if(!ok){stop();$('#dungeon-phase').textContent=tr('dungeonArtFailed');}render();scene.draw({elapsed,run,finished,reduced:reduced()});});
+    void scene.load(key,{fallback:h.portraitUrl()}).then(ok=>{if(ticket!==previewTicket||!dialog.open)return;artReady=ok;if(!ok){stop();$('#dungeon-phase').textContent=tr('dungeonArtFailed');}render();scene.draw({elapsed,run,finished,reduced:reduced()});});
     $('#dungeon-heading').textContent=tr(`dungeon_${key}`);
     $('#dungeon-boss-name').textContent=tr(`boss_${key}`);
     $('#dungeon-phase').textContent=tr(`dungeonScene_${key}`);
@@ -154,9 +153,10 @@ export function createDungeons(h){
   $('#dungeon-fast').addEventListener('click',()=>{speed=speed===1?3:1;$('#dungeon-fast').textContent=tr(speed===1?'dungeonFast':'dungeonNormal');});
   $('#dungeon-pause').addEventListener('click',()=>{paused=!paused;$('#dungeon-pause').textContent=tr(paused?'dungeonResume':'dungeonPause');});
   $('#dungeon-close').addEventListener('click',()=>dialog.close());
-  dialog.addEventListener('close',stop);dialog.addEventListener('cancel',stop);
+  const closeScene=()=>{stop();++previewTicket;artReady=false;scene.clear();};
+  dialog.addEventListener('close',closeScene);dialog.addEventListener('cancel',closeScene);
   document.defaultView.setInterval(updateTimers,1000);
   document.addEventListener('visibilitychange',updateTimers);
   document.defaultView.addEventListener('resize',()=>{if(dialog.open)scene.draw({elapsed:run?elapsed:ambient,run,finished,reduced:reduced()});});
-  return {render,show,visit,close(){stop();dialog.close();selected=null;run=null;}};
+  return {render,show,visit,close(){closeScene();dialog.close();selected=null;run=null;}};
 }

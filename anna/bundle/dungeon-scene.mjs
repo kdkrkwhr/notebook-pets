@@ -1,6 +1,7 @@
 import {WORLD,THEMES,layout,worldPoint,routePoint,paintRoom} from './dungeon-map.mjs';
 import {drawEnemy} from './dungeon-enemies.mjs';
-import {drawAvatar,facing,portraitPalette} from './dungeon-avatar.mjs';
+import {drawAvatar,facing} from './dungeon-avatar.mjs';
+import {pixelCanvas} from './pixel-pet.mjs';
 import {journey,WALK_MS,ROUND_MS,EXIT_MS,REST_MS,totalDuration} from './dungeon-journey.mjs';
 export {WORLD,WALK_MS,ROUND_MS};
 export const routePosition=progress=>routePoint(progress);
@@ -16,7 +17,14 @@ export function paintDungeon(canvas,key){
  asset(key).then(img=>{if(canvas.isConnected){c.drawImage(img,110,230,1340,754,0,0,480,270);canvas.dataset.art='ready';}}).catch(()=>{canvas.dataset.art='failed';});
 }
 export function createDungeonScene(canvas,explorer){
- const c=canvas.getContext('2d');let key='hellgate',atlas=null,ready=false,generation=0,species='monster',palette,source='',terrain=null,terrainKey='';
+ const c=canvas.getContext('2d');let key='hellgate',atlas=null,ready=false,generation=0,portrait=null,terrain=null,terrainKey='';
+ async function loadPortrait(sources){
+  for(const src of new Set(sources.filter(Boolean))){
+   try{const img=new Image();img.crossOrigin='anonymous';img.src=src;await img.decode();return pixelCanvas(img);}
+   catch{/* Try only another image of this same companion. */}
+  }
+  throw Error('Companion portrait unavailable');
+ }
  const ellipse=(x,y,rx,ry,color)=>{c.fillStyle=color;c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fill();};
  function enemy(kind,x,y,beat,active,dead,reduced,direction,elapsed){
   c.save();if(dead)c.globalAlpha=.2;ellipse(x,y,28,10,'#0008');
@@ -29,15 +37,16 @@ export function createDungeonScene(canvas,explorer){
  }
  return {
   async load(region,identity={}){
-   const ticket=++generation;ready=false;key=region;species=identity.species||'monster';explorer.hidden=true;canvas.dataset.art='loading';
-   try{const original=await asset('guardians');atlas=document.createElement('canvas');atlas.width=252;atlas.height=168;atlas.getContext('2d').drawImage(original,0,0,252,168);if(ticket!==generation)return false;ready=true;canvas.dataset.art='ready';return true;}
+   const ticket=++generation;ready=false;portrait=null;key=region;explorer.hidden=true;canvas.dataset.art='loading';c.clearRect(0,0,canvas.width,canvas.height);
+   const sources=[explorer.src,identity.fallback];
+   try{const [original,currentPortrait]=await Promise.all([asset('guardians'),loadPortrait(sources)]);if(ticket!==generation)return false;atlas=document.createElement('canvas');atlas.width=252;atlas.height=168;atlas.getContext('2d').drawImage(original,0,0,252,168);portrait=currentPortrait;ready=true;canvas.dataset.art='ready';return true;}
    catch{if(ticket===generation)canvas.dataset.art='failed';return false;}
   },
+  clear(){++generation;ready=false;portrait=null;explorer.removeAttribute('src');c.clearRect(0,0,canvas.width,canvas.height);canvas.dataset.art='empty';},
   draw({elapsed=0,run=null,finished=false,reduced=false}={}){
    if(!ready)return;
-   // Keep the source portrait as an accessible identity reference, draw the animated rig on canvas.
+   // The decoded portrait belongs to this load only; late/failed loads cannot reuse another pet.
    explorer.hidden=true;
-   if(explorer.complete&&explorer.naturalWidth&&source!==explorer.src){palette=portraitPalette(explorer);source=explorer.src;}
    const width=Math.max(1,Math.round(canvas.clientWidth)),height=Math.max(1,Math.round(canvas.clientHeight));if(canvas.width!==width||canvas.height!==height){canvas.width=width;canvas.height=height;}
    const state=run?journey(run,finished?totalDuration(run):elapsed,finished):{room:{kind:'battle',enemy:'slime'},index:0,total:3,phase:'preview',time:0,beat:0};
    const {room,index,phase,time,beat}=state,exit=phase==='exit',progress=exit?(time-WALK_MS-(room.kind==='rest'?REST_MS:room.combat.turns.length*ROUND_MS))/EXIT_MS:phase==='travel'?time/WALK_MS:phase==='preview'?0:1;
@@ -57,7 +66,7 @@ export function createDungeonScene(canvas,explorer){
    let hx=hero[0],hy=hero[1];if(impact&&state.frame?.dodged_me&&!reduced)hy+=Math.sin((beat-.45)/.21*Math.PI)*25;
    ellipse(hx,hy+2,20,8,'#0008');
    const frame=walking&&!reduced?Math.floor(elapsed/140)%4:0;
-   drawAvatar(c,hx,hy,{species,palette,direction,frame,scale:2.1,hit:impact&&!state.frame?.dodged_me,fallen:finished&&run?.hp_me<=0});
+   drawAvatar(c,hx,hy,{portrait,direction,frame,scale:2.1,hit:impact&&!state.frame?.dodged_me,fallen:finished&&run?.hp_me<=0});
    if(battle&&beat>.65&&beat<.9){c.strokeStyle='#ffedbd';c.lineWidth=4;c.beginPath();c.moveTo(hx+12,hy-35);c.lineTo(boss[0]-10,boss[1]-25);c.stroke();}
    if(battle&&beat>.55){
     const prev=state.turn?room.combat.turns[state.turn-1]:{hp_me:room.start_hp,hp_enemy:room.combat.max_hp_enemy};

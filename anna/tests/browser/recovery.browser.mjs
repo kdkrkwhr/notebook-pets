@@ -793,14 +793,66 @@ test('legacy six-room result visits distinct rooms and pauses without spending a
  assert.equal((await calls(p,'image')).length,0);
 });
 
-test('directional avatar has distinct front back and side frames, with no new AI call',async t=>{
+test('dungeon avatar preserves distinct silhouettes with the same colors and animates without AI',async t=>{
  const p=await setup(t);await start(p);
  const result=await p.evaluate(async()=>{
   const {drawAvatar}=await import('./dungeon-avatar.mjs');
   const canvas=document.createElement('canvas');canvas.width=canvas.height=96;const c=canvas.getContext('2d');
-  return ['up','down','left','right'].map(direction=>{c.clearRect(0,0,96,96);drawAvatar(c,48,82,{species:'dragon',direction,frame:1});return canvas.toDataURL();});
+  const portrait=document.createElement('canvas');portrait.width=portrait.height=64;const a=portrait.getContext('2d');
+  a.fillStyle='#af4e80';a.fillRect(8,8,24,48);a.fillStyle='#ffe7a0';a.fillRect(9,12,4,4);
+  const draw=(direction,frame)=>{c.clearRect(0,0,96,96);drawAvatar(c,48,90,{portrait,direction,frame});return canvas.toDataURL();};
+  const first=draw('down',0),step=draw('down',1),left=draw('left',0),right=draw('right',0);
+  a.clearRect(0,0,64,64);a.fillStyle='#af4e80';a.fillRect(8,32,48,24);a.fillStyle='#ffe7a0';a.fillRect(9,36,4,4);
+  return {first,second:draw('down',0),step,left,right};
  });
- assert.equal(new Set(result).size,4);assert.equal((await calls(p,'image')).length,0);
+ assert.notEqual(result.first,result.second);assert.notEqual(result.first,result.step);assert.notEqual(result.left,result.right);
+ assert.equal((await calls(p,'image')).length,0);
+});
+
+test('dungeon scene discards late, failed and cleared portrait loads instead of reusing the last companion',async t=>{
+ const p=await setup(t);
+ const result=await p.evaluate(async()=>{
+  const {createDungeonScene}=await import('./dungeon-scene.mjs');
+  const c=document.createElement('canvas');c.style.width='800px';c.style.height='500px';document.body.append(c);
+  const img=new Image(),scene=createDungeonScene(c,img),art=document.createElement('canvas');art.width=art.height=64;
+  const a=art.getContext('2d');a.fillStyle='#bb4080';a.fillRect(8,8,24,48);const first=art.toDataURL();
+  a.clearRect(0,0,64,64);a.fillStyle='#bb4080';a.fillRect(8,32,48,24);const second=art.toDataURL();
+  img.src=second;await scene.load('hellgate');scene.draw();const expected=c.toDataURL();
+  const decode=Image.prototype.decode;let release,entered;const waiting=new Promise(r=>entered=r);
+  Image.prototype.decode=async function(){if(this.src===first){entered();await new Promise(r=>release=r);}return decode.call(this);};
+  try{
+   img.src=first;const older=scene.load('hellgate');await waiting;
+   const blank=()=>!c.getContext('2d').getImageData(0,0,c.width,c.height).data.some((v,i)=>i%4===3&&v);
+   scene.draw();const blankDuringLoad=blank();
+   img.src=second;await scene.load('hellgate');scene.draw();release();const ignored=await older;scene.draw();const afterLate=c.toDataURL();
+   img.src='data:image/png;base64,invalid';const fallback=await scene.load('hellgate',{fallback:second});scene.draw();const afterFallback=c.toDataURL();
+   const failed=await scene.load('hellgate');scene.draw();const blankAfterFailure=blank();
+   img.src=first;const pending=scene.load('hellgate');await Promise.resolve();scene.clear();release();const cleared=await pending;scene.draw();
+   return {expected,afterLate,afterFallback,ignored,fallback,failed,cleared,blankDuringLoad,blankAfterFailure,blankAfterClear:blank()};
+  }finally{Image.prototype.decode=decode;c.remove();}
+ });
+ assert.equal(result.afterLate,result.expected);assert.equal(result.afterFallback,result.expected);
+ assert.equal(result.fallback,true);assert.equal(result.ignored,false);assert.equal(result.failed,false);assert.equal(result.cleared,false);
+ assert.ok(result.blankDuringLoad&&result.blankAfterFailure&&result.blankAfterClear);
+});
+
+test('changing companion or portrait refreshes the dungeon silhouette without gameplay or AI calls',async t=>{
+ const p=await setup(t,{walkOutcome:'quiet'});await start(p);await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
+ await p.emulateMedia({reducedMotion:'reduce'});
+ const assignPortrait=async(changed,wide)=>p.evaluate(({changed,wide})=>{
+  const h=window.hostTest;if(changed){h.state.save.pet_id='replacement';h.state.save.status.name='New companion';}
+  const canvas=document.createElement('canvas');canvas.width=canvas.height=64;const c=canvas.getContext('2d');c.fillStyle='#b1478c';c.fillRect(8,wide?32:8,wide?48:24,wide?24:48);
+  const owner=h.state.save.pet_id,source=`portraits/${owner}/${wide?'wide':'tall'}.png`,pixel=`portraits/${owner}/pixel-${wide?'wide':'tall'}.png`;
+  h.faults.portraits={...h.faults.portraits,[source]:canvas.toDataURL(),[pixel]:canvas.toDataURL()};
+  h.state.kv['notebuddy/art-v1']={...h.state.kv['notebuddy/art-v1'],[`${owner}/stage-1`]:{path:source},[`${owner}/pixel-stage-1`]:{path:pixel,format:'pixel-v1',source_path:source}};
+ },{changed,wide});
+ const preview=async()=>{await p.locator('#refresh').click();await idle(p);await p.locator('[data-dungeon="hellgate"]').click();await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.art==='ready');return p.locator('#dungeon-map').evaluate(c=>c.toDataURL());};
+ await assignPortrait(false,false);const first=await preview();await p.locator('#dungeon-close').click();
+ const before=(await calls(p,'image')).length;
+ await assignPortrait(true,true);const second=await preview();assert.notEqual(first,second);
+ assert.equal(await p.locator('#dungeon-explorer').getAttribute('alt'),'New companion');await p.locator('#dungeon-close').click();
+ await assignPortrait(false,false);const replaced=await preview();assert.equal(replaced,first);
+ assert.equal((await calls(p,'explore_hellgate')).length,0);assert.equal((await calls(p,'image')).length,before);
 });
 
 
