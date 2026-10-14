@@ -1,6 +1,14 @@
 # 0.8.1 · Keep the companion's appearance in dungeons
 
-App **0.8.1**, unchanged game tool **0.6.0**. Owner test deployment verified on **2026-10-14 KST**. Review **0.3.4** and its shared listing are preserved.
+App **0.8.1**, unchanged game tool **0.6.0**. Owner test deployment verified on **2026-10-14 KST**. Initial deployment preserved review 0.3.4; the user's subsequent request updated the listing and resubmitted **0.8.1**, now **pending_review**.
+
+## Review resubmission · 2026-10-14 KST
+
+- Updated the public introduction for photo/drawing creation, personality and recorded experiences, six continuing walk arcs, three pixel dungeons and current AI usage. Charges recover every five minutes up to five, and each dungeon stage costs one charge. Random starters still use AI for personality creation.
+- Replaced four historical screenshots with five current UI captures, including the dungeon preview. `scripts/capture_store.mjs` uses disposable real Python-engine views with a read-only SDK fixture; no paid AI or production storage is called. All five captures were visually checked; provenance is recorded in `store/README.md` and `store/capture.json`.
+- `anna-app validate --strict` passed. `apps sync-meta --json` synchronized the listing, privacy URL and five CDN screenshots. Then `apps submit-review notebuddy --json` returned **pending_review / review_candidate_version 0.8.1**.
+- An independent server read confirmed candidate **1370 / 0.8.1**, ready bundle **1271**, unchanged working revision **44**, all eight listing text/URL fields matching `app.json`, and five Anna CDN screenshots. The existing tool **0.6.0 / version 746** and application bundle were not changed by this metadata submission.
+- The [English review guide](REVIEW_081.md) and both language READMEs describe the current candidate. The CLI provides no separate reviewer-notes field; that guide is repository documentation, not a separately uploaded form. This is a review request, not approval or public publication.
 
 ## Fix
 

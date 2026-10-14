@@ -1,13 +1,15 @@
-# Store screenshots
+# Store screenshots — 0.8.1
 
-Captured on 2026-10-09 from app 0.2.1 with the actual bundled UI and Python game engine, using an isolated local Anna development harness. The harness controls and logs are excluded. Screenshots contain no real account data, fabricated AI conversation, edited game values or generated UI mockups.
+Captured on **2026-10-14** from the unchanged 0.8.1 UI bundle, using isolated views produced by the actual Python game worker. No production account, Anna storage, paid AI request or fabricated AI conversation was used. `capture.json` records the version and demonstration companion. The screenshots are browser captures, not generated UI mockups.
 
-- `01-first-meeting.png`: actual initial screen, 1280 × 820.
-- `02-companion-and-care.png`: a newly created test companion, 1280 × 1520.
-- `03-care-and-album.png`: the same companion's care, daily quests and locked future stages, 1280 × 740.
+- `01-first-meeting.png`: first meeting and random/drawing/photo selection, 1280 × 1000.
+- `02-companion-and-care.png`: demonstration companion **Mori**, conversation area and care controls, 1280 × 1000.
+- `03-care-and-album.png`: daily quests, growth album and pixel preparation, 1280 × 850.
+- `04-draw-your-companion.png`: reference editor with a sketch drawn through its real pointer controls, 1280 × 1000.
+- `05-pixel-dungeon.png`: actual discovered-dungeon preview and the current companion's pixel silhouette, 1280 × 900. Entry is not pressed.
 
-The companion uses the revised `starters-v1` artwork. The 0.2.1 recapture verified image decoding and initial creation; the language/privacy checks below refer to the earlier capture, with current behavior also covered by the browser regression suite. No paid AI request was made. The English UI, Korean privacy dialog, closing behavior and a 360-pixel privacy-dialog layout were checked in a separate headless Edge browser. This is not a native-mobile certification or an APS persistence test.
+`scripts/store_fixture.py` creates disposable games and performs real walk commands until a dungeon is discovered. The game values are not manually edited. `scripts/capture_store.mjs` serves the shipped files in a network-isolated browser with read-only host responses; it does not certify Anna installation, AI quality or production persistence. The personality is not initialized and chat is empty, so no model-generated result is implied.
 
-The CLI legacy in-memory harness did not retain the sequenced game state across the start → feed calls in an earlier capture attempt: feed returned `request_expired`. That failed capture was discarded. Final screenshots show the successful initial creation only. Real APS save/persistence checks belong to the installed private Anna app and are recorded in `../HANDOFF.md`; do not use the legacy harness to certify them.
+Reproduce from `anna/` with `node scripts/capture_store.mjs` after preparing the existing assets and dependencies. The random demonstration companion may differ on a recapture. All five images were visually checked before metadata synchronization. `app.json` references the local files; Anna CLI uploads them through the official listing screenshot API.
 
-`../app.json` references these local files. Anna CLI uploads them through the official listing screenshot API. Recheck screenshots against the frozen release candidate before review submission. No cover asset has been invented; the cover remains optional and unset.
+The earlier screenshots were from 0.2.1 and have been replaced. Installed-runtime and persistence verification are recorded separately in [0.8.1 release notes](../RELEASE_081.md).

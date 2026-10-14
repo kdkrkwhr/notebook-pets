@@ -2,17 +2,21 @@
 
 [한국어](README.md) · **English**
 
-One companion. A little care, every day. This private Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. The review candidate is app **0.3.4**, game tool **0.1.15**, with status **pending_review**. On 2026-10-12, its listing and privacy link were updated and review was requested again. See the [submission record](RELEASE_034.md); approval and publication are still pending.
+One companion. A little care, every day. This Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. The review candidate is app **0.8.1**, game tool **0.6.0**, with status **pending_review**. On 2026-10-14, the listing, privacy link and five screenshots were updated, and review was resubmitted from **0.3.4 to 0.8.1**. A fresh server read confirmed the candidate and status. See the [review guide](REVIEW_081.md) and [submission/deployment record](RELEASE_081.md); approval and publication are still pending.
 
-## Test app: connected dungeon rooms
+## Connected dungeon rooms
 
-Installed test app **0.5.0 / tool 0.3.0** includes Hellgate, Ice Kingdom and Dream Forest. Walks can discover one unfinished dungeon at a time, open for 24 hours. Entry costs one walk charge for a 3–6 room expedition. Meet different enemies, carry HP between rooms, recover at sanctuaries in longer layouts, and clear the final guardian for 10 coins per region per Korea calendar day. Movement follows the visible corridors and gates. Pause, 3x playback, skip and saved replay do not change rewards.
+App **0.8.1 / tool 0.6.0** includes Hellgate, Ice Kingdom and Dream Forest. Eligible walks have a 25% discovery chance, with one active dungeon lasting 24 hours from discovery. Each stage entry costs one walk charge; charges recover every five minutes up to five. Explore 3–6 rooms, make route and trap choices, carry HP between rooms, recover at sanctuaries in longer layouts, and clear the final guardian for 10 coins per region per Korea calendar day. Movement follows visible corridors and gates. Pause, 3x playback, skip and saved replay do not change rewards. A cosmetic shop and wearable customization are not available yet.
 
-Four-direction animated pixel avatars use species anatomy and portrait colors, without an additional AI call. They simplify the original appearance and do not reproduce every custom detail. Original portraits and stored 64×64 images are preserved. Existing single-boss expeditions remain replayable as one room; new entries use multiple rooms. See [rules](DUNGEONS.md) and the [verified deployment record](RELEASE_050.md). The public review candidate remains 0.3.4.
+Pixel conversion uses the current companion's portrait without an additional AI call. Version 0.8.1 draws that actual 64×64 appearance instead of a common species rig. Movement mirrors and bobs a single portrait; it does not generate side or rear views. See [rules](DUNGEONS.md) and the [verified deployment record](RELEASE_081.md).
+
+## Personality and shared experiences
+
+The chosen name and appearance inspire a saved fictional personality, voice and habits. Recorded care, training, walks and adventure choices gradually influence curiosity, sociability, energy and caution. Chat, care reactions and walk narration use the same personality and memories; chat text itself does not update trait scores. Personality creation uses Anna AI allowance even with a random starter. Existing companions can choose **Meet your personality**.
 
 ## Walk stories
 
-Some peaceful walks open a short AI episode with two choices. One request generates both endings; selection adds no AI usage, XP or items. Finish the current episode before another walk. Reopening restores the latest choice without generating again. AI failure uses a prepared story. Stories are part of reset/removal. New stories use Anna allowance.
+Walks can offer an XP discovery, a creature encounter or a story with two choices. Six three-chapter arcs respond to recorded care and earlier choices, with an explanation of the experiences affecting each outcome. The game rules determine bond and coin rewards; AI supplies narration. One request prepares choices and endings, so choosing does not call AI again. Closing a pending walk preserves it under **Continue walk**. Login does not automatically open it or regenerate narration. AI failure uses a prepared story. Stories are part of reset/removal, and new narration uses Anna allowance.
 
 ## Create from a drawing or photo
 
