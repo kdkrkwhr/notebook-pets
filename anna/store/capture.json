@@ -1,11 +1,11 @@
 {
-  "appVersion": "0.8.1",
+  "appVersion": "1.0.0",
   "source": "shipped bundle + disposable real Python engine views + recorded Anna drawing result",
-  "at": "2026-10-14T04:13:39.232Z",
+  "at": "2026-10-14T09:33:52.874Z",
   "species": "plant",
   "element": "nature",
   "captureAiCalls": 0,
   "assetPreparationAiCalls": 3,
   "productionStorageCalls": 0,
-  "screenshots": 5
+  "screenshots": 7
 }

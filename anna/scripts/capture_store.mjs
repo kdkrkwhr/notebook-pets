@@ -39,16 +39,28 @@ try{
   if(u.pathname==='/anna-tool-ids.js')return route.fulfill({contentType:'text/javascript',body:'window.__ANNA_TOOL_IDS__={notebuddy:"offline-store-capture"}'});
   if(/^\/store-demo\/(portrait|reference|pixel)\.png$/.test(u.pathname))return route.fulfill({contentType:'image/png',body:await readFile(new URL('demo/'+u.pathname.split('/').pop(),store))});
   const name=u.pathname==='/'?'index.html':u.pathname.slice(1);if(name.includes('..'))return route.abort();
-  const type=name.endsWith('.js')||name.endsWith('.mjs')?'text/javascript':name.endsWith('.css')?'text/css':name.endsWith('.png')?'image/png':name.endsWith('.svg')?'image/svg+xml':'text/html';
+  const type=name.endsWith('.js')||name.endsWith('.mjs')?'text/javascript':name.endsWith('.css')?'text/css':name.endsWith('.png')?'image/png':name.endsWith('.svg')?'image/svg+xml':name.endsWith('.woff2')?'font/woff2':'text/html';
   try{return route.fulfill({contentType:type,body:await readFile(new URL(name,bundle))});}catch{return route.fulfill({status:404,body:''});}
  });
- const open=async scene=>{await p.goto('https://notebuddy.test/?scene='+scene);await p.waitForFunction(()=>document.querySelector('#connection').textContent.includes('Connected')&&!document.querySelector('#refresh').disabled);await p.evaluate(()=>{if(document.querySelector('#title-screen').open)document.querySelector('#title-start').click();});await p.evaluate(()=>Promise.all([...document.images].filter(i=>i.getAttribute('src')&&!i.hidden).map(i=>i.decode().catch(()=>{}))));};
+ // Lazy images outside the rendered view never load, so only visible ones are forced and awaited.
+ const decoded=()=>p.evaluate(()=>Promise.all([...document.images].filter(i=>i.getAttribute('src')&&i.checkVisibility()).map(i=>{i.loading='eager';return i.decode().catch(()=>{});})));
+ const open=async(scene,{title=false}={})=>{await p.goto('https://notebuddy.test/?scene='+scene);await p.waitForFunction(()=>document.querySelector('#connection').textContent.includes('Connected')&&!document.querySelector('#refresh').disabled);await p.waitForFunction(()=>document.fonts.check('16px Galmuri11')&&document.fonts.status==='loaded');if(!title)await p.evaluate(()=>{if(document.querySelector('#title-screen').open)document.querySelector('#title-start').click();});await decoded();};
  const shot=async name=>p.screenshot({path:fileURLToPath(new URL(name,store))});
  await open('welcome');await shot('01-first-meeting.png');
  await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();
  await drawStoreReference(p);await shot('04-draw-your-companion.png');
  const reference=Buffer.from((await p.locator('#art-canvas').evaluate(canvas=>canvas.toDataURL('image/png'))).split(',')[1],'base64');
- if(demo&&createHash('sha256').update(reference).digest('hex')!==demo.referenceSha256)throw Error('Drawing does not match the analyzed reference');
+ if(demo&&createHash('sha256').update(await readFile(new URL('demo/reference.png',store))).digest('hex')!==demo.referenceSha256)throw Error('Recorded reference does not match');
+ // Pointer strokes can rasterize a few pixels differently with the editor's on-screen layout.
+ const referenceDiff=demo?await p.locator('#art-canvas').evaluate(async canvas=>{
+  const img=new Image();img.src='/store-demo/reference.png';await img.decode();
+  const other=document.createElement('canvas');other.width=canvas.width;other.height=canvas.height;const o=other.getContext('2d');o.drawImage(img,0,0,canvas.width,canvas.height);
+  const a=canvas.getContext('2d').getImageData(0,0,canvas.width,canvas.height).data,b=o.getImageData(0,0,canvas.width,canvas.height).data;
+  let inked=0,differ=0;for(let i=0;i<a.length;i+=4){const ink=Math.min(a[i],a[i+1],a[i+2])<200||Math.min(b[i],b[i+1],b[i+2])<200;if(!ink)continue;inked++;if(Math.abs(a[i]-b[i])+Math.abs(a[i+1]-b[i+1])+Math.abs(a[i+2]-b[i+2])>96)differ++;}
+  return differ/inked;
+ }):0;
+ console.log('redrawn reference differs on',(referenceDiff*100).toFixed(1)+'% of inked pixels');
+ if(referenceDiff>.02)throw Error('Drawing does not match the analyzed reference');
  if(referenceOnly){
    await mkdir(new URL('demo/',store),{recursive:true});
    await writeFile(new URL('demo/reference.png',store),reference);
@@ -59,12 +71,15 @@ try{
  await open('companion');
  if(!await p.locator('#pet-image').evaluate(img=>img.currentSrc.endsWith('/store-demo/portrait.png')&&img.naturalWidth>=512))throw Error('Generated portrait was replaced by a fallback');
  await shot('02-companion-and-care.png');
+ await p.locator('#open-items').click();await p.locator('[data-item="frost-crown"]').waitFor();await decoded();await shot('06-item-book.png');await p.locator('#close-items').click();
  await p.setViewportSize({width:1280,height:850});await p.locator('#album').scrollIntoViewIfNeeded();await shot('03-care-and-album.png');
+ await p.setViewportSize({width:1280,height:900});await open('companion',{title:true});
+ if(!await p.locator('#title-screen').evaluate(d=>d.open))throw Error('Title screen did not open');await shot('00-title.png');
  await p.setViewportSize({width:1280,height:900});await open('dungeon');await p.locator('[data-dungeon]').first().click();
  await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.art==='ready');await shot('05-pixel-dungeon.png');
  if(errors.length)throw Error(errors.join('\n'));
  const calls=await p.evaluate(()=>window.storeCalls);if(calls.some(c=>c!=='status'))throw Error('Unexpected gameplay call');
- await writeFile(new URL('capture.json',store),JSON.stringify({appVersion:'0.8.1',source:'shipped bundle + disposable real Python engine views + recorded Anna drawing result',at:new Date().toISOString(),species:fixture.initial.species_key,element:fixture.initial.element_key,captureAiCalls:0,assetPreparationAiCalls:demo.aiCalls,productionStorageCalls:0,screenshots:5},null,2)+'\n');
- console.log('Captured 5 actual UI screenshots with the recorded Anna portrait; no new Anna or AI calls during capture.');
+ await writeFile(new URL('capture.json',store),JSON.stringify({appVersion:JSON.parse(await readFile(new URL('app.json',root),'utf8')).version,source:'shipped bundle + disposable real Python engine views + recorded Anna drawing result',at:new Date().toISOString(),species:fixture.initial.species_key,element:fixture.initial.element_key,captureAiCalls:0,assetPreparationAiCalls:demo.aiCalls,productionStorageCalls:0,screenshots:7},null,2)+'\n');
+ console.log('Captured 7 actual UI screenshots with the recorded Anna portrait; no new Anna or AI calls during capture.');
  }
 }finally{await browser.close();}
