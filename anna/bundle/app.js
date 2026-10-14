@@ -30,7 +30,7 @@ let preferences;
 try{preferences=window.localStorage;}catch{preferences=null;}
 let language=loadLanguage(preferences);
 const itemCatalog=createItemCatalog(document,()=>language);
-const titleScreen=createTitleScreen(document,{items:()=>itemCatalog.open(),privacy:()=>$('#privacy-dialog').showModal()});
+const titleScreen=createTitleScreen(document,{privacy:()=>$('#privacy-dialog').showModal()});
 const birthSteps=createBirthSteps(document);
 let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingImage=null,pendingChat=null;
 let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetRequest=null;

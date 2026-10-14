@@ -304,7 +304,6 @@ export const messages = {
   titleTagline: ["A one-of-a-kind companion, born on a notebook page", "공책 한 장에서 태어난 단 하나의 친구"],
   titlePress: ["Press any key", "아무 키나 눌러 시작"],
   titleStart: ["Start", "시작하기"],
-  titleItems: ["Item book", "아이템 도감"],
   titleMenu: ["Title menu", "타이틀 메뉴"],
   birthSteps: ["Steps to meet your companion", "친구를 만나는 단계"],
   birthStepMode: ["How to meet", "만나는 방법"],

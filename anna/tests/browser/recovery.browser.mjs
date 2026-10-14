@@ -48,8 +48,11 @@ async function finishWalk(p){
 }
 async function calls(p,method){return p.evaluate(m=>window.hostTest.calls.filter(x=>x.args?.command===m||m==='walk'&&x.args?.command==='walk_begin'||x.method===m),method);}
 
-test('item book works before creating a pet, filters and details never call AI or mutate storage',async t=>{
- const p=await setup(t),before=await p.evaluate(()=>JSON.stringify(window.hostTest.state));
+test('item book opens only after creating a pet, filters and details never call AI or mutate storage',async t=>{
+ const p=await setup(t);
+ assert.equal(await p.locator('#open-items').isVisible(),false);
+ assert.equal(await p.locator('#title-screen .title-menu button').count(),2);
+ await start(p);const before=await p.evaluate(()=>JSON.stringify(window.hostTest.state));
  const callsBefore=await p.evaluate(()=>window.hostTest.calls.length);
  assert.equal(await p.locator('#item-catalog').isVisible(),false);
  await p.locator('#open-items').click();assert.equal(await p.locator('[data-item]').count(),16);
@@ -69,7 +72,7 @@ test('item book works before creating a pet, filters and details never call AI o
 });
 
 test('Korean item book fits a narrow screen and distinguishes body requirements from surrounding effects',async t=>{
- const p=await setup(t);await p.setViewportSize({width:360,height:740});
+ const p=await setup(t);await start(p);await p.setViewportSize({width:360,height:740});
  await p.locator('#language').selectOption('ko');await idle(p);await p.locator('#open-items').click();
  assert.equal(await p.locator('#item-catalog-heading').innerText(),'탐험가의 아이템 도감');
  await p.locator('#item-slot').selectOption('aura');assert.equal(await p.locator('[data-item]').count(),4);
@@ -1079,11 +1082,11 @@ test('title screen opens on every load, never blocks connection and leads to the
  assert.equal(await p.locator('#title-start').evaluate(e=>document.activeElement===e),true);
  await p.waitForFunction(()=>document.querySelector('#connection').textContent.includes('Connected'));
  assert.equal(await p.locator('#title-start').isDisabled(),false);
- await p.keyboard.press('ArrowDown');assert.equal(await p.locator('#title-items').evaluate(e=>document.activeElement===e),true);
+ await p.keyboard.press('ArrowDown');assert.equal(await p.locator('#title-privacy').evaluate(e=>document.activeElement===e),true);
  await p.keyboard.press('x');assert.equal(await p.locator('#title-screen').isVisible(),false);
  await p.reload();await p.waitForFunction(()=>document.querySelector('#title-screen').open);
  const callsBefore=await p.evaluate(()=>window.hostTest.calls.filter(c=>c.args?.command!=='status').length);
- await p.locator('#title-items').click();assert.equal(await p.locator('#item-catalog').isVisible(),true);
+ await p.locator('#title-start').click();await idle(p);await p.locator('#open-items').click();assert.equal(await p.locator('#item-catalog').isVisible(),true);
  assert.equal(await p.locator('#collection-tab-items').getAttribute('aria-selected'),'true');
  await p.locator('#collection-tab-album').click();assert.equal(await p.locator('#collection-album-panel').isVisible(),true);
  assert.equal(await p.locator('#collection-album .album-item').count(),await p.locator('#album .album-item').count());
@@ -1092,12 +1095,13 @@ test('title screen opens on every load, never blocks connection and leads to the
  assert.equal(await p.evaluate(()=>window.hostTest.calls.filter(c=>c.args?.command!=='status').length),callsBefore);
 });
 
-test('welcome steps follow the start form and the empty album explains itself',async t=>{
+test('welcome steps follow the start form and the art choice keeps its preview beside the button',async t=>{
  const p=await setup(t);
  assert.equal(await p.locator('#birth-steps [aria-current=step]').getAttribute('data-step'),'name');
  await p.locator('#pet-name').fill('Mori');assert.equal(await p.locator('#birth-steps [aria-current=step]').getAttribute('data-step'),'meet');
  await p.locator('#birth-mode').selectOption('art');assert.equal(await p.locator('#birth-steps [aria-current=step]').getAttribute('data-step'),'mode');
- await p.locator('#birth-mode').selectOption('random');
- await p.locator('#open-items').click();await p.locator('#collection-tab-album').click();
- assert.equal(await p.locator('#collection-album-empty').isVisible(),true);
+ const layout=await p.evaluate(()=>{const preview=document.querySelector('#birth-art-choice .art-source-preview');preview.src='assets/starters-v1/plant_nature_stage1.png';preview.hidden=false;
+  const b=document.querySelector('#choose-art').getBoundingClientRect(),i=preview.getBoundingClientRect(),n=document.querySelector('#birth-art-choice p').getBoundingClientRect();
+  return {overlap:!(b.right<=i.left||i.right<=b.left||b.bottom<=i.top||i.bottom<=b.top),centered:Math.abs((b.top+b.bottom)/2-(i.top+i.bottom)/2)<2,noteBelow:n.top>=Math.max(b.bottom,i.bottom)};});
+ assert.deepEqual(layout,{overlap:false,centered:true,noteBelow:true});
 });

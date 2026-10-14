@@ -77,6 +77,9 @@ footer{color:var(--ink-soft)}
 .birth-steps [data-state=current] span{background:var(--gold);color:var(--paper);border-color:var(--ink)}
 .birth-steps [data-state=done]{color:var(--green);border-color:var(--green)}
 .birth-steps [data-state=done] span{background:var(--green);color:var(--paper)}
+#birth-art-choice:not([hidden]){display:flex;align-items:center;flex-wrap:wrap;gap:12px 16px}
+#birth-art-choice .art-source-preview{margin:0;border:2px solid var(--frame);border-radius:8px}
+#birth-art-choice p{flex-basis:100%;margin:0}
 
 /* Collection tabs */
 .collection-tabs{display:flex;gap:8px;padding:16px 28px 0;border-bottom:3px solid var(--ink);background:var(--paper)}

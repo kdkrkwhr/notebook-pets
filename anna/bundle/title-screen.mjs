@@ -1,7 +1,7 @@
 // Shown on every app load; it never waits for or blocks the connection behind it.
 const passthrough=new Set(['Tab','Shift','Control','Alt','Meta','CapsLock']);
 
-export function createTitleScreen(document,{items,privacy}){
+export function createTitleScreen(document,{privacy}){
  const dialog=document.querySelector('#title-screen'),menu=[...dialog.querySelectorAll('.title-menu button')];
  const close=next=>{if(dialog.open)dialog.close();next?.();};
  dialog.addEventListener('cancel',event=>{event.preventDefault();close();});
@@ -16,7 +16,6 @@ export function createTitleScreen(document,{items,privacy}){
   event.preventDefault();close();
  });
  document.querySelector('#title-start').addEventListener('click',()=>close());
- document.querySelector('#title-items').addEventListener('click',()=>close(items));
  document.querySelector('#title-privacy').addEventListener('click',()=>close(privacy));
  return {
   show(){if(!dialog.open)dialog.showModal();menu[0].focus();},
