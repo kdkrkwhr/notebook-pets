@@ -2,6 +2,12 @@
 
 App **0.8.1**, unchanged game tool **0.6.0**. Owner test deployment verified on **2026-10-14 KST**. Initial deployment preserved review 0.3.4; the user's subsequent request updated the listing and resubmitted **0.8.1**, now **pending_review**.
 
+## Screenshot follow-up · 2026-10-14 KST
+
+- Replaced the initial random-starter demonstration with a matching drawing/result example. An original sprout doodle was entered through the actual editor; the unchanged app analysis, birth-image and personality prompts produced **Mori**, a plant/nature companion, through Anna. Preparation used one analysis, one image generation and one personality call. No production game/storage records were read or changed.
+- The listing now starts with the completed companion, then its reference drawing, followed by the album, the same companion's pixel dungeon preview and the welcome screen. Recorded outputs and hashes are in `store/demo/`; capture reuses them with no extra AI calls.
+- Strict validation, reference/result hash checks, no starter fallback, browser-error checks and visual inspection passed. `apps sync-meta` updated all five screenshots; the server still reports **0.8.1 pending_review**, candidate **1370**, bundle **1271**, revision **44**. The first two CDN images were downloaded and visually verified in the intended order. No new app cut, tool deployment or resubmission was needed for this listing-only update.
+
 ## Review resubmission · 2026-10-14 KST
 
 - Updated the public introduction for photo/drawing creation, personality and recorded experiences, six continuing walk arcs, three pixel dungeons and current AI usage. Charges recover every five minutes up to five, and each dungeon stage costs one charge. Random starters still use AI for personality creation.

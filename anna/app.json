@@ -15,10 +15,10 @@
   "logo_url": "https://cdn.anna.partners/production/app-logos/450-notebuddy/20261009063318_3f0871d8.webp",
   "privacy_url": "https://github.com/kdkrkwhr/notebook-pets/blob/release/anna/PRIVACY.md",
   "screenshots": [
-    "store/01-first-meeting.png",
     "store/02-companion-and-care.png",
-    "store/03-care-and-album.png",
     "store/04-draw-your-companion.png",
-    "store/05-pixel-dungeon.png"
+    "store/03-care-and-album.png",
+    "store/05-pixel-dungeon.png",
+    "store/01-first-meeting.png"
   ]
 }

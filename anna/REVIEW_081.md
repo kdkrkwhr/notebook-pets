@@ -30,7 +30,7 @@ Chat, care reactions, walk narration, image analysis, image generation and perso
 
 The game tool has sequenced, idempotent actions and authoritative rewards. Per-user storage contains game progress, bounded interaction memories/personality, up to 24 recent chat messages, reference images/descriptions, portraits and the current walk story. The privacy notice explains reset/removal and platform/provider retention separately. No user's chat is deliberately placed into another user's context.
 
-Live image-to-image accessory editing, a cosmetic shop and manual dungeon movement are outside this release. AI wording and visual similarity vary. The feature screenshots use isolated demonstration data, not real account records.
+Live image-to-image accessory editing, a cosmetic shop and manual dungeon movement are outside this release. AI wording and visual similarity vary. The feature screenshots use isolated demonstration data, not real account records. The sprout doodle and completed companion are a matching reference/result pair from the app's actual Anna analysis and generation prompts; the same portrait appears in the album and dungeon. See [screenshot provenance](store/README.md).
 
 ## Validation
 

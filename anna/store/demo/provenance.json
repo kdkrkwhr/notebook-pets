@@ -1,0 +1,50 @@
+{
+  "name": "Mori",
+  "appVersion": "0.8.1",
+  "source": "Original doodle entered in the shipped drawing editor",
+  "referenceSha256": "b509aef9d608ab0c4b64d5103b29b8ea0ddab87e17e84b133f93cbc11d652194",
+  "aiCalls": 3,
+  "productionStorageCalls": 0,
+  "assessment": {
+    "features": "A simple, stylized round creature with a white body outlined in dark green. It has two small, angular arms and two short, blocky legs. On top of its head is a thin green stem with two diamond-shaped green leaves. The face consists of two vertical dark green lines for eyes, a small 'v' shaped dark green mouth, and two horizontal pink oval blush marks on the cheeks.",
+    "species": "plant",
+    "element": "nature",
+    "confidence": "clear"
+  },
+  "updatedAt": "2026-10-14T04:11:59.318Z",
+  "portrait": {
+    "sha256": "6f349dde3d3e36131f895a40eaa9c1fe7c9f89a6b7c08e5e323af24bb9353c72",
+    "model": "openai/gpt-image-2",
+    "source": "Anna image.generate",
+    "promptFunction": "unmodified birthPrompt",
+    "parameters": {
+      "n": 1,
+      "size": "1024x1024",
+      "quality": "low",
+      "resolution": "1K",
+      "output_format": "png"
+    }
+  },
+  "personality": {
+    "appearance": "A simple, stylized round creature with a white body outlined in dark green. It has two small, angular arms and two short, blocky legs. On top of its head is a thin green stem with two diamond-shaped green leaves. The face consists of two vertical dark green lines for eyes, a small 'v' shaped dark green mouth, and two horizontal pink oval blush marks on the cheeks.",
+    "source": "reference",
+    "traits": {
+      "curiosity": 1,
+      "warmth": 1,
+      "energy": -1,
+      "caution": 0
+    },
+    "summary": {
+      "en": "Inspired by the name Mori (forest) and its sprout-like head, this character is a gentle observer of nature who moves slowly to avoid startling nearby insects.",
+      "ko": "숲을 뜻하는 이름과 머리의 새싹에서 영감을 받아, 주변 곤충들이 놀라지 않게 천천히 움직이며 자연을 관찰하는 다정한 성격입니다."
+    },
+    "voice": {
+      "en": "Soft-spoken and rhythmic, like a light breeze through leaves.",
+      "ko": "나뭇잎 사이로 부는 산들바람처럼 부드럽고 리듬감 있게 말합니다."
+    },
+    "habit": {
+      "en": "Gently tilts its head to the side to balance its two diamond-shaped leaves when thinking.",
+      "ko": "생각에 잠길 때면 다이아몬드 모양의 잎사귀 두 개가 균형을 잡도록 고개를 옆으로 살짝 기울입니다."
+    }
+  }
+}
