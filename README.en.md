@@ -2,277 +2,128 @@
 
 [한국어](README.md) · **English**
 
-Version **0.2.0**
+**Draw a little friend. Care for them, talk to them, and go on adventures together.**
 
-[![Tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/ci.yml/badge.svg?branch=develop)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/ci.yml)
+Notebuddy is a companion game about growing alongside one AI friend. Start with a drawing, a photo or a surprise companion. Share your day, build a routine, discover stories and pixel dungeons on walks, and keep a little album of your friend's growth.
 
-> An AI companion born in a notebook — a monster you care for and raise on Discord.
+The current Anna owner test app is **0.9.0**. Version **0.8.1 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 14, 2026.
 
-Notebook Pets is a virtual-pet project where **Python handles the game rules and an AI agent gives the character its voice and story**. Raise **the single partner you first meet** through feeding, play, and walks in a Tamagotchi-style game. Connect Hermes or another AI agent through shared Python tools or MCP, or use the standalone Discord gateway.
-
-The **[Anna edition](anna/README.en.md)** connects the same game engine to an English-first UI with a Korean option, per-user Anna storage, AI chat and image generation. Create a companion from a drawing or photo, shape its personality through shared experiences, follow continuing walk stories and discover pixel dungeons. App **0.8.1 / tool 0.6.0** was resubmitted on 2026-10-14 and is **pending review**. See the [review guide](anna/REVIEW_081.md) and [deployment/validation record](anna/RELEASE_081.md).
-
-The repository is named `notebook-pets`; the service name is **Notebuddy (노트버디)**.
+[![Anna app tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml/badge.svg?branch=release)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml)
 
 <p align="center">
-  <img src="assets/examples/plant_nature_stage1.png" width="160" alt="A nature-element plant monster">
-  <img src="assets/examples/machine_fire_stage1.png" width="160" alt="A fire-element machine monster">
-  <img src="assets/examples/ghost_wind_stage1.png" width="160" alt="A wind-element ghost monster">
-  <img src="assets/examples/dragon_light_stage4.png" width="160" alt="A light-element dragon in its final form">
+  <img src="anna/store/02-companion-and-care.png" width="960" alt="Mori, a companion created from a sprout drawing, beside the conversation area and care buttons">
 </p>
 
-## Game features
+*Meet Mori: the actual companion Anna generated from the sprout drawing below.*
 
-| Area | Contents |
+[Create a friend](#a-little-friend-from-your-own-drawing) · [Care and conversation](#share-a-meal-and-the-story-of-your-day) · [Growth album](#keep-their-growth-in-an-album) · [Walks and dungeons](#choose-what-happens-on-your-walk) · [Item book](#meet-sixteen-little-treasures) · [User guide](anna/README.en.md)
+
+## A little friend from your own drawing
+
+Sketch with a mouse or touch, or upload a drawing or photo you already have. Give your companion a name and choose Meet. AI looks at the reference's shape, colors and features, then creates a new character portrait.
+
+| The original drawing | Mori, created from that drawing |
+| :---: | :---: |
+| <img src="anna/store/demo/reference.png" width="280" alt="Original sprout doodle with two leaves and small arms and feet"> | <img src="anna/store/demo/portrait.png" width="280" alt="Anna-generated Mori with the round body and leaves from the reference"> |
+
+- **Draw it yourself:** use colors, an eraser and undo to sketch your friend.
+- **Bring a drawing or photo:** use a PNG, JPEG or WebP image as a reference.
+- **Meet a surprise companion:** start with one of 9 species and 8 elements without preparing an image.
+
+Uncertain interpretations ask for confirmation before generation. If generation fails, you can retry for the same companion. AI creates a new interpretation of the reference, so the result can vary.
+
+<details>
+<summary>See the drawing editor</summary>
+
+<p align="center">
+  <img src="anna/store/04-draw-your-companion.png" width="900" alt="The real drawing editor with the sprout sketch, color picker, eraser, undo and Use this image button">
+</p>
+
+</details>
+
+## Share a meal and the story of your day
+
+Feed your friend, offer a treat, play, train and help them rest. Watch their fullness and bond, collect a daily gift, and finish daily quests for rewards.
+
+Tell them about your day in the conversation area. Replies draw on their saved personality, recent conversation and shared experiences. They also offer a short reaction after care.
+
+**Personality grows with experience.** A name and appearance inspire their initial voice and habits. Care, training, walks and adventure choices gradually influence curiosity, warmth, energy and caution. You can inspect these changes in the personality panel and hear them reflected in conversations and walk stories. Chat text alone does not directly change trait scores.
+
+## Keep their growth in an album
+
+Your little companion reaches new growth stages at **levels 10, 30 and 50**. When you are ready, request a new portrait and keep it beside earlier stages in the growth album. New growth portraits are generated when you choose to create them.
+
+<p align="center">
+  <img src="anna/store/03-care-and-album.png" width="900" alt="Daily quests, the growth album and pixel preparation for the same companion">
+</p>
+
+A **pixel version** is prepared from the completed portrait, so your own friend's appearance can join dungeon adventures. Pixel conversion itself makes no additional AI request.
+
+## Choose what happens on your walk
+
+A walk might bring an XP discovery, another creature, or a story with two choices. Pick what your friend does and see the outcome.
+
+There are currently **six three-chapter story arcs**. Earlier choices and care/adventure experiences influence later events, preparation requirements and endings. Close a pending story and return through **Continue walk** when you are ready.
+
+Walk charges currently recover **one every five minutes, up to five**.
+
+## Discover three pixel dungeons
+
+Dungeons can appear by chance during a walk. A discovery stays open for **24 hours**, with a countdown on screen. Another dungeon will not appear until the current one is cleared or expires.
+
+| Dungeon | What awaits |
 | --- | --- |
-| Monsters | 9 species × 8 elements: 72 starter combinations |
-| Care | Feeding, snacks, play, sleep, intimacy, and satiety |
-| Daily quest | Feed once, train once, and walk once to claim a reward |
-| Activities | Persistent stat training, walks, HP-based automatic battles and fleeing |
-| Records | Partner evolution album, battle records, titles, and rankings |
-| Progression rules | Stage transitions at levels 10, 30, and 50; level cap of 100 |
-| Final evolution | Light branch at intimacy 70 or above; dark branch below 70 |
-| Artwork | Per-pet artwork and evolution with local ComfyUI and IP-Adapter |
-| Agent integration | Shared Python tools, stdio MCP, and a Discord gateway |
+| **Hellgate** | Embers, lava and a journey toward a sealed gate |
+| **Ice Kingdom** | A frozen kingdom surrounded by snow and ice |
+| **Dream Forest** | A woodland filled with strange light and dreams |
 
-Browse the [character showcase](assets/examples/README.md) and the [evolution gallery](assets/anchored_evolution/index.html) for plant, machine, ghost, and dragon growth, including light/dark branches. Browse all 72 species/element combinations used by Anna in the [starter gallery](assets/starters-v1/index.html).
+<p align="center">
+  <img src="anna/store/05-pixel-dungeon.png" width="960" alt="Hellgate preview before entry, showing Mori's actual pixel appearance, rooms, corridors, minimap and closing timer">
+</p>
 
-## Architecture and principles
+*Hellgate before entry. The Mori from the home screen appears here as the same friend's pixel portrait.*
 
-```text
-User message → host binds authenticated actor and event
-    ├─ AI agent → shared Python tool / stdio MCP
-    └─ standalone Discord gateway → command handling
-                        ↓
-                 Python game engine
-    ├─ growth, combat, and action rules from game_data.json
-    ├─ access control, file locking, and event deduplication
-    └─ state/{user_id}.json stores state and processing receipts
-                        ↓
-                 JSON result → reply
+Your companion moves automatically as the camera follows. Explore **3–6 rooms**, choose your way through forks and traps, find recovery opportunities on longer expeditions, and challenge the final guardian. Before entering, you can check species adaptation bonuses and elemental matchups.
 
-Image request → ImageService → local ComfyUI + IP-Adapter
-                            → per-pet cache → host delivers artwork
-```
+Each stage costs one walk charge. Your first clear of each region per day awards 10 coins. You choose when to enter the next stage; movement playback supports pause, 3x speed and skip.
 
-- **Separate rules from expression:** the agent is intended to narrate engine results rather than invent game outcomes.
-- **Persist state in files:** per-user JSON, rather than conversational memory, is the source of game state.
-- **Keep balance in data:** species, elements, matchups, XP thresholds, and action limits live in `data/game_data.json`.
-- **Swap agents:** models receive only command arguments. The trusted host binds actor and event IDs; retries keep the same receipt even when changing providers.
-- **Separate saves from rendering:** image failures do not roll back committed XP or evolution. Example persona instructions are in the [integration guide](docs/AGENT_INTEGRATION.md).
+## Meet sixteen little treasures
 
-Species selection, encounters, and battles use randomness governed by the game rules.
+**The item book arrived in 0.9.0.** Choose **Browse items** on the home screen to see four items each from everyday adventures, Hellgate, Ice Kingdom and Dream Forest. You can browse before creating a companion, too.
 
-## Quick start
+<p align="center">
+  <img src="docs/screenshots/items-catalog-ko.png" width="900" alt="Korean item book showing all sixteen head, neck, back and surrounding-effect designs across four collections">
+</p>
 
-Use the launcher to share one configuration across tools. Relative paths in `notebook.local.json` are resolved from the configuration file's directory. See [configuration and launcher](docs/CONFIGURATION.md) for settings and environment precedence.
+Filter by region or type, search by name, and open a design to see its art, story, rarity, **planned way to collect it** and attachment requirements. Discover the Little Traveler's Hat, Frost Crown, Butterfly Cape, Firefly Companions and more.
 
-```bash
-python -X utf8 tools/manage.py init
-python -X utf8 tools/manage.py config
-python -X utf8 tools/manage.py doctor
-```
+| Item details | On a narrow screen |
+| :---: | :---: |
+| <img src="docs/screenshots/item-detail-ko.png" width="420" alt="Frost Crown detail with artwork, description, planned reward and fit requirements in Korean"> | <img src="docs/screenshots/items-mobile-ko.png" width="280" alt="Korean item book in two columns on a 360-pixel screen"> |
 
-### Requirements
+**This is a catalog preview.** Collecting, buying and equipping are not available yet; prices and reward milestones are still undecided. Browsing spends no coins or AI allowance. The screenshots show Korean; the book also supports English.
 
-- Verified with Python 3.12.
-- The engine, shared Python adapter, and basic tests use only the standard library. Install `requirements-mcp.txt` for MCP or `requirements-discord.txt` for the Discord gateway.
-- Discord, Hermes, ComfyUI, and LLM API keys are not required to try the basic CLI.
+Future equipment will take each companion's body shape into account. A friend without hands may collect gloves, but wearing gloves will not invent hands. Ornaments such as floating starlight are planned to work without limbs.
 
-Run these commands from the repository root:
+## Where can I use it?
 
-```bash
-git clone https://github.com/kdkrkwhr/notebook-pets.git
-cd notebook-pets
-
-# Help takes no user ID
-python -X utf8 engine/engine.py help
-
-# Creates a demo save at state/123456789012345678.json
-python -X utf8 engine/engine.py 123456789012345678 start Buddy
-python -X utf8 engine/engine.py 123456789012345678 status
-python -X utf8 engine/engine.py 123456789012345678 밥줘
-python -X utf8 engine/engine.py 123456789012345678 walk
-
-# Rankings also take no user ID
-python -X utf8 engine/engine.py rank
-```
-
-Starting again with the same ID returns an existing-monster response. These commands create and modify a save file, so use a demo ID distinct from real users. Commands and decay jobs using the same store are serialized with a file lock.
-
-Successful commands and handled game errors print JSON containing `ok` and `msg`. Messages are currently in Korean, and additional fields vary by command.
-
-## Commands
-
-The general format is below. Do not pass Discord's `!` prefix directly to the engine.
-
-```text
-python -X utf8 engine/engine.py <user_id> <command> [arguments...]
-```
-
-| Action | CLI command / alias |
+| Edition | Availability |
 | --- | --- |
-| Create a monster | `start <name>` / `공책시작 <name>` |
-| View status | `status` / `상태` |
-| Feed / give a snack | `feed` / `밥줘`, `snack` / `간식줘` |
-| Play / sleep | `play` / `놀아줘`, `sleep` / `재워줘` / `잘자` |
-| Train / walk | `train` / `훈련`, `walk` / `산책` |
-| Battle / flee | `battle` / `배틀`, `flee` / `도망` |
-| Daily attendance (XP + 3 normal feed) | `attendance` / `출석` |
-| Quest progress / claim reward | `quests` / `퀘스트` / `일일퀘스트`, `claimquest` / `퀘스트보상` |
-| Evolution album / titles | `album` / `앨범` / `진화앨범`, `titles` / `칭호` |
-| Rankings | `python -X utf8 engine/engine.py rank` or `랭킹` — omit the ID |
-| Help | `python -X utf8 engine/engine.py help` or `도움말` — omit the ID |
+| **Anna app** | The screens and features above are in owner test version **0.9.0**. Public store release awaits **0.8.1 review**. [App user guide](anna/README.en.md) |
+| **Open-source engine, Discord and AI agents** | Run or connect the project yourself. The Anna interface, continuing stories and item book have their own feature scope. [Setup and integration guide](docs/DEVELOPMENT.en.md) |
 
-Resolve a wild encounter by battling or fleeing before walking again. Use `status` to inspect the current encounter. Automatic battles start at full HP and last up to 20 rounds; HP, attack, and defense training all contribute. Simultaneous knockouts are draws.
+The Anna app supports **English and Korean**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.
 
-Daily limits reset at midnight in Korea (KST); sleep grants an XP bonus for the following calendar day. Attendance provides three normal feed once per day. When owner access is enabled, rankings also require an allowed user ID.
+Chat, care reactions, personality and walk-story generation, reference analysis and new portraits use **the signed-in user's Anna AI allowance**. Random companions also use AI to initialize personality. Selecting or previewing a file, browsing the item book and converting a portrait to pixels do not call AI.
 
-### Evolution album
+## What comes next?
 
-Use `album` or Discord's `!앨범` / `!진화앨범` to see your original partner's growth stages and evolution dates. Only cached artwork is shown; future stages remain locked and missing historical dates are not inferred.
+The sixteen-item book is the starting point for **collecting, a coin shop, an inventory and equipment**. Per-portrait anatomy analysis and fitted appearances are planned for that stage.
 
-Run `python -X utf8 tools/export_album.py <user_id> --output albums/buddy.html` to create an offline HTML album with embedded images. See [evolution albums](docs/ALBUM.md).
+The next dungeon themes are the **Sunken Palace and Forgotten Clockwork City**, followed by a sky castle, library and desert. These features and regions are not playable yet. [Item plans](anna/ITEMS.md)
 
-### Daily quest
+---
 
-Use `quests` to check progress. Feed once, train once, and walk once, then use `claimquest` to receive **30 base XP and one rare feed**. Discord aliases are `!퀘스트` and `!퀘스트보상`. Status and successful objective actions also include progress.
+[Anna user guide](anna/README.en.md) · [Engine and Discord development](docs/DEVELOPMENT.en.md) · [Anna development](anna/DEVELOPMENT.en.md) · [Latest deployment](anna/RELEASE_090.md) · [Privacy](anna/PRIVACY.md)
 
-Only successful actions count; rewards can be claimed once per day. Progress and claim eligibility reset at midnight KST; unclaimed rewards do not carry over. Existing sleep bonuses, level caps, and evolution rules apply to XP rewards. Configure objectives and rewards in `data/game_data.json` under `daily_quest`.
-
-### Administrator and owner settings
-
-Set `NOTEBOOK_ADMIN_IDS` to comma-separated administrator IDs. By default, no administrators are configured.
-
-```powershell
-# PowerShell example — replace with the actual administrator's Discord ID
-$env:NOTEBOOK_ADMIN_IDS = "123456789012345678"
-python -X utf8 engine/engine.py 123456789012345678 owner 987654321098765432 Player
-python -X utf8 engine/engine.py 123456789012345678 clearowner
-```
-
-- `owner <target_id> [name]`: restricts **this entire deployment** to the designated owner and administrators. It does not assign ownership of an individual user's monster.
-- `clearowner`: removes the owner restriction.
-- `reset <target_id> [new_name]`: deletes the target save. If the new name has at least two characters, a new monster is created.
-
-Settings are stored in the Git-ignored `data/access.json`. The CLI does not authenticate callers: the integration must supply the real sender ID. IDs must be positive integer strings of 1–20 ASCII digits. See the [runtime integration guide](docs/INTEGRATION.md) for agent integration and storage settings.
-
-## Agent and Discord integration
-
-| Connection | Use |
-| --- | --- |
-| Python tools | Register the game with a custom agent, Hermes, or another host |
-| stdio MCP | Persistent read-only access, or event-scoped gameplay through a gateway |
-| Standalone Discord bot | Command handling and artwork delivery without an AI agent |
-
-### Shared Python tool
-
-Add `engine/` to the host's Python module search path. Replace these example IDs with authenticated message metadata.
-
-```python
-from adapter import bind_game_event, dispatch_tool, tool_definition
-
-game = bind_game_event(actor_id="123", event_id="discord:456")
-definition = tool_definition()  # Register using your host SDK's format
-result = dispatch_tool(game, {"command": "feed", "arguments": []})
-```
-
-Retrying the same event returns the saved result. A different mutation for an already committed event is rejected; reads remain available. Administrative commands are excluded from agent tools.
-
-### MCP
-
-```bash
-python -m pip install -r requirements-mcp.txt
-```
-
-Configure your MCP host to launch `tools/mcp_server.py` over stdio with `NOTEBOOK_ACTOR_ID` and `NOTEBOOK_DATA_DIR`. **Persistent connections are read-only.** For gameplay mutations, a trusted gateway supplies `NOTEBOOK_EVENT_ID` for each authenticated user message. Do not put a fixed event ID in persistent configuration. The tool returns game JSON; rendering and image delivery remain host responsibilities.
-
-See [AI agent integration](docs/AGENT_INTEGRATION.md) for configuration JSON and event-scoped connections.
-
-### Discord bot
-
-`tools/discord_bot.py` replies with the game result first, then edits that message to attach artwork. See [image and Discord setup](docs/IMAGES.md) for the bot token, allowed channels, and local image server configuration. External agents such as Hermes can use the same engine through the shared adapter.
-
-### Image generation (optional)
-
-Using the existing PNGs does not require ComfyUI. To generate new artwork, provide:
-
-- ComfyUI running at `http://127.0.0.1:8188`.
-- The `DreamShaper_8_pruned.safetensors` checkpoint.
-- The `ComfyUI_IPAdapter_plus` node and IP-Adapter Plus / CLIP Vision models — see [setup](docs/IMAGES.md).
-
-```bash
-python -X utf8 tools/gen_image.py plant nature sprout samples/demo_plant.png 42
-python -X utf8 tools/prerender_all.py --stage 1
-```
-
-The first command writes `assets/samples/demo_plant.png`. The second skips starter images that already exist. The bot and CLI share `data/image_prompts.json`. Evolution uses the previous stage as its starting image and the original starter as its style and character reference. Both final branches start from the same stage-three image. Artwork is cached per pet. Check the server with `python tools/check_images.py`; render an existing pet with `python tools/render_pet.py <user_id>`.
-
-Compare plant, machine, ghost and dragon growth and final light/dark branches in the [evolution gallery](assets/anchored_evolution/index.html). Evolution references each pet's original appearance while changing body proportions at maturity. Open the HTML locally to filter by species and inspect full-size images.
-
-## Repository layout
-
-```text
-engine/engine.py           Game CLI and rule processing
-engine/adapter.py          Shared agent tools and actor/event binding
-engine/image_service.py    Per-pet image rendering and cache
-tools/mcp_server.py        stdio MCP server
-tools/discord_bot.py       Standalone Discord gateway
-data/image_prompts.json   Shared image prompts and reference settings
-assets/anchored_evolution/ Growth and final-branch gallery
-data/game_data.json       Balance data
-data/prompt_templates.md  Image-prompt reference
-state/                    User saves (JSON files are Git-ignored)
-assets/samples/           Starter artwork and extra samples
-assets/samples_hd/        Selected high-resolution samples
-tools/gen_image.py        ComfyUI image generator
-tools/prerender_all.py    Batch generation for combinations
-tools/preview_roll.py     Random species/element preview
-tools/daily_decay.py      Inactivity decay batch
-tools/backup_store.py     Save snapshots, verification, and recovery to a new root
-tools/daily_backup.py     Verified backup job and retention policy
-tools/register_backup_task.ps1 Windows daily backup scheduling
-tools/doctor.py           Store, backup, and optional service preflight checks
-tools/export_album.py     Offline HTML partner evolution album
-tools/manage.py           Shared configuration for diagnostics, game, bot, and backups
-notebook.example.json     Configuration example without secrets
-tools/upscale_images.py  Image upscaling tool
-tests/test_engine.py      Engine self-checks
-promo/index.html         Static promotional page
-docs/                    Agent, artwork, and runtime integration guides
-```
-
-Run `python -X utf8 tools/backup_store.py create --output backups/save.json` to snapshot saves, quest claims, event receipts, and access settings together. Use `verify backups/save.json` to check the snapshot and `restore backups/save.json --target <new-directory>` to recover without overwriting existing data. See [backup and recovery](docs/BACKUP.md) for separate artwork preservation and deployment switching.
-
-For scheduled execution, use `tools/daily_backup.py --destination backups`. It verifies each new snapshot before applying a default 30-day retention window with at least the newest seven preserved. Manual backups are excluded from pruning. The Windows scheduling helper supports configuration previews and registration with `-Register`.
-
-## Verification
-
-GitHub Actions runs the suite on **Windows and Linux / Python 3.12** for every branch push and PR targeting `develop` or `release`. MCP is installed so the real stdio test runs too. Save compatibility, evolution albums, and backup tests use temporary data and fake delivery transports; no Discord token, GPU, or live server is required. See [Actions logs](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/ci.yml) for failing test names and tracebacks.
-
-Run `python -X utf8 tools/doctor.py` to check the store. Add `--backup-root backups`, `--discord`, or `--comfy` to include those components; use `--json` for monitoring. See [preflight checks](docs/OPERATIONS.md) for the scope of each check.
-
-```bash
-python -B -X utf8 tests/test_engine.py
-python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
-```
-
-Tests cover species bonuses, XP and evolution, sleep, access control, storage failures, concurrent processes, message replay, combat, image pipelines, and agent integration. Test data is stored in temporary files.
-
-Installing `requirements-mcp.txt` also enables the real stdio client/server test; otherwise that test is skipped. Current validation: **145 unittest cases and 6 engine self-checks passed**, without an external LLM account. Recovery tests cover transaction locking, damaged files, event replay after restoration, retention, and interrupted-job recovery.
-
-## Documentation
-
-- [Configuration and launcher](docs/CONFIGURATION.md): shared settings, environment, and commands
-
-- [Evolution album](docs/ALBUM.md): one partner's growth history and image/HTML album
-
-- [Preflight checks](docs/OPERATIONS.md): store, backup, and connection configuration checks
-
-- [Backup and recovery](docs/BACKUP.md): save snapshots, validation, and restoration to a new data root
-
-- [AI agent integration](docs/AGENT_INTEGRATION.md): Python tools, MCP setup, and agent instructions
-- [Runtime integration](docs/INTEGRATION.md): identity, deduplication, and storage rules
-- [Image and Discord setup](docs/IMAGES.md): running ComfyUI and the bot
-- [Evolution gallery](assets/anchored_evolution/index.html): growth across four representative species
-- [Balance report](docs/BALANCE_REPORT.md): combat and progression simulations
+Screenshots show the real application UI running with separate test data. Creation, album and dungeon captures are from 0.8.1; the item book is from 0.9.0. Mori's portrait is an actual Anna-generated result. [Screenshot sources](docs/screenshots/README.md)
