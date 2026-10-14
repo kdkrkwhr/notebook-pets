@@ -1,3 +1,4 @@
+import {createItemCatalog} from './item-catalog.mjs';
 import {createPersonality,axes as personalityAxes} from './personality.mjs';
 import {checkArtwork} from './birth-art.mjs';
 let persona,personalityFeedback='',personalityWorking=false;
@@ -26,6 +27,7 @@ import {CHAT,ART,ErasedError,mergeSaved,removeAppData} from './data.mjs';
 let preferences;
 try{preferences=window.localStorage;}catch{preferences=null;}
 let language=loadLanguage(preferences);
+const itemCatalog=createItemCatalog(document,()=>language);
 let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingImage=null,pendingChat=null;
 let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetRequest=null;
 const tr=(key,values)=>t(language,key,values);
@@ -51,6 +53,7 @@ function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
 function translate(){
   translateDocument(document,language);$('#language').value=language;
+  itemCatalog.render();
   if(birthNotice)birthMessage(birthNotice.key,birthNotice.values);
   text('#draw',tr(pendingImage?'retryImage':'draw'));
 }

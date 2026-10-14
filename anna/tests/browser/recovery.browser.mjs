@@ -48,6 +48,41 @@ async function finishWalk(p){
 }
 async function calls(p,method){return p.evaluate(m=>window.hostTest.calls.filter(x=>x.args?.command===m||m==='walk'&&x.args?.command==='walk_begin'||x.method===m),method);}
 
+test('item book works before creating a pet, filters and details never call AI or mutate storage',async t=>{
+ const p=await setup(t),before=await p.evaluate(()=>JSON.stringify(window.hostTest.state));
+ const callsBefore=await p.evaluate(()=>window.hostTest.calls.length);
+ assert.equal(await p.locator('#item-catalog').isVisible(),false);
+ await p.locator('#open-items').click();assert.equal(await p.locator('[data-item]').count(),16);
+ assert.match(await p.locator('#item-catalog-notice').innerText(),/later update/);
+ await p.locator('#item-region').selectOption('icekingdom');assert.equal(await p.locator('[data-item]').count(),4);
+ await p.locator('#item-slot').selectOption('head');assert.equal(await p.locator('[data-item]').count(),1);
+ await p.locator('[data-item="frost-crown"]').click();assert.equal(await p.locator('#item-detail-name').innerText(),'Frost Crown');
+ assert.match(await p.locator('#item-detail-reward').innerText(),/not set yet/);
+ assert.match(await p.locator('#item-detail-fit').innerText(),/never add/);
+ assert.equal(await p.locator('#item-detail-image').evaluate(img=>img.decode().then(()=>img.naturalWidth>0)),true);
+ await p.keyboard.press('Escape');assert.equal(await p.locator('#item-detail').isVisible(),false);assert.equal(await p.locator('#item-catalog').isVisible(),true);
+ await p.locator('#item-clear').click();await p.locator('#item-search').fill('no-such-item');assert.equal(await p.locator('#item-empty').isVisible(),true);
+ await p.locator('#item-clear').click();assert.equal(await p.locator('[data-item]').count(),16);
+ await p.locator('#close-items').click();assert.equal(await p.locator('#open-items').evaluate(e=>document.activeElement===e),true);
+ assert.equal(await p.evaluate(()=>JSON.stringify(window.hostTest.state)),before);
+ assert.equal(await p.evaluate(()=>window.hostTest.calls.length),callsBefore);
+});
+
+test('Korean item book fits a narrow screen and distinguishes body requirements from surrounding effects',async t=>{
+ const p=await setup(t);await p.setViewportSize({width:360,height:740});
+ await p.locator('#language').selectOption('ko');await idle(p);await p.locator('#open-items').click();
+ assert.equal(await p.locator('#item-catalog-heading').innerText(),'탐험가의 아이템 도감');
+ await p.locator('#item-slot').selectOption('aura');assert.equal(await p.locator('[data-item]').count(),4);
+ await p.locator('[data-item="firefly-orbit"]').click();assert.match(await p.locator('#item-detail-fit').innerText(),/손·발이나 고정할 부위가 필요 없/);
+ assert.equal(await p.locator('#item-detail').evaluate(e=>e.scrollWidth<=e.clientWidth+1),true);
+ await p.locator('#close-item-detail').click();await p.locator('#item-clear').click();
+ await p.locator('#item-search').fill('목도리');assert.equal(await p.locator('[data-item]').count(),2);
+ assert.equal(await p.locator('#item-catalog').evaluate(e=>e.scrollWidth<=e.clientWidth+1),true);
+ await p.locator('.item-fit-explanation summary').click();assert.match(await p.locator('.item-fit-explanation').innerText(),/손이 없는 친구도 수집/);
+ if(process.env.ANNA_ITEMS_CAPTURE){await p.locator('#item-clear').click();await p.locator('#item-catalog').evaluate(e=>e.scrollTo(0,0));await p.screenshot({path:process.env.ANNA_ITEMS_CAPTURE});}
+ assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
+});
+
 test('pixel companion is saved at birth without AI, and conversion produces a transparent 64px PNG',async t=>{
  const p=await setup(t);await start(p);
  await p.waitForFunction(()=>window.hostTest.state.kv['notebuddy/art-v1']?.['isolated-fixture/pixel-stage-1']);

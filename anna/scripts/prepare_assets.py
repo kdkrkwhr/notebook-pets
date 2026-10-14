@@ -28,6 +28,10 @@ for name in sorted(expected):
 (ART / 'dungeons-v2').mkdir(parents=True, exist_ok=True)
 for name in ['hellgate.png', 'icekingdom.png', 'dreamforest.png', 'guardians.png']:
     shutil.copy2(ROOT / 'assets' / 'dungeons-v2' / name, ART / 'dungeons-v2' / name)
+# Item illustrations are catalog assets, never generated while browsing the book.
+(ART / 'items-v1').mkdir(parents=True, exist_ok=True)
+for path in (ROOT / 'assets' / 'items-v1').glob('*.png'):
+    shutil.copy2(path, ART / 'items-v1' / path.name)
 # Remove obsolete generated starter copies, never personal storage or source art.
 for path in ART.glob('*_stage1.png'):
     path.unlink()

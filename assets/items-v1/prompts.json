@@ -1,0 +1,70 @@
+{
+  "generator": "built-in image_gen",
+  "transparent_background": true,
+  "items": [
+    {
+      "id": "traveler-hat",
+      "prompt": "Use case: stylized-concept. Asset: one inventory icon for Notebuddy, a cozy pixel-art fantasy pet RPG. Create ONLY a small traveler's hat: soft moss-green felt, rounded conical crown, short warm tan brim, tiny cream leaf pinned to a brown band. No head, no character. Premium handcrafted 32-bit pixel art, chunky crisp square pixels, limited harmonious palette, warm dark outlines, three-tone shading, readable silhouette, slight three-quarter view, NOT vector art, NOT glossy 3D, NOT smooth painting. Square composition with a single large centered item occupying 65 percent of the canvas, generous empty margins on all sides. Transparent background with actual alpha, no scene, no ground, no UI, no labels, no letters, no watermark, no grid. This will be viewed at 80-128 pixels, keep details bold."
+    },
+    {
+      "id": "red-scarf",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a small warm cherry-red knitted scarf tied in a loose loop with two short fringed ends, charming fold shapes, coral highlights and dark wine shadows."
+    },
+    {
+      "id": "traveler-cape",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a small moss-green traveler's cape with warm beige lining and a tiny round brass clasp; empty garment only, a simple soft triangular drape and rounded hem."
+    },
+    {
+      "id": "little-starlight",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a small cluster of five floating golden and cream four-pointed star sparkles arranged as a loose orbit with an EMPTY CENTER, tiny muted gold pixel specks, magical effect only."
+    },
+    {
+      "id": "ember-horns",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a wearable charcoal headband with TWO small curved horn-shaped ornaments, warm orange glowing ember tips and subtle red cracks. A costume accessory, not biological horns or a skull."
+    },
+    {
+      "id": "sealstone-pendant",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a single dark volcanic-stone pendant on a simple bronze chain; a small angular orange fissure glows inside the gray stone, ancient sealed-gate motif without letters."
+    },
+    {
+      "id": "blazing-cape",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a small empty charcoal-red fabric cape with bronze collar clasp, a deep burgundy upper drape and bold golden-orange flame-shaped hems. Rare magical garment, dramatic but friendly."
+    },
+    {
+      "id": "drifting-embers",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a gentle loose circular orbit of seven warm orange and gold ember particles around an EMPTY CENTER, some tiny crimson pixels, magical surrounding effect with no ground or character."
+    },
+    {
+      "id": "frost-crown",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a small elegant silver and pale ice-blue crown, five pointed frozen crystal prongs, a large faceted glowing blue crystal in the center, restrained icy white highlights. Rare winter royalty accessory."
+    },
+    {
+      "id": "snowflake-scarf",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a loosely looped icy blue knitted scarf with two short ends, bright white snowflake stitches and pale lavender shadows. Empty scarf, friendly and cozy."
+    },
+    {
+      "id": "aurora-cape",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a small empty fabric cape clasped with a silver star, folded cloth transitioning between muted turquoise and lilac with pale aurora ribbons along the hem, clear simple silhouette."
+    },
+    {
+      "id": "snowfall",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a small delicate circular drift of six white and pale cyan snowflake sprites around an EMPTY CENTER, two distinct larger six-point snow crystals and a few tiny square flakes. Surrounding magical effect only."
+    },
+    {
+      "id": "moonflower-crown",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a small circular flower wreath with three pale cream-lavender moonflowers and sage-green leaves, a tiny silver crescent pendant at the front; an empty wearable circlet."
+    },
+    {
+      "id": "dewdrop-necklace",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a fine vine-like sage necklace holding one large turquoise teardrop jewel, silver-blue highlight, a tiny leaf attachment, elegant simple fantasy accessory."
+    },
+    {
+      "id": "butterfly-cape",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: an EMPTY fabric cape shaped like a pair of butterfly wings, lavender and dusky lilac cloth panels with cream edge markings, sage collar clasp, clearly CLOTH GARMENT not living butterfly or insect body."
+    },
+    {
+      "id": "firefly-orbit",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous margins. Transparent background with true alpha. No character, body, model, ground, scene, UI, text, labels, border, watermark or grid. Icon will display at 80-128 pixels. Subject: a small loose orbit of five tiny golden-green fireflies with clearly visible tiny bodies and pale wings around an EMPTY CENTER, short pixel sparkle trails, muted forest-green and warm yellow palette. Rare magical surrounding effect, no companion."
+    }
+  ]
+}

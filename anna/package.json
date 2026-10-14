@@ -1,6 +1,6 @@
 {
   "name": "notebuddy-anna",
-  "version": "0.8.1",
+  "version": "0.9.0",
   "private": true,
   "description": "Notebook Pets on Anna: one lifelong AI companion.",
   "scripts": {
