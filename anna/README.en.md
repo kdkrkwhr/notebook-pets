@@ -10,7 +10,7 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-As of October 14, 2026, the owner test app is **1.0.0**. It restyles the app as a JRPG-style notebook, adds a title screen and gives the dungeon companion a 2.5D turn and walk. Version **0.8.1 is awaiting store review**; public release is still pending. The test update adds a **sixteen-item catalog preview** alongside creation, care, conversation, personality, walks and dungeons. Collecting, buying and equipping items are planned for later.
+As of October 14, 2026, the owner test app is **1.0.0**. It restyles the app as a JRPG-style notebook, adds a title screen and gives the dungeon companion a 2.5D turn and walk. Version **1.0.0 is awaiting store review**; public release is still pending. The test update adds a **sixteen-item catalog preview** alongside creation, care, conversation, personality, walks and dungeons. Collecting, buying and equipping items are planned for later.
 
 ## Your first meeting
 
@@ -59,6 +59,6 @@ Switching between English and Korean changes the interface and new replies while
 
 ---
 
-[Full feature gallery](../README.en.md) · [Development and setup](DEVELOPMENT.en.md) · [1.0.0 deployment](RELEASE_100.md) · [0.10.1 deployment](RELEASE_0101.md) · [0.10.0 deployment](RELEASE_0100.md) · [0.9.0 deployment](RELEASE_090.md) · [0.8.1 review guide](REVIEW_081.md) · [Handoff](HANDOFF.md)
+[Full feature gallery](../README.en.md) · [Development and setup](DEVELOPMENT.en.md) · [1.0.0 deployment](RELEASE_100.md) · [0.10.1 deployment](RELEASE_0101.md) · [0.10.0 deployment](RELEASE_0100.md) · [0.9.0 deployment](RELEASE_090.md) · [1.0.0 review guide](REVIEW_100.md) · [0.8.1 review guide](REVIEW_081.md) · [Handoff](HANDOFF.md)
 
 Screenshots show the real UI with separate test data. Mori is an actual Anna-generated result; the item book is from 0.9.0. [Screenshot sources](../docs/screenshots/README.md)

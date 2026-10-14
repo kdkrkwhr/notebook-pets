@@ -4,9 +4,9 @@ The feature guides use browser captures of the actual Notebuddy UI, not generate
 
 ## Creation, care, album and dungeon
 
-The existing images in [`anna/store/`](../../anna/store/README.md) were captured from the 0.8.1 UI on 2026-10-14 with disposable real-engine views. They demonstrate features retained in the 0.9.0 test app. The reference drawing and the Anna-generated companion are the same **Mori** throughout. Chat is empty; no dialogue was fabricated. The dungeon image is explicitly a **preview before entry**, not a battle capture.
+The existing images in [`anna/store/`](../../anna/store/README.md) were recaptured from the 1.0.0 UI on 2026-10-14 with disposable real-engine views and are also the 1.0.0 store listing images. The reference drawing and the Anna-generated companion are the same **Mori** throughout. Chat is empty; no dialogue was fabricated. The dungeon image is explicitly a **preview before entry**, not a battle capture.
 
-The READMEs link to these files in place. They were not regenerated or modified for this documentation update, and the pending 0.8.1 store listing was not changed.
+The READMEs link to these files in place, so they always show the current store captures.
 
 ## Item book · 0.9.0
 
