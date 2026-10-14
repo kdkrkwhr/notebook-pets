@@ -856,8 +856,8 @@ test('dungeon scene discards late, failed and cleared portrait loads instead of 
   const a=art.getContext('2d');a.fillStyle='#bb4080';a.fillRect(8,8,24,48);const first=art.toDataURL();
   a.clearRect(0,0,64,64);a.fillStyle='#bb4080';a.fillRect(8,32,48,24);const second=art.toDataURL();
   img.src=second;await scene.load('hellgate');scene.draw();const expected=c.toDataURL();
-  const decode=Image.prototype.decode;let release,entered;const waiting=new Promise(r=>entered=r);
-  Image.prototype.decode=async function(){if(this.src===first){entered();await new Promise(r=>release=r);}return decode.call(this);};
+  const original=window.fetch,caches=[];let release,entered;const waiting=new Promise(r=>entered=r);
+  window.fetch=async(url,options)=>{caches.push(options?.cache);if(url===first){entered();await new Promise(r=>release=r);}return original(url,options);};
   try{
    img.src=first;const older=scene.load('hellgate');await waiting;
    const blank=()=>!c.getContext('2d').getImageData(0,0,c.width,c.height).data.some((v,i)=>i%4===3&&v);
@@ -866,9 +866,10 @@ test('dungeon scene discards late, failed and cleared portrait loads instead of 
    img.src='data:image/png;base64,invalid';const fallback=await scene.load('hellgate',{fallback:second});scene.draw();const afterFallback=c.toDataURL();
    const failed=await scene.load('hellgate');scene.draw();const blankAfterFailure=blank();
    img.src=first;const pending=scene.load('hellgate');await Promise.resolve();scene.clear();release();const cleared=await pending;scene.draw();
-   return {expected,afterLate,afterFallback,ignored,fallback,failed,cleared,blankDuringLoad,blankAfterFailure,blankAfterClear:blank()};
-  }finally{Image.prototype.decode=decode;c.remove();}
+   return {expected,afterLate,afterFallback,ignored,fallback,failed,cleared,blankDuringLoad,blankAfterFailure,blankAfterClear:blank(),bypassesCache:caches.length>0&&caches.every(v=>v==='no-store')};
+  }finally{window.fetch=original;c.remove();}
  });
+ assert.equal(result.bypassesCache,true);
  assert.equal(result.afterLate,result.expected);assert.equal(result.afterFallback,result.expected);
  assert.equal(result.fallback,true);assert.equal(result.ignored,false);assert.equal(result.failed,false);assert.equal(result.cleared,false);
  assert.ok(result.blankDuringLoad&&result.blankAfterFailure&&result.blankAfterClear);

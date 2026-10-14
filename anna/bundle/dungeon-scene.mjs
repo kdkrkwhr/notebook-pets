@@ -20,7 +20,8 @@ export function createDungeonScene(canvas,explorer){
  const c=canvas.getContext('2d');let key='hellgate',atlas=null,ready=false,generation=0,portrait=null,terrain=null,terrainKey='';
  async function loadPortrait(sources){
   for(const src of new Set(sources.filter(Boolean))){
-   try{const img=new Image();img.crossOrigin='anonymous';img.src=src;await img.decode();return pixelCanvas(img);}
+   // The home screen already shows these signed URLs without CORS; a cached copy fails a CORS read.
+   try{const response=await fetch(src,{cache:'no-store'});if(!response.ok)throw Error('Portrait unavailable');const bitmap=await createImageBitmap(await response.blob());try{return pixelCanvas(bitmap);}finally{bitmap.close();}}
    catch{/* Try only another image of this same companion. */}
   }
   throw Error('Companion portrait unavailable');
