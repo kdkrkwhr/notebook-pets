@@ -9,6 +9,7 @@ export const messages = {
 "personalityWorking":["Getting to know this little friend…", "이 친구만의 성격을 알아가는 중…"],
 "personalityFailed":["Could not finish meeting your personality. Saved progress is safe. Press the button to retry; a saved result is reused.", "성격을 완성하지 못했어요. 기존 진행은 보존돼요. 버튼으로 다시 시도할 수 있고, 이미 저장된 결과는 재사용해요."],
 "personalityInterrupted":["An earlier attempt was interrupted. Press the button to continue when ready.", "이전 생성이 중단됐어요. 준비되면 버튼으로 이어갈 수 있어요."],
+"personalitySaveFailed":["Your personality arrived, but saving is unfinished. Retry in this window to save it without another AI request.", "성격은 받았지만 저장이 끝나지 않았어요. 이 창에서 다시 누르면 AI 요청 없이 저장해요."],
 "personalityStable":["This is your starting personality. Shared experiences slowly shape its expression; evolution keeps the same friend.", "처음 만난 성격이에요. 함께한 경험이 표현을 조금씩 바꾸고, 진화해도 같은 친구로 이어져요."],
 "personalityChange":["After {actions}, {trait} has become {direction}.", "{actions} 경험이 쌓여 {trait}이(가) {direction}."],
 "more":["a little stronger", "조금 더 강해졌어요"],

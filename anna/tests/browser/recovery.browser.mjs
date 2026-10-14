@@ -964,6 +964,17 @@ test('personality generation failure leaves game playable and only explicit retr
  await fault(p,{personalityMalformed:false});await p.locator('#personality-details summary').click();await p.locator('#meet-personality').click();await idle(p);
  await p.waitForFunction(()=>window.hostTest.state.save.status.personality);assert.equal((await calls(p,'personality-llm')).length,1);
 });
+test('received personality survives draft save failure and retries without paid generation',async t=>{
+ const p=await setup(t,{personalityDraftSave:true});await start(p);
+ await p.waitForFunction(()=>document.querySelector('#personality-status').textContent.includes('saving is unfinished'));
+ assert.equal((await calls(p,'personality-llm')).length,1);assert.equal((await calls(p,'personality')).length,0);
+ assert.equal(await p.locator('[data-action="feed"]').isEnabled(),true);
+ await fault(p,{personalityDraftSave:false});await p.locator('#personality-details summary').click();await p.locator('#meet-personality').click();await idle(p);
+ await p.waitForFunction(()=>window.hostTest.state.save.status.personality);
+ assert.equal((await calls(p,'personality-llm')).length,1);assert.equal((await calls(p,'personality')).length,1);
+ await p.reload();await idle(p);assert.equal((await calls(p,'personality-llm')).length,0);
+});
+
 test('walk influence remains visible independently of AI scene and survives reload',async t=>{
  const p=await setup(t,{walkOutcome:'quiet',journey:true});await start(p);await p.locator('[data-action="walk"]').click();
  await p.waitForFunction(()=>document.querySelectorAll('#story-choices button').length===2);

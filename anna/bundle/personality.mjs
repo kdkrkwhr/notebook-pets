@@ -16,7 +16,7 @@ export function parsePersonality(response,appearance,source){
 // The draft is separate from the art index and is included in reset/removal.
 // Only explicit creation or a retry asks AI; refresh never starts a paid request.
 export function createPersonality(h){
- let working=false,epoch=0,feedback='';
+ let working=false,epoch=0,feedback='',received=null;
  const display=()=>h.render({working,feedback});
  async function active(pet,token){const v=await h.active();if(token!==epoch||v.pet_id!==pet)throw Error('Companion changed');return v;}
  async function save(pet,token,value){
@@ -29,27 +29,31 @@ export function createPersonality(h){
   if(working)return;const token=epoch;working=true;feedback='';display();
   try{
    const snapshot=await h.active(),pet=snapshot.pet_id;
-   if(snapshot.status?.personality){h.saved(snapshot);return;}
+   if(received?.pet_id!==pet)received=null;
+   if(snapshot.status?.personality){received=null;h.saved(snapshot);return;}
    const row=await h.anna().storage.get({key:PERSONA});await active(pet,token);
    if(erased(row.value))throw new ErasedError();
    const prior=row.value?.pet_id===pet?row.value:null;
-   if(automatic&&prior&&!prior.output){feedback='personalityInterrupted';return;}
-   let profile=prior?.output;
+   let profile=prior?.output||received?.output;
+   if(automatic&&prior&&!profile){feedback='personalityInterrupted';return;}
    if(!profile){
     // A durable marker is written before vision or text requests.
     await save(pet,token,{pet_id:pet,state:'generating'});
     const {appearance,source}=await h.features(snapshot);await active(pet,token);
     const response=await h.anna().llm.complete({systemPrompt:personalityPrompt(snapshot.status.name,appearance),messages:[{role:'user',content:{type:'text',text:'Create this fictional companion’s personality.'}}],temperature:.7,maxTokens:900},{timeoutMs:45000});
-    profile=parsePersonality(response,appearance,source);await active(pet,token);
-    await save(pet,token,{pet_id:pet,state:'ready',output:profile});
+    profile=parsePersonality(response,appearance,source);
+    if(token!==epoch)throw Error('Companion changed');
+    // Keep the received answer in this window until its durable save succeeds.
+    received={pet_id:pet,output:profile};await active(pet,token);
    }
+   if(!prior?.output)await save(pet,token,{pet_id:pet,state:'ready',output:profile});
    const before=await active(pet,token);
-   if(before.status?.personality){h.saved(before);return;}
+   if(before.status?.personality){received=null;h.saved(before);return;}
    const result=await h.commit(before,JSON.stringify(profile));await active(pet,token);
    if(!result.ok||!result.status?.personality)throw Error('Personality not committed');
-   h.saved(result);feedback='';
-  }catch{if(token===epoch)feedback='personalityFailed';}
+   received=null;h.saved(result);feedback='';
+  }catch{if(token===epoch)feedback=received?'personalitySaveFailed':'personalityFailed';}
   finally{if(token===epoch){working=false;display();}}
  }
- return {run,render:display,clear(){epoch++;working=false;feedback='';display();}};
+ return {run,render:display,clear(){epoch++;working=false;feedback='';received=null;display();}};
 }
