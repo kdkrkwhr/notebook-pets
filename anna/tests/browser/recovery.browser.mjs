@@ -840,10 +840,16 @@ test('dungeon avatar preserves distinct silhouettes with the same colors and ani
   a.fillStyle='#af4e80';a.fillRect(8,8,24,48);a.fillStyle='#ffe7a0';a.fillRect(9,12,4,4);
   const draw=(direction,frame)=>{c.clearRect(0,0,96,96);drawAvatar(c,48,90,{portrait,direction,frame});return canvas.toDataURL();};
   const first=draw('down',0),step=draw('down',1),left=draw('left',0),right=draw('right',0);
+  const opaque=turn=>{c.clearRect(0,0,96,96);drawAvatar(c,48,90,{portrait,direction:'right',turn});const d=c.getImageData(0,0,96,70).data;let min=96,max=-1;for(let i=3;i<d.length;i+=4)if(d[i]>200){const x=(i>>2)%96;min=Math.min(min,x);max=Math.max(max,x);}return max-min+1;};
+  const full=opaque(1),edge=opaque(.25);
+  const shade=dir=>{c.clearRect(0,0,96,96);drawAvatar(c,48,90,{portrait,direction:dir});const d=c.getImageData(0,0,96,96).data;const at=(x,y)=>d[(y*96+x)*4];const xs=[];for(let x=0;x<96;x++)if(d[(60*96+x)*4+3]>200)xs.push(x);return [at(xs[0],60),at(xs.at(-1),60)];};
+  const [lightLeft,darkRight]=shade('right'),[mirroredLeft,mirroredRight]=shade('left');
   a.clearRect(0,0,64,64);a.fillStyle='#af4e80';a.fillRect(8,32,48,24);a.fillStyle='#ffe7a0';a.fillRect(9,36,4,4);
-  return {first,second:draw('down',0),step,left,right};
+  return {first,second:draw('down',0),step,left,right,full,edge,lightLeft,darkRight,mirroredLeft,mirroredRight};
  });
  assert.notEqual(result.first,result.second);assert.notEqual(result.first,result.step);assert.notEqual(result.left,result.right);
+ assert.ok(result.edge<result.full*.5,`mid-turn ${result.edge}px vs ${result.full}px`);
+ assert.ok(result.lightLeft>result.darkRight&&result.mirroredLeft>result.mirroredRight,'light stays on the world left when mirrored');
  assert.equal((await calls(p,'image')).length,0);
 });
 

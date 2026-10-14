@@ -3,6 +3,15 @@ import assert from 'node:assert/strict';
 import {clearWhiteBorder,currentPixel,pixelKey,pixelSource} from '../bundle/pixel-pet.mjs';
 import {routePosition} from '../bundle/dungeon.mjs';
 import {WORLD,cameraAt} from '../bundle/dungeon-scene.mjs';
+import {TURN_MS,turnToward} from '../bundle/dungeon-avatar.mjs';
+
+test('dungeon avatar turns through the card edge instead of snapping, and keeps its side on vertical travel',()=>{
+  const half=turnToward(1,'left',TURN_MS/2);assert.ok(Math.abs(half)<.01);
+  assert.equal(turnToward(half,'left',TURN_MS/2),-1);
+  assert.equal(turnToward(-1,'up',50),-1);assert.equal(turnToward(1,'down',50),1);
+  assert.equal(turnToward(1,'left',Infinity),-1);assert.equal(turnToward(1,'left',-5),-1);
+  let turn=-1;for(let t=0;t<TURN_MS;t+=16)turn=turnToward(turn,'right',16);assert.equal(turn,1);
+});
 
 test('pixel background removal preserves enclosed white features and colored edges',()=>{
   const data=new Uint8ClampedArray(5*5*4).fill(255);

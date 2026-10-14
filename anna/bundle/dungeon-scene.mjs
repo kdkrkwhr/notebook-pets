@@ -1,6 +1,6 @@
 import {WORLD,THEMES,layout,worldPoint,routePoint,paintRoom} from './dungeon-map.mjs';
 import {drawEnemy} from './dungeon-enemies.mjs';
-import {drawAvatar,facing} from './dungeon-avatar.mjs';
+import {drawAvatar,facing,turnToward} from './dungeon-avatar.mjs';
 import {pixelCanvas} from './pixel-pet.mjs';
 import {journey,WALK_MS,ROUND_MS,EXIT_MS,REST_MS,totalDuration} from './dungeon-journey.mjs';
 export {WORLD,WALK_MS,ROUND_MS};
@@ -17,7 +17,7 @@ export function paintDungeon(canvas,key){
  asset(key).then(img=>{if(canvas.isConnected){c.drawImage(img,110,230,1340,754,0,0,480,270);canvas.dataset.art='ready';}}).catch(()=>{canvas.dataset.art='failed';});
 }
 export function createDungeonScene(canvas,explorer){
- const c=canvas.getContext('2d');let key='hellgate',atlas=null,ready=false,generation=0,portrait=null,terrain=null,terrainKey='';
+ const c=canvas.getContext('2d');let key='hellgate',atlas=null,ready=false,generation=0,portrait=null,terrain=null,terrainKey='',turn=1,turnAt=null;
  async function loadPortrait(sources){
   for(const src of new Set(sources.filter(Boolean))){
    // The home screen already shows these signed URLs without CORS; a cached copy fails a CORS read.
@@ -38,7 +38,7 @@ export function createDungeonScene(canvas,explorer){
  }
  return {
   async load(region,identity={}){
-   const ticket=++generation;ready=false;portrait=null;key=region;explorer.hidden=true;canvas.dataset.art='loading';c.clearRect(0,0,canvas.width,canvas.height);
+   const ticket=++generation;ready=false;portrait=null;key=region;turnAt=null;explorer.hidden=true;canvas.dataset.art='loading';c.clearRect(0,0,canvas.width,canvas.height);
    const sources=[explorer.src,identity.fallback];
    try{const [original,currentPortrait]=await Promise.all([asset('guardians'),loadPortrait(sources)]);if(ticket!==generation)return false;atlas=document.createElement('canvas');atlas.width=252;atlas.height=168;atlas.getContext('2d').drawImage(original,0,0,252,168);portrait=currentPortrait;ready=true;canvas.dataset.art='ready';return true;}
    catch{if(ticket===generation)canvas.dataset.art='failed';return false;}
@@ -65,9 +65,9 @@ export function createDungeonScene(canvas,explorer){
    }else enemy(room.enemy,boss[0],boss[1],beat,battle,exit||finished&&state.room.combat?.hp_enemy<=0,reduced,index%2?'right':'left',elapsed);
    if(battle&&beat<.45)ellipse(hero[0],hero[1],30+beat*30,14+beat*10,'#ff7c5555');
    let hx=hero[0],hy=hero[1];if(impact&&state.frame?.dodged_me&&!reduced)hy+=Math.sin((beat-.45)/.21*Math.PI)*25;
-   ellipse(hx,hy+2,20,8,'#0008');
    const frame=walking&&!reduced?Math.floor(elapsed/140)%4:0;
-   drawAvatar(c,hx,hy,{portrait,direction,frame,scale:2.1,hit:impact&&!state.frame?.dodged_me,fallen:finished&&run?.hp_me<=0});
+   turn=turnToward(turn,direction,reduced||turnAt===null?Infinity:elapsed-turnAt);turnAt=elapsed;
+   drawAvatar(c,hx,hy,{portrait,direction,frame,walking:walking&&!reduced,turn,scale:2.1,hit:impact&&!state.frame?.dodged_me,fallen:finished&&run?.hp_me<=0});
    if(battle&&beat>.65&&beat<.9){c.strokeStyle='#ffedbd';c.lineWidth=4;c.beginPath();c.moveTo(hx+12,hy-35);c.lineTo(boss[0]-10,boss[1]-25);c.stroke();}
    if(battle&&beat>.55){
     const prev=state.turn?room.combat.turns[state.turn-1]:{hp_me:room.start_hp,hp_enemy:room.combat.max_hp_enemy};
@@ -83,7 +83,7 @@ export function createDungeonScene(canvas,explorer){
    c.fillStyle=unlocked?'#b4edb4':'#de9a8e';const door=worldPoint(map.exit);c.fillRect(mx+door[0]/WORLD.width*mw-2,my+door[1]/WORLD.height*mh-2,4,4);
    const count=state.total,gap=16,start=mx+mw/2-(count-1)*gap/2;
    for(let i=0;i<count;i++){c.fillStyle=i<index?'#9bb897':i===index?'#ffdb91':'#33464c';c.fillRect(start+i*gap-4,my+mh+12,8,8);}
-   canvas.dataset.camera=`${camera.x.toFixed(1)},${camera.y.toFixed(1)}`;canvas.dataset.phase=finished?'finished':phase;canvas.dataset.room=String(index+1);canvas.dataset.enemy=room.enemy||'none';canvas.dataset.direction=direction;canvas.dataset.walkFrame=String(frame);
+   canvas.dataset.camera=`${camera.x.toFixed(1)},${camera.y.toFixed(1)}`;canvas.dataset.phase=finished?'finished':phase;canvas.dataset.room=String(index+1);canvas.dataset.enemy=room.enemy||'none';canvas.dataset.direction=direction;canvas.dataset.walkFrame=String(frame);canvas.dataset.turn=turn.toFixed(2);
   }
  };
 }
