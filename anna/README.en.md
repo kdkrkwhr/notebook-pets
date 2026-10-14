@@ -4,9 +4,9 @@
 
 One companion. A little care, every day. This Anna app reuses the original Notebook Pets Python engine with an English-first interface and an optional Korean interface. The review candidate is app **0.8.1**, game tool **0.6.0**, with status **pending_review**. On 2026-10-14, the listing, privacy link and five screenshots were updated, and review was resubmitted from **0.3.4 to 0.8.1**. A fresh server read confirmed the candidate and status. See the [review guide](REVIEW_081.md) and [submission/deployment record](RELEASE_081.md); approval and publication are still pending.
 
-## Item book · 0.9.0 test candidate
+## Item book · 0.9.0 owner test deployment
 
-Browse **16 pixel-illustrated cosmetic items** from everyday adventures, Hellgate, Ice Kingdom and Dream Forest. **Browse items** opens region/type filters, search and details with lore, rarity, planned acquisition and attachment requirements, even before creating a companion. This is a catalog preview: collecting, buying, equipping and individual anatomy analysis are not available yet. Browsing spends no coins or AI allowance. See [scope and future fit rules](ITEMS.md).
+Browse **16 pixel-illustrated cosmetic items** from everyday adventures, Hellgate, Ice Kingdom and Dream Forest. **Browse items** opens region/type filters, search and details with lore, rarity, planned acquisition and attachment requirements, even before creating a companion. This is a catalog preview: collecting, buying, equipping and individual anatomy analysis are not available yet. Browsing spends no coins or AI allowance. Installed and verified in the owner's test app; the pending review remains 0.8.1. See [scope and future fit rules](ITEMS.md) and the [deployment record](RELEASE_090.md).
 
 ## Connected dungeon rooms
 
