@@ -1,4 +1,6 @@
 import {createItemCatalog} from './item-catalog.mjs';
+import {createTitleScreen} from './title-screen.mjs';
+import {createBirthSteps} from './birth-steps.mjs';
 import {createPersonality,axes as personalityAxes} from './personality.mjs';
 import {checkArtwork} from './birth-art.mjs';
 let persona,personalityFeedback='',personalityWorking=false;
@@ -28,6 +30,8 @@ let preferences;
 try{preferences=window.localStorage;}catch{preferences=null;}
 let language=loadLanguage(preferences);
 const itemCatalog=createItemCatalog(document,()=>language);
+const titleScreen=createTitleScreen(document,{items:()=>itemCatalog.open(),privacy:()=>$('#privacy-dialog').showModal()});
+const birthSteps=createBirthSteps(document);
 let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingImage=null,pendingChat=null;
 let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetRequest=null;
 const tr=(key,values)=>t(language,key,values);
@@ -39,7 +43,7 @@ $('#draw-evolved').addEventListener('click',()=>$('#draw').click());
 function notice(message=''){ $('#notice').textContent=message;$('#notice').hidden=!message; }
 function controls(value){
   busy=value;
-  document.querySelectorAll('button,input,select').forEach(e=>e.disabled=value);
+  document.querySelectorAll('button,input,select').forEach(e=>{if(!e.closest('#title-screen'))e.disabled=value;});
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingResetRequest||view?.reset_pending))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
   $('#retry-chat').hidden=!pendingChat;
   $('#retry-reaction').hidden=!reactions?.hasUnsaved();
@@ -111,7 +115,7 @@ function render(){
   $('#reset-game').hidden=resetting||!s;
   if(view?.erased)forgetCachedData();
   $('#welcome').hidden=resetting||!!s||view?.code!=='not_started';$('#game').hidden=!s;
-  if(!s){birth?.render();return;}
+  if(!s){birth?.render();birthSteps.render();return;}
   renderPersonality();
   text('#name',s.name);text('#pet-type',`${s.species} · ${s.element}`);text('#mood',`◌ ${s.mood}`);
   renderWalkEnergy();
@@ -143,6 +147,7 @@ function render(){
     const subtitle=document.createElement('small');subtitle.textContent=entry.reached?tr(entry.current?'currentStage':'memoryStage'):tr('futureStage',{level:entry.min_level});
     item.append(frame,title,subtitle);$('#album').append(item);
   }
+  $('#collection-album').replaceChildren(...[...$('#album').children].map(item=>item.cloneNode(true)));
   drawChat();birth?.render();stories?.render();dungeons?.render();renderPixel();renderPersonality();
 }
 function forgetCachedData(){
@@ -152,7 +157,7 @@ function forgetCachedData(){
   reactions?.clear();reactionFeedback();
   battleScene.close();
   history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
-  $('#messages').replaceChildren();$('#album').replaceChildren();$('#quests').replaceChildren();
+  $('#messages').replaceChildren();$('#album').replaceChildren();$('#collection-album').replaceChildren();$('#quests').replaceChildren();
   for(const id of ['name','pet-type','title','action-result','pet-name','chat-input','mood','level','stage-label','xp-label','satiety','intimacy','stats','inventory','image-caption','quest-date','encounter-text']){const e=$(`#${id}`);if('value' in e)e.value='';else e.textContent='';}
   for(const e of document.querySelectorAll('#game progress'))e.value=0;
   $('#encounter').hidden=true;
@@ -497,4 +502,5 @@ persona=createPersonality({anna:()=>anna,active:assertActive,
 });
 
 translate();
+titleScreen.show();
 await refresh();

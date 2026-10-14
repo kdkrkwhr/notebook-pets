@@ -301,6 +301,19 @@ export const messages = {
   opponentHP: ["Opponent HP", "상대 체력"],
   growthPortrait: ["Your companion has grown. You can draw a portrait for this stage; until then, the starter picture remains.", "친구가 성장했어요. 이 단계의 새 그림을 생성할 수 있어요. 그전까지는 첫 모습이 표시됩니다."],
   drawEvolved: ["Draw this growth stage", "성장한 모습 그리기"],
+  titleTagline: ["A one-of-a-kind companion, born on a notebook page", "공책 한 장에서 태어난 단 하나의 친구"],
+  titlePress: ["Press any key", "아무 키나 눌러 시작"],
+  titleStart: ["Start", "시작하기"],
+  titleItems: ["Item book", "아이템 도감"],
+  titleMenu: ["Title menu", "타이틀 메뉴"],
+  birthSteps: ["Steps to meet your companion", "친구를 만나는 단계"],
+  birthStepMode: ["How to meet", "만나는 방법"],
+  birthStepName: ["Name", "이름 짓기"],
+  birthStepMeet: ["Meet", "만나기"],
+  collectionTabs: ["Collection", "도감"],
+  collectionItems: ["Items", "아이템"],
+  collectionAlbum: ["Growth album", "성장 앨범"],
+  collectionAlbumEmpty: ["Meet your companion to start the growth album.", "친구를 만나면 성장 앨범이 채워져요."],
 };
 export function normalizeLanguage(value){return value==='ko'?'ko':'en';}
 export function t(language,key,values={}){

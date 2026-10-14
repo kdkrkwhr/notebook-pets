@@ -34,7 +34,7 @@ async function setup(t,faults={}){
  t.after(()=>assert.deepEqual(errors,[],'No uncaught browser errors'));
  return page;
 }
-async function idle(p){await p.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled&&document.querySelector('#messages').dataset.reactionBusy!=='true');}
+async function idle(p){await p.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled&&document.querySelector('#messages').dataset.reactionBusy!=='true');await p.evaluate(()=>{if(document.querySelector('#title-screen').open)document.querySelector('#title-start').click();});}
 async function fault(p,value){await p.evaluate(v=>Object.assign(window.hostTest.faults,v),value);}
 async function start(p){await p.locator('#pet-name').fill('Recovery buddy');await p.locator('#start-form button').click();await idle(p);}
 async function finishWalk(p){
@@ -1071,4 +1071,33 @@ test('walk influence remains visible independently of AI scene and survives relo
  await p.locator('#story-resume').click();assert.equal(await p.locator('#story-influence').isVisible(),true);
  await p.locator('#story-choices button').last().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
  assert.match(await p.locator('#story-influence').innerText(),/regardless of preparation/);
+});
+
+test('title screen opens on every load, never blocks connection and leads to the collection',async t=>{
+ const p=await setup(t);await start(p);
+ await p.reload();await p.waitForFunction(()=>document.querySelector('#title-screen').open);
+ assert.equal(await p.locator('#title-start').evaluate(e=>document.activeElement===e),true);
+ await p.waitForFunction(()=>document.querySelector('#connection').textContent.includes('Connected'));
+ assert.equal(await p.locator('#title-start').isDisabled(),false);
+ await p.keyboard.press('ArrowDown');assert.equal(await p.locator('#title-items').evaluate(e=>document.activeElement===e),true);
+ await p.keyboard.press('x');assert.equal(await p.locator('#title-screen').isVisible(),false);
+ await p.reload();await p.waitForFunction(()=>document.querySelector('#title-screen').open);
+ const callsBefore=await p.evaluate(()=>window.hostTest.calls.filter(c=>c.args?.command!=='status').length);
+ await p.locator('#title-items').click();assert.equal(await p.locator('#item-catalog').isVisible(),true);
+ assert.equal(await p.locator('#collection-tab-items').getAttribute('aria-selected'),'true');
+ await p.locator('#collection-tab-album').click();assert.equal(await p.locator('#collection-album-panel').isVisible(),true);
+ assert.equal(await p.locator('#collection-album .album-item').count(),await p.locator('#album .album-item').count());
+ assert.equal(await p.locator('#collection-album-empty').isVisible(),false);
+ await p.keyboard.press('ArrowLeft');assert.equal(await p.locator('#item-book-panel').isVisible(),true);
+ assert.equal(await p.evaluate(()=>window.hostTest.calls.filter(c=>c.args?.command!=='status').length),callsBefore);
+});
+
+test('welcome steps follow the start form and the empty album explains itself',async t=>{
+ const p=await setup(t);
+ assert.equal(await p.locator('#birth-steps [aria-current=step]').getAttribute('data-step'),'name');
+ await p.locator('#pet-name').fill('Mori');assert.equal(await p.locator('#birth-steps [aria-current=step]').getAttribute('data-step'),'meet');
+ await p.locator('#birth-mode').selectOption('art');assert.equal(await p.locator('#birth-steps [aria-current=step]').getAttribute('data-step'),'mode');
+ await p.locator('#birth-mode').selectOption('random');
+ await p.locator('#open-items').click();await p.locator('#collection-tab-album').click();
+ assert.equal(await p.locator('#collection-album-empty').isVisible(),true);
 });

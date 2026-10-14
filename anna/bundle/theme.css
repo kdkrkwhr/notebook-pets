@@ -1,0 +1,117 @@
+/* Notebook JRPG theme: framed pixel windows on squared paper. Loaded after style.css. */
+@font-face{font-family:"Galmuri11";src:url("fonts/Galmuri11.woff2") format("woff2");font-weight:400;font-display:swap}
+@font-face{font-family:"Galmuri11";src:url("fonts/Galmuri11-Bold.woff2") format("woff2");font-weight:700;font-display:swap}
+:root{
+ --ink:#3d3226;--ink-soft:#6d5d49;--paper:#fffaf0;--page:#f2ead8;--grid:#e4d8bf;--frame:#d9c6a2;
+ --green:#55794a;--green-dark:#3d5a34;--gold:#d79a3a;--line:#d9c6a2;--muted:#7a6d5c;
+ --pixel:"Galmuri11","Malgun Gothic","Apple SD Gothic Neo",monospace;
+ --window-shadow:inset 0 0 0 3px var(--paper),inset 0 0 0 5px var(--frame),4px 4px 0 #3d322626;
+ color:var(--ink);background:var(--page);
+}
+body{background-color:var(--page);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;min-height:100dvh}
+
+h1,h2,h3,summary,button,select,.badge,.eyebrow,.brand,.level,.xp-label,.vitals span,.stats,.quests,.message-label,.album-item,footer,.birth-steps,.result,#inventory,#quest-date,.title-screen{font-family:var(--pixel)}
+h1,h2,h3{font-weight:700;letter-spacing:0;color:var(--ink)}
+.eyebrow{letter-spacing:1px;color:var(--ink-soft)}
+
+/* Windows */
+.paper,dialog:not(#dungeon-dialog):not(#title-screen){background:var(--paper);border:3px solid var(--ink);border-radius:6px;box-shadow:var(--window-shadow)}
+dialog::backdrop{background:#3d322666}
+.section-heading h2,.card-top h2{display:flex;align-items:center;gap:8px}
+.section-heading h2::before,.card-top h2::before{content:"";width:8px;height:8px;background:var(--gold);box-shadow:2px 2px 0 var(--ink);flex-shrink:0}
+
+/* Header */
+.masthead{background:var(--paper);border-bottom:3px solid var(--ink);box-shadow:0 3px 0 var(--frame)}
+.brand{color:var(--ink)}.brand>span{font:700 22px var(--pixel)}.brand small{font:11px var(--pixel);color:var(--ink-soft)}
+.brand img{image-rendering:pixelated}
+
+/* Buttons: chunky pixel keys that press down. */
+button{border:2px solid var(--ink);border-radius:4px;background:var(--paper);box-shadow:0 3px 0 var(--ink);transition:transform .08s,box-shadow .08s,background .12s}
+button:hover:not(:disabled){background:#fdf0d2;transform:none}
+button:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+button:disabled{box-shadow:0 3px 0 #3d322655}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.primary{background:var(--green);border-color:var(--ink);color:#fffaf0}
+.primary:hover:not(:disabled){background:var(--green-dark)}
+.quiet{background:var(--paper);border-color:var(--ink-soft);box-shadow:0 2px 0 var(--ink-soft)}
+.danger{background:#fff2ec;border-color:#913e32;color:#913e32;box-shadow:0 3px 0 #913e32}
+dialog .close,#story-close,#dungeon-close{box-shadow:none}
+input,select{border:2px solid var(--ink-soft);border-radius:4px;background:#fffdf7}
+select{font-size:13px}
+
+/* Care actions read as a command menu with a selection cursor. */
+.actions button{position:relative;background:#fffdf6}
+.actions span{font-family:var(--pixel);color:var(--green)}
+.actions b{font-weight:700}
+.actions button:hover:not(:disabled)::before,.actions button:focus-visible::before,.story-choice:hover:not(:disabled)::before,.story-choice:focus-visible::before{content:"▶";position:absolute;left:6px;top:8px;font-size:10px;color:var(--gold);animation:cursor-nudge .6s steps(2) infinite}
+.story-choice{position:relative;padding-left:28px;background:#fffdf6;border-color:var(--ink);font-family:"Malgun Gothic","Apple SD Gothic Neo",system-ui,sans-serif}
+.story-choice:hover:not(:disabled)::before,.story-choice:focus-visible::before{top:50%;margin-top:-7px;left:10px}
+@keyframes cursor-nudge{50%{transform:translateX(3px)}}
+
+/* Gauges */
+progress{height:10px;border:2px solid var(--ink);border-radius:0;background:#efe4cc}
+progress::-webkit-progress-bar{background:#efe4cc}
+progress::-webkit-progress-value{border-radius:0;background:repeating-linear-gradient(90deg,#7fa35f 0 6px,#6b9150 6px 8px)}
+#intimacy-bar::-webkit-progress-value{background:repeating-linear-gradient(90deg,#e09a7f 0 6px,#cf8569 6px 8px)}
+.vitals progress{height:10px}
+.badge{border:2px solid var(--ink-soft);border-radius:4px;background:#f5ecd6;color:var(--ink)}
+.level{font:700 24px var(--pixel);color:var(--green-dark)}
+
+/* Companion and chat */
+.message{border:2px solid var(--ink);border-radius:4px;background:#fffdf6;box-shadow:2px 2px 0 #3d322622}
+.message.user{background:#e9f0dc;border-radius:4px}
+.message-label{color:var(--ink-soft);font-weight:700}
+.suggestions button{border-radius:4px;color:var(--ink-soft);box-shadow:0 2px 0 var(--ink-soft)}
+.result,.notice{border:2px dashed var(--frame);border-radius:4px;background:#fbf3df;color:var(--ink)}
+.notice{background:#fff0d6;border-style:solid;border-color:var(--gold)}
+.quests .done{color:var(--green)}
+.album-image,.pixel-companion,.growth-note{border:2px solid var(--frame);border-radius:4px;background:#f6edd8}
+footer{color:var(--ink-soft)}
+
+/* Welcome: step indicator mirrors the start form. */
+.birth-steps{display:flex;align-items:center;gap:6px;flex-wrap:wrap;list-style:none;margin:0 0 20px;padding:0;font-size:12px}
+.birth-steps li{display:flex;align-items:center;gap:6px;padding:6px 10px 6px 6px;border:2px solid var(--frame);border-radius:20px;color:var(--ink-soft);background:var(--paper)}
+.birth-steps li+li::before{content:"";width:14px;height:2px;background:var(--frame);margin-left:-16px;margin-right:4px}
+.birth-steps span{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;border:2px solid currentColor;font-size:11px}
+.birth-steps [data-state=current]{border-color:var(--ink);color:var(--ink);background:#fdf0d2;box-shadow:0 2px 0 var(--ink)}
+.birth-steps [data-state=current] span{background:var(--gold);color:var(--paper);border-color:var(--ink)}
+.birth-steps [data-state=done]{color:var(--green);border-color:var(--green)}
+.birth-steps [data-state=done] span{background:var(--green);color:var(--paper)}
+
+/* Collection tabs */
+.collection-tabs{display:flex;gap:8px;padding:16px 28px 0;border-bottom:3px solid var(--ink);background:var(--paper)}
+.collection-tabs [role=tab]{border-bottom:0;border-radius:6px 6px 0 0;box-shadow:none;margin-bottom:-3px;padding:10px 18px;background:#f1e6cc;color:var(--ink-soft)}
+.collection-tabs [aria-selected=true]{background:var(--paper);color:var(--ink);border-color:var(--ink);border-bottom:3px solid var(--paper)}
+#item-catalog[open]{min-height:min(720px,calc(100dvh - 32px))}
+#collection-album-panel{padding-top:24px}#collection-album{grid-template-columns:repeat(auto-fill,minmax(120px,1fr))}
+#collection-album-empty{margin:12px 0}
+.item-book-header{border-bottom:0}
+.item-card{border:2px solid var(--ink);border-radius:6px;box-shadow:0 3px 0 var(--ink)}
+.item-card:hover:not(:disabled){transform:none;background:#fdf6e4}
+
+/* Title screen: shown on every load, never blocks the connection behind it. */
+#title-screen{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:24px;border:0;border-radius:0;box-shadow:none;overflow:hidden;color:var(--ink);background-color:var(--page);background-image:radial-gradient(ellipse at center,#fffaf0 0 35%,transparent 75%),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:auto,24px 24px,24px 24px}
+#title-screen[open]{display:grid;place-items:center}
+#title-screen::backdrop{background:var(--page)}
+.title-center{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center;gap:14px;max-width:560px}
+.title-eyebrow{font-size:11px;letter-spacing:4px;color:var(--ink-soft)}
+.title-logo{font-size:clamp(44px,9vw,84px);line-height:1;font-weight:700;color:var(--ink);text-shadow:4px 4px 0 #e8be6f,8px 8px 0 #3d322622;margin:0}
+.title-logo span{display:block;font-size:clamp(18px,3.4vw,28px);margin-top:14px;color:var(--green-dark);text-shadow:2px 2px 0 #e8be6f}
+.title-tagline{font-size:13px;color:var(--ink-soft);line-height:1.6}
+.title-press{margin:8px 0 4px;font-size:13px;letter-spacing:2px;color:var(--ink);animation:title-blink 1.2s steps(2) infinite}
+.title-menu{display:flex;flex-direction:column;gap:6px;min-width:220px;padding:14px;background:var(--paper);border:3px solid var(--ink);border-radius:6px;box-shadow:var(--window-shadow)}
+.title-menu button{position:relative;text-align:left;padding:10px 14px 10px 30px;border-color:transparent;background:transparent;box-shadow:none;font-size:14px}
+.title-menu button:hover,.title-menu button:focus-visible{background:#fdf0d2;border-color:var(--ink);outline:none}
+.title-menu button:hover::before,.title-menu button:focus-visible::before{content:"▶";position:absolute;left:10px;top:50%;margin-top:-7px;font-size:11px;color:var(--gold);animation:cursor-nudge .6s steps(2) infinite}
+/* Starter portraits have white backgrounds, so they are framed as stickers on the page. */
+.title-friends img{position:absolute;width:clamp(80px,13vw,140px);height:auto;padding:6px;background:#fff;border:3px solid var(--ink);border-radius:6px;box-shadow:4px 4px 0 #3d322633;rotate:var(--tilt);animation:title-bob 3.2s ease-in-out infinite}
+.title-friends img:nth-child(1){left:8%;top:12%;--tilt:-6deg}
+.title-friends img:nth-child(2){right:8%;top:16%;--tilt:5deg;animation-delay:-.8s}
+.title-friends img:nth-child(3){left:12%;bottom:12%;--tilt:4deg;animation-delay:-1.6s}
+.title-friends img:nth-child(4){right:10%;bottom:10%;--tilt:-4deg;animation-delay:-2.4s}
+@keyframes title-blink{50%{opacity:.25}}
+@keyframes title-bob{50%{translate:0 -10px}}
+@media(max-width:600px){.title-friends img{width:64px;opacity:.85}.title-friends img:nth-child(1){left:4%;top:6%}.title-friends img:nth-child(2){right:4%;top:8%}.title-friends img:nth-child(3){left:6%;bottom:5%}.title-friends img:nth-child(4){right:6%;bottom:4%}.title-menu{min-width:200px}}
+
+@media(max-width:760px){.collection-tabs{padding:12px 18px 0}.birth-steps{font-size:11px}.birth-steps li{padding:4px 8px 4px 4px}}
+@media(prefers-reduced-motion:reduce){.title-press,.title-friends img,.title-menu button::before,.actions button::before,.story-choice::before{animation:none}button{transition:none}button:active:not(:disabled){transform:none}}

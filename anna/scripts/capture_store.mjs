@@ -42,7 +42,7 @@ try{
   const type=name.endsWith('.js')||name.endsWith('.mjs')?'text/javascript':name.endsWith('.css')?'text/css':name.endsWith('.png')?'image/png':name.endsWith('.svg')?'image/svg+xml':'text/html';
   try{return route.fulfill({contentType:type,body:await readFile(new URL(name,bundle))});}catch{return route.fulfill({status:404,body:''});}
  });
- const open=async scene=>{await p.goto('https://notebuddy.test/?scene='+scene);await p.waitForFunction(()=>document.querySelector('#connection').textContent.includes('Connected')&&!document.querySelector('#refresh').disabled);await p.evaluate(()=>Promise.all([...document.images].filter(i=>i.getAttribute('src')&&!i.hidden).map(i=>i.decode().catch(()=>{}))));};
+ const open=async scene=>{await p.goto('https://notebuddy.test/?scene='+scene);await p.waitForFunction(()=>document.querySelector('#connection').textContent.includes('Connected')&&!document.querySelector('#refresh').disabled);await p.evaluate(()=>{if(document.querySelector('#title-screen').open)document.querySelector('#title-start').click();});await p.evaluate(()=>Promise.all([...document.images].filter(i=>i.getAttribute('src')&&!i.hidden).map(i=>i.decode().catch(()=>{}))));};
  const shot=async name=>p.screenshot({path:fileURLToPath(new URL(name,store))});
  await open('welcome');await shot('01-first-meeting.png');
  await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();
