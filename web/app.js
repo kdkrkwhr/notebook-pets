@@ -18,11 +18,14 @@ async function refresh(){
   $('birth').hidden=!!saved.state;$('actions').hidden=!saved.state;
   $('pet-name').textContent=current.name??'아직 비어 있는 첫 페이지';
   $('summary').textContent=saved.state?`${current.species} · ${current.element} · Lv.${current.level} · ${current.mood}`:'친구에게 이름을 지어 주세요.';
-  $('details').textContent=saved.state?`경험치 ${current.xp} / ${current.xp_next}\n포만감 ${current.satiety} · 친밀도 ${current.intimacy}\n${JSON.stringify(current.stats)}\n오늘의 퀘스트\n${JSON.stringify(current.quest,null,2)}`:'아직 기록이 없습니다.';
+  const labels={hp:'체력',atk:'공격',def:'방어',spd:'속도',feed:'밥 주기',play:'놀기',train:'훈련',walk:'산책',battle:'배틀',attendance:'출석'};
+  const stats=Object.entries(current.stats??{}).map(([k,v])=>`${labels[k]??k} ${v}`).join(' · ');
+  const tasks=(current.quest?.tasks??[]).map(t=>`${labels[t.command]??t.command} ${t.progress}/${t.target}`).join('\n');
+  $('details').textContent=saved.state?`경험치 ${current.xp} / ${current.xp_next}\n포만감 ${current.satiety} · 친밀도 ${current.intimacy}\n${stats}\n\n오늘의 퀘스트\n${tasks}\n${current.quest?.claimed?'오늘의 보상 수령 완료':''}`:'아직 기록이 없습니다.';
   $('choices').replaceChildren();
   if(current.walk_choice?.choice_id){for(const [label,cmd] of [['주워 보기','walk_collect'],['지나가기','walk_leave']])button($('choices'),label,cmd,[current.walk_choice.choice_id]);}
   const ex=current.dungeons?.expedition;
-  if(ex?.choice_id){button($('choices'),'안전하게 진행','dungeon_safe',[ex.choice_id]);button($('choices'),'위험을 감수','dungeon_risk',[ex.choice_id]);}
+  if(ex?.phase==='choice'&&ex.choice_id){button($('choices'),'안전하게 진행','dungeon_safe',[ex.choice_id]);button($('choices'),'위험을 감수','dungeon_risk',[ex.choice_id]);}
   for(const entry of current.dungeons?.entries??[])if(!entry.cleared)button($('choices'),`${entry.id} 탐험`,`explore_${entry.id}`);
 }
 async function act(command,args=[]){
@@ -30,7 +33,7 @@ async function act(command,args=[]){
   try{const saved=await load(db);const candidate=await calculate(saved.state,command,args,crypto.randomUUID());
     if(candidate.changed)await commit(db,saved.revision,candidate.state);
     $('result').textContent=candidate.result.msg??JSON.stringify(candidate.result);
-    await refresh();$('notice').textContent='이 브라우저에 저장했습니다.';
+    await refresh();$('notice').textContent=candidate.changed?'이 브라우저에 저장했습니다.':'행동 결과를 확인해 주세요.';
   }catch(error){$('notice').textContent=error.message;}finally{lock(false);}
 }
 for(const [label,cmd] of [['밥 주기','feed'],['놀기','play'],['훈련','train'],['잠자기','sleep'],['산책','walk_begin'],['배틀','battle'],['도망','flee'],['출석','attendance'],['퀘스트 보상','claimquest']])button($('actions'),label,cmd);
