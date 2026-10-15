@@ -7,4 +7,9 @@
 
 로컬 실제 Edge 검증 통과: 기존 게임·백업·모의 BYOK·폰트/모바일 회귀, 모델 드롭다운·페이지 조회·선택 모델 요청, 잘못된 확인문구/취소/오래된 초기화 거절, 초기화 후 새로고침과 새 친구 생성, 오래된 저장 부활 차단, 진행 중 AI 취소, 다른 앱 데이터 보존.
 
-Pages 배포·브랜치 정리·공개 URL 최종 검증 진행 중.
+배포 완료: https://kdkrkwhr.github.io/notebook-pets/ · 배포 소스 `4ba6c232dc4ad06a6e9644eb35cdd3cd605e7105`.
+
+- [웹 빌드·Chromium·Pages](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38754838951) 및 [release-web 코어 Windows/Linux·Pyodide CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38754838923) 모두 성공.
+- 공개 URL의 실제 Edge에서도 전체 웹 회귀·모델 드롭다운/페이지 조회·초기화/취소/충돌·새 친구 생성 검증 통과. 모델/AI 요청은 모의 응답을 사용했다. 별도 브라우저 컨텍스트에서만 초기화해 사용자의 기존 저장은 보존했다.
+- 로컬·원격 `main` 삭제 완료. 삭제 전 tip `dca0a256d073b125d0c1e35a5afd1945bf9c8baa`가 `release-web`의 조상임을 확인했다. 원격 브랜치는 `release`와 `release-web` 두 개뿐이며 기본 브랜치는 기존 `release`를 유지한다.
+- Pages는 `release-web` 푸시만 빌드·배포하며, 코어 CI도 해당 브랜치를 검증한다. Anna의 배포 트랙과 앱/도구 버전은 변경하지 않았다.
