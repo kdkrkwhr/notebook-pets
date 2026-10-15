@@ -66,7 +66,7 @@ npx anna-app apps push --no-install-local --profile binary
 npx anna-app apps cut <새-버전>
 ```
 
-플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 현재 도구 버전은 0.7.0입니다. UI·아트 보완인 1.1.1에서는 1.1.0에서 검증한 Windows/Linux 도구 패키지를 유지합니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드해야 합니다.
+플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 현재 도구 버전은 0.8.0입니다. UI·아트 보완인 1.1.1에서는 1.1.0에서 검증한 Windows/Linux 도구 패키지를 유지합니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드해야 합니다.
 
 `cut`은 검토할 비공개 버전을 만듭니다. `submit-review`는 심사 제출, `release`는 공개이므로 자동 실행하지 않습니다. 심사 전 실제 Anna Agent/Cloud 설치 실행, 소개 이미지·지원 정보, 장기간 저장 크기 및 여러 실행기의 동시 사용을 확인해야 합니다. 실제 설치 초안을 Anna 대시보드에서 실행하여 생성·밥 주기·대화·그림 저장과 재접속 복원까지 확인했습니다. 세부 결과는 HANDOFF.md를 참고하세요.
 
