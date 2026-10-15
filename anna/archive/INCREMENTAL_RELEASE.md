@@ -1,8 +1,10 @@
+> 과거 기록입니다. 현재 설치·배포 상태는 [최신 인계](../HANDOFF.md)를 확인하세요.
+
 # Incremental Anna updates — 10 October 2026
 
 ## Current review status
 
-On 10 October 2026, the owner requested and completed a review-candidate replacement: **0.2.5 is now pending review**. The English listing and four screenshots were updated and verified. The historical entries below describe status at each deployment; their references to candidate 0.2.1 no longer describe the current review. See [submission receipt](reviews/REVIEW_025.md).
+On 10 October 2026, the owner requested and completed a review-candidate replacement: **0.2.5 is now pending review**. The English listing and four screenshots were updated and verified. The historical entries below describe status at each deployment; their references to candidate 0.2.1 no longer describe the current review. See [submission receipt](../reviews/REVIEW_025.md).
 
 ## Drawing-only birth candidate 0.2.5
 

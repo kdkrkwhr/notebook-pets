@@ -1,4 +1,4 @@
-Latest change: **0.3.1 / tool 0.1.11** adds explicit new-companion restart after removal. Deleted records are not recovered. See [restart behavior](RESTART_AFTER_REMOVAL.md). Older permanent-no-restart descriptions and the 0.3.0 candidate below are historical; deployed 0.2.1 is unchanged.
+Current behavior: privacy removal ends the existing game. An explicitly confirmed UI restart can return to the first-meeting screen after cleanup; deleted records are not recovered. See the [current restart contract](RESET.md). Version numbers and deployment observations below describe historical verification, not the current installed app. See [HANDOFF.md](../HANDOFF.md) for current versions.
 
 # Data removal contract — private preview
 

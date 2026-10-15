@@ -1,6 +1,6 @@
 # 배포 기록
 
-[작업 인계](../HANDOFF.md) · [이력](../HANDOFF_HISTORY.md) · [심사 기록](../reviews/)
+[작업 인계](../HANDOFF.md) · [이력](../HANDOFF_HISTORY.md) · [심사 기록](../reviews)
 
 Anna 테스트 앱 배포별 기록이다. 최신이 위에 온다.
 

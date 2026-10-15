@@ -19,6 +19,6 @@ App **1.1.1 / ID 1393 / working revision 50**, unchanged game tool **0.7.0 / Exe
 
 ## Remaining limits
 
-- The existing platform limitation around simultaneous first creation remains documented in [FIRST_CREATION.md](../FIRST_CREATION.md).
+- The existing platform limitation around simultaneous first creation remains documented in [FIRST_CREATION.md](../docs/FIRST_CREATION.md).
 - The sixteen-item book is still a preview; item collection and equipment remain future work. The new illustrations are discovery-card artwork; exploration continues to use the existing room/corridor renderer.
 - The 1.1.0 handoff's unfinished immutable-cut, local-tool and installed-UI checks are completed by this superseding 1.1.1 deployment.

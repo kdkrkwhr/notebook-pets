@@ -6,7 +6,7 @@ Each new region has a head, neck, back and surrounding-effect design, with Korea
 
 Actual collection, purchases, equipment and dungeon rewards are unchanged. No game-tool or saved-data schema changes. The existing 1.0.0 review candidate and shared listing are preserved during owner test deployment.
 
-README guides include current catalog, detail and mobile screenshots made with separate test data. [Items and exact prompts](../ITEMS.md).
+README guides include current catalog, detail and mobile screenshots made with separate test data. [Items and exact prompts](../docs/ITEMS.md).
 
 ## Validation and deployment
 
@@ -19,4 +19,8 @@ README guides include current catalog, detail and mobile screenshots made with s
 
 ## Remaining limits
 
-The catalog remains a preview: no item ownership, collection, purchases, equipment or new dungeon rewards. The existing platform first-creation concurrency limitation remains documented in [FIRST_CREATION.md](../FIRST_CREATION.md). No public release or review resubmission was requested or performed.
+The catalog remains a preview: no item ownership, collection, purchases, equipment or new dungeon rewards. The existing platform first-creation concurrency limitation remains documented in [FIRST_CREATION.md](../docs/FIRST_CREATION.md). No public release or review resubmission was requested or performed.
+
+## Documentation maintenance · 2026-10-15
+
+Baseline `fc939f5`: topic documents moved to `anna/docs/`, obsolete procedures to `anna/archive/`, and reset guidance was consolidated. The initial promo page and four byte-identical image copies were removed; original artwork remains. See the [maintenance record](../../docs/MAINTENANCE.md). This changes no app/tool code, package, installation or review candidate; no redeployment or new installed-runtime verification was performed.

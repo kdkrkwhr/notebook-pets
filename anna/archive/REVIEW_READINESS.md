@@ -1,3 +1,5 @@
+> 과거 기록입니다. 현재 설치·배포 상태는 [최신 인계](../HANDOFF.md)를 확인하세요.
+
 배포 전 공통 확인: 루트 `README.md`·`README.en.md`의 버전과 "기준 날짜" 문구, 루트 `VERSION`, `anna/HANDOFF.md`의 현재 상태 표를 같은 버전으로 갱신한다.
 
 Current incremental candidate: 0.2.3 / tool 0.1.13 adds only rechargeable walks to the verified reset-only 0.2.2. Upload and live verification pending.
@@ -13,18 +15,18 @@ Incremental candidate 0.2.2 / tool 0.1.12: backports only confirmed restart and 
 - 앱 **0.2.1**, version ID **1219** / 게임 도구 **0.1.9**, version ID **694**.
 - 영문 소개·로고·지원 GitHub Issues·개인정보 안내 URL 등록. 별도 비공개 지원 창구가 마련됐다고 주장하지 않습니다.
 - 실제 UI와 격리된 Python 엔진으로 스크린샷 3장을 재촬영했습니다. 성장 앨범 10/30/50 표시를 확인했고 사용자 계정·대화·유료 AI는 사용하지 않았습니다.
-- strict manifest 검증 통과. 기존 코드 검증과 설치된 고정 버전의 연결·저장된 펫/개인 그림·앨범 확인은 [HANDOFF.md](HANDOFF.md)에 기록했습니다.
+- strict manifest 검증 통과. 기존 코드 검증과 설치된 고정 버전의 연결·저장된 펫/개인 그림·앨범 확인은 [HANDOFF.md](../HANDOFF.md)에 기록했습니다.
 - 자동 돌봄 AI 반응은 제외한 후보입니다. 수동 AI 대화·그림, 2D 전투, 성장 1/10/30/50을 제공합니다.
 
 ## 보류한 제한과 검증 범위
 
-- [동시 최초 생성](FIRST_CREATION.md): 공식 APS API에 원자적 create-if-absent가 없으며 다중 실행기의 지연된 최초 쓰기가 다른 펫/진행을 덮을 수 있습니다. 현재 보호 조치로 완전히 막지 못합니다.
-- [삭제](DATA_REMOVAL.md): 첫 쓰기·구버전 요청·진행 중 업로드 및 플랫폼 로그/백업 보관까지 완전 삭제를 보장하지 않습니다. 개인정보 안내에도 한계를 유지합니다.
+- [동시 최초 생성](../docs/FIRST_CREATION.md): 공식 APS API에 원자적 create-if-absent가 없으며 다중 실행기의 지연된 최초 쓰기가 다른 펫/진행을 덮을 수 있습니다. 현재 보호 조치로 완전히 막지 못합니다.
+- [삭제](../docs/DATA_REMOVAL.md): 첫 쓰기·구버전 요청·진행 중 업로드 및 플랫폼 로그/백업 보관까지 완전 삭제를 보장하지 않습니다. 개인정보 안내에도 한계를 유지합니다.
 - 별도 신규 계정의 설치/최초 권한 승인 전체 흐름은 미검증입니다. 기존 계정 검증 및 오류 주입 브라우저 테스트와 구분합니다. 모바일 지원 인증도 주장하지 않습니다.
 - 위 항목은 이번 사용자 승인으로 제출 차단에서 제외했으며 Anna가 승인한 예외는 아닙니다. 심사 피드백에 따라 추가 조치할 수 있습니다.
 
 ## 공식 제출 절차
 
-[Publishing an App](https://anna.partners/developers/apps/app-publish.md)의 manifest 검증·고정 버전·Executa 의존성·UI bundle readiness 및 설치 사용 요건을 기준으로 확인합니다. 제출 API의 서버 사전 검사를 통과해야 심사 대기가 됩니다. 공식 제출 API가 성공하여 **pending_review**, 심사 후보 **0.2.1**을 반환했고 서버 재조회로 확인했습니다. [접수 기록](HANDOFF_HISTORY.md)을 참고하세요.
+[Publishing an App](https://anna.partners/developers/apps/app-publish.md)의 manifest 검증·고정 버전·Executa 의존성·UI bundle readiness 및 설치 사용 요건을 기준으로 확인합니다. 제출 API의 서버 사전 검사를 통과해야 심사 대기가 됩니다. 공식 제출 API가 성공하여 **pending_review**, 심사 후보 **0.2.1**을 반환했고 서버 재조회로 확인했습니다. [접수 기록](../HANDOFF_HISTORY.md)을 참고하세요.
 
 심사 승인은 Anna의 결정입니다. 관리자가 승인과 공개를 함께 수행할 수 있으며 제출은 통과나 공개 완료를 뜻하지 않습니다. 이번 작업에서는 별도 release 명령을 실행하지 않습니다.

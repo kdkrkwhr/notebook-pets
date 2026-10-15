@@ -12,7 +12,7 @@ Test deployment completed on 2026-10-13. Future feature work includes Git commit
 
 ## Behavior
 
-New companions and saved growth portraits receive a locally converted 64×64 pixel portrait without an additional AI generation request. Existing companions can prepare one on demand. Walks discover Hellgate, Ice Kingdom and Dream Forest. Entering costs one walk charge; the server saves the boss result and coin reward before the automatic pixel-map replay begins. See [DUNGEONS.md](../DUNGEONS.md) for rules and remaining art/gameplay scope.
+New companions and saved growth portraits receive a locally converted 64×64 pixel portrait without an additional AI generation request. Existing companions can prepare one on demand. Walks discover Hellgate, Ice Kingdom and Dream Forest. Entering costs one walk charge; the server saves the boss result and coin reward before the automatic pixel-map replay begins. See [DUNGEONS.md](../docs/DUNGEONS.md) for rules and remaining art/gameplay scope.
 
 ## Verification and limits
 

@@ -1,12 +1,12 @@
 # Five regions · 1.1.1 / tool 0.7.0
 
-1.1.1은 신규 두 지역의 발견 카드에 전용 환경 그림을, 최종 전투에 전용 보스의 대기·공격 준비·공격 자세를 연결한다. 실제 이동은 다섯 지역 모두 기존 방·복도와 경로 선택 맵을 사용한다. 새 배경 그림을 이동 가능한 타일맵으로 사용하지 않는다. 아트는 개발 중 내장 이미지 생성 도구로 제작해 앱에 포함하며, 플레이할 때 AI를 호출하지 않는다. [아트와 프롬프트](../assets/dungeons-v2/EXPANSION_111.md), [1.1.1 배포 기록](releases/RELEASE_111.md).
+1.1.1은 신규 두 지역의 발견 카드에 전용 환경 그림을, 최종 전투에 전용 보스의 대기·공격 준비·공격 자세를 연결한다. 실제 이동은 다섯 지역 모두 기존 방·복도와 경로 선택 맵을 사용한다. 새 배경 그림을 이동 가능한 타일맵으로 사용하지 않는다. 아트는 개발 중 내장 이미지 생성 도구로 제작해 앱에 포함하며, 플레이할 때 AI를 호출하지 않는다. [아트와 프롬프트](../../assets/dungeons-v2/EXPANSION_111.md), [1.1.1 배포 기록](../releases/RELEASE_111.md).
 
 1.1.2에서는 새 지역별 아이템 4종을 더해 도감이 24종으로 늘었다. 실제 획득·구매·착용은 아직 예정이며 던전 보상은 바뀌지 않는다. [아이템 안내](ITEMS.md)
 
 아래는 1.1.0 확장의 초기 구현 기록이다.
 
-2026-10-15 추가. NEXT_RELEASE.md의 첫 확장 2종을 기존 발견·입장·단계·보상 규칙 그대로 붙였다. 소유자 테스트 앱에 작업 초안으로 설치했고 심사 제출은 하지 않았다. [배포 기록](releases/RELEASE_110.md)
+2026-10-15 추가. [개발 계획](ROADMAP.md)의 첫 확장 2종을 기존 발견·입장·단계·보상 규칙 그대로 붙였다. 1.1.1에서 카드·보스 아트와 테스트 설치 검증을 마쳤으며 심사 후보 1.0.0은 유지했다. [확장 구현 기록](../releases/RELEASE_110.md) · [배포 완료 기록](../releases/RELEASE_111.md)
 
 | 지역 | 키 | 보스 | 보스 속성(발견 날짜로 결정) | 적응 종족 |
 | --- | --- | --- | --- | --- |
@@ -23,7 +23,7 @@
 
 # Interactive stages · 0.6.0 / tool 0.4.0
 
-Current rules and deployment status: [0.6.0 release](releases/RELEASE_060.md).
+Current rules and deployment status: [0.6.0 release](../releases/RELEASE_060.md).
 
 Every stage costs one walk charge. Automatic movement pauses at a fork or trap, then the user's safe/risky route choice determines trap damage and route coins before combat. Sanctuary stages offer healing versus coins. Closing preserves a paid choice; entry into the next stage requires a separate action and charge. Fields have branches, loops and visible hazards; enemies have unique silhouettes. Existing results are replay-only historical records.
 
@@ -41,13 +41,13 @@ The renderer uses a shared tile layout for floors, corridors, doors and routes. 
 
 Manual movement, branching reward choices and individually authored directional sprites for each custom pet remain outside this implementation. Playback takes roughly a minute or more for a complete expedition, depending on room count and rounds; defeat can end earlier. 3x, pause and skip are available. Reduced-motion users receive the final result directly.
 
-See [0.5.0 validation and deployment](releases/RELEASE_050.md). Earlier implementation notes follow for historical context.
+See [0.5.0 validation and deployment](../releases/RELEASE_050.md). Earlier implementation notes follow for historical context.
 
 ---
 
 # Scrolling RPG dungeons · 0.4.2 / tool 0.2.2
 
-2026-10-13 사용자 요청으로 던전이 진행 중이면 클리어 또는 만료 전까지 다른 던전이 발견되지 않도록 변경했다. 발견 후 24시간 유지, 남은 시간 표시, 확대 화면을 유지한다. 실제 Anna 배포 및 계정 검증은 [배포 기록](releases/RELEASE_042.md)에 기록한다. 심사 중인 0.3.4는 별개다.
+2026-10-13 사용자 요청으로 던전이 진행 중이면 클리어 또는 만료 전까지 다른 던전이 발견되지 않도록 변경했다. 발견 후 24시간 유지, 남은 시간 표시, 확대 화면을 유지한다. 실제 Anna 배포 및 계정 검증은 [배포 기록](../releases/RELEASE_042.md)에 기록한다. 심사 중인 0.3.4는 별개다.
 
 ## 캐릭터 픽셀 변환
 
@@ -85,22 +85,22 @@ See [0.5.0 validation and deployment](releases/RELEASE_050.md). Earlier implemen
 
 입장 요청 하나로 전투 결과, 횟수 차감, 코인, 클리어, 마지막 탐험과 영수증을 함께 저장한다. 저장에 실패하면 성공으로 응답하지 않는다. 앱은 이미 저장된 결과를 비스듬히 내려다보는 픽셀 RPG 환경에서 자동 이동과 보스전으로 재생한다. 3배속, 건너뛰기, 닫기, 재접속 후 마지막 탐험 다시 보기는 게임 행동이나 AI를 호출하지 않는다. 자정을 넘어 재생해도 입장 요청이 처리된 날짜의 결과를 유지한다. 백그라운드 자동 사냥은 없다.
 
-지역별 1536×1024 배경과 보스 3종×3자세 투명 아틀라스를 앱에 포함한다. 계단·성소·다리·광장으로 이어지는 경로를 카메라가 따라가며, 보스의 준비 자세·공격 예고·타격·피격·회피·피해량을 저장된 턴과 연결한다. 배경 로딩 실패 시 입장과 차감을 막는다. 캐릭터는 저장된 픽셀 한 장의 위치 이동·상하 움직임·좌우 반전으로 표현하며 방향별 걷기 스프라이트는 후속이다. 동작 줄이기 설정에서는 바로 결과를 표시한다. 원본과 생성 기록은 [아트 문서](../assets/dungeons-v2/README.md)에 있다.
+지역별 1536×1024 배경과 보스 3종×3자세 투명 아틀라스를 앱에 포함한다. 계단·성소·다리·광장으로 이어지는 경로를 카메라가 따라가며, 보스의 준비 자세·공격 예고·타격·피격·회피·피해량을 저장된 턴과 연결한다. 배경 로딩 실패 시 입장과 차감을 막는다. 캐릭터는 저장된 픽셀 한 장의 위치 이동·상하 움직임·좌우 반전으로 표현하며 방향별 걷기 스프라이트는 후속이다. 동작 줄이기 설정에서는 바로 결과를 표시한다. 원본과 생성 기록은 [아트 문서](../../assets/dungeons-v2/README.md)에 있다.
 
 탐험창은 앱 화면 너비 96%·높이 94%를 사용한다. 지도에 경로 미니맵과 체력바를 겹쳐 표시하고, 입장 상세 정보는 하단에서 펼쳐 본다. 타이머는 서버 시각을 기준으로 표시하며 만료 후에는 새 입장을 막는다. 이미 저장한 결과는 만료 후에도 끝까지 재생하거나 다시 볼 수 있다.
 
 ## 후속 범위
 
-0.4.1은 Anna 테스트 계정에 배포 완료했다. 실제 실행 도구 0.2.1, 발견한 지역만 표시, 실시간 카운트다운, 확대 미리보기와 기존 데이터 보존을 확인했다. [전체 검증·배포 내역](releases/RELEASE_041.md)을 참고한다.
+0.4.1은 Anna 테스트 계정에 배포 완료했다. 실제 실행 도구 0.2.1, 발견한 지역만 표시, 실시간 카운트다운, 확대 미리보기와 기존 데이터 보존을 확인했다. [전체 검증·배포 내역](../releases/RELEASE_041.md)을 참고한다.
 
 방향별 캐릭터 걷기 프레임, 사진·흰 캐릭터의 시각 품질 개선, 일반 적의 순찰·다중 전투, 난이도 플레이테스트, 코인 상점·아바타 착용, 추가 던전은 후속이다. 현재는 자동 이동과 보스 1회 전투이며 코인은 누적만 가능하다. 이 후보는 공개나 심사 재제출 없이 테스트할 수 있도록 기존 제출 버전과 구분한다.
 
-저장소의 동시 최초 생성 및 다른 창에서 진행 중인 초기화·파일 정리의 기존 플랫폼 제한은 [PRIVACY.md](PRIVACY.md)를 따른다.
+저장소의 동시 최초 생성 및 다른 창에서 진행 중인 초기화·파일 정리의 기존 플랫폼 제한은 [PRIVACY.md](../PRIVACY.md)를 따른다.
 
 ## 로컬 검증
 
-0.4.2 검증: 엔진 173개, Anna Python 57개, JavaScript 52개 통과. 브라우저에서 진행 중 신규 발견 차단·클리어 후 발견, 카메라 이동과 전투 완료, 이미지 실패 시 미입장, 360px 한국어와 동작 줄이기를 확인했다. 배포와 최종 CI 수치는 [RELEASE_042.md](releases/RELEASE_042.md)를 따른다. 아래는 이전 버전의 검증 기록이다.
+0.4.2 검증: 엔진 173개, Anna Python 57개, JavaScript 52개 통과. 브라우저에서 진행 중 신규 발견 차단·클리어 후 발견, 카메라 이동과 전투 완료, 이미지 실패 시 미입장, 360px 한국어와 동작 줄이기를 확인했다. 배포와 최종 CI 수치는 [RELEASE_042.md](../releases/RELEASE_042.md)를 따른다. 아래는 이전 버전의 검증 기록이다.
 
 2026-10-13 엔진 167개, Anna Python 57개, UI 단위 52개, 브라우저 60개와 strict manifest 검사가 통과했다. 기존 세이브 읽기 무변경, 발견 보정, 입장 거절 시 미차감, 패배 재도전, 중복·동시 요청, 저장 오류 시 미지급, 자정 이후 기존 결과 재생, 계정별 격리, 임시 보너스 보존을 확인했다. 픽셀 PNG 크기·투명 여백·연결된 흰 배경 제거, 새 펫·단계·원본 교체 구분, AI 무호출, 최초 저장 및 실패 재시도, 360px·동작 줄이기도 검증했다. 실제 Anna 제공자와 파일 저장소가 아닌 격리된 브라우저 호스트 테스트다.
 
-같은 날 Anna 테스트 앱 0.4.0 / working revision 34와 실행 도구 0.2.0 배포를 완료했다. 설치 앱의 정상 연결과 새 모듈 HTTP 200, 실제 실행 도구의 버전·로딩·실행 상태를 확인했다. 현재 계정은 새 캐릭터 생성 대기 상태여서 실제 픽셀 파일 저장과 탐험 플레이 확인은 남아 있다. [배포 기록](releases/RELEASE_040.md)을 따른다.
+같은 날 Anna 테스트 앱 0.4.0 / working revision 34와 실행 도구 0.2.0 배포를 완료했다. 설치 앱의 정상 연결과 새 모듈 HTTP 200, 실제 실행 도구의 버전·로딩·실행 상태를 확인했다. 현재 계정은 새 캐릭터 생성 대기 상태여서 실제 픽셀 파일 저장과 탐험 플레이 확인은 남아 있다. [배포 기록](../releases/RELEASE_040.md)을 따른다.

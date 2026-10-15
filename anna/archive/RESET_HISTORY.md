@@ -1,3 +1,5 @@
+> 과거 기록입니다. 현재 설치·배포 상태는 [최신 인계](../HANDOFF.md)를 확인하세요.
+
 # New-companion reset · app 0.1.10 / tool 0.1.8
 
 User-approved product change: keep one pet at a time, but allow an explicit fresh start. Both species and element are drawn again by the original engine; same combinations remain possible. New name is entered before confirmation. Old progress, chat and all portraits are cleared. No AI call runs automatically.
@@ -25,3 +27,27 @@ The superseded app 0.1.9/tool 0.1.7 failed runner startup because reset paramete
 App 0.1.10 (ID 1205), tool 0.1.8 (Executa version 686), draft revision 12, 98 UI files. CI source `e3b7bd7`: [Anna Windows/Linux](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37932202883), [engine](https://github.com/kdkrkwhr/notebook-pets/actions/runs/37932202726). Passed 29 Node, 13 browser and 46 Python tests plus strict validation. Uploaded both tested standalone tool packages from that successful run.
 
 The installed private app connected and restored 모찌 at 10 XP, four chat messages and the portrait. Opened the reset preview (real reset/inspect) and cancelled. The real partner was not reset, no old files removed and no AI calls made. This is a read-only production smoke test, not destructive end-to-end reset evidence. No review submission or public release.
+
+
+---
+
+# Confirmed restart
+
+
+Incremental candidate 0.2.2 / tool 0.1.12: backports only confirmed restart and its visible Start over button onto deployed 0.2.1. New portrait analysis, artwork birth, care reactions and walk recharge remain on develop and are not included. Deployment verification is pending.
+
+Use Start over in the game or ended-game screen. Enter a new name, close other windows, and confirm RESET NOTEBUDDY. Cleanup completes before the new companion is released. Deleted records are not restored.
+
+
+---
+
+# Restart to welcome screen — 0.2.7 / tool 0.1.14
+
+Start over confirms removal of the current companion, chat and portraits, then returns to the ordinary first-meeting screen. No name is requested in the reset dialog and no new species or element is selected during cleanup. The user chooses a name and Random or Drawing afterward.
+
+Cleanup retains its interrupted-reset barrier. The completed reset retains a minimal welcome marker, reset receipt and fresh request epoch. The next explicit start uses a conditional write against this existing row; late old actions cannot create or replace the new companion. Retrying a completed reset cannot clear a newly started game. Old clients may still pass a name for compatibility, while the current UI omits it.
+
+This patch is based on the working 0.2.5 release. Direct evolution image editing is not included. The existing review candidate remains 0.2.5 until explicitly replaced; testing this patch must not reset a real player's data automatically.
+
+Verification: 52 server tests, 41 browser tests and all UI unit tests passed. Linux and Windows CI packages passed in run 38061043894 (source 3b67289). Working revision 27 is ready. Immutable candidate 0.2.7 is version 1253, tool 0.1.14 is Executa version 706. After apps cut uploaded the binary packages, working install confirmed agent_version 0.1.14 loaded. A deliberately invalid confirmation was rejected by the new name-optional handler without data mutation. Review remains pending_review on 0.2.5; no review replacement or public release was performed.
+

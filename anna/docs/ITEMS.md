@@ -24,7 +24,7 @@ Definitions and localized descriptions are in `bundle/items.mjs`; art and exact 
 | Back | Tide Cape / 물결 망토 | Brass-Gear Cape / 황동 톱니 망토 |
 | Surrounding effect | Deep-Sea Bubbles / 심해 물방울 | Little Clockwork Orbit / 작은 태엽 무리 (rare) |
 
-All eight use the same preview, planned reward and fit rules as the original sixteen. [Exact illustration prompts](../assets/items-v1/prompts-112.json).
+All eight use the same preview, planned reward and fit rules as the original sixteen. [Exact illustration prompts](../../assets/items-v1/prompts-112.json).
 
 ## Future fit model
 

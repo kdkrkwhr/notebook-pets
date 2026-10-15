@@ -8,7 +8,7 @@ Each new discovery lasts **24 hours from discovery**, as chosen by the user. Car
 
 The exploration dialog uses **96% of the app viewport width and 94% of its height**. Desktop places the large map beside the controls; narrow screens stack them. Expiry disables entry even when the preview is already open.
 
-See [DUNGEONS.md](../DUNGEONS.md) for full rules. Existing pets, portraits, conversations, coins and saved results are retained. The 0.3.4 review candidate and its shared listing must remain intact during test deployment.
+See [DUNGEONS.md](../docs/DUNGEONS.md) for full rules. Existing pets, portraits, conversations, coins and saved results are retained. The 0.3.4 review candidate and its shared listing must remain intact during test deployment.
 
 ## Deployed build
 
@@ -24,6 +24,6 @@ See [DUNGEONS.md](../DUNGEONS.md) for full rules. Existing pets, portraits, conv
 - The actual installed app is **Connected**. `style.css`, `app.js`, `dungeon.mjs` and `pixel-pet.mjs` returned HTTP 200. The existing save displays only its discovered Dream Forest, with a ticking countdown; the other two cards are absent. Pixel preparation is in the growth album.
 - Opened the real Dream Forest preview without entering: **1073×716** dialog in a **1118×762** app viewport, approximately 96%×94%; map width **685px**. Closed the preview after checking. No walk charge, combat, reset or paid AI request was used.
 - Before/after game, portrait-index and chat values and etags are identical. The existing pre-0.4.1 Dream Forest keeps its original midnight deadline because its save has no discovery timestamp. Newly discovered regions use 24 hours from discovery.
-- Expiry, midnight boundaries, discovery probability and result replay were tested with controlled clocks/RNG and isolated browser fixtures; no real 24-hour wait or new live expedition was performed. Artwork and balance limitations remain documented in [DUNGEONS.md](../DUNGEONS.md).
+- Expiry, midnight boundaries, discovery probability and result replay were tested with controlled clocks/RNG and isolated browser fixtures; no real 24-hour wait or new live expedition was performed. Artwork and balance limitations remain documented in [DUNGEONS.md](../docs/DUNGEONS.md).
 
 Private storage snapshots, diagnostic scripts and mobile preview captures remain in ignored `.local/`.

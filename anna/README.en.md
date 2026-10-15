@@ -47,7 +47,7 @@ Everyday adventures and the five dungeon collections each offer one head, neck, 
   <img src="../docs/screenshots/items-catalog-112-ko.png" width="900" alt="All twenty-four items in the Korean item book; the same interface also supports English">
 </p>
 
-This is a **catalog preview**: browsing does not spend coins or grant items. Individual body analysis and equipment are not available yet. Collection and wearing will be separate; a companion without hands may collect gloves, but wearing them will not invent hands. [Items and future fit rules](ITEMS.md)
+This is a **catalog preview**: browsing does not spend coins or grant items. Individual body analysis and equipment are not available yet. Collection and wearing will be separate; a companion without hands may collect gloves, but wearing them will not invent hands. [Items and future fit rules](docs/ITEMS.md)
 
 ## Return to your friend
 
@@ -59,6 +59,6 @@ Switching between English and Korean changes the interface and new replies while
 
 ---
 
-[Full feature gallery](../README.en.md) · [Development and setup](DEVELOPMENT.en.md) · [1.1.2 deployment](releases/RELEASE_112.md) · [0.10.1 deployment](releases/RELEASE_0101.md) · [0.10.0 deployment](releases/RELEASE_0100.md) · [0.9.0 deployment](releases/RELEASE_090.md) · [1.0.0 review guide](reviews/REVIEW_100.md) · [0.8.1 review guide](reviews/REVIEW_081.md) · [Handoff](HANDOFF.md)
+[Full feature gallery](../README.en.md) · [Development and setup](DEVELOPMENT.en.md) · [Technical documents](docs/README.md) · [Deployment history](releases/README.md) · [Review history](reviews/README.md) · [Handoff](HANDOFF.md)
 
 Screenshots show the real UI with separate test data. Mori is an actual Anna-generated result; the item book is from 1.1.2. [Screenshot sources](../docs/screenshots/README.md)

@@ -23,6 +23,6 @@ Source and output files use the portraits prefix and are included in reset/remov
 
 ## Verification
 
-Browser tests use isolated storage and mocked vision/image providers for drawing, PNG/JPEG/WebP decoding and normalization, invalid or oversized files, cancellation during decoding, changed references, refusal, outages, retries, persistence, narrow Korean layout and companion replacement. They do not establish live model quality. See the [0.3.5 work record](releases/RELEASE_035.md) for deployment status.
+Browser tests use isolated storage and mocked vision/image providers for drawing, PNG/JPEG/WebP decoding and normalization, invalid or oversized files, cancellation during decoding, changed references, refusal, outages, retries, persistence, narrow Korean layout and companion replacement. They do not establish live model quality. See the [0.3.5 work record](../releases/RELEASE_035.md) for deployment status.
 
 The feature keeps game tool 0.1.15, the existing storage schema and existing LLM/image permissions. It requires no data migration, new external service or API key. Private photos and one-off account migration scripts are not part of the release.

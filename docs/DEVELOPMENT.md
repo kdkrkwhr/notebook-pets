@@ -205,7 +205,6 @@ tools/manage.py           공통 설정으로 점검·게임·봇·백업 실행
 notebook.example.json     비밀값 없는 설정 예시
 tools/upscale_images.py  이미지 업스케일 도구
 tests/test_engine.py      엔진 self-check
-promo/index.html         정적 소개 페이지
 docs/                    에이전트·이미지·운영 연결 안내
 ```
 

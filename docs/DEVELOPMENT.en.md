@@ -205,7 +205,6 @@ tools/manage.py           Shared configuration for diagnostics, game, bot, and b
 notebook.example.json     Configuration example without secrets
 tools/upscale_images.py  Image upscaling tool
 tests/test_engine.py      Engine self-checks
-promo/index.html         Static promotional page
 docs/                    Agent, artwork, and runtime integration guides
 ```
 

@@ -10,9 +10,11 @@
 | 게임 도구 | **0.7.0** / Executa version 752 / PC·클라우드 모두 loaded=true / running=true |
 | 스토어 | 1.0.0 **pending_review** (review_candidate_version=1.0.0), 공개 전 |
 | 검증 | JS 81 · 브라우저 90 · strict 로컬 통과, Windows/Linux 엔진·Anna CI 모두 통과 |
-| 알려진 제한 | 여러 실행기의 동시 최초 생성 경합 ([FIRST_CREATION.md](FIRST_CREATION.md)), 해결 수단 없음 |
+| 알려진 제한 | 여러 실행기의 동시 최초 생성 경합 ([FIRST_CREATION.md](docs/FIRST_CREATION.md)), 해결 수단 없음 |
 
 이 파일은 최신 배포·심사 2건만 유지한다. 새 기록을 추가하면 가장 오래된 섹션을 [HANDOFF_HISTORY.md](HANDOFF_HISTORY.md) 맨 위로 옮긴다.
+
+문서 유지 관리(2026-10-15, 작업 기준 `fc939f5`): [문서 목차](../docs/README.md)와 [Anna 기술 문서](docs/README.md)를 신설하고 과거 절차는 `archive/`로 분리했다. 새로 시작 안내는 [RESET.md](docs/RESET.md)에 통합했다. 이 작업은 문서·중복 홍보 자료 정리이며 UI·도구·설치 버전 변경이나 재배포는 없다. 위 설치·실행 검증은 기존 1.1.2 배포 당시의 기록이다. 로컬 링크 검사 결과는 [정리 기록](../docs/MAINTENANCE.md)에 남긴다.
 
 ---
 
@@ -26,7 +28,7 @@
 - `apps push` revision 51, `apps cut 1.1.2` ID 1394, 테스트 설치 완료. Windows/Linux 도구는 기존 0.7.0 패키지와 SHA-256이 같아 캐시된 패키지를 재사용했다. 설치 후 **PC·클라우드 모두 agent_version=0.7.0, loaded=true, running=true** 확인.
 - 실제 설치 화면에서 **Connected**, 오류 안내 없음, **24종 및 새 지역별 4종**, 새 아이템 **8개 상세 이미지 및 전체 24개 그림 디코딩**을 확인했다. 설치 경로의 코드·그림 **12개가 HTTP 200 및 로컬 SHA-256 일치**. 중복 열린 창을 새로고침하는 동안 한 창의 상태 요청이 일시 시간 초과했으나 최종 단일 창에서 새로고침·재확인해 정상 연결을 확인했다.
 - 저장소 게임·아트·대화·산책 이야기·성격 초안 **5종의 값과 ETag가 배포 전후 동일**. 공유 소개 필드·스크린샷 6장·심사 상태도 스냅샷과 정확히 같다. 게임 행동·산책 소모·실사용 AI 호출·심사 재신청·공개 출시는 하지 않았다.
-- 제한: 도감은 미리보기이며 실제 획득·착용은 후속 작업이다. 플랫폼의 동시 최초 생성 경합은 기존 [제한](FIRST_CREATION.md)으로 남는다. [전체 배포 기록](releases/RELEASE_112.md) · [아이템과 생성 프롬프트](ITEMS.md).
+- 제한: 도감은 미리보기이며 실제 획득·착용은 후속 작업이다. 플랫폼의 동시 최초 생성 경합은 기존 [제한](docs/FIRST_CREATION.md)으로 남는다. [전체 배포 기록](releases/RELEASE_112.md) · [아이템과 생성 프롬프트](docs/ITEMS.md).
 
 # 1.1.1 · 확장 던전 아트·안내 및 테스트 배포 완료 · 2026-10-15
 
@@ -38,4 +40,4 @@
 - 설치된 Anna 앱을 새로고침해 **Connected**, 오류 안내 없음, 기존 캐릭터·픽셀 그림 정상 로딩을 확인했다. 실제 설치 경로의 JS·이미지 **7개 모두 HTTP 200 및 로컬 SHA-256 일치**. 발견하지 않은 던전을 열려고 실제 게임 데이터를 바꾸거나 산책을 소비하지 않았다.
 - 로컬 JS **81/81**, 브라우저 **90/90**, strict 검사 통과. [엔진 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38701415414)와 [Anna CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38701415506)가 Windows/Linux 모두 성공했다. Anna CI에는 저장·프로토콜 검사와 실행 패키지 빌드·스모크 테스트가 포함된다.
 - 저장소 게임·아트·대화·산책 이야기·성격 초안 **5종의 값과 ETag가 배포 전후 동일**하다. 공유 소개 필드와 스크린샷 6장, 심사 상태도 이전 스냅샷과 정확히 같다. 공개 출시·심사 재신청은 하지 않았다.
-- 이전 1.1.0 기록의 미완료 배포 항목은 이번 1.1.1에서 마무리했다. 플랫폼의 동시 최초 생성 경합은 기존 [제한](FIRST_CREATION.md)으로 남는다. [전체 배포 기록](releases/RELEASE_111.md) · [새 아트와 생성 프롬프트](../assets/dungeons-v2/EXPANSION_111.md).
+- 이전 1.1.0 기록의 미완료 배포 항목은 이번 1.1.1에서 마무리했다. 플랫폼의 동시 최초 생성 경합은 기존 [제한](docs/FIRST_CREATION.md)으로 남는다. [전체 배포 기록](releases/RELEASE_111.md) · [새 아트와 생성 프롬프트](../assets/dungeons-v2/EXPANSION_111.md).

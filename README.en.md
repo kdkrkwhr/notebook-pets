@@ -2,6 +2,8 @@
 
 [한국어](README.md) · **English**
 
+[Documentation index](docs/README.md) · [Installed app and deployment status](anna/HANDOFF.md)
+
 **Draw a little friend. Care for them, talk to them, and go on adventures together.**
 
 Notebuddy is a companion game about growing alongside one AI friend. Start with a drawing, a photo or a surprise companion. Share your day, build a routine, discover stories and pixel dungeons on walks, and keep a little album of your friend's growth.
@@ -128,7 +130,7 @@ Chat, care reactions, personality and walk-story generation, reference analysis 
 
 The twenty-four-item book is the starting point for **collecting, a coin shop, an inventory and equipment**. Per-portrait anatomy analysis and fitted appearances are planned for that stage.
 
-The **Sunken Palace and Forgotten Clockwork City are now playable**. Future regions include a sky castle, library and desert. Item collection, equipment and those future regions are not available yet. [Item plans](anna/ITEMS.md)
+The **Sunken Palace and Forgotten Clockwork City are now playable**. Future regions include a sky castle, library and desert. Item collection, equipment and those future regions are not available yet. [Item plans](anna/docs/ITEMS.md)
 
 ---
 

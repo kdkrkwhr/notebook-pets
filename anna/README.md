@@ -47,7 +47,7 @@
   <img src="../docs/screenshots/items-catalog-112-ko.png" width="900" alt="현재 24종 아이템 전체를 보여 주는 한국어 도감">
 </p>
 
-현재는 **미리보기 도감**이라 코인을 쓰거나 아이템을 받지는 않아요. 캐릭터별 부위 분석과 실제 착용도 아직 제공하지 않습니다. 향후 수집과 착용은 분리할 예정으로, 손이 없는 친구도 장갑을 모을 수 있지만 장갑 때문에 손이 생기지는 않도록 준비하고 있어요. [아이템과 착용 계획](ITEMS.md)
+현재는 **미리보기 도감**이라 코인을 쓰거나 아이템을 받지는 않아요. 캐릭터별 부위 분석과 실제 착용도 아직 제공하지 않습니다. 향후 수집과 착용은 분리할 예정으로, 손이 없는 친구도 장갑을 모을 수 있지만 장갑 때문에 손이 생기지는 않도록 준비하고 있어요. [아이템과 착용 계획](docs/ITEMS.md)
 
 ## 이어서 즐기기와 AI 사용량
 
@@ -59,6 +59,6 @@
 
 ---
 
-[전체 기능 갤러리](../README.md) · [개발·설치 안내](DEVELOPMENT.md) · [1.1.2 배포 기록](releases/RELEASE_112.md) · [0.10.1 배포 기록](releases/RELEASE_0101.md) · [0.10.0 배포 기록](releases/RELEASE_0100.md) · [0.9.0 배포 기록](releases/RELEASE_090.md) · [1.0.0 심사 안내](reviews/REVIEW_100.md) · [0.8.1 심사 안내](reviews/REVIEW_081.md) · [작업 인계](HANDOFF.md)
+[전체 기능 갤러리](../README.md) · [개발·설치 안내](DEVELOPMENT.md) · [기술 문서](docs/README.md) · [배포 기록](releases/README.md) · [심사 기록](reviews/README.md) · [작업 인계](HANDOFF.md)
 
 스크린샷은 별도 테스트 데이터로 촬영한 실제 UI입니다. Mori는 실제 Anna 생성 결과이고, 도감 화면은 1.1.2입니다. [화면 출처](../docs/screenshots/README.md)
