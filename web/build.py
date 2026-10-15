@@ -23,7 +23,9 @@ for name in ('theme.css', 'icon.svg', 'title-screen.mjs', 'item-catalog.mjs', 'i
     shutil.copyfile(anna / name, OUT / name)
 shutil.copytree(anna / 'fonts', OUT / 'fonts', dirs_exist_ok=True)
 for folder in ('starters-v1', 'items-v1', 'dungeons-v2'):
-    shutil.copytree(anna / 'assets' / folder, OUT / 'assets' / folder, dirs_exist_ok=True)
+    # Anna's bundle/assets is generated and ignored. Both platforms consume
+    # the tracked public originals, so fresh CI checkouts need no Anna build.
+    shutil.copytree(ROOT / 'assets' / folder, OUT / 'assets' / folder, dirs_exist_ok=True)
 shutil.copyfile(ROOT / 'anna' / 'THIRD_PARTY_NOTICES.txt', OUT / 'THIRD_PARTY_NOTICES.txt')
 for folder in ('core', 'data', 'pyodide'):
     (OUT / folder).mkdir(exist_ok=True)
