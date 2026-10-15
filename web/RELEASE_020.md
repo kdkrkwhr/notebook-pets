@@ -8,4 +8,9 @@
 
 제한: AI 이미지 생성/외형 편집·Anna의 풍부한 산책 이야기/던전 애니메이션·대화 영속화는 미이식. 웹은 기본 친구 초상화를 사용한다. 유료 AI 실호출 없음.
 
-Pages 배포와 공개 사이트 검증 진행 중.
+Pages 배포 완료: https://kdkrkwhr.github.io/notebook-pets/ · 배포 소스 `661f6e378b3d88b65915511dda1e07059fa8aecb`.
+
+- [Pages 빌드·Chromium·배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38753308700), [main 웹 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38753302549), [Windows/Linux·Pyodide 코어 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38753302981) 모두 성공.
+- 공개 URL에서도 실제 Edge로 같은 게임·저장·CAS·백업·모의 BYOK·키 비영속화·폰트/이미지·24종 도감·네 가지 화면 너비 검증 통과. 별도 브라우저 컨텍스트로 실행해 기존 사용자 데이터는 변경하지 않았다.
+- 공개 app.js·공유 CSS 2개·웹 CSS·Galmuri11·아이콘·대표 스타터 그림이 소스와 SHA-256 일치(텍스트 줄바꿈 정규화). HTML의 앱/스타일 참조에는 내용 해시를 붙여 업데이트 때 오래된 캐시를 재사용하지 않는다.
+- Windows 로컬 생성물이 없는 새 CI 체크아웃에서도 빌드되도록 그림은 추적된 `assets/` 원본에서 읽는다. 개인 그림이나 Anna 런타임 저장은 포함하지 않는다.

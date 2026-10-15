@@ -1,5 +1,7 @@
 # Web 0.1.0 · 2026-10-15
 
+현재 웹 버전은 [0.2.0 · Anna 디자인 공유](RELEASE_020.md)이며, 아래는 첫 프리뷰의 배포 기록이다.
+
 GitHub Pages 초기 프리뷰. 소스는 `main`, 배포는 `release-web`에서 관리한다. Anna `release`와 앱 1.2.1 / 도구 0.8.1 / working revision 53은 이번 작업으로 변경하거나 재배포하지 않았다.
 
 - Pyodide 314.0.7 module worker로 기존 Python 규칙 실행. 빌드 결과에 런타임 포함.
