@@ -1,5 +1,7 @@
 # Anna 작업 인계
 
+웹 디자인 공유(2026-10-15): 웹 0.2.0은 Anna의 폰트·테마 CSS·공개 기본 그림·시작 화면·아이템 도감을 빌드 시 공유한다. Anna 파일/앱/도구와 개인 데이터는 변경하지 않았다. 웹 배포·검증은 [웹 0.2.0 기록](../web/RELEASE_020.md)을 따른다.
+
 웹 트랙 추가(2026-10-15): `main`/`release-web`에 [GitHub Pages 웹 프리뷰](../web/README.md)를 구현했다. Anna 소스·게임 도구는 변경하지 않아 재배포하지 않았으며, 마지막 확인된 Anna 앱 1.2.1 / 도구 0.8.1 / working revision 53은 아래 기록을 따른다. Pages 배포 결과는 [웹 릴리즈 기록](../web/RELEASE.md)에 별도 기록한다.
 
 [사용 안내](README.md) · [개발·배포](DEVELOPMENT.md) · [이전 인계 이력](HANDOFF_HISTORY.md)
