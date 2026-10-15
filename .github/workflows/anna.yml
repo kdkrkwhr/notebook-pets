@@ -2,8 +2,9 @@ name: Anna app
 
 on:
   push:
+    branches: [release]
   pull_request:
-    branches: [develop, release]
+    branches: [main, release]
   workflow_dispatch:
 
 permissions:

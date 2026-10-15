@@ -10,9 +10,9 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-Owner test update **1.2.0** uses game tool **0.8.0**. The store candidate remains **1.0.0 pending review**, not publicly released.
+Owner test update **1.2.1** uses game tool **0.8.1**. The store candidate remains **1.0.0 pending review**, not publicly released.
 
-In 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common items, shops and equipment are deferred. Collection and browsing make no AI requests.
+In 1.2.1, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common items, shops and equipment are deferred. Collection and browsing make no AI requests.
 
 ## Your first meeting
 

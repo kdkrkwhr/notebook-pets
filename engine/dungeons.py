@@ -3,7 +3,7 @@ import copy
 import hashlib
 from datetime import date, datetime, timedelta, timezone
 import math
-import time
+from ports import time
 
 CATALOG = {
     'hellgate': {'species': ['dragon', 'monster', 'ghost'], 'elements': ['fire', 'thunder', 'dark']},

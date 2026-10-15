@@ -6,6 +6,7 @@ Anna 앱과 원본 Python 엔진은 같은 게임 규칙을 사용하지만 실�
 
 | 하고 싶은 일 | 시작 문서 |
 | --- | --- |
+| 공통 코어·멀티 플랫폼 구조와 출시 방향 | [아키텍처](ARCHITECTURE.md) |
 | Anna에서 친구 만나기 | [Anna 사용 안내](../anna/README.md) |
 | Anna UI·도구 개발 및 테스트 배포 | [Anna 개발·배포](../anna/DEVELOPMENT.md) |
 | 현재 설치 버전·최근 검증 확인 | [최신 작업 인계](../anna/HANDOFF.md) |

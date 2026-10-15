@@ -1,0 +1,7 @@
+{
+  "name": "notebuddy-portable-core-check",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node smoke.mjs"},
+  "devDependencies": {"playwright-core": "1.64.0", "pyodide": "314.0.7"}
+}

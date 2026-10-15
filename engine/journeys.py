@@ -5,7 +5,7 @@ Old saves begin with empty memories; no history is invented or backfilled.
 """
 import copy
 import re
-import uuid
+from ports import uuid
 import personality
 
 ACTIONS = frozenset(('feed','snack','play','sleep','train','walk','battle','flee',

@@ -1,12 +1,20 @@
 """Shared image identity and prompts. No network, files written, or game mutation."""
 import hashlib
 import json
-from pathlib import Path
 import re
-from runtime import GameError, validate_user_id
+from domain import GameError, validate_user_id
+from ports import ContextMapping
 
-ROOT = Path(__file__).resolve().parents[1]
-TEMPLATE = json.loads((ROOT / "data/image_prompts.json").read_text(encoding="utf-8"))
+TEMPLATE = ContextMapping('templates')
+
+
+def __getattr__(name):
+    if name == 'ROOT':
+        # Compatibility for the optional local image/ComfyUI adapters only.
+        from pathlib import Path
+        from local_runtime import BASE
+        return Path(BASE)
+    raise AttributeError(name)
 
 
 def pet_identity(st):

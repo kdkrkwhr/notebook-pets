@@ -33,6 +33,7 @@ debug.log
 
 # Anna app build and local development
 anna/node_modules/
+tests/pyodide/node_modules/
 anna/.anna/
 anna/.venv/
 anna/dist/

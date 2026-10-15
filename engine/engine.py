@@ -1,38 +1,53 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""Shared authoritative rules, with lazy compatibility entry points for the CLI.
+
+Portable hosts use game_api.transition with explicit execution inputs. Importing
+these rules performs no filesystem or environment access. execute/main retain
+the existing local adapter contract; LLM narration never decides game rewards.
 """
-공책 AI 키우기 — 결정론 게임 엔진 (v0.2)
-판정은 전부 이 스크립트가 한다. LLM(에이전트)은 결과 JSON을 받아 서사만 붙인다.
-사용법: python engine.py <user_id> <command> [args...]
-출력: 단일 JSON (Discord 중계용)
-"""
-import copy, json, math, os, random, re, sys, time, uuid
+import copy, json, math, re
 from contextvars import ContextVar
 from datetime import date, datetime, timedelta
-from runtime import KST, MISSING, GameError, atomic_write_json, game_clock, game_date, read_json, store_lock, validate_user_id
+from domain import KST, GameError, validate_user_id
+from ports import ContextMapping, current, random, time, uuid
 import art
 import dungeons
 import collectibles
 import journeys
 import personality
 
-BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DATA = os.path.join(BASE, "data", "game_data.json")
-DATA_ROOT = os.path.abspath(os.environ.get("NOTEBOOK_DATA_DIR", BASE))
-STATE_DIR = os.path.join(DATA_ROOT, "state")
-_pending_save = ContextVar("pending_save", default=None)
+G = ContextMapping('rules')
+_pending_save = ContextVar('pending_save', default=None)
 
-with open(DATA, encoding="utf-8") as f:
-    G = json.load(f)
+def __getattr__(name):
+    if name in {'BASE','DATA_ROOT','STATE_DIR','ACCESS','ADMIN_IDS','MISSING','read_json','atomic_write_json','store_lock','game_clock'}:
+        import local_runtime
+        return getattr(local_runtime, name)
+    raise AttributeError(name)
+
+def game_date():
+    bound = current()
+    if bound:
+        return datetime.fromtimestamp(bound[0].now, KST).date()
+    from runtime import game_date as local_date
+    return local_date()
+
 
 def state_path(uid):
-    return os.path.join(STATE_DIR, f"{validate_user_id(uid)}.json")
+    from local_runtime import state_path as run
+    return run(uid)
 
 def load_state(uid):
-    st = read_json(state_path(uid))
-    if st is MISSING:
-        return None
-    return migrate_state(st, uid)
+    bound = current()
+    if bound:
+        if bound[1] is None:
+            raise ValueError('A transition candidate is required')
+        value = bound[1].read(uid)
+        return None if value is None else migrate_state(value, uid)
+    from local_runtime import read_state
+    return read_state(uid)
+
 
 def legacy_stage(level):
     return 1 if level <= 30 else 2 if level <= 50 else 3 if level <= 80 else 4
@@ -69,7 +84,14 @@ def save_state(st):
     if pending is not None:
         pending.append(st)
         return
-    atomic_write_json(state_path(st["user_id"]), st)
+    bound = current()
+    if bound:
+        if bound[1] is None:
+            raise ValueError('A transition candidate is required')
+        bound[1].write(st)
+    else:
+        from local_runtime import write_state
+        write_state(st)
 
 def today(): return game_date().isoformat()
 
@@ -250,16 +272,15 @@ def out(ok, msg, **extra):
     r = {"ok": ok, "msg": msg}; r.update(extra); return r
 
 # ---------- 커맨드 ----------
-ADMIN_IDS = {v.strip() for v in os.environ.get("NOTEBOOK_ADMIN_IDS", "").split(",") if v.strip()}
-ACCESS = os.path.join(DATA_ROOT, "data", "access.json")
 
-def is_admin(uid): return uid in ADMIN_IDS
+
+def is_admin(uid):
+    from local_runtime import is_admin as run
+    return run(uid)
 
 def load_access():
-    a = read_json(ACCESS)
-    if a is MISSING:
-        return {"owner_id": "", "owner_name": ""}
-    return validate_access(a)
+    from local_runtime import load_access as run
+    return run()
 
 
 def validate_access(a):
@@ -274,43 +295,24 @@ def validate_access(a):
     return a
 
 def save_access(a):
-    atomic_write_json(ACCESS, a)
+    from local_runtime import save_access as run
+    return run(a)
 
 def access_check(uid):
-    """소유주 게이트. 반환 (allowed, owner_name).
-    소유주 미등록 → 전체 개방. 등록 시 → 소유주 본인 또는 관리자만."""
-    a = load_access()
-    owner = a.get("owner_id", "")
-    if not owner: return True, ""                                   # open
-    if uid == owner or is_admin(uid): return True, a.get("owner_name", "")
-    return False, a.get("owner_name", "")
+    from local_runtime import access_check as run
+    return run(uid)
 
 def cmd_set_owner(uid, target, name):
-    """관리자 전용: 소유주 등록. 이후 그 ID(+관리자)만 게임 가능."""
-    if not is_admin(uid): return out(False, "이 명령어는 관리자만 쓸 수 있어.")
-    validate_user_id(target)
-    save_access({"owner_id": target, "owner_name": name or ""})
-    return out(True, "소유주 등록 완료", owner_id=target, owner_name=name or "")
+    from local_runtime import cmd_set_owner as run
+    return run(uid, target, name)
 
 def cmd_clear_owner(uid):
-    """관리자 전용: 소유주 해제 → 전체 개방으로 복귀."""
-    if not is_admin(uid): return out(False, "이 명령어는 관리자만 쓸 수 있어.")
-    save_access({"owner_id": "", "owner_name": ""})
-    return out(True, "소유주 해제 완료 — 이제 누구나 놀 수 있어.")
+    from local_runtime import cmd_clear_owner as run
+    return run(uid)
 
 def cmd_reset(uid, target, name):
-    """관리자 전용: 몬스터 초기화. reset <target_uid> [새이름]"""
-    if uid not in ADMIN_IDS:
-        return out(False, "이 명령어는 관리자만 쓸 수 있어.")
-    st = load_state(target)
-    if not st:
-        return out(False, f"{target} 은(는) 몬스터가 없어.")
-    old_name = st["name"]
-    if len(name) > 1:  # 새 이름이 오면 바로 재탄생
-        r = cmd_start(target, name, replace=True)
-        return out(True, f"{old_name} 초기화 후 {r.get('species')} {name} 재탄생!", **{k: v for k, v in r.items() if k not in ("ok", "msg")})
-    os.remove(state_path(target))
-    return out(True, f"{old_name} 초기화 완료. !공책시작 으로 다시 키울 수 있어.")
+    from local_runtime import cmd_reset as run
+    return run(uid, target, name)
 
 def cmd_start(uid, name, replace=False):
     if not replace and load_state(uid): return out(False, "이미 키우는 몬스터가 있어. (!상태 로 확인)")
@@ -724,13 +726,8 @@ def cmd_claimquest(st):
                xp_result=xp, loot={"rare_feed": reward["rare_feed"]})
 
 def cmd_rank():
-    ranks = []
-    for fn in os.listdir(STATE_DIR):
-        if fn.endswith(".json"):
-            s = load_state(fn[:-5])
-            if s: ranks.append({"name": s["name"], "lv": s["level"], "win": s["record"]["win"]})
-    ranks.sort(key=lambda r: (r["lv"], r["win"]), reverse=True)
-    return out(True, "", ranking=ranks[:10])
+    from local_runtime import cmd_rank as run
+    return run()
 
 def cmd_help():
     return out(True, "커맨드 목록", commands=list(G["commands"].keys()) + list(dungeons.COMMANDS) + sorted(dungeons.CHOICES) + ["status", "quests", "claimquest", "album", "titles", "rank", "help"])
@@ -745,7 +742,10 @@ ALIASES = {
     "도망": "flee",
     "퀘스트": "quests", "일일퀘스트": "quests", "퀘스트보상": "claimquest",
 }
-COMMANDS = {"personality", "walk_begin", "walk_collect", "walk_leave"} | set(G["commands"]) | set(dungeons.COMMANDS) | dungeons.CHOICES | {"status", "quests", "claimquest", "album", "titles", "rank", "help", "owner", "clearowner", "reset"}
+BASE_COMMANDS = frozenset({'start','feed','snack','play','sleep','train','walk','battle','flee','attendance'})
+COMMANDS = ({'personality','walk_begin','walk_collect','walk_leave'} | BASE_COMMANDS |
+            set(dungeons.COMMANDS) | dungeons.CHOICES |
+            {'status','quests','claimquest','album','titles','rank','help','owner','clearowner','reset'})
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
 READ_COMMANDS = frozenset({"status", "quests", "album", "titles", "rank", "help"})
 
@@ -810,95 +810,13 @@ def execute_once(actor_id, command, arguments, request_id):
 
 
 def execute(actor_id, command, arguments=(), *, request_id=None):
-    """Trusted adapter entry point: actor_id comes from the platform session.
-
-    This is not remote authentication: local CLI callers have OS-level access.
-    Never let the LLM or message body choose actor_id or runtime environment vars.
-    """
-    try:
-        command = ALIASES.get(command, command)
-        if command not in COMMANDS:
-            raise GameError("unknown_command", "모르는 커맨드입니다.")
-        if not isinstance(arguments, (list, tuple)) or any(not isinstance(v, str) for v in arguments):
-            raise GameError("invalid_arguments", "명령 인자가 올바르지 않습니다.")
-        bound_event = os.environ.get("NOTEBOOK_EVENT_ID")
-        if bound_event is not None:
-            if request_id is not None and request_id != bound_event:
-                raise GameError("request_mismatch", "플랫폼 메시지 ID가 일치하지 않습니다.")
-            request_id = bound_event
-        if request_id is not None:
-            if not isinstance(request_id, str) or re.fullmatch(r"[A-Za-z0-9:_-]{1,128}", request_id) is None:
-                raise GameError("invalid_request_id", "메시지 ID 형식이 올바르지 않습니다.")
-            if command not in PLAYER_COMMANDS:
-                raise GameError("unsupported_request_id", "관리자 명령은 메시지 기반 게임 도구에서 실행할 수 없습니다.")
-        if command == "help":
-            if arguments:
-                raise GameError("invalid_arguments", "도움말에는 추가 인자가 필요하지 않습니다.")
-            return cmd_help()
-        if actor_id is not None:
-            validate_user_id(actor_id)
-        elif command != "rank":
-            raise GameError("invalid_user_id", "실제 발신자의 사용자 ID가 필요합니다.")
-        authenticated = os.environ.get("NOTEBOOK_ACTOR_ID")
-        if authenticated is not None:
-            validate_user_id(authenticated)
-            if actor_id is None:
-                actor_id = authenticated
-            elif actor_id != authenticated:
-                raise GameError("actor_mismatch", "발신자와 요청 사용자 ID가 일치하지 않습니다.")
-        for admin in ADMIN_IDS:
-            validate_user_id(admin)
-        if command in {"owner", "reset"}:
-            if not is_admin(actor_id):
-                return out(False, "이 명령어는 관리자만 쓸 수 있어.", code="forbidden")
-            if command == "owner" and not arguments:
-                raise GameError("invalid_arguments", "소유주로 등록할 사용자 ID가 필요합니다.")
-            target = validate_user_id(arguments[0] if arguments else actor_id)
-        elif command in dungeons.CHOICES | {"walk_collect", "walk_leave"}:
-            if len(arguments) != 1 or re.fullmatch(r'[a-f0-9]{32}', arguments[0]) is None:
-                raise GameError('invalid_arguments', 'A current choice_id is required.')
-        elif command == 'personality':
-            if len(arguments)!=1 or len(arguments[0])>4096:
-                raise GameError('invalid_arguments', 'A bounded personality profile is required.')
-        elif command != "start" and arguments:
-            raise GameError("invalid_arguments", "이 명령에는 추가 인자가 필요하지 않습니다.")
-        name = " ".join(arguments[1:] if command in {"owner", "reset"} else arguments)
-        if command != "personality" and (len(name) > 80 or any(ord(ch) < 32 for ch in name)):
-            raise GameError("invalid_arguments", "이름은 제어문자 없이 80자 이내로 입력해 주세요.")
-        with store_lock(STATE_DIR), game_clock():
-            # Explicit admin commands can recover broken access settings.
-            if command == "owner":
-                return cmd_set_owner(actor_id, target, name)
-            if command == "clearowner":
-                return cmd_clear_owner(actor_id)
-            allowed, owner_name = access_check(actor_id)
-            if not allowed:
-                return out(False, "not_owner", reason="not_owner", owner_name=owner_name)
-            if command == "reset":
-                return cmd_reset(actor_id, target, name)
-            if request_id is not None and actor_id is not None and command not in READ_COMMANDS:
-                return execute_once(actor_id, command, arguments, request_id)
-            return dispatch_player(actor_id, command, arguments)
-    except GameError as exc:
-        return out(False, str(exc), code=exc.code)
-    except (KeyError, TypeError, ValueError):
-        return out(False, "저장 데이터의 형식을 확인해 주세요.", code="invalid_state")
+    from local_runtime import execute as run
+    return run(actor_id, command, arguments, request_id=request_id)
 
 
 def main():
-    args = sys.argv[1:]
-    if not args:
-        result = execute(None, "help")
-    elif ALIASES.get(args[0], args[0]) in COMMANDS:
-        command = ALIASES.get(args[0], args[0])
-        if command == "help" or (command == "rank" and len(args) == 1):
-            result = execute(None, command, args[1:])
-        else:
-            result = execute(args[1] if len(args) > 1 else None, command, args[2:])
-    else:
-        result = execute(args[0], args[1] if len(args) > 1 else "", args[2:])
-    print(json.dumps(result, ensure_ascii=False))
-    return result
+    from local_runtime import main as run
+    return run()
 
 if __name__ == "__main__":
     random.seed()  # 실행마다 다른 시드 — 판정 로직 자체는 결정론적 규칙 적용

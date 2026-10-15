@@ -2,24 +2,18 @@
 import errno
 import json
 import os
-import re
 import tempfile
 import time
 from contextlib import contextmanager
 from contextvars import ContextVar
-from datetime import datetime, timedelta, timezone
+from datetime import datetime
 from pathlib import Path
 
 
-KST = timezone(timedelta(hours=9), name="Asia/Seoul")
+from domain import KST, GameError, validate_user_id
+
 MISSING = object()
-_transaction_date = ContextVar("transaction_date", default=None)
-
-
-class GameError(Exception):
-    def __init__(self, code, message):
-        super().__init__(message)
-        self.code = code
+_transaction_date = ContextVar('transaction_date', default=None)
 
 
 def game_date():
@@ -35,12 +29,6 @@ def game_clock():
     finally:
         _transaction_date.reset(token)
 
-
-def validate_user_id(value):
-    # ASCII only: reject separators, signs, whitespace, Unicode digits and paths.
-    if not isinstance(value, str) or re.fullmatch(r"[1-9][0-9]{0,19}", value) is None:
-        raise GameError("invalid_user_id", "사용자 ID는 1~20자리의 양의 정수여야 합니다.")
-    return value
 
 
 def read_json(path):

@@ -1,14 +1,15 @@
-"""Run unchanged game rules against one temporary, APS-scoped save.
+"""Isolated Anna adapter: JSON state enters the shared core directly.
 
-This worker is process-isolated: legacy engine globals and OS file locks never
-point at the Discord installation. Anna authenticates the APS tool bucket; `1`
-is only the internal player slot within that already-private bucket.
+Anna authenticates the APS bucket; '1' is its private internal player slot.
+The adapter loads bundled rules, supplies system dependencies and builds views.
+No temporary save files, process environment changes or OS locks are needed.
 """
 import json
-import os
 from pathlib import Path
+import random
 import sys
-import tempfile
+import time
+import uuid
 
 ALLOWED = frozenset({'personality', 'start', 'status', 'feed', 'snack', 'play', 'sleep', 'train',
                      'walk_begin', 'walk_collect', 'walk_leave', 'walk', 'battle', 'flee', 'attendance', 'quests', 'claimquest',
@@ -21,29 +22,28 @@ def run(payload):
     if command not in ALLOWED:
         return {'result': {'ok': False, 'code': 'forbidden', 'msg': '지원하지 않는 행동입니다.'},
                 'changed': False}
-    with tempfile.TemporaryDirectory(prefix='notebuddy-') as temporary:
-        for key in ('NOTEBOOK_ADMIN_IDS', 'NOTEBOOK_EVENT_ID'):
-            os.environ.pop(key, None)
-        os.environ.update(NOTEBOOK_DATA_DIR=temporary, NOTEBOOK_ACTOR_ID='1')
-        source = Path(__file__).parent / 'game_core'
-        if not source.is_dir():
-            source = Path(__file__).resolve().parents[3]
-        sys.path.insert(0, str(source / 'engine'))
-        import engine
-        import art
-        from runtime import atomic_write_json
-
+    source = Path(__file__).parent / 'game_core'
+    if not source.is_dir():
+        source = Path(__file__).resolve().parents[3]
+    sys.path.insert(0, str(source / 'engine'))
+    import engine
+    import art
+    from game_api import transition
+    from ports import ExecutionContext, execution
+    context = ExecutionContext(
+        rules=json.loads((source / 'data' / 'game_data.json').read_text(encoding='utf-8')),
+        templates=json.loads((source / 'data' / 'image_prompts.json').read_text(encoding='utf-8')),
+        now=time.time(), rng=random, new_id=lambda: uuid.uuid4().hex)
+    with execution(context):
         previous = payload.get('state')
-        save = Path(temporary) / 'state' / '1.json'
         if previous is not None:
             previous = engine.migrate_state(previous, '1')
-            atomic_write_json(save, previous)
         arguments = [payload['name']] if command == 'start' and payload.get('name') else []
         if command in ('dungeon_safe', 'dungeon_risk', 'walk_collect', 'walk_leave'):
             arguments = [payload.get('choice_id', '')]
         if command == 'personality': arguments = [payload.get('profile', '')]
-        result = engine.execute('1', command, arguments, request_id=payload.get('request_id'))
-        current = json.loads(save.read_text(encoding='utf-8')) if save.is_file() else None
+        outcome = transition(previous, command, context, actor_id='1', arguments=arguments, request_id=payload.get('request_id'))
+        result, current = outcome.result, outcome.state
         # Only the new local candidate is adjusted before its single APS commit.
         # Replays and already-created pets never reapply or reroll these traits.
         species, element = payload.get('birth_species'), payload.get('birth_element', 'random')
@@ -60,9 +60,8 @@ def run(payload):
                 request = payload.get('request_id')
                 if request in current.get('processed_requests', {}):
                     current['processed_requests'][request]['result'] = result.copy()
-                atomic_write_json(save, current)
-        status = engine.execute('1', 'status') if current else None
-        album = engine.execute('1', 'album').get('album') if current else None
+        status = transition(current, 'status', context).result if current else None
+        album = transition(current, 'album', context).result.get('album') if current else None
         view = {'status': status, 'album': album}
         if current:
             view['inventory'] = current['inventory']

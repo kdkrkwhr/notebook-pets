@@ -2,8 +2,9 @@ name: Tests
 
 on:
   push:
+    branches: [main]
   pull_request:
-    branches: [develop, release]
+    branches: [main, release]
   workflow_dispatch:
 
 permissions:
@@ -14,6 +15,18 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  pyodide:
+    name: Browser Python core / Pyodide
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: tests/pyodide
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - run: npm ci --ignore-scripts
+      - run: npx playwright-core install chromium
+      - run: npm test
   test:
     name: Python 3.12 / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
