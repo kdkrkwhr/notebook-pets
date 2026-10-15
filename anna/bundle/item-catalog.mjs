@@ -5,10 +5,11 @@ export function createItemCatalog(document,language){
  let selected=null;
  const words={
   heading:['Explorer’s item book','탐험가의 아이템 도감'],open:['Browse items','아이템 둘러보기'],
-  intro:['Little treasures from familiar paths and distant dungeons.','익숙한 산책길과 신비로운 던전에서 만날 작은 보물들.'],
+  intro:['Twenty-four little treasures from familiar paths and five distant dungeons.','익숙한 산책길과 다섯 던전에서 만날 24종의 작은 보물들.'],
   preview:['Collection preview','도감 미리보기'],notice:['Explore the designs and planned rewards. Collecting, buying and equipping will open in a later update.','아이템 모습과 예정된 획득 방법을 먼저 살펴보세요. 수집·구매·착용은 다음 업데이트에서 열려요.'],
   allRegions:['All regions','모든 지역'],allSlots:['All types','모든 부위'],region:['Region','지역'],slot:['Type','부위'],
   common:['Everyday adventures','공용'],hellgate:['Hellgate','지옥문'],icekingdom:['Ice Kingdom','얼음왕국'],dreamforest:['Dream Forest','몽환의 숲'],
+  sunkenpalace:['Sunken Palace','침몰한 왕궁'],clockworkcity:['Forgotten Clockwork City','잊혀진 태엽도시'],
   head:['Head','머리'],neck:['Neck ornament','목 장식'],back:['Back ornament','등 장식'],aura:['Surrounding effect','주변 효과'],
   standard:['Standard','일반'],rare:['Rare','희귀'],search:['Find an item','아이템 검색'],empty:['No items match. Try another name or filter.','맞는 아이템이 없어요. 이름이나 필터를 바꿔 보세요.'],
   clear:['Clear filters','필터 초기화'],close:['Close','닫기'],count:['items','종'],

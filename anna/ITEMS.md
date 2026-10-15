@@ -1,8 +1,8 @@
-# Item catalog · 0.9.0
+# Item catalog · 1.1.2
 
-The first catalog has **16 items**: common gear and four items for each of Hellgate, Ice Kingdom and Dream Forest. It is a read-only preview, available before or after creating a companion, with English/Korean names and lore, region/type filters, text search, rare-item labels, detail views, planned acquisition and attachment requirements.
+The catalog has **24 items**: common gear and four items for each of Hellgate, Ice Kingdom, Dream Forest, Sunken Palace and Forgotten Clockwork City. It is a read-only preview, available from home after creating a companion, with English/Korean names and lore, region/type filters, text search, rare-item labels, detail views, planned acquisition and attachment requirements.
 
-No collection, ownership, gift, purchase, coin spending, equipment, avatar regeneration or body analysis is implemented in this release. The welcome gift, coin unlocks and repeated-clear rewards are plans, clearly labeled in the UI. Prices and milestone counts remain unset. Browsing performs no game actions, storage writes or AI calls and grants no rewards. It does not alter the current 0.8.1 review listing.
+No collection, ownership, gift, purchase, coin spending, equipment, avatar regeneration or body analysis is implemented in this release. The welcome gift, coin unlocks and repeated-clear rewards are plans, clearly labeled in the UI. Prices and milestone counts remain unset. Browsing performs no game actions, storage writes or AI calls and grants no rewards. It does not alter the current 1.0.0 review listing.
 
 ## Items
 
@@ -15,6 +15,17 @@ No collection, ownership, gift, purchase, coin spending, equipment, avatar regen
 
 Definitions and localized descriptions are in `bundle/items.mjs`; art and exact built-in image-generation prompts are in `../assets/items-v1/`. Icons are static illustrations, not fitted character images or animations. Artwork loads from the application bundle.
 
+### Expansion items · 1.1.2
+
+| Type | Sunken Palace | Forgotten Clockwork City |
+| --- | --- | --- |
+| Head | Coral Pearl Tiara / 산호 진주 왕관 (rare) | Clockmaker’s Goggles / 태엽 고글 |
+| Neck | Seashell Pearl Pendant / 진주 조개 펜던트 | Pocket-Watch Necklace / 회중시계 목걸이 |
+| Back | Tide Cape / 물결 망토 | Brass-Gear Cape / 황동 톱니 망토 |
+| Surrounding effect | Deep-Sea Bubbles / 심해 물방울 | Little Clockwork Orbit / 작은 태엽 무리 (rare) |
+
+All eight use the same preview, planned reward and fit rules as the original sixteen. [Exact illustration prompts](../assets/items-v1/prompts-112.json).
+
 ## Future fit model
 
 - Collection and wearing are independent. A character may own an item it cannot wear.
@@ -25,4 +36,4 @@ Definitions and localized descriptions are in `bundle/items.mjs`; art and exact 
 - Body classification and geometric placement are distinct: knowing that a hand exists does not guarantee that a glove can be rendered correctly. Preserve character identity and verify the fitted result before exposing it as successful equipment.
 - Analysis is planned per portrait, not per catalog click. Character regeneration remains an explicit AI action, with usage disclosed. Runtime inspection and persistent fit data are deferred until equipment is implemented; the current catalog only explains item requirements.
 
-The other five planned dungeons and their twenty possible items are outside this first catalog.
+Items for the remaining planned dungeons will be considered when those regions are implemented.

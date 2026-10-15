@@ -55,7 +55,7 @@ test('item book opens only after creating a pet, filters and details never call 
  await start(p);const before=await p.evaluate(()=>JSON.stringify(window.hostTest.state));
  const callsBefore=await p.evaluate(()=>window.hostTest.calls.length);
  assert.equal(await p.locator('#item-catalog').isVisible(),false);
- await p.locator('#open-items').click();assert.equal(await p.locator('[data-item]').count(),16);
+ await p.locator('#open-items').click();assert.equal(await p.locator('[data-item]').count(),24);
  assert.match(await p.locator('#item-catalog-notice').innerText(),/later update/);
  await p.locator('#item-region').selectOption('icekingdom');assert.equal(await p.locator('[data-item]').count(),4);
  await p.locator('#item-slot').selectOption('head');assert.equal(await p.locator('[data-item]').count(),1);
@@ -65,7 +65,16 @@ test('item book opens only after creating a pet, filters and details never call 
  assert.equal(await p.locator('#item-detail-image').evaluate(img=>img.decode().then(()=>img.naturalWidth>0)),true);
  await p.keyboard.press('Escape');assert.equal(await p.locator('#item-detail').isVisible(),false);assert.equal(await p.locator('#item-catalog').isVisible(),true);
  await p.locator('#item-clear').click();await p.locator('#item-search').fill('no-such-item');assert.equal(await p.locator('#item-empty').isVisible(),true);
- await p.locator('#item-clear').click();assert.equal(await p.locator('[data-item]').count(),16);
+ await p.locator('#item-clear').click();assert.equal(await p.locator('[data-item]').count(),24);
+ for(const [region,label] of [['sunkenpalace','Sunken Palace'],['clockworkcity','Forgotten Clockwork City']]){
+  await p.locator('#item-region').selectOption(region);assert.equal(await p.locator('[data-item]').count(),4);
+  assert.equal(await p.locator('#item-region option:checked').innerText(),label);
+  for(const card of await p.locator('[data-item]').all()){
+   await card.click();assert.match(await p.locator('#item-detail-reward').innerText(),/future|not set yet/);
+   assert.equal(await p.locator('#item-detail-image').evaluate(img=>img.decode().then(()=>img.naturalWidth>0)),true);
+   await p.locator('#close-item-detail').click();
+  }
+ }
  await p.locator('#close-items').click();assert.equal(await p.locator('#open-items').evaluate(e=>document.activeElement===e),true);
  assert.equal(await p.evaluate(()=>JSON.stringify(window.hostTest.state)),before);
  assert.equal(await p.evaluate(()=>window.hostTest.calls.length),callsBefore);
@@ -75,11 +84,16 @@ test('Korean item book fits a narrow screen and distinguishes body requirements 
  const p=await setup(t);await start(p);await p.setViewportSize({width:360,height:740});
  await p.locator('#language').selectOption('ko');await idle(p);await p.locator('#open-items').click();
  assert.equal(await p.locator('#item-catalog-heading').innerText(),'탐험가의 아이템 도감');
- await p.locator('#item-slot').selectOption('aura');assert.equal(await p.locator('[data-item]').count(),4);
+ await p.locator('#item-slot').selectOption('aura');assert.equal(await p.locator('[data-item]').count(),6);
  await p.locator('[data-item="firefly-orbit"]').click();assert.match(await p.locator('#item-detail-fit').innerText(),/손·발이나 고정할 부위가 필요 없/);
  assert.equal(await p.locator('#item-detail').evaluate(e=>e.scrollWidth<=e.clientWidth+1),true);
  await p.locator('#close-item-detail').click();await p.locator('#item-clear').click();
  await p.locator('#item-search').fill('목도리');assert.equal(await p.locator('[data-item]').count(),2);
+ await p.locator('#item-clear').click();await p.locator('#item-region').selectOption('clockworkcity');
+ assert.equal(await p.locator('#item-region option:checked').innerText(),'잊혀진 태엽도시');
+ await p.locator('[data-item="gear-orbit"]').click();assert.equal(await p.locator('#item-detail-name').innerText(),'작은 태엽 무리');
+ assert.match(await p.locator('#item-detail-fit').innerText(),/손·발이나 고정할 부위가 필요 없/);
+ await p.locator('#close-item-detail').click();
  assert.equal(await p.locator('#item-catalog').evaluate(e=>e.scrollWidth<=e.clientWidth+1),true);
  await p.locator('.item-fit-explanation summary').click();assert.match(await p.locator('.item-fit-explanation').innerText(),/손이 없는 친구도 수집/);
  if(process.env.ANNA_ITEMS_CAPTURE){await p.locator('#item-clear').click();await p.locator('#item-catalog').evaluate(e=>e.scrollTo(0,0));await p.screenshot({path:process.env.ANNA_ITEMS_CAPTURE});}

@@ -10,7 +10,7 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-As of October 15, 2026, the owner test app is **1.1.1**. Sunken Palace and Forgotten Clockwork City bring the total to five regions, with illustrated discovery cards and bosses. It restyles the app as a JRPG-style notebook, adds a title screen and gives the dungeon companion a 2.5D turn and walk. Version **1.0.0 is awaiting store review**; public release is still pending. The test update adds a **sixteen-item catalog preview** alongside creation, care, conversation, personality, walks and dungeons. Collecting, buying and equipping items are planned for later.
+As of October 15, 2026, the owner test app is **1.1.2**. Sunken Palace and Forgotten Clockwork City bring the total to five regions, with illustrated discovery cards and bosses. It restyles the app as a JRPG-style notebook, adds a title screen and gives the dungeon companion a 2.5D turn and walk. Version **1.0.0 is awaiting store review**; public release is still pending. The test update adds a **twenty-four-item catalog preview** alongside creation, care, conversation, personality, walks and dungeons. Collecting, buying and equipping items are planned for later.
 
 ## Your first meeting
 
@@ -35,16 +35,16 @@ As of October 15, 2026, the owner test app is **1.1.1**. Sunken Palace and Forgo
 | **Keep a growth album** | Reach new stages at levels 10, 30 and 50, then choose when to draw and save a new portrait. |
 | **Take a walk** | Find XP, meet creatures or choose a story outcome. Six three-chapter arcs carry earlier choices and experiences forward. |
 | **Explore a dungeon** | Discover Hellgate, Ice Kingdom, Dream Forest, Sunken Palace or Forgotten Clockwork City during walks, then enjoy automatic movement, room choices and battles. |
-| **Browse little treasures** | Open **Browse items** for sixteen illustrations with lore, rarity, planned rewards and fit requirements. |
+| **Browse little treasures** | Open **Browse items** for twenty-four illustrations with lore, rarity, planned rewards and fit requirements. |
 
 Walk charges recover **one every five minutes, up to five**. Each discovered dungeon lasts **24 hours**, and another will not appear until it is cleared or expires. Each stage costs one charge; the first clear of each region per day awards 10 coins. Daily rules reset at midnight Korea time.
 
-## A sixteen-item book
+## A twenty-four-item book
 
-Everyday adventures and the three dungeon collections each offer one head, neck, back and surrounding-effect design. Filter by region or type, search for a name, and open an item to take a closer look.
+Everyday adventures and the five dungeon collections each offer one head, neck, back and surrounding-effect design. Filter by region or type, search for a name, and open an item to take a closer look.
 
 <p align="center">
-  <img src="../docs/screenshots/items-catalog-ko.png" width="900" alt="All sixteen items in the Korean item book; the same interface also supports English">
+  <img src="../docs/screenshots/items-catalog-112-ko.png" width="900" alt="All twenty-four items in the Korean item book; the same interface also supports English">
 </p>
 
 This is a **catalog preview**: browsing does not spend coins or grant items. Individual body analysis and equipment are not available yet. Collection and wearing will be separate; a companion without hands may collect gloves, but wearing them will not invent hands. [Items and future fit rules](ITEMS.md)
@@ -59,6 +59,6 @@ Switching between English and Korean changes the interface and new replies while
 
 ---
 
-[Full feature gallery](../README.en.md) · [Development and setup](DEVELOPMENT.en.md) · [1.1.1 deployment](releases/RELEASE_111.md) · [0.10.1 deployment](releases/RELEASE_0101.md) · [0.10.0 deployment](releases/RELEASE_0100.md) · [0.9.0 deployment](releases/RELEASE_090.md) · [1.0.0 review guide](reviews/REVIEW_100.md) · [0.8.1 review guide](reviews/REVIEW_081.md) · [Handoff](HANDOFF.md)
+[Full feature gallery](../README.en.md) · [Development and setup](DEVELOPMENT.en.md) · [1.1.2 deployment](releases/RELEASE_112.md) · [0.10.1 deployment](releases/RELEASE_0101.md) · [0.10.0 deployment](releases/RELEASE_0100.md) · [0.9.0 deployment](releases/RELEASE_090.md) · [1.0.0 review guide](reviews/REVIEW_100.md) · [0.8.1 review guide](reviews/REVIEW_081.md) · [Handoff](HANDOFF.md)
 
-Screenshots show the real UI with separate test data. Mori is an actual Anna-generated result; the item book is from 0.9.0. [Screenshot sources](../docs/screenshots/README.md)
+Screenshots show the real UI with separate test data. Mori is an actual Anna-generated result; the item book is from 1.1.2. [Screenshot sources](../docs/screenshots/README.md)

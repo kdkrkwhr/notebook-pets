@@ -1,5 +1,5 @@
 // Catalog definitions only. Acquisition and equipment are not enabled in this release.
-export const regions=['common','hellgate','icekingdom','dreamforest'];
+export const regions=['common','hellgate','icekingdom','dreamforest','sunkenpalace','clockworkcity'];
 export const slots=['head','neck','back','aura'];
 const item=(id,region,slot,name,description,rarity='standard',reward='regional')=>({id,region,slot,name,description,rarity,reward,icon:`assets/items-v1/${id}.png`});
 export const items=[
@@ -19,6 +19,14 @@ export const items=[
  item('dewdrop-necklace','dreamforest','neck',['Dewdrop Necklace','이슬방울 목걸이'],['One morning dewdrop keeps a reflection of the forest’s forgotten dream.','아침 이슬 한 방울에 숲이 잊어버린 꿈이 비쳐요.']),
  item('butterfly-cape','dreamforest','back',['Butterfly Cape','나비 망토'],['A cloth cape shaped like butterfly wings, made for dreaming rather than flight.','날기보다 꿈꾸기 위해 만든, 나비 날개 모양의 천 망토예요.']),
  item('firefly-orbit','dreamforest','aura',['Firefly Companions','반딧불 무리'],['The forest’s smallest guides have decided to keep you company.','숲에서 가장 작은 길잡이들이 함께 여행하기로 했어요.'],'rare','milestone'),
+ item('coral-tiara','sunkenpalace','head',['Coral Pearl Tiara','산호 진주 왕관'],['Coral branches cradle a pearl that remembers the drowned palace’s last moonlit ball.','산호 가지가 품은 진주에 침몰한 왕궁의 마지막 달빛 무도회가 남아 있어요.'],'rare','milestone'),
+ item('pearl-pendant','sunkenpalace','neck',['Seashell Pearl Pendant','진주 조개 펜던트'],['A little shell keeps a quiet pearl safe, like a promise brought home from the deep.','작은 조개가 심해에서 가져온 약속처럼 고요한 진주를 품고 있어요.']),
+ item('tide-cape','sunkenpalace','back',['Tide Cape','물결 망토'],['Foam-colored stitches follow the tide along a soft cape rescued from the royal wardrobe.','왕궁 옷장에서 건져 낸 부드러운 망토에 포말빛 바느질이 물결을 따라 흘러요.']),
+ item('bubble-orbit','sunkenpalace','aura',['Deep-Sea Bubbles','심해 물방울'],['Pearl-bright bubbles drift beside their companion, carrying a tiny piece of the quiet sea.','진주처럼 빛나는 물방울이 고요한 바다 한 조각을 품고 친구 곁을 맴돌아요.']),
+ item('gear-goggles','clockworkcity','head',['Clockmaker’s Goggles','태엽 고글'],['Amber lenses once helped a little clockmaker find the city’s smallest missing gears.','작은 시계공이 도시에서 잃어버린 톱니를 찾을 때 쓰던 호박빛 고글이에요.']),
+ item('clockwork-locket','clockworkcity','neck',['Pocket-Watch Necklace','회중시계 목걸이'],['Its hands rest at a treasured moment, keeping a memory rather than measuring the hours.','소중한 순간에 멈춘 바늘이 시간을 재는 대신 추억 하나를 간직해요.']),
+ item('brass-cape','clockworkcity','back',['Brass-Gear Cape','황동 톱니 망토'],['Golden gear stitches decorate a navy cloth cape from the city’s forgotten workshop.','잊힌 공방에서 발견한 남색 천 망토에 금빛 톱니 무늬가 수놓여 있어요.']),
+ item('gear-orbit','clockworkcity','aura',['Little Clockwork Orbit','작은 태엽 무리'],['Loose cogs float in a gentle rhythm, as if the old city has found a new heartbeat.','낱개의 톱니들이 옛 도시가 새 심장을 찾은 듯 부드러운 박자로 맴돌아요.'],'rare','milestone'),
 ];
 
 export function selectItems({region='all',slot='all',query='',language='en'}={}){

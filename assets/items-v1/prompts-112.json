@@ -1,0 +1,40 @@
+{
+  "version": "1.1.2",
+  "date": "2026-10-15",
+  "mode": "built-in image_gen",
+  "transparent_background": true,
+  "items": [
+    {
+      "id": "coral-tiara",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous empty margins on every side. Transparent background with actual alpha. No character, body, model, ground, scene, UI, text, labels, letters, numerals, border, watermark or grid. Icon displays at 80-128 pixels, keep details bold. Subject: a small ancient underwater royal tiara, an oval seafoam-jade band with three delicate pink coral branches and one large ivory pearl in the center, a few tiny gold fastenings. A wearable ornament, not a living coral creature."
+    },
+    {
+      "id": "pearl-pendant",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous empty margins on every side. Transparent background with actual alpha. No character, body, model, ground, scene, UI, text, labels, letters, numerals, border, watermark or grid. Icon displays at 80-128 pixels, keep details bold. Subject: a single necklace with a short loop of turquoise cord and a golden open scallop-shell pendant cradling one luminous ivory pearl. Muted teal, cream and aged gold; a little treasure from a drowned palace."
+    },
+    {
+      "id": "tide-cape",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous empty margins on every side. Transparent background with actual alpha. No character, body, model, ground, scene, UI, text, labels, letters, numerals, border, watermark or grid. Icon displays at 80-128 pixels, keep details bold. Subject: one short teal and deep-blue cloth cape, gently flowing folds, pale foam-colored wave embroidery along its scalloped hem, small gold shell clasp at the collar, midnight-blue lining. It is cloth, not water, with no mannequin or wearer."
+    },
+    {
+      "id": "bubble-orbit",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous empty margins on every side. Transparent background with actual alpha. No character, body, model, ground, scene, UI, text, labels, letters, numerals, border, watermark or grid. Icon displays at 80-128 pixels, keep details bold. Subject: a loose oval orbit of seven translucent aqua and pale-pearl bubbles with crisp pixel highlights and a few tiny seafoam sparkles. Empty transparent center large enough for an imaginary pet. Surrounding-effect ornament only, no pet, no fish, no water surface."
+    },
+    {
+      "id": "gear-goggles",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous empty margins on every side. Transparent background with actual alpha. No character, body, model, ground, scene, UI, text, labels, letters, numerals, border, watermark or grid. Icon displays at 80-128 pixels, keep details bold. Subject: one pair of small clockmaker goggles with warm brass circular rims, amber glass lenses, two small gear details on the outer rims, and a dark cocoa leather head strap. The two lenses and connected strap form one readable wearable item."
+    },
+    {
+      "id": "clockwork-locket",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous empty margins on every side. Transparent background with actual alpha. No character, body, model, ground, scene, UI, text, labels, letters, numerals, border, watermark or grid. Icon displays at 80-128 pixels, keep details bold. Subject: a single necklace with a simple short brass chain loop and a round antique pocket-watch locket, ivory face with two dark hands and plain tiny tick marks, no numbers or text. A small visible winding key on top, copper-brown shadows and honey-gold highlights."
+    },
+    {
+      "id": "brass-cape",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous empty margins on every side. Transparent background with actual alpha. No character, body, model, ground, scene, UI, text, labels, letters, numerals, border, watermark or grid. Icon displays at 80-128 pixels, keep details bold. Subject: one short deep navy cloth cape with a warm ochre lining, stitched brass-gold gear motifs along the hem and a small gear-shaped clasp. Clearly flexible cloth, not armor, no wings, with three broad folds and generous margins."
+    },
+    {
+      "id": "gear-orbit",
+      "prompt": "Use case: stylized-concept. Asset: a SINGLE inventory icon for Notebuddy, cozy fantasy pet RPG. Premium handcrafted 32-bit pixel art, crisp chunky square pixels, limited palette, warm dark outline, three-tone shading, bold readable silhouette, slight three-quarter view. NOT vector, NOT glossy 3D, NOT smooth painted art. Square canvas, item centered occupying 65 percent, generous empty margins on every side. Transparent background with actual alpha. No character, body, model, ground, scene, UI, text, labels, letters, numerals, border, watermark or grid. Icon displays at 80-128 pixels, keep details bold. Subject: a loose oval orbit of five small brass and copper cogwheels of different sizes with a few warm amber sparkles. The cogwheels float separately around a completely empty transparent center. A cozy magical clockwork surrounding effect, no character, no solid connecting ring."
+    }
+  ]
+}

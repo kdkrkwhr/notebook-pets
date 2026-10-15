@@ -2,6 +2,10 @@
 
 The feature guides use browser captures of the actual Notebuddy UI, not generated interface mockups. No live user's companion, conversation or account details appear in these documentation images.
 
+## Expanded item book · 1.1.2
+
+Captured on 2026-10-15 from the shipped Korean UI with a disposable real-engine view and the recorded Mori demo. [Full catalog](items-catalog-112-ko.png) shows all twenty-four designs, [item detail](item-detail-112-ko.png) shows Coral Pearl Tiara, and [mobile view](items-mobile-112-ko.png) shows the Clockwork City filter at 360 × 740. Capture makes no Anna AI or production-storage calls. Collection, buying and equipment remain explicitly planned. These documentation captures do not replace the review listing's six screenshots.
+
 ## Expansion discovery cards · 1.1.1
 
 [Sunken Palace](sunkenpalace-card-111.png) and [Forgotten Clockwork City](clockworkcity-card-111.png) show the actual Korean discovery card from the 1.1.1 bundle. Each capture uses a separate disposable discovery view and the recorded Mori demo. They do not imply simultaneous discoveries. Capture makes no game changes, Anna AI calls or production-storage writes. These documentation images do not replace the six screenshots attached to the 1.0.0 review listing.
