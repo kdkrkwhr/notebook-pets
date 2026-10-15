@@ -10,9 +10,9 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-Owner test update **1.2.1** uses game tool **0.8.1**. The store candidate remains **1.0.0 pending review**, not publicly released.
+Owner test update **1.4.0** uses game tool **0.9.0**. The store candidate remains **1.0.0 pending review**, not publicly released.
 
-In 1.2.1, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common items, shops and equipment are deferred. Collection and browsing make no AI requests.
+Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
 ## Your first meeting
 
@@ -49,7 +49,7 @@ Everyday adventures and the five dungeon collections each offer one head, neck, 
   <img src="../docs/screenshots/items-catalog-112-ko.png" width="900" alt="All twenty-four items in the Korean item book; the same interface also supports English">
 </p>
 
-In 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common items, shops and equipment are deferred. Collection and browsing make no AI requests.
+In 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
 ## Return to your friend
 
@@ -66,3 +66,9 @@ Switching between English and Korean changes the interface and new replies while
 Screenshots show the real UI with separate test data. Mori is an actual Anna-generated result; the item book is from 1.1.2. [Screenshot sources](../docs/screenshots/README.md)
 
 <p align="center"><img src="../docs/screenshots/inventory-120-ko.png" width="280" alt="1.2.0 Korean inventory with isolated test ownership"></p>
+
+## My home (1.4.0)
+
+Open **My home**, buy furniture with game coins, then choose **Decorate**. Your companion chooses among validated layouts using its saved personality and carries the furniture into place. One room includes a free resting nest and eleven purchasable objects; each request places at most three stored objects. Undo restores the previous layout while keeping your purchases.
+
+Only Decorate makes one bounded AI request. Purchases, room visits, movement, idle life, undo and save-only retries use no AI. Room geometry, individual furniture sprites and the existing portrait are rendered separately. Initial character motion uses portrait movement and carrying effects.
