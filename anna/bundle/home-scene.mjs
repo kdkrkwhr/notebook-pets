@@ -40,7 +40,22 @@ export function createHomeScene(canvas){
  ready.catch(()=>{});
  return {
   ready,
-  async set(value,source){home=value;job=null;if(!active){active=true;started=performance.now();frame=requestAnimationFrame(tick);}if(source&&(source!==petSource||!pet)){petSource=source;const id=++ticket;try{const response=await fetch(source,{cache:'no-store'});if(!response.ok)throw Error();const bitmap=await createImageBitmap(await response.blob()),b=document.createElement('canvas');b.width=b.height=256;const ctx=b.getContext('2d');ctx.drawImage(bitmap,0,0,256,256);bitmap.close();const image=ctx.getImageData(0,0,256,256);clearWhiteBorder(image.data,256,256);ctx.putImageData(image,0,0);if(id===ticket)pet=b;}catch{if(id===ticket)pet=null;}}},
+  async set(value,source){
+   const id=++ticket,cached=pet&&source&&source===petSource&&home?.pet_id===value?.pet_id;
+   home=value;job=null;
+   // A URL is reusable only after its pixels loaded for this companion.
+   // Clearing first also hides the previous portrait during loading or failure.
+   if(!cached){pet=null;petSource='';}
+   if(!active){active=true;started=performance.now();frame=requestAnimationFrame(tick);}
+   if(!source||cached)return;
+   try{
+    const response=await fetch(source,{cache:'no-store'});if(!response.ok)throw Error();
+    const bitmap=await createImageBitmap(await response.blob()),b=document.createElement('canvas');b.width=b.height=256;
+    const ctx=b.getContext('2d');ctx.drawImage(bitmap,0,0,256,256);bitmap.close();
+    const image=ctx.getImageData(0,0,256,256);clearWhiteBorder(image.data,256,256);ctx.putImageData(image,0,0);
+    if(id===ticket){pet=b;petSource=source;}
+   }catch{if(id===ticket){pet=null;petSource='';}}
+  },
   play(value){home=value;if(matchMedia('(prefers-reduced-motion: reduce)').matches||!value.motion?.length){job=null;return;}const work=structuredClone(value.previous??value.layout);const state={layout:work,legs:[],index:0,at:performance.now()};for(const step of value.motion){const key=step.item,route=step.route;
     if(step.phase==='store'){state.legs.push({route:[...route].reverse(),duration:900,finish:()=>{delete work[key];}});state.legs.push({route,carry:key,duration:1200});}
     else{state.legs.push({route,carry:key,duration:1400,finish:()=>{work[key]=value.layout[key];}});state.legs.push({route:[...route].reverse(),duration:700});}}
