@@ -6,6 +6,7 @@ Anna 테스트 앱 배포별 기록이다. 최신이 위에 온다.
 
 | 버전 | 날짜 | 요약 |
 | --- | --- | --- |
+| [1.1.2 · Expanded item catalog](RELEASE_112.md) | 2026-10-15 | 왕궁·태엽도시 아이템 8종 추가, 총 24종 도감. ID 1394 / revision 51 테스트 설치·실행 확인, 도구 0.7.0 유지. 수집·착용은 예정, 심사 1.0.0 유지. |
 | [1.1.1 · Expansion artwork and deployment completion](RELEASE_111.md) | 2026-10-15 | 새 던전 카드·보스 아트와 다섯 지역 안내. ID 1393 / revision 50 테스트 설치·실행 확인, PC·클라우드 도구 0.7.0, Windows/Linux CI 통과. 심사 1.0.0 유지. |
 | [1.1.0 · Sunken Palace and Forgotten Clockwork City](RELEASE_110.md) | 2026-10-15 | App **1.1.0**, game tool **0.7.0**. Two new dungeon regions with procedural art; owner draft installed, review candidate 1.0.0 untouched, `apps cut` pending. |
 | [1.0.0 · 2.5D dungeon companion](RELEASE_100.md) | 2026-10-14 | App **1.0.0**, unchanged game tool **0.6.0**. The owner asked to number the app as 1.x from now on; 1.0.0 cont… |
