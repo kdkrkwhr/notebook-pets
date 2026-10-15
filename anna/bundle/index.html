@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Notebuddy</title><link rel="icon" href="icon.svg"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="theme.css"></head>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Notebuddy</title><link rel="icon" href="icon.svg"><link rel="stylesheet" href="style.css"><link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="home.css"></head>
 <body>
   <dialog id="title-screen" class="title-screen" aria-labelledby="title-logo">
     <div class="title-friends" aria-hidden="true"><img src="assets/starters-v1/plant_nature_stage1.png" alt=""><img src="assets/starters-v1/machine_fire_stage1.png" alt=""><img src="assets/starters-v1/ghost_wind_stage1.png" alt=""><img src="assets/starters-v1/dragon_light_stage1.png" alt=""></div>
@@ -30,7 +30,7 @@
   </dialog>
   <header class="masthead">
     <a class="brand" href="#"><img src="icon.svg" alt=""><span>notebuddy<small data-i18n="diary">A little growth diary</small></span></a>
-    <div class="header-controls"><label for="language" class="sr-only" data-i18n="language">Language</label><select id="language"><option value="en" lang="en">English</option><option value="ko" lang="ko">한국어</option></select><button id="refresh" class="quiet" type="button" data-i18n="refresh">↻ Refresh</button><span id="connection" class="badge" data-i18n="connecting">Connecting…</span></div>
+    <div class="header-controls"><button id="open-home" type="button" class="quiet" hidden>⌂ My home</button><label for="language" class="sr-only" data-i18n="language">Language</label><select id="language"><option value="en" lang="en">English</option><option value="ko" lang="ko">한국어</option></select><button id="refresh" class="quiet" type="button" data-i18n="refresh">↻ Refresh</button><span id="connection" class="badge" data-i18n="connecting">Connecting…</span></div>
   </header>
   <main>
     <div class="intro"><div><h1 data-i18n="heading">One companion. A little care, every day.</h1><p class="muted" data-i18n="subtitle">Small moments of care become a story you share.</p></div></div>
@@ -112,5 +112,6 @@
       </div>
     </div>
   </dialog>
+  <dialog id="home-dialog" aria-labelledby="home-name"><div class="home-heading"><div><span class="eyebrow">MY LITTLE HOME</span><h2 id="home-name"></h2></div><span id="home-coins" class="badge"></span><button id="home-close" class="quiet" type="button">닫기</button></div><div class="home-content"><div class="home-living"><canvas id="home-canvas" width="1000" height="680" aria-label="친구의 방과 가구 이동 장면"></canvas><p id="home-reason" class="home-speech"></p><div class="home-actions"><button id="home-decorate" class="primary" type="button">꾸며 줘</button><button id="home-undo" class="quiet" type="button">이전 배치</button><button id="home-skip" class="quiet" type="button">바로 보기</button></div><p id="home-status" role="status" aria-live="polite"></p><button id="home-retry" type="button" class="quiet" hidden>같은 요청 확인</button></div><div class="home-shop-panel"><h3 id="home-shop-heading">가구 상점</h3><p id="home-usage" class="muted small">AI: Decorate only / ‘꾸며 줘’만 AI 사용<br>구매·이동·생활·되돌리기는 AI를 호출하지 않아요.</p><div id="home-shop"></div></div></div></dialog>
   <script src="anna-tool-ids.js"></script><script type="module" src="bootstrap.mjs"></script>
 </body></html>

@@ -9,6 +9,7 @@ ROOT = APP.parent
 ART = APP / 'bundle' / 'assets'
 CORE = APP / 'executas' / 'notebuddy' / 'game_core'
 ART.mkdir(parents=True, exist_ok=True)
+shutil.copytree(ROOT / 'assets' / 'home-v1', ART / 'home-v1', dirs_exist_ok=True)
 # A versioned path prevents browsers from reusing the old sample artwork.
 starters = ROOT / 'assets' / 'starters-v1'
 rules = json.loads((ROOT / 'data' / 'game_data.json').read_text(encoding='utf-8'))
@@ -39,7 +40,7 @@ for path in ART.glob('*_stage1.png'):
 for path in (ROOT / 'assets' / 'anchored_evolution').glob('*.png'):
     if not path.name.endswith('_stage1.png'):
         shutil.copy2(path, ART / path.name)
-for directory, names in [('engine', ['engine.py', 'runtime.py', 'domain.py', 'ports.py', 'game_api.py', 'repositories.py', 'local_runtime.py', 'art.py', 'dungeons.py', 'collectibles.py', 'journeys.py', 'personality.py']),
+for directory, names in [('engine', ['engine.py', 'runtime.py', 'domain.py', 'ports.py', 'game_api.py', 'repositories.py', 'local_runtime.py', 'art.py', 'dungeons.py', 'collectibles.py', 'journeys.py', 'personality.py','home.py']),
                           ('data', ['game_data.json', 'image_prompts.json'])]:
     (CORE / directory).mkdir(parents=True, exist_ok=True)
     for name in names:

@@ -11,7 +11,7 @@ import sys
 import time
 import uuid
 
-ALLOWED = frozenset({'personality', 'start', 'status', 'feed', 'snack', 'play', 'sleep', 'train',
+ALLOWED = frozenset({'home','home_buy','home_apply','home_undo','personality', 'start', 'status', 'feed', 'snack', 'play', 'sleep', 'train',
                      'walk_begin', 'walk_collect', 'walk_leave', 'walk', 'battle', 'flee', 'attendance', 'quests', 'claimquest',
                      'album', 'titles', 'help', 'explore_hellgate', 'explore_icekingdom', 'explore_dreamforest',
                      'explore_sunkenpalace', 'explore_clockworkcity', 'dungeon_safe', 'dungeon_risk'})
@@ -42,6 +42,7 @@ def run(payload):
         if command in ('dungeon_safe', 'dungeon_risk', 'walk_collect', 'walk_leave'):
             arguments = [payload.get('choice_id', '')]
         if command == 'personality': arguments = [payload.get('profile', '')]
+        if command in ('home_buy','home_apply','home_undo'):arguments=[payload.get('home_payload','')]
         outcome = transition(previous, command, context, actor_id='1', arguments=arguments, request_id=payload.get('request_id'))
         result, current = outcome.result, outcome.state
         # Only the new local candidate is adjusted before its single APS commit.
@@ -64,6 +65,8 @@ def run(payload):
         album = transition(current, 'album', context).result.get('album') if current else None
         view = {'status': status, 'album': album}
         if current:
+            import home
+            view['home']=home.view(current)
             view['inventory'] = current['inventory']
             view['species_key'], view['element_key'] = current['species'], current['element']
             view['pet_id'] = art.pet_identity(current)

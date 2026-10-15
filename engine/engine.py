@@ -16,6 +16,7 @@ import dungeons
 import collectibles
 import journeys
 import personality
+import home
 
 G = ContextMapping('rules')
 _pending_save = ContextVar('pending_save', default=None)
@@ -108,6 +109,7 @@ def validate_state(st, uid):
         collectibles.validate(st)
         journeys.validate(st)
         personality.validate(st)
+        home.validate(st)
         require(type(st["version"]) is int and st["version"] in (2, 3, 4))
         require(isinstance(st["name"], str))
         if "pet_id" in st:
@@ -350,6 +352,12 @@ def cmd_personality(st, raw):
     result = personality.establish(st, raw)
     save_state(st)
     return out(True, 'Your companion has found their voice.', personality=result)
+
+def cmd_home(st, command, arguments):
+    if command == 'home':return out(True, '', home=home.view(st), home_candidates=home.candidates(st))
+    result = home.request(st, command, arguments[0])
+    save_state(st)
+    return result
 
 def cmd_titles(st):
     return out(True, "", titles=titles(st), record=st["record"])
@@ -743,11 +751,11 @@ ALIASES = {
     "퀘스트": "quests", "일일퀘스트": "quests", "퀘스트보상": "claimquest",
 }
 BASE_COMMANDS = frozenset({'start','feed','snack','play','sleep','train','walk','battle','flee','attendance'})
-COMMANDS = ({'personality','walk_begin','walk_collect','walk_leave'} | BASE_COMMANDS |
+COMMANDS = ({'home','home_buy','home_apply','home_undo','personality','walk_begin','walk_collect','walk_leave'} | BASE_COMMANDS |
             set(dungeons.COMMANDS) | dungeons.CHOICES |
             {'status','quests','claimquest','album','titles','rank','help','owner','clearowner','reset'})
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
-READ_COMMANDS = frozenset({"status", "quests", "album", "titles", "rank", "help"})
+READ_COMMANDS = frozenset({"home","status", "quests", "album", "titles", "rank", "help"})
 
 
 def dispatch_player(actor_id, command, arguments):
@@ -760,6 +768,7 @@ def dispatch_player(actor_id, command, arguments):
         return out(False, "!공책시작 으로 먼저 몬스터를 만들어.", code="not_started")
     fresh_daily(st)
     table = {
+        **{key:(lambda key=key:cmd_home(st,key,arguments)) for key in ('home','home_buy','home_apply','home_undo')},
         "personality": lambda: cmd_personality(st, arguments[0]),
         "status": lambda: cmd_status(st), "feed": lambda: cmd_care(st, "feed"),
         "play": lambda: cmd_care(st, "play"), "snack": lambda: cmd_care(st, "snack"),

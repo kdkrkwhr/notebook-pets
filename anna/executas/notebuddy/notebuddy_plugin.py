@@ -15,11 +15,11 @@ from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.8.1'
+VERSION = '0.9.0'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'
-READ = frozenset({'status', 'album', 'titles', 'quests', 'help'})
+READ = frozenset({'home','status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
     'name': 'tool-dev-notebuddy', 'display_name': 'Notebuddy Game', 'version': VERSION,
     'description': 'Care for the authenticated user’s lifelong pet. Python rules are authoritative.',
@@ -29,6 +29,7 @@ MANIFEST = {
         'name': 'game', 'description': 'Read or care for your pet. Never choose a user or provide game state. Read status first. For a new action append a unique suffix to request_id_prefix from the latest response. Reuse the entire request_id on retries. Never restamp an expired request automatically.',
         'timeout': 60,
         'parameters': [
+            {'name':'home_payload','type':'string','required':False,'description':'home_buy/home_apply/home_undo only: bounded JSON. Current pet_id and home revision required. Buy adds item_id; apply adds a current home_candidates candidate_id and short reason. Invoke home_apply only for explicit room-decoration requests. Buying/viewing/animation never require AI.'},
             {'name': 'profile', 'type': 'string', 'required': False, 'description': 'personality only: bounded JSON with appearance, source (reference/portrait/starter), traits (curiosity/warmth/energy/caution: -1/0/1), and bilingual en/ko summary, voice, habit. Establish once from the pet name and visual features. Cannot overwrite an existing personality or change rewards.'},
             {'name': 'command', 'type': 'string', 'required': True, 'enum': sorted(ALLOWED),
              'description': 'One game action. status reads current progress; start creates your first partner.'},
@@ -78,7 +79,7 @@ class GameService:
             return await reset(self.storage, SAVE_KEY, args, lambda payload: asyncio.to_thread(evaluate, payload))
 
     async def invoke(self, args, context=None):
-        if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language', 'birth_species', 'birth_element', 'choice_id', 'profile'}:
+        if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language', 'birth_species', 'birth_element', 'choice_id', 'profile','home_payload'}:
             raise ValueError('Invalid game arguments.')
         language = args.get('language', 'en')
         if language not in ('en', 'ko'):
@@ -106,6 +107,10 @@ class GameService:
         if command == 'personality':
             if not isinstance(profile, str) or not 1<=len(profile)<=4096: raise ValueError('A bounded profile is required.')
         elif profile is not None: raise ValueError('Only personality accepts profile.')
+        home_payload=args.get('home_payload')
+        if command in ('home_buy','home_apply','home_undo'):
+            if not isinstance(home_payload,str) or not 1<=len(home_payload)<=1024:raise ValueError('A bounded home payload is required.')
+        elif home_payload is not None:raise ValueError('Only home actions accept home_payload.')
         event = args.get('request_id')
         if event is not None and (not isinstance(event, str) or not re.fullmatch(r'[A-Za-z0-9:_-]{1,128}', event)):
             raise ValueError('Invalid request ID.')
@@ -136,7 +141,7 @@ class GameService:
                 computed = await asyncio.to_thread(evaluate, {
                     'command': 'status' if mode == 'expired' else command, 'name': name,
                     'request_id': event_key(event) if event and mode != 'expired' else None,
-                    'state': None if awaiting_start else previous, 'choice_id':choice_id, 'profile':profile,
+                    'state': None if awaiting_start else previous, 'choice_id':choice_id, 'profile':profile,'home_payload':home_payload,
                     'birth_species': birth_species if mode != 'expired' else None, 'birth_element': birth_element})
                 if mode == 'expired' and computed['result'].get('code') != 'invalid_state':
                     computed['result'] = {'ok': False, 'code': 'request_expired', 'msg': ''}
@@ -146,7 +151,7 @@ class GameService:
                 if mode == 'new' and isinstance(computed.get('state'), dict):
                     try:
                         candidate = commit_result(computed['state'], previous, event,
-                                                  command, name, computed['result'], choice_id=choice_id, profile=profile)
+                                                  command, name, computed['result'], choice_id=choice_id, profile=profile,home_payload=home_payload)
                     except SaveCapacityError:
                         computed = await asyncio.to_thread(evaluate, {'command': 'status', 'state': None if awaiting_start else previous})
                         computed['result'] = {'ok': False, 'code': 'save_capacity', 'msg': ''}

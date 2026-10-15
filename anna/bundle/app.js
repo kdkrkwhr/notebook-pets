@@ -1,4 +1,6 @@
 import {createItemCatalog} from './item-catalog.mjs';
+import {createHome} from './home.mjs';
+let homeUI;
 import {createTitleScreen} from './title-screen.mjs';
 import {createBirthSteps} from './birth-steps.mjs';
 import {createPersonality,axes as personalityAxes} from './personality.mjs';
@@ -111,6 +113,7 @@ function render(){
   $('#resetting').hidden=!resetting;
   if(resetting)forgetCachedData();
   const s=resetting?null:view?.status;
+  homeUI?.update(resetting?null:view);
   itemCatalog.update(s?.collectibles);
   $('#removed').hidden=!view?.erased;
   $('#reset-game').hidden=resetting||!s;
@@ -152,6 +155,7 @@ function render(){
   drawChat();birth?.render();stories?.render();dungeons?.render();renderPixel();renderPersonality();
 }
 function forgetCachedData(){
+  homeUI?.clear();
   itemCatalog.clear();
   persona?.clear();
   pixels?.clear();pixelNotice='';dungeons?.close();$('#pixel-pet').removeAttribute('src');$('#pixel-pet').hidden=true;
@@ -504,5 +508,8 @@ persona=createPersonality({anna:()=>anna,active:assertActive,
 });
 
 translate();
+homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertActive,invoke,
+ saved:next=>{adoptView(next);render();},locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),busy:controls,
+ portrait:()=>view?urls[imageKey(view)]||starter(view):'icon.svg'});
 titleScreen.show();
 await refresh();
