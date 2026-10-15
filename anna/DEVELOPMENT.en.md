@@ -2,7 +2,7 @@
 
 [Back to the user guide](README.en.md) · [한국어](DEVELOPMENT.md)
 
-The current owner test app is **1.1.0** (installed working draft, no immutable version yet), with game tool **0.7.0**. The review candidate is **1.0.0**. See the [latest deployment record](releases/RELEASE_110.md).
+The current owner test app is **1.1.1**, with game tool **0.7.0**. The review candidate is **1.0.0**. See the [latest deployment record](releases/RELEASE_111.md).
 
 ## Development
 
@@ -37,7 +37,7 @@ New actions append a unique suffix to `request_id_prefix` from the latest status
 
 ## First-partner creation
 
-Before the first write, the adapter rechecks whether another agent already created a partner while the engine was computing. This preserves that partner and its progress when observed. The final read/write gap remains: APS has no supported atomic create-if-absent operation. Cross-agent first creation remains a release blocker pending Anna support. See [FIRST_CREATION.md](FIRST_CREATION.md) for the API evidence, offline reproducer, and closure criteria.
+Before the first write, the adapter rechecks whether another agent already created a partner while the engine was computing. This preserves that partner and its progress when observed. The final read/write gap remains: APS has no supported atomic create-if-absent operation. The owner accepted this limitation for review submission; platform support remains a follow-up. See [FIRST_CREATION.md](FIRST_CREATION.md) for the API evidence, offline reproducer, and closure criteria.
 
 ## Structure
 

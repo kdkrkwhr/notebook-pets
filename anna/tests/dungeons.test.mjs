@@ -2,7 +2,7 @@ import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {DUNGEON_IDS} from '../bundle/dungeon.mjs';
 import {THEMES} from '../bundle/dungeon-map.mjs';
-import {ENEMY_KINDS,BOSS_KINDS} from '../bundle/dungeon-enemies.mjs';
+import {BOSS_ART} from '../bundle/dungeon-enemies.mjs';
 import {messages} from '../bundle/i18n.mjs';
 
 test('every region has a theme, bilingual names and a boss that the renderer can draw',()=>{
@@ -13,7 +13,8 @@ test('every region has a theme, bilingual names and a boss that the renderer can
    const pair=messages[prefix+id];assert.ok(Array.isArray(pair)&&pair.length===2&&pair.every(s=>s.trim()),prefix+id);
   }
  }
- // Painted atlas columns cover the first three regions; later regions draw a procedural boss kind.
- for(const id of DUNGEON_IDS.slice(3))assert.ok(ENEMY_KINDS.includes(BOSS_KINDS[id]),id);
- for(const id of DUNGEON_IDS.slice(0,3))assert.equal(BOSS_KINDS[id],undefined);
+ for(const id of DUNGEON_IDS){
+  const art=BOSS_ART[id];assert.ok(art.column===undefined?art.row>=0&&art.row<art.rows:art.column>=0&&art.column<art.columns,id);
+  assert.ok([56,84].includes(art.cellHeight),id);
+ }
 });

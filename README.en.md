@@ -6,7 +6,7 @@
 
 Notebuddy is a companion game about growing alongside one AI friend. Start with a drawing, a photo or a surprise companion. Share your day, build a routine, discover stories and pixel dungeons on walks, and keep a little album of your friend's growth.
 
-The current Anna owner test app is **1.0.0** (JRPG notebook theme, title screen and a 2.5D dungeon companion). Version **1.0.0 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 14, 2026.
+The current Anna owner test app is **1.1.1**, with a notebook theme, a 2.5D companion and **five dungeons**, including illustrated previews and bosses for both new regions. Version **1.0.0 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 15, 2026.
 
 [![Anna app tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml/badge.svg?branch=release)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml)
 
@@ -67,7 +67,7 @@ There are currently **six three-chapter story arcs**. Earlier choices and care/a
 
 Walk charges currently recover **one every five minutes, up to five**.
 
-## Discover three pixel dungeons
+## Discover five pixel dungeons
 
 Dungeons can appear by chance during a walk. A discovery stays open for **24 hours**, with a countdown on screen. Another dungeon will not appear until the current one is cleared or expires.
 
@@ -76,6 +76,8 @@ Dungeons can appear by chance during a walk. A discovery stays open for **24 hou
 | **Hellgate** | Embers, lava and a journey toward a sealed gate |
 | **Ice Kingdom** | A frozen kingdom surrounded by snow and ice |
 | **Dream Forest** | A woodland filled with strange light and dreams |
+| **Sunken Palace** | Coral, deep blue halls and the Crown Keeper of the Deep |
+| **Forgotten Clockwork City** | Aged brass machinery and the Great Clockwork Golem |
 
 <p align="center">
   <img src="anna/store/05-pixel-dungeon.png" width="960" alt="Hellgate preview before entry, showing Mori's actual pixel appearance, rooms, corridors, minimap and closing timer">
@@ -86,6 +88,12 @@ Dungeons can appear by chance during a walk. A discovery stays open for **24 hou
 Your companion moves automatically as the camera follows. Explore **3–6 rooms**, choose your way through forks and traps, find recovery opportunities on longer expeditions, and challenge the final guardian. Before entering, you can check species adaptation bonuses and elemental matchups.
 
 Each stage costs one walk charge. Your first clear of each region per day awards 10 coins. You choose when to enter the next stage; movement playback supports pause, 3x speed and skip.
+
+| Sunken Palace discovery | Forgotten Clockwork City discovery |
+| :---: | :---: |
+| <img src="docs/screenshots/sunkenpalace-card-111.png" width="440" alt="Sunken Palace illustration and discovery countdown in the actual app"> | <img src="docs/screenshots/clockworkcity-card-111.png" width="440" alt="Forgotten Clockwork City illustration and discovery countdown in the actual app"> |
+
+*Actual 1.1.1 UI with separate test discoveries. Exploration follows the existing room-and-corridor maps; the final room features each region's illustrated boss.*
 
 ## Meet sixteen little treasures
 
@@ -109,7 +117,7 @@ Future equipment will take each companion's body shape into account. A friend wi
 
 | Edition | Availability |
 | --- | --- |
-| **Anna app** | The screens and features above are in owner test version **1.0.0**. Public store release awaits **1.0.0 review**. [App user guide](anna/README.en.md) |
+| **Anna app** | The screens and features above are in owner test version **1.1.1**. Public store release awaits **1.0.0 review**. [App user guide](anna/README.en.md) |
 | **Open-source engine, Discord and AI agents** | Run or connect the project yourself. The Anna interface, continuing stories and item book have their own feature scope. [Setup and integration guide](docs/DEVELOPMENT.en.md) |
 
 The Anna app supports **English and Korean**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.
@@ -120,10 +128,10 @@ Chat, care reactions, personality and walk-story generation, reference analysis 
 
 The sixteen-item book is the starting point for **collecting, a coin shop, an inventory and equipment**. Per-portrait anatomy analysis and fitted appearances are planned for that stage.
 
-The next dungeon themes are the **Sunken Palace and Forgotten Clockwork City**, followed by a sky castle, library and desert. These features and regions are not playable yet. [Item plans](anna/ITEMS.md)
+The **Sunken Palace and Forgotten Clockwork City are now playable**. Future regions include a sky castle, library and desert. Item collection, equipment and those future regions are not available yet. [Item plans](anna/ITEMS.md)
 
 ---
 
-[Anna user guide](anna/README.en.md) · [Engine and Discord development](docs/DEVELOPMENT.en.md) · [Anna development](anna/DEVELOPMENT.en.md) · [Latest deployment](anna/releases/RELEASE_100.md) · [Privacy](anna/PRIVACY.md)
+[Anna user guide](anna/README.en.md) · [Engine and Discord development](docs/DEVELOPMENT.en.md) · [Anna development](anna/DEVELOPMENT.en.md) · [Latest deployment](anna/releases/RELEASE_111.md) · [Privacy](anna/PRIVACY.md)
 
-Screenshots show the real application UI running with separate test data. Creation, album and dungeon captures are from 1.0.0; the item book details are from 0.9.0. Mori's portrait is an actual Anna-generated result. [Screenshot sources](docs/screenshots/README.md)
+Screenshots show the real application UI running with separate test data. Creation, album and Hellgate captures are from 1.0.0; the two new dungeon cards are from 1.1.1; the item book details are from 0.9.0. Mori's portrait is an actual Anna-generated result. [Screenshot sources](docs/screenshots/README.md)

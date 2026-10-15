@@ -1,5 +1,7 @@
 # Dungeon art v2 — 2026-10-13
 
+For the two regions added in 1.1.x, see [expansion art and prompts](EXPANSION_111.md). Current environment illustrations appear on discovery cards; the live exploration uses the room/corridor renderer. The notes below describe the original art and its initial 0.4.2 integration.
+
 These are the actual bundled environments and boss atlas for Notebuddy 0.4.2. Generated with Codex's built-in image generation tool during development, then copied unchanged into this directory. No Anna model or user allowance was used. `anna/scripts/prepare_assets.py` copies the four PNG files into the app bundle.
 
 | File | Use |
@@ -34,4 +36,3 @@ Input reference: generated Hellgate environment. Transparent background: false.
 Use case: stylized-concept. Asset type: production transparent pixel-art enemy animation atlas for a three-quarter top-down dark-fantasy action RPG. One transparent 1536 by 1024 PNG, precisely 3 columns and 3 rows of equal-sized cells. Nine isolated full-body sprites, no backgrounds or ground tiles; genuine alpha transparency. Each column is a distinct original boss. LEFT column: hulking black iron ember-armored gatekeeper with a heavy sword, small molten cracks. CENTER column: ornate blue-silver frost crown guardian with ice spear and flowing ragged blue cape. RIGHT column: imposing spectral forest stag, four legs, ancient wooden antlers, moss and a faint violet inner glow. ROW 1: idle guard stance. ROW 2: clearly different attack wind-up pose. ROW 3: clearly different sweeping attack pose. All face diagonally toward bottom-left, elevated three-quarter game perspective. Crisp detailed hand-crafted pixel clusters, premium indie dark-fantasy sprites, strong coherent silhouettes, restrained highlights, NOT cute cartoon vector illustration. Each figure entirely within its own equal cell with generous 12% transparent margin; place its ground-contact baseline near 87% of its cell height. Preserve same proportions, character identity, approximate size, facing and lighting within each column across the three animation poses. No text, no labels, no grid lines, no floors, no scene, no UI, no logo, no watermark. Real transparent background, no checkerboard pixels. The sprites will be cropped at exact third-width/third-height cell boundaries by the game renderer.
 
 No input reference. Transparent background: true. Source alpha is preserved.
-

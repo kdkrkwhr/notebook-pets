@@ -1,8 +1,14 @@
 // Enemy-specific pixel silhouettes. These deliberately do not reuse the pet avatar rig.
-export const ENEMY_KINDS=['slime','bat','beetle','sentinel','crownkeeper','clockgolem'];
+export const ENEMY_KINDS=['slime','bat','beetle','sentinel'];
 const ACCENTS={hellgate:'#ffb36b',icekingdom:'#b6edff',dreamforest:'#d9b8ff',sunkenpalace:'#8ff1dc',clockworkcity:'#ffd77a'};
-// Regions without a column in the painted guardian atlas draw their boss procedurally.
-export const BOSS_KINDS={sunkenpalace:'crownkeeper',clockworkcity:'clockgolem'};
+// Original bosses use pose rows; expansion bosses use pose columns in square cells.
+export const BOSS_ART={
+ hellgate:{file:'guardians',column:0,columns:3,cellHeight:56},
+ icekingdom:{file:'guardians',column:1,columns:3,cellHeight:56},
+ dreamforest:{file:'guardians',column:2,columns:3,cellHeight:56},
+ sunkenpalace:{file:'guardians-expansion-v1',row:0,rows:2,columns:3,cellHeight:84},
+ clockworkcity:{file:'guardians-expansion-v1',row:1,rows:2,columns:3,cellHeight:84},
+};
 export function drawEnemy(c,x,y,{kind,region='hellgate',elapsed=0,beat=0,active=false,dead=false,reduced=false,direction='left',scale=2}={}){
  if(!ENEMY_KINDS.includes(kind))return;
  const frame=reduced||dead?0:Math.floor(elapsed/150)%4,step=[0,1,0,-1][frame];
@@ -37,30 +43,6 @@ export function drawEnemy(c,x,y,{kind,region='hellgate',elapsed=0,beat=0,active=
   poly([[-11,-29],[-16,-23],[-16,-10],[-11,-3],[9,-3],[15,-10],[15,-22],[9,-29]],ink);
   poly([[-10,-26],[-13,-21],[-13,-11],[-8,-6],[-1,-6],[-1,-27]],'#49898c');poly([[1,-27],[8,-26],[12,-21],[12,-11],[8,-6],[1,-6]],'#77b9ad');
   rect(-9,-22,5,7,'#98d6c7');rect(4,-23,4,5,'#c4e8d1');rect(-1,-27,2,23,ink);rect(-5,-34,11,8,ink);rect(-3,-33,7,6,'#4a6672');rect(-5,-38,2,6,ink);rect(5,-39,2,7,ink);rect(-6,-40,3,3,accent);rect(5,-41,3,3,accent);rect(-3,-32,2,2,'#ffdf9a');rect(2,-32,2,2,'#ffdf9a');
- }else if(kind==='crownkeeper'){
-  // Deep-sea crown keeper: a serpent rising from its coils, side fins, a coral crown and a lantern held in one claw.
-  c.scale(1.2,1.2);const sway=reduced?0:step*2,lunge=attack?10:windup?-6:0;
-  poly([[-34,0],[-38,-8],[-30,-16],[-10,-18],[14,-16],[30,-9],[34,0]],ink);poly([[-31,-2],[-34,-8],[-28,-13],[-10,-15],[13,-13],[27,-8],[30,-2]],'#2f7f8f');
-  poly([[-22,-16],[-26,-26],[-14,-34],[8,-34],[22,-26],[20,-16]],ink);poly([[-19,-17],[-22,-25],[-13,-31],[7,-31],[18,-25],[17,-17]],'#3a93a0');
-  for(let i=-26;i<26;i+=8)rect(i,-6,4,3,'#5fc3c9');for(let i=-14;i<12;i+=8)rect(i,-24,4,3,'#5fc3c9');
-  poly([[-10+lunge,-32],[-14+lunge,-48+sway],[-8+lunge,-62+sway],[6+lunge,-66+sway],[18+lunge,-60+sway],[20+lunge,-44+sway],[12+lunge,-32]],ink);
-  poly([[-7+lunge,-33],[-11+lunge,-47+sway],[-5+lunge,-59+sway],[6+lunge,-63+sway],[15+lunge,-58+sway],[17+lunge,-44+sway],[10+lunge,-33]],'#48a7b3');
-  rect(-6+lunge,-52+sway,16,7,'#8ff1dc');rect(-3+lunge,-50+sway,3,3,ink);rect(5+lunge,-50+sway,3,3,ink);rect(-4+lunge,-40+sway,12,2,'#1f4f5a');
-  for(const [dx,h] of [[-8,8],[-2,13],[4,9],[10,12]])rect(dx+lunge,-66-h+sway,4,h,'#f29b8f');rect(-10+lunge,-67+sway,24,4,'#ffd27a');
-  for(const side of [-1,1]){c.save();c.scale(side,1);poly([[16,-40+sway],[34,-52+sway],[30,-34+sway],[20,-30+sway]],ink);poly([[18,-40+sway],[30,-48+sway],[27,-36+sway]],'#6fd3cc');c.restore();}
-  rect(24+lunge,-30-sway,4,10,ink);rect(22+lunge,-38-sway,8,8,'#2a3a48');rect(24+lunge,-36-sway,4,4,accent);rect(23+lunge,-46-sway,6,8,'#ffd27a88');
-  poly([[30,-9],[40,-20],[42,-6]],ink);poly([[31,-9],[38,-17],[39,-8]],'#6fd3cc');
- }else if(kind==='clockgolem'){
-  // Clockwork golem: riveted brass chassis, a turning gear chest, a wind-up key and piston arms.
-  c.scale(1.2,1.2);const arm=windup?-9:attack?6:0,spin=reduced?0:Math.floor(elapsed/120)%4;
-  rect(-14,-8+step,11,8,ink);rect(3,-8-step,11,8,ink);rect(-12,-6+step,7,4,'#8a6a3a');rect(5,-6-step,7,4,'#8a6a3a');
-  rect(-19,-36,38,29,ink);rect(-16,-34,32,24,'#b08a4a');rect(-14,-32,12,4,'#d9b56a');rect(10,-28,4,16,'#6e5430');
-  for(const [dx,dy] of [[-14,-14],[12,-14],[-14,-30],[12,-30]])rect(dx,dy,2,2,'#f2dca0');
-  c.save();c.translate(0,-22);c.rotate(spin*Math.PI/8);for(let i=0;i<8;i++){c.rotate(Math.PI/4);rect(-2,-10,4,4,'#e6c56b');}c.restore();
-  rect(-6,-28,12,12,'#5c4420');rect(-4,-26,8,8,accent);rect(-2,-24,4,4,'#fff7d8');
-  for(const side of [-1,1]){c.save();c.scale(side,1);rect(18,-34+arm,10,14,ink);rect(20,-20+arm,12,16,ink);rect(20,-32+arm,6,10,'#c99a4a');rect(22,-18+arm,8,11,'#8a6a3a');rect(23,-16+arm,2,7,'#e6c56b');rect(22,-18+arm,8,3,'#f2dca0');c.restore();}
-  rect(-9,-50,19,15,ink);rect(-7,-48,15,11,'#b08a4a');rect(-5,-44,4,3,accent);rect(3,-44,4,3,accent);rect(-6,-39,13,2,'#6e5430');
-  rect(-2,-62+(reduced?0:spin),4,12,ink);rect(-8,-66+(reduced?0:spin),16,5,'#d9b56a');rect(-6,-65+(reduced?0:spin),4,3,'#f2dca0');rect(3,-65+(reduced?0:spin),4,3,'#f2dca0');
  }else{
   // A massive stone construct: separate blocks, oversized fists and a glowing core.
   const arm=windup&&!reduced?-9:attack&&!reduced?5:0;

@@ -2,6 +2,10 @@
 
 The feature guides use browser captures of the actual Notebuddy UI, not generated interface mockups. No live user's companion, conversation or account details appear in these documentation images.
 
+## Expansion discovery cards · 1.1.1
+
+[Sunken Palace](sunkenpalace-card-111.png) and [Forgotten Clockwork City](clockworkcity-card-111.png) show the actual Korean discovery card from the 1.1.1 bundle. Each capture uses a separate disposable discovery view and the recorded Mori demo. They do not imply simultaneous discoveries. Capture makes no game changes, Anna AI calls or production-storage writes. These documentation images do not replace the six screenshots attached to the 1.0.0 review listing.
+
 ## Creation, care, album and dungeon
 
 The existing images in [`anna/store/`](../../anna/store/README.md) were recaptured from the 1.0.0 UI on 2026-10-14 with disposable real-engine views and are also the 1.0.0 store listing images. The reference drawing and the Anna-generated companion are the same **Mori** throughout. Chat is empty; no dialogue was fabricated. The dungeon image is explicitly a **preview before entry**, not a battle capture.

@@ -26,7 +26,8 @@ for name in sorted(expected):
     shutil.copy2(starters / name, ART / 'starters-v1' / name)
 # The game environments are bundled locally; entering a dungeon never generates art.
 (ART / 'dungeons-v2').mkdir(parents=True, exist_ok=True)
-for name in ['hellgate.png', 'icekingdom.png', 'dreamforest.png', 'guardians.png']:
+for name in ['hellgate.png', 'icekingdom.png', 'dreamforest.png', 'guardians.png',
+             'sunkenpalace.png', 'clockworkcity.png', 'guardians-expansion-v1.png']:
     shutil.copy2(ROOT / 'assets' / 'dungeons-v2' / name, ART / 'dungeons-v2' / name)
 # Item illustrations are catalog assets, never generated while browsing the book.
 (ART / 'items-v1').mkdir(parents=True, exist_ok=True)

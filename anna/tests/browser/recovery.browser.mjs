@@ -924,6 +924,36 @@ test('paid checkpoint stops, resumes after reload and accepts an explicit route 
  await p.locator('#dungeon-risk').click();await idle(p);assert.equal((await calls(p,'dungeon_risk')).length,1);
 });
 
+test('expansion art loads distinct previews and transparent three-pose bosses without game or AI requests',async t=>{
+ const p=await setup(t);await start(p);
+ const before=await p.evaluate(()=>({state:JSON.stringify(window.hostTest.state),calls:window.hostTest.calls.length}));
+ const result=await p.evaluate(async()=>{
+  const {paintDungeon,createDungeonScene,WALK_MS,ROUND_MS}=await import('./dungeon-scene.mjs');
+  const {BOSS_ART}=await import('./dungeon-enemies.mjs');
+  const c=document.createElement('canvas');c.style.cssText='width:900px;height:540px';document.body.append(c);
+  const source=document.createElement('canvas');source.width=source.height=64;source.getContext('2d').fillRect(16,16,32,32);
+  const explorer=new Image();explorer.src=source.toDataURL();const scene=createDungeonScene(c,explorer),rows=[];
+  const run={outcome:'win',max_hp_me:20,max_hp_enemy:20,hp_me:10,hp_enemy:0,turns:[{hp_me:18,hp_enemy:12}]};
+  try{for(const region of ['sunkenpalace','clockworkcity']){
+   await paintDungeon(c,region);const preview=c.toDataURL(),previewReady=c.dataset.art;
+   const ready=await scene.load(region),frames=[.1,.5,.8].map(beat=>{scene.draw({run,elapsed:WALK_MS+ROUND_MS*beat});return c.toDataURL();});
+   const spec=BOSS_ART[region],img=new Image();img.src=new URL(`./assets/dungeons-v2/${spec.file}.png`,location.href);await img.decode();
+   const atlas=document.createElement('canvas');atlas.width=img.width;atlas.height=img.height;const ctx=atlas.getContext('2d');ctx.drawImage(img,0,0);
+   const w=img.width/3,h=img.height/2,cells=[];
+   for(let column=0;column<3;column++){
+    const data=ctx.getImageData(column*w,spec.row*h,w,h).data;let solid=0,gutter=0;
+    for(let y=0;y<h;y++)for(let x=0;x<w;x++){const a=data[(y*w+x)*4+3];if(a>200)solid++;if((x<12||x>=w-12||y<12||y>=h-12)&&a>32)gutter++;}
+    cells.push({solid,gutter});
+   }
+   rows.push({region,previewReady,preview,ready,frames,cells});
+  }}finally{c.remove();}
+  return rows;
+ });
+ assert.notEqual(result[0].preview,result[1].preview);
+ for(const r of result){assert.equal(r.previewReady,'ready');assert.equal(r.ready,true);assert.equal(new Set(r.frames).size,3);for(const cell of r.cells){assert.ok(cell.solid>1000);assert.equal(cell.gutter,0,'Boss stays inside its transparent cell');}}
+ assert.deepEqual(await p.evaluate(()=>({state:JSON.stringify(window.hostTest.state),calls:window.hostTest.calls.length})),before);
+});
+
 test('enemy silhouettes are distinct in monochrome and animate independently of the pet rig',async t=>{
  const p=await setup(t);
  const result=await p.evaluate(async()=>{
@@ -934,7 +964,7 @@ test('enemy silhouettes are distinct in monochrome and animate independently of 
    return {kind,frames};
   });
  });
- assert.equal(new Set(result.map(r=>r.frames[0])).size,result.length);assert.equal(result.length,6);
+ assert.equal(new Set(result.map(r=>r.frames[0])).size,result.length);assert.equal(result.length,4);
  for(const r of result)assert.notEqual(r.frames[0],r.frames[1],r.kind+' animates');
 });
 
