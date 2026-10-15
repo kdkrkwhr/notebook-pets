@@ -1,5 +1,11 @@
 # NoteBuddy Web preview
 
+## 0.3.0 · 초기화·모델 선택·브랜치 간소화
+
+- ‘공책 보관 → 현재 공책 초기화…’에서 경고와 ‘초기화’ 입력을 거쳐 이 브라우저의 게임을 비운다. 현재 탭의 대화/입력한 키도 지운다. 먼저 내려받은 백업은 다시 가져올 수 있다. 초기화 성공 전에는 화면 데이터를 지우지 않고, 다른 탭의 저장 변경이 있으면 초기화를 거절한다. 저장 revision을 유지해 오래된 작업이 이전 친구를 되살리지 못하게 한다.
+- 모델은 드롭다운으로 선택한다. 기본 Gemini 2.5 Flash/Flash-Lite/Pro 외에 ‘사용 가능한 모델 불러오기’를 누르면 입력한 키로 Google `models.list`를 직접 조회해 대화용 목록을 채운다. 키를 URL이나 저장소에 넣지 않는다. 목록 조회는 생성 요청이 아니며, 모델별 사용 권한·할당량은 실제 호출 때 제공자가 판단한다. [Google 모델 API](https://ai.google.dev/api/models).
+- 사용자 요청으로 `main`은 이력을 보존한 뒤 정리하고 `release-web`을 공통 통합·코어 검증·Pages 배포 기준으로 사용한다. Anna 전용 `release`는 그대로 유지한다.
+
 ## 0.2.0 · Anna 디자인 공유
 
 Anna의 실제 `style.css`·`theme.css`·Galmuri11 폰트·아이콘·72종 기본 친구 그림·아이템 그림을 빌드 시 공유한다. 시작 화면과 아이템 도감 마크업/동작도 Anna 원본을 사용한다. 웹 전용 CSS는 플랫폼별 배치·설정 창에만 적용한다.
@@ -20,7 +26,7 @@ python -m http.server 8080 --directory web/dist
 
 `http://localhost:8080/`에서 실행한다. `file://`로 열지 않는다. `node tests/pyodide/web.mjs`는 실제 Edge/Chromium에서 Worker, 저장 복원, CAS 충돌, 백업 가져오기/내보내기, 모의 BYOK 요청과 키 비영속화를 검증한다.
 
-`main`은 공유 소스와 웹 통합 검증, `release-web`은 검증된 Pages 배포 트랙이다. `.github/workflows/web.yml`이 빌드·브라우저 테스트 이후 Pages artifact를 배포한다. 모든 경로는 상대 경로여서 `/notebook-pets/` 하위 경로에서도 동작한다. 빌드는 지정한 Python 9개, 공개 규칙 JSON 2개, 웹 UI, 고정 버전 Pyodide 런타임만 복사한다. 저장 데이터·API 키·Anna 패키지는 포함하지 않는다.
+`release-web`이 공유 소스 통합·검증과 Pages 배포를 담당한다. `.github/workflows/web.yml`이 이 브랜치의 빌드·브라우저 테스트 이후 Pages artifact를 배포한다. 모든 경로는 상대 경로여서 `/notebook-pets/` 하위 경로에서도 동작한다. 빌드는 지정한 Python 9개, 공개 규칙 JSON 2개, 공유 UI·폰트·공개 그림, 고정 버전 Pyodide 런타임을 복사한다. 저장 데이터·API 키·Anna 패키지는 포함하지 않는다.
 
 ## 저장과 AI
 

@@ -1,4 +1,6 @@
 /* Platform layout only: Anna's style.css and theme.css are shared at build time. */
+#model{width:100%;min-height:48px;padding:10px;font-family:inherit}#load-models{margin-top:12px;max-width:100%}
+#reset-dialog{width:min(520px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:24px}#reset-dialog p{margin:16px 0;line-height:1.8}#reset-dialog label{display:block;margin:20px 0 8px;font-size:13px}#open-reset{display:block;margin-top:28px}#reset-error{color:#913e32}
 [hidden]{display:none!important}
 .header-controls{flex-wrap:wrap}.masthead .brand{min-width:0}.brand small{line-height:1.6}
 .chat-empty{margin:auto;text-align:center;color:var(--muted);padding:36px 12px}.chat-empty img{width:48px;opacity:.6;margin-bottom:18px}.chat-empty p{font-family:var(--pixel);font-size:15px;margin-bottom:8px}.chat-empty small{font-size:12px}

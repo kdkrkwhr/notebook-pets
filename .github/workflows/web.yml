@@ -1,9 +1,9 @@
 name: Web / GitHub Pages
 on:
   push:
-    branches: [main, release-web]
+    branches: [release-web]
   pull_request:
-    branches: [main, release-web]
+    branches: [release-web]
   workflow_dispatch:
 permissions:
   contents: read

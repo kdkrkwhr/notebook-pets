@@ -8,8 +8,8 @@
 
 # Architecture and release direction (2026-10-15)
 
-- Preserve the existing `release` branch as the Anna deployment track. `main` is the shared integration source. Do not rename or delete the Anna branch as part of platform work.
+- User preference (2026-10-15): keep two active tracks, `release-web` for shared-core integration and GitHub Pages development/deployment, and the existing `release` for Anna. The redundant `main` branch is retired after verifying its history is preserved in `release-web`. Do not rename or delete the Anna branch as part of platform work.
 - Share one Python rule implementation across Anna, future static Web (Pyodide) and future Android (Web wrapper). Platform adapters handle persistence, authentication, system dependencies and AI transports; LLM output never changes authoritative rewards/stats/timers.
 - Canonical portable API: `engine/game_api.py` with explicit `ExecutionContext`. Keep filesystem/environment/OS locks out of this import and execution graph. Legacy direct engine/CLI calls may use the lazy `local_runtime` compatibility adapter.
 - Web target: no required application/DB/AI proxy server; local IndexedDB persistence and user BYOK direct requests where the provider supports browser calls. Do not introduce paid backend infrastructure without an explicit user request.
-- Future `release-web` and `release-android` tracks are created when their adapters/builds exist. Do not fork or copy gameplay rules into platform branches.
+- `release-web` is the existing Pages track. Create `release-android` when its adapter/build exists. Bring tested shared-core changes from `release-web` to Anna `release` through Git; never fork or manually copy gameplay rule implementations between platforms.
