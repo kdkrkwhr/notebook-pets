@@ -934,7 +934,7 @@ test('enemy silhouettes are distinct in monochrome and animate independently of 
    return {kind,frames};
   });
  });
- assert.equal(new Set(result.map(r=>r.frames[0])).size,4);
+ assert.equal(new Set(result.map(r=>r.frames[0])).size,result.length);assert.equal(result.length,6);
  for(const r of result)assert.notEqual(r.frames[0],r.frames[1],r.kind+' animates');
 });
 

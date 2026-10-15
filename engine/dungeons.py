@@ -9,6 +9,9 @@ CATALOG = {
     'hellgate': {'species': ['dragon', 'monster', 'ghost'], 'elements': ['fire', 'thunder', 'dark']},
     'icekingdom': {'species': ['mammal', 'bird', 'machine'], 'elements': ['water']},
     'dreamforest': {'species': ['plant', 'fairy', 'reptile'], 'elements': ['nature', 'earth', 'light']},
+    # First expansion (NEXT_RELEASE.md): thunder/nature favored below the sea, nature/wind favored in the clockwork city.
+    'sunkenpalace': {'species': ['reptile', 'plant'], 'elements': ['water', 'nature']},
+    'clockworkcity': {'species': ['machine', 'monster'], 'elements': ['earth', 'dark']},
 }
 CHOICES = {'dungeon_safe', 'dungeon_risk'}
 COMMANDS = {f'explore_{key}': key for key in CATALOG}

@@ -2,7 +2,7 @@ import {t} from './i18n.mjs';
 import {createDungeonScene,paintDungeon,WALK_MS,ROUND_MS} from './dungeon-scene.mjs';
 import {journey,totalDuration} from './dungeon-journey.mjs';
 export {routePosition} from './dungeon-scene.mjs';
-export const DUNGEON_IDS=['hellgate','icekingdom','dreamforest'];
+export const DUNGEON_IDS=['hellgate','icekingdom','dreamforest','sunkenpalace','clockworkcity'];
 
 export function createDungeons(h){
   const document=h.document,$=id=>document.querySelector(id),dialog=$('#dungeon-dialog');

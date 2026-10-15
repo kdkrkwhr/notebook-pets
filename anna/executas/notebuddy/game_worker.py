@@ -12,7 +12,8 @@ import tempfile
 
 ALLOWED = frozenset({'personality', 'start', 'status', 'feed', 'snack', 'play', 'sleep', 'train',
                      'walk_begin', 'walk_collect', 'walk_leave', 'walk', 'battle', 'flee', 'attendance', 'quests', 'claimquest',
-                     'album', 'titles', 'help', 'explore_hellgate', 'explore_icekingdom', 'explore_dreamforest', 'dungeon_safe', 'dungeon_risk'})
+                     'album', 'titles', 'help', 'explore_hellgate', 'explore_icekingdom', 'explore_dreamforest',
+                     'explore_sunkenpalace', 'explore_clockworkcity', 'dungeon_safe', 'dungeon_risk'})
 
 
 def run(payload):

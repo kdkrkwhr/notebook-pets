@@ -1,5 +1,5 @@
 import {WORLD,THEMES,layout,worldPoint,routePoint,paintRoom} from './dungeon-map.mjs';
-import {drawEnemy} from './dungeon-enemies.mjs';
+import {drawEnemy,BOSS_KINDS} from './dungeon-enemies.mjs';
 import {drawAvatar,facing,turnToward} from './dungeon-avatar.mjs';
 import {pixelCanvas} from './pixel-pet.mjs';
 import {journey,WALK_MS,ROUND_MS,EXIT_MS,REST_MS,totalDuration} from './dungeon-journey.mjs';
@@ -14,6 +14,8 @@ const assets=new Map();
 function asset(key){if(!assets.has(key))assets.set(key,new Promise((resolve,reject)=>{const img=new Image();img.onload=()=>resolve(img);img.onerror=()=>{assets.delete(key);reject(Error('Dungeon art unavailable'));};img.src=new URL(`./assets/dungeons-v2/${key}.png`,import.meta.url).href;}));return assets.get(key);}
 export function paintDungeon(canvas,key){
  canvas.width=480;canvas.height=270;const c=canvas.getContext('2d');c.fillStyle=THEMES[key].void;c.fillRect(0,0,480,270);
+ // ponytail: expansion regions have no painted environment yet; the preview is the procedural first room.
+ if(BOSS_KINDS[key]){c.save();c.imageSmoothingEnabled=false;c.scale(480/WORLD.width,480/WORLD.width);c.translate(0,-(WORLD.height-270*WORLD.width/480)/2);paintRoom(c,key,0);c.restore();canvas.dataset.art='ready';return;}
  asset(key).then(img=>{if(canvas.isConnected){c.drawImage(img,110,230,1340,754,0,0,480,270);canvas.dataset.art='ready';}}).catch(()=>{canvas.dataset.art='failed';});
 }
 export function createDungeonScene(canvas,explorer){
@@ -29,7 +31,9 @@ export function createDungeonScene(canvas,explorer){
  const ellipse=(x,y,rx,ry,color)=>{c.fillStyle=color;c.beginPath();c.ellipse(x,y,rx,ry,0,0,Math.PI*2);c.fill();};
  function enemy(kind,x,y,beat,active,dead,reduced,direction,elapsed){
   c.save();if(dead)c.globalAlpha=.2;ellipse(x,y,28,10,'#0008');
-  if(kind==='guardian'){
+  if(kind==='guardian'&&BOSS_KINDS[key]){
+   drawEnemy(c,x,y,{kind:BOSS_KINDS[key],region:key,elapsed,beat,active,reduced,direction:'left'});
+  }else if(kind==='guardian'){
    const row=active?(beat<.45?1:beat<.7?2:0):0,col=['hellgate','icekingdom','dreamforest'].indexOf(key),w=atlas.width/3,h=atlas.height/3;
    c.drawImage(atlas,col*w,row*h,w,h,x-92-(active&&beat>.45&&beat<.7?12:0),y-122,184,125);
   }else{

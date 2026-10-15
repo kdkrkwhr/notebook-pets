@@ -1,3 +1,20 @@
+# Five regions · source candidate / tool 0.7.0
+
+2026-10-15 추가. NEXT_RELEASE.md의 첫 확장 2종을 기존 발견·입장·단계·보상 규칙 그대로 붙였다. 아직 Anna 테스트 배포와 심사 제출은 하지 않았다.
+
+| 지역 | 키 | 보스 | 보스 속성(발견 날짜로 결정) | 적응 종족 |
+| --- | --- | --- | --- | --- |
+| 침몰한 왕궁 | `sunkenpalace` | 심해의 왕관지기 | 물·자연 | 파충류족·식물족 |
+| 잊혀진 태엽도시 | `clockworkcity` | 거대 태엽 골렘 | 땅·어둠 | 기계족·괴수족 |
+
+- 보스 속성은 계획서의 "유리한 속성 후보"가 불리한 날이 없도록 골랐다. 왕궁은 번개·자연이 물의 날에 유리하고 자연의 날에는 중립이다. 태엽도시는 자연·바람이 땅의 날에 유리하고 어둠의 날에는 중립이다.
+- 발견 확률·24시간 유지·단계당 산책 1개·지역별 당일 첫 클리어 10코인은 기존 세 지역과 같다. 발견 후보가 3개에서 5개로 늘어 특정 지역을 만날 확률만 낮아진다.
+- 아트: 확장 지역은 그려진 환경 PNG와 보스 아틀라스 열이 없다. 미리보기 카드는 탐험 화면과 같은 절차적 첫 방을 축소해 보여 주고, 보스는 `dungeon-enemies.mjs`의 `crownkeeper`·`clockgolem` 픽셀 실루엣을 1.2배로 그린다. AI 호출은 없다. 나중에 환경 PNG를 추가하면 `BOSS_KINDS`에서 지역을 빼고 아틀라스 열을 늘리면 된다.
+- 아이템 도감은 그대로 공용+기존 3지역 16종이다. 새 지역 아이템은 수집·상점 작업에서 추가한다.
+- 도구 버전을 0.7.0으로 올렸다(`executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`, 플러그인 `VERSION`, 앱 `manifest.json`의 required_executas). 배포 시 Windows/Linux 패키지를 다시 빌드해야 한다.
+
+---
+
 # Interactive stages · 0.6.0 / tool 0.4.0
 
 Current rules and deployment status: [0.6.0 release](releases/RELEASE_060.md).

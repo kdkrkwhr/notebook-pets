@@ -39,6 +39,19 @@ class DungeonTests(unittest.TestCase):
             self.assertEqual(engine.execute('123', 'walk', request_id='discover'), first)
         self.assertEqual(engine.load_state('123'), saved)
 
+    def test_expansion_regions_are_catalogued_with_commands_and_stable_bosses(self):
+        for key, species, elements in [('sunkenpalace', {'reptile', 'plant'}, {'water', 'nature'}),
+                                       ('clockworkcity', {'machine', 'monster'}, {'earth', 'dark'})]:
+            self.assertEqual(set(dungeons.CATALOG[key]['species']), species)
+            self.assertEqual(set(dungeons.CATALOG[key]['elements']), elements)
+            self.assertIn(f'explore_{key}', engine.PLAYER_COMMANDS)
+            self.assertIn(dungeons.boss_element(key, '2026-10-15'), elements)
+            self.assertEqual(dungeons.room_plan(key, '2026-10-15'), dungeons.room_plan(key, '2026-10-15'))
+        st = self.opened()
+        self.assertEqual({e['id'] for e in engine.execute('123', 'status')['dungeons']['entries']}, set(dungeons.CATALOG))
+        self.assertEqual(engine.execute('123', 'explore_sunkenpalace', request_id='sunken')['ok'], True)
+        dungeons.validate(engine.load_state('123'))
+
     def test_discovery_has_no_guarantee_even_for_legacy_miss_counter(self):
         st = self.seed()
         st['dungeons'] = {'date':engine.today(),'discovered':[],'cleared':[], 'misses':2,'last_run':None}
@@ -51,13 +64,13 @@ class DungeonTests(unittest.TestCase):
         st = self.seed()
         found = []
         with patch.object(engine.random, 'random', return_value=.2499):
-            for _ in range(3):
+            for _ in range(len(dungeons.CATALOG)):
                 key = dungeons.discover(st, engine.today(), engine.random)
                 found.append(key)
                 st['dungeons']['cleared'].append(key)
             found.append(dungeons.discover(st, engine.today(), engine.random))
-        self.assertEqual(set(found[:3]), set(dungeons.CATALOG))
-        self.assertIsNone(found[3])
+        self.assertEqual(set(found[:-1]), set(dungeons.CATALOG))
+        self.assertIsNone(found[-1])
         dungeons.validate(st)
 
     def test_pending_discovery_blocks_rolls_across_midnight_until_exact_expiry(self):
@@ -117,12 +130,12 @@ class DungeonTests(unittest.TestCase):
         st['dungeons']['cleared'] = ['hellgate']
         with patch.object(engine.random, 'random', return_value=0):
             found = []
-            for _ in range(3):
+            for _ in range(len(dungeons.CATALOG)):
                 key = dungeons.discover(st,engine.today(),engine.random)
                 found.append(key)
                 if key:
                     st['dungeons']['cleared'].append(key)
-        self.assertEqual(set(found), {'icekingdom','dreamforest',None})
+        self.assertEqual(set(found), (set(dungeons.CATALOG) - {'hellgate'}) | {None})
         self.assertEqual(set(st['dungeons']['cleared']), set(dungeons.CATALOG))
         dungeons.validate(st)
 

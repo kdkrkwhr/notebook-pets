@@ -1,5 +1,5 @@
 export const TILE=48,WORLD={width:2304,height:1728};
-export const THEMES={hellgate:{floor:'#634b43',tile:'#73584b',wall:'#362c32',edge:'#b87957',glow:'#ffab63',void:'#1e171e'},icekingdom:{floor:'#416278',tile:'#54798e',wall:'#233849',edge:'#8fbbc7',glow:'#b3edff',void:'#121f32'},dreamforest:{floor:'#485b54',tile:'#596c5f',wall:'#293d39',edge:'#8da082',glow:'#d6bcff',void:'#171e2b'}};
+export const THEMES={hellgate:{floor:'#634b43',tile:'#73584b',wall:'#362c32',edge:'#b87957',glow:'#ffab63',void:'#1e171e'},icekingdom:{floor:'#416278',tile:'#54798e',wall:'#233849',edge:'#8fbbc7',glow:'#b3edff',void:'#121f32'},dreamforest:{floor:'#485b54',tile:'#596c5f',wall:'#293d39',edge:'#8da082',glow:'#d6bcff',void:'#171e2b'},sunkenpalace:{floor:'#2f5a6a',tile:'#3a6c78',wall:'#1b3340',edge:'#7fb8b0',glow:'#ffd27a',void:'#0d1b2a'},clockworkcity:{floor:'#5c4a36',tile:'#6b5740',wall:'#2f2620',edge:'#c99a4a',glow:'#9fe3ff',void:'#1a1512'}};
 const maps=new Map();
 export function layout(index=0,choice='safe'){
  const cacheKey=`${index%4}/${choice}`;if(maps.has(cacheKey))return maps.get(cacheKey);
