@@ -226,6 +226,10 @@ python -B -X utf8 -m unittest discover -s tests -p "test_*.py" -v
 
 종족 보너스, 경험치·진화, 수면, 접근 제어, 저장 실패, 동시 실행, 메시지 재처리, 전투, 이미지 파이프라인과 에이전트 연결을 확인합니다. 테스트 데이터는 임시 파일에 저장합니다.
 
+공식 러너는 CI와 같은 `unittest`입니다. 테스트 파일은 모두 unittest 스타일이므로 로컬에서는 `python -B -X utf8 -m pytest tests -q`로도 같은 테스트를 실행할 수 있습니다.
+
+루트 `VERSION`은 Anna 앱 버전과 함께 올립니다(현재 1.0.0). `tools/backup_store.py`가 이 값을 백업 메타데이터의 `game_version`으로 기록합니다.
+
 `requirements-mcp.txt`를 설치하면 실제 stdio 클라이언트·서버 통신 테스트도 실행됩니다. 미설치 시 해당 테스트만 건너뜁니다. 테스트는 외부 LLM 계정 없이 실행하며, 최신 결과는 위 Actions 링크에서 확인합니다. 파트너 진화 기록·앨범, 동시 저장 잠금, 복구 후 중복 요청 재처리와 백업 보관 정책도 검증합니다.
 
 ## 문서

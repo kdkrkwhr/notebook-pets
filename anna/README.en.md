@@ -59,6 +59,6 @@ Switching between English and Korean changes the interface and new replies while
 
 ---
 
-[Full feature gallery](../README.en.md) · [Development and setup](DEVELOPMENT.en.md) · [1.0.0 deployment](RELEASE_100.md) · [0.10.1 deployment](RELEASE_0101.md) · [0.10.0 deployment](RELEASE_0100.md) · [0.9.0 deployment](RELEASE_090.md) · [1.0.0 review guide](REVIEW_100.md) · [0.8.1 review guide](REVIEW_081.md) · [Handoff](HANDOFF.md)
+[Full feature gallery](../README.en.md) · [Development and setup](DEVELOPMENT.en.md) · [1.0.0 deployment](releases/RELEASE_100.md) · [0.10.1 deployment](releases/RELEASE_0101.md) · [0.10.0 deployment](releases/RELEASE_0100.md) · [0.9.0 deployment](releases/RELEASE_090.md) · [1.0.0 review guide](reviews/REVIEW_100.md) · [0.8.1 review guide](reviews/REVIEW_081.md) · [Handoff](HANDOFF.md)
 
 Screenshots show the real UI with separate test data. Mori is an actual Anna-generated result; the item book is from 0.9.0. [Screenshot sources](../docs/screenshots/README.md)

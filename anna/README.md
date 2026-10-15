@@ -59,6 +59,6 @@
 
 ---
 
-[전체 기능 갤러리](../README.md) · [개발·설치 안내](DEVELOPMENT.md) · [1.0.0 배포 기록](RELEASE_100.md) · [0.10.1 배포 기록](RELEASE_0101.md) · [0.10.0 배포 기록](RELEASE_0100.md) · [0.9.0 배포 기록](RELEASE_090.md) · [1.0.0 심사 안내](REVIEW_100.md) · [0.8.1 심사 안내](REVIEW_081.md) · [작업 인계](HANDOFF.md)
+[전체 기능 갤러리](../README.md) · [개발·설치 안내](DEVELOPMENT.md) · [1.0.0 배포 기록](releases/RELEASE_100.md) · [0.10.1 배포 기록](releases/RELEASE_0101.md) · [0.10.0 배포 기록](releases/RELEASE_0100.md) · [0.9.0 배포 기록](releases/RELEASE_090.md) · [1.0.0 심사 안내](reviews/REVIEW_100.md) · [0.8.1 심사 안내](reviews/REVIEW_081.md) · [작업 인계](HANDOFF.md)
 
 스크린샷은 별도 테스트 데이터로 촬영한 실제 UI입니다. Mori는 실제 Anna 생성 결과이고, 도감 화면은 0.9.0입니다. [화면 출처](../docs/screenshots/README.md)

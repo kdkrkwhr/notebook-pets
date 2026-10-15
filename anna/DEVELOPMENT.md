@@ -2,7 +2,7 @@
 
 [사용 안내로 돌아가기](README.md) · [English](DEVELOPMENT.en.md)
 
-현재 테스트 앱은 **1.0.0**, 실행 도구는 **0.6.0**입니다. 심사 대상은 **1.0.0**입니다. [최신 배포 기록](RELEASE_100.md)을 기준으로 확인하세요.
+현재 테스트 앱은 **1.0.0**, 실행 도구는 **0.6.0**입니다. 심사 대상은 **1.0.0**입니다. [최신 배포 기록](releases/RELEASE_100.md)을 기준으로 확인하세요.
 
 ## 실행
 
@@ -52,7 +52,9 @@ npm run test:browser
 npm run test:plugin
 ```
 
-0.9.0 검증: JavaScript 78개, 브라우저 87개와 strict 검사 및 Windows/Linux CI를 통과했습니다. 저장·프로토콜과 실행 패키지도 CI에서 확인했습니다. 전투·반응 자동 테스트는 실제 계정이나 유료 AI를 호출하지 않습니다. 이전 실제 계정 검증과 최신 배포 결과는 [HANDOFF.md](HANDOFF.md), 저장 전환과 성장 시뮬레이션은 [INTERACTIONS.md](INTERACTIONS.md)를 참고하세요.
+`test:plugin`은 CI와 같은 `unittest` 러너를 사용합니다. 루트 엔진 테스트는 저장소 루트에서 `python -B -X utf8 -m unittest discover -s tests -p "test_*.py"`로 실행하며, pytest로도 같은 테스트가 실행됩니다.
+
+1.0.0 검증: JavaScript 80개, 브라우저 89개와 strict 검사 및 Windows/Linux CI를 통과했습니다. 저장·프로토콜과 실행 패키지도 CI에서 확인했습니다. 전투·반응 자동 테스트는 실제 계정이나 유료 AI를 호출하지 않습니다. 이전 실제 계정 검증과 최신 배포 결과는 [HANDOFF.md](HANDOFF.md), 저장 전환과 성장 시뮬레이션은 [INTERACTIONS.md](INTERACTIONS.md)를 참고하세요.
 
 ## 패키징 및 초안 갱신
 

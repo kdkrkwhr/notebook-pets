@@ -2,7 +2,7 @@
 
 ## Current review status
 
-On 10 October 2026, the owner requested and completed a review-candidate replacement: **0.2.5 is now pending review**. The English listing and four screenshots were updated and verified. The historical entries below describe status at each deployment; their references to candidate 0.2.1 no longer describe the current review. See [submission receipt](REVIEW_025.md).
+On 10 October 2026, the owner requested and completed a review-candidate replacement: **0.2.5 is now pending review**. The English listing and four screenshots were updated and verified. The historical entries below describe status at each deployment; their references to candidate 0.2.1 no longer describe the current review. See [submission receipt](reviews/REVIEW_025.md).
 
 ## Drawing-only birth candidate 0.2.5
 

@@ -1,6 +1,6 @@
 # Notebuddy 0.4.0 — pixel companions and dungeons
 
-Test deployment completed on 2026-10-13. Future feature work includes Git commit/push, Anna test deployment and installed-runtime verification, as requested by the user and recorded in [AGENTS.md](../AGENTS.md).
+Test deployment completed on 2026-10-13. Future feature work includes Git commit/push, Anna test deployment and installed-runtime verification, as requested by the user and recorded in [AGENTS.md](../../AGENTS.md).
 
 ## Deployed build
 
@@ -12,7 +12,7 @@ Test deployment completed on 2026-10-13. Future feature work includes Git commit
 
 ## Behavior
 
-New companions and saved growth portraits receive a locally converted 64×64 pixel portrait without an additional AI generation request. Existing companions can prepare one on demand. Walks discover Hellgate, Ice Kingdom and Dream Forest. Entering costs one walk charge; the server saves the boss result and coin reward before the automatic pixel-map replay begins. See [DUNGEONS.md](DUNGEONS.md) for rules and remaining art/gameplay scope.
+New companions and saved growth portraits receive a locally converted 64×64 pixel portrait without an additional AI generation request. Existing companions can prepare one on demand. Walks discover Hellgate, Ice Kingdom and Dream Forest. Entering costs one walk charge; the server saves the boss result and coin reward before the automatic pixel-map replay begins. See [DUNGEONS.md](../DUNGEONS.md) for rules and remaining art/gameplay scope.
 
 ## Verification and limits
 

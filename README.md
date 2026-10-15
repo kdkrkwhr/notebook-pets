@@ -124,6 +124,6 @@ Anna 화면은 **한국어와 영어**를 지원합니다. 상단에서 언어�
 
 ---
 
-[Anna 사용 안내](anna/README.md) · [엔진·Discord 개발 안내](docs/DEVELOPMENT.md) · [Anna 개발 안내](anna/DEVELOPMENT.md) · [최신 배포 기록](anna/RELEASE_100.md) · [개인정보 안내](anna/PRIVACY.md)
+[Anna 사용 안내](anna/README.md) · [엔진·Discord 개발 안내](docs/DEVELOPMENT.md) · [Anna 개발 안내](anna/DEVELOPMENT.md) · [최신 배포 기록](anna/releases/RELEASE_100.md) · [개인정보 안내](anna/PRIVACY.md)
 
 스크린샷은 실제 앱 UI를 별도 테스트 데이터로 실행해 촬영했습니다. 친구 생성·앨범·던전은 1.0.0 화면, 도감 상세는 0.9.0 화면이며, 위 Mori의 그림은 실제 Anna 생성 결과입니다. [화면 출처](docs/screenshots/README.md)

@@ -13,7 +13,7 @@ The owner requested a fresh account reset and replacement of the existing review
 
 The English store description now explains drawing-only creation, rechargeable walks, care reactions, AI allowance, retry behavior and data controls. It does not advertise the separate unreleased portrait-analysis evolution feature. Four screenshots were recaptured from the actual 0.2.5 UI with the real game engine in an isolated in-memory local harness: first meeting, companion/care, care/album, and the drawing editor. AI was disabled; no private account data or generated personal portrait was used. Mutable listing metadata was synchronized independently of the immutable code version.
 
-Homepage, issue/support page, versioned privacy notice, logo and all four uploaded screenshots returned HTTP 200 before submission. Privacy points to `anna-v0.2.5/anna/PRIVACY.md`. Full code verification is recorded in [incremental releases](INCREMENTAL_RELEASE.md): 40 unit tests, 40 browser scenarios, and successful Windows/Linux CI.
+Homepage, issue/support page, versioned privacy notice, logo and all four uploaded screenshots returned HTTP 200 before submission. Privacy points to `anna-v0.2.5/anna/PRIVACY.md`. Full code verification is recorded in [incremental releases](../INCREMENTAL_RELEASE.md): 40 unit tests, 40 browser scenarios, and successful Windows/Linux CI.
 
 ## Account reset
 

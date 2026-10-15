@@ -10,7 +10,7 @@ The dungeon presentation is rebuilt around three detailed 1536×1024 environment
 
 The four static art files are bundled with the app. Loading them makes no Anna AI request. Art must load successfully before entry is enabled. The player's existing locally converted pixel portrait is preserved; its movement uses translation, bobbing and facing changes, not newly generated directional walking frames. This remains automatic exploration with one boss, without manual action controls, roaming enemy AI, loot rooms or offline farming. The camera and presentation do not change combat results or award additional rewards.
 
-Art sources and generation briefs: [assets/dungeons-v2/README.md](../assets/dungeons-v2/README.md). The 0.3.4 review candidate and shared listing are preserved during test deployment.
+Art sources and generation briefs: [assets/dungeons-v2/README.md](../../assets/dungeons-v2/README.md). The 0.3.4 review candidate and shared listing are preserved during test deployment.
 
 ## Validation
 

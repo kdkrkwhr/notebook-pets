@@ -124,6 +124,6 @@ The next dungeon themes are the **Sunken Palace and Forgotten Clockwork City**, 
 
 ---
 
-[Anna user guide](anna/README.en.md) · [Engine and Discord development](docs/DEVELOPMENT.en.md) · [Anna development](anna/DEVELOPMENT.en.md) · [Latest deployment](anna/RELEASE_100.md) · [Privacy](anna/PRIVACY.md)
+[Anna user guide](anna/README.en.md) · [Engine and Discord development](docs/DEVELOPMENT.en.md) · [Anna development](anna/DEVELOPMENT.en.md) · [Latest deployment](anna/releases/RELEASE_100.md) · [Privacy](anna/PRIVACY.md)
 
 Screenshots show the real application UI running with separate test data. Creation, album and dungeon captures are from 1.0.0; the item book details are from 0.9.0. Mori's portrait is an actual Anna-generated result. [Screenshot sources](docs/screenshots/README.md)

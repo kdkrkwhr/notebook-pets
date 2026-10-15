@@ -2,7 +2,7 @@
 
 [Back to the user guide](README.en.md) · [한국어](DEVELOPMENT.md)
 
-The current owner test app is **1.0.0**, with game tool **0.6.0**. The review candidate is **1.0.0**. See the [latest deployment record](RELEASE_100.md).
+The current owner test app is **1.0.0**, with game tool **0.6.0**. The review candidate is **1.0.0**. See the [latest deployment record](releases/RELEASE_100.md).
 
 ## Development
 
@@ -26,6 +26,8 @@ npm test
 npm run test:browser
 npm run test:plugin
 ```
+
+`test:plugin` uses the same `unittest` runner as CI. Root engine tests run from the repository root with `python -B -X utf8 -m unittest discover -s tests -p "test_*.py"`; pytest runs the same tests.
 
 The Anna CI workflow validates the app, runs UI, browser and Python regression tests, and builds and smoke-tests Windows/Linux packages without calling paid AI services.
 

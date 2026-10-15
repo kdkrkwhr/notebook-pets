@@ -20,6 +20,6 @@ These three PNGs are unchanged copies of the screenshots captured and visually c
 
 The shipped UI was rendered with the isolated test SDK; capture made no Anna AI or production storage calls. The desktop and detail images were captured from the real dialog elements, and the mobile image from the page. The items are explicitly a preview, not owned or equipped inventory.
 
-The installed Anna app was checked separately: sixteen decoded images and matching code/art hashes, a working detail view and preserved user data. See [0.9.0 deployment verification](../../anna/RELEASE_090.md).
+The installed Anna app was checked separately: sixteen decoded images and matching code/art hashes, a working detail view and preserved user data. See [0.9.0 deployment verification](../../anna/releases/RELEASE_090.md).
 
 The item illustrations were generated with the built-in image generation tool; their [source files and exact prompts](../../assets/items-v1/README.md) are distinct from these UI screenshots.

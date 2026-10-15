@@ -1,6 +1,6 @@
 # Interactive stages · 0.6.0 / tool 0.4.0
 
-Current rules and deployment status: [0.6.0 release](RELEASE_060.md).
+Current rules and deployment status: [0.6.0 release](releases/RELEASE_060.md).
 
 Every stage costs one walk charge. Automatic movement pauses at a fork or trap, then the user's safe/risky route choice determines trap damage and route coins before combat. Sanctuary stages offer healing versus coins. Closing preserves a paid choice; entry into the next stage requires a separate action and charge. Fields have branches, loops and visible hazards; enemies have unique silhouettes. Existing results are replay-only historical records.
 
@@ -18,13 +18,13 @@ The renderer uses a shared tile layout for floors, corridors, doors and routes. 
 
 Manual movement, branching reward choices and individually authored directional sprites for each custom pet remain outside this implementation. Playback takes roughly a minute or more for a complete expedition, depending on room count and rounds; defeat can end earlier. 3x, pause and skip are available. Reduced-motion users receive the final result directly.
 
-See [0.5.0 validation and deployment](RELEASE_050.md). Earlier implementation notes follow for historical context.
+See [0.5.0 validation and deployment](releases/RELEASE_050.md). Earlier implementation notes follow for historical context.
 
 ---
 
 # Scrolling RPG dungeons · 0.4.2 / tool 0.2.2
 
-2026-10-13 사용자 요청으로 던전이 진행 중이면 클리어 또는 만료 전까지 다른 던전이 발견되지 않도록 변경했다. 발견 후 24시간 유지, 남은 시간 표시, 확대 화면을 유지한다. 실제 Anna 배포 및 계정 검증은 [배포 기록](RELEASE_042.md)에 기록한다. 심사 중인 0.3.4는 별개다.
+2026-10-13 사용자 요청으로 던전이 진행 중이면 클리어 또는 만료 전까지 다른 던전이 발견되지 않도록 변경했다. 발견 후 24시간 유지, 남은 시간 표시, 확대 화면을 유지한다. 실제 Anna 배포 및 계정 검증은 [배포 기록](releases/RELEASE_042.md)에 기록한다. 심사 중인 0.3.4는 별개다.
 
 ## 캐릭터 픽셀 변환
 
@@ -68,7 +68,7 @@ See [0.5.0 validation and deployment](RELEASE_050.md). Earlier implementation no
 
 ## 후속 범위
 
-0.4.1은 Anna 테스트 계정에 배포 완료했다. 실제 실행 도구 0.2.1, 발견한 지역만 표시, 실시간 카운트다운, 확대 미리보기와 기존 데이터 보존을 확인했다. [전체 검증·배포 내역](RELEASE_041.md)을 참고한다.
+0.4.1은 Anna 테스트 계정에 배포 완료했다. 실제 실행 도구 0.2.1, 발견한 지역만 표시, 실시간 카운트다운, 확대 미리보기와 기존 데이터 보존을 확인했다. [전체 검증·배포 내역](releases/RELEASE_041.md)을 참고한다.
 
 방향별 캐릭터 걷기 프레임, 사진·흰 캐릭터의 시각 품질 개선, 일반 적의 순찰·다중 전투, 난이도 플레이테스트, 코인 상점·아바타 착용, 추가 던전은 후속이다. 현재는 자동 이동과 보스 1회 전투이며 코인은 누적만 가능하다. 이 후보는 공개나 심사 재제출 없이 테스트할 수 있도록 기존 제출 버전과 구분한다.
 
@@ -76,8 +76,8 @@ See [0.5.0 validation and deployment](RELEASE_050.md). Earlier implementation no
 
 ## 로컬 검증
 
-0.4.2 검증: 엔진 173개, Anna Python 57개, JavaScript 52개 통과. 브라우저에서 진행 중 신규 발견 차단·클리어 후 발견, 카메라 이동과 전투 완료, 이미지 실패 시 미입장, 360px 한국어와 동작 줄이기를 확인했다. 배포와 최종 CI 수치는 [RELEASE_042.md](RELEASE_042.md)를 따른다. 아래는 이전 버전의 검증 기록이다.
+0.4.2 검증: 엔진 173개, Anna Python 57개, JavaScript 52개 통과. 브라우저에서 진행 중 신규 발견 차단·클리어 후 발견, 카메라 이동과 전투 완료, 이미지 실패 시 미입장, 360px 한국어와 동작 줄이기를 확인했다. 배포와 최종 CI 수치는 [RELEASE_042.md](releases/RELEASE_042.md)를 따른다. 아래는 이전 버전의 검증 기록이다.
 
 2026-10-13 엔진 167개, Anna Python 57개, UI 단위 52개, 브라우저 60개와 strict manifest 검사가 통과했다. 기존 세이브 읽기 무변경, 발견 보정, 입장 거절 시 미차감, 패배 재도전, 중복·동시 요청, 저장 오류 시 미지급, 자정 이후 기존 결과 재생, 계정별 격리, 임시 보너스 보존을 확인했다. 픽셀 PNG 크기·투명 여백·연결된 흰 배경 제거, 새 펫·단계·원본 교체 구분, AI 무호출, 최초 저장 및 실패 재시도, 360px·동작 줄이기도 검증했다. 실제 Anna 제공자와 파일 저장소가 아닌 격리된 브라우저 호스트 테스트다.
 
-같은 날 Anna 테스트 앱 0.4.0 / working revision 34와 실행 도구 0.2.0 배포를 완료했다. 설치 앱의 정상 연결과 새 모듈 HTTP 200, 실제 실행 도구의 버전·로딩·실행 상태를 확인했다. 현재 계정은 새 캐릭터 생성 대기 상태여서 실제 픽셀 파일 저장과 탐험 플레이 확인은 남아 있다. [배포 기록](RELEASE_040.md)을 따른다.
+같은 날 Anna 테스트 앱 0.4.0 / working revision 34와 실행 도구 0.2.0 배포를 완료했다. 설치 앱의 정상 연결과 새 모듈 HTTP 200, 실제 실행 도구의 버전·로딩·실행 상태를 확인했다. 현재 계정은 새 캐릭터 생성 대기 상태여서 실제 픽셀 파일 저장과 탐험 플레이 확인은 남아 있다. [배포 기록](releases/RELEASE_040.md)을 따른다.
