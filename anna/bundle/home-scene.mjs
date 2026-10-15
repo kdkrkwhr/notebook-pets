@@ -23,7 +23,7 @@ export function createHomeScene(canvas){
   const win=project([5,0]);c.fillStyle='#b2cdd0';c.fillRect(win[0]-42,win[1]-118,72,75);c.strokeStyle='#8b7050';c.lineWidth=6;c.strokeRect(win[0]-42,win[1]-118,72,75);c.lineWidth=3;c.beginPath();c.moveTo(win[0]-6,win[1]-118);c.lineTo(win[0]-6,win[1]-43);c.moveTo(win[0]-42,win[1]-81);c.lineTo(win[0]+30,win[1]-81);c.stroke();
  }
  function furniture(key,pos,alpha=1,carry=false){if(!sheet||!crops[key])return;const source=crops[key],w=carry?Math.min(SIZE[key]||90,85):SIZE[key]||90,h=w*source[3]/source[2],layer=home.catalog.find(v=>v.id===key)?.layer;const point=carry?pos:project([pos[0]+.7,pos[1]+.7]);
-  let lift=carry?0:layer==='wall'?90:layer==='surface'?70:0;c.save();c.globalAlpha=alpha;c.drawImage(sheet,...source,point[0]-w/2,point[1]-h-lift,w,h);c.restore();}
+  let lift=carry?0:layer==='wall'?30:layer==='surface'?70:0;c.save();c.globalAlpha=alpha;c.drawImage(sheet,...source,point[0]-w/2,point[1]-h-lift,w,h);c.restore();}
  function character(position,time,walking,carried){const p=project([position[0]+1,position[1]+1]),bob=walking?Math.sin(time/110)*3:Math.sin(time/800)*1.5;
   c.save();c.fillStyle='#392b252d';c.beginPath();c.ellipse(p[0],p[1]+3,42,13,0,0,Math.PI*2);c.fill();
   if(pet){const ratio=pet.height/pet.width,w=148,h=w*ratio;c.translate(p[0],p[1]-h/2+bob);c.rotate(walking?Math.sin(time/180)*.025:0);c.drawImage(pet,-w/2,-h/2,w,h);}else{c.fillStyle='#65825b';c.beginPath();c.ellipse(p[0],p[1]-38,32,40,0,0,Math.PI*2);c.fill();}c.restore();
