@@ -1,8 +1,14 @@
-# Item catalog · 1.1.2
+# Item collection · 1.2.0 / tool 0.8.0
 
-The catalog has **24 items**: common gear and four items for each of Hellgate, Ice Kingdom, Dream Forest, Sunken Palace and Forgotten Clockwork City. It is a read-only preview, available from home after creating a companion, with English/Korean names and lore, region/type filters, text search, rare-item labels, detail views, planned acquisition and attachment requirements.
+The catalog has **24 items**. Twenty regional cosmetics can now be collected; the four common items remain explicitly unavailable until a later gift/shop update. **My inventory** opens the owned filter. Catalog cards and details show owned/missing status, with region/type/search filters in Korean and English.
 
-No collection, ownership, gift, purchase, coin spending, equipment, avatar regeneration or body analysis is implemented in this release. The welcome gift, coin unlocks and repeated-clear rewards are plans, clearly labeled in the UI. Prices and milestone counts remain unset. Browsing performs no game actions, storage writes or AI calls and grants no rewards. It does not alter the current 1.0.0 review listing.
+## Reward contract
+
+- A winning final guardian stage grants one unowned item from that region in a fixed order: three standard items, then its rare item on the fourth clear. Intermediate rooms, sanctuaries, losses and draws grant none.
+- Ownership is bounded to one of each item. After collecting all four regional items, later clears grant existing coins without another item. Current daily discovery/clear limits, walk charges, route coins and final-clear coins are unchanged.
+- Existing saves read as an empty collection without a storage write. Earlier clear records are not backfilled. Only future successful clears qualify, including an already-paid final stage completed after this update.
+- `collectibles` in the game save maps stable item IDs to quantity `1`. Item ownership, clear result, coins and request receipt commit in the same conditional game write. Response retries replay the saved reward; a failed write claims no reward. Ownership belongs to the current companion and clears with reset/removal.
+- Item grants and browsing use no AI. No purchase, coin spending, equipment, portrait fitting or anatomy analysis is enabled. The shared 1.0.0 review listing remains unchanged.
 
 ## Items
 
@@ -13,7 +19,7 @@ No collection, ownership, gift, purchase, coin spending, equipment, avatar regen
 | Back | Beginner’s Cape | Blazing Cape (rare) | Aurora Cape | Butterfly Cape |
 | Surrounding effect | Little Starlight | Drifting Embers | Drifting Snow | Firefly Companions (rare) |
 
-Definitions and localized descriptions are in `bundle/items.mjs`; art and exact built-in image-generation prompts are in `../assets/items-v1/`. Icons are static illustrations, not fitted character images or animations. Artwork loads from the application bundle.
+Definitions and localized descriptions are in `bundle/items.mjs`; art and exact built-in image-generation prompts are in `../../assets/items-v1/`. Icons are static illustrations, not fitted character images or animations. Artwork loads from the application bundle.
 
 ### Expansion items · 1.1.2
 
@@ -24,7 +30,7 @@ Definitions and localized descriptions are in `bundle/items.mjs`; art and exact 
 | Back | Tide Cape / 물결 망토 | Brass-Gear Cape / 황동 톱니 망토 |
 | Surrounding effect | Deep-Sea Bubbles / 심해 물방울 | Little Clockwork Orbit / 작은 태엽 무리 (rare) |
 
-All eight use the same preview, planned reward and fit rules as the original sixteen. [Exact illustration prompts](../../assets/items-v1/prompts-112.json).
+All eight expansion items use the same collection and future fit rules as the original regions. [Exact illustration prompts](../../assets/items-v1/prompts-112.json).
 
 ## Future fit model
 

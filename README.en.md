@@ -8,7 +8,7 @@
 
 Notebuddy is a companion game about growing alongside one AI friend. Start with a drawing, a photo or a surprise companion. Share your day, build a routine, discover stories and pixel dungeons on walks, and keep a little album of your friend's growth.
 
-The current Anna owner test app is **1.1.2**, with a notebook theme, a 2.5D companion and **five dungeons**, including illustrated previews and bosses for both new regions. Version **1.0.0 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 15, 2026.
+The current Anna owner test app is **1.2.0**, with a notebook theme, a 2.5D companion and **five dungeons**, including illustrated previews and bosses for both new regions. Version **1.0.0 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 15, 2026.
 
 [![Anna app tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml/badge.svg?branch=release)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml)
 
@@ -105,13 +105,13 @@ Each stage costs one walk charge. Your first clear of each region per day awards
   <img src="docs/screenshots/items-catalog-112-ko.png" width="900" alt="Korean item book showing all twenty-four head, neck, back and surrounding-effect designs across six collections">
 </p>
 
-Filter by region or type, search by name, and open a design to see its art, story, rarity, **planned way to collect it** and attachment requirements. Discover the Little Traveler's Hat, Frost Crown, Butterfly Cape, Firefly Companions and more.
+Filter by region or type, search by name, and open a design to see its art, story, rarity, **way to collect it** and attachment requirements. Discover the Little Traveler's Hat, Frost Crown, Butterfly Cape, Firefly Companions and more.
 
 | Item details | On a narrow screen |
 | :---: | :---: |
 | <img src="docs/screenshots/item-detail-112-ko.png" width="420" alt="Coral Pearl Tiara detail with artwork, description, planned reward and fit requirements in Korean"> | <img src="docs/screenshots/items-mobile-112-ko.png" width="280" alt="Korean item book in two columns on a 360-pixel screen"> |
 
-**This is a catalog preview.** Collecting, buying and equipping are not available yet; prices and reward milestones are still undecided. Browsing spends no coins or AI allowance. The screenshots show Korean; the book also supports English.
+In 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common items, shops and equipment are deferred. Collection and browsing make no AI requests.
 
 Future equipment will take each companion's body shape into account. A friend without hands may collect gloves, but wearing gloves will not invent hands. Ornaments such as floating starlight are planned to work without limbs.
 
@@ -119,7 +119,7 @@ Future equipment will take each companion's body shape into account. A friend wi
 
 | Edition | Availability |
 | --- | --- |
-| **Anna app** | The screens and features above are in owner test version **1.1.2**. Public store release awaits **1.0.0 review**. [App user guide](anna/README.en.md) |
+| **Anna app** | The screens and features above are in owner test version **1.2.0**. Public store release awaits **1.0.0 review**. [App user guide](anna/README.en.md) |
 | **Open-source engine, Discord and AI agents** | Run or connect the project yourself. The Anna interface, continuing stories and item book have their own feature scope. [Setup and integration guide](docs/DEVELOPMENT.en.md) |
 
 The Anna app supports **English and Korean**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.
@@ -128,12 +128,14 @@ Chat, care reactions, personality and walk-story generation, reference analysis 
 
 ## What comes next?
 
-The twenty-four-item book is the starting point for **collecting, a coin shop, an inventory and equipment**. Per-portrait anatomy analysis and fitted appearances are planned for that stage.
+Regional collection and inventory are available. Coin shops and equipment are next; identity-preserving fitted portraits require image-edit API support and quality validation.
 
-The **Sunken Palace and Forgotten Clockwork City are now playable**. Future regions include a sky castle, library and desert. Item collection, equipment and those future regions are not available yet. [Item plans](anna/docs/ITEMS.md)
+The **Sunken Palace and Forgotten Clockwork City are now playable**. Future regions include a sky castle, library and desert. Equipment and those future regions are not available yet. [Item plans](anna/docs/ITEMS.md)
 
 ---
 
 [Anna user guide](anna/README.en.md) · [Engine and Discord development](docs/DEVELOPMENT.en.md) · [Anna development](anna/DEVELOPMENT.en.md) · [Latest deployment](anna/releases/RELEASE_112.md) · [Privacy](anna/PRIVACY.md)
 
 Screenshots show the real application UI running with separate test data. Creation, album and Hellgate captures are from 1.0.0; the two new dungeon cards are from 1.1.1; the item book and details are from 1.1.2. Mori's portrait is an actual Anna-generated result. [Screenshot sources](docs/screenshots/README.md)
+
+<p align="center"><img src="docs/screenshots/inventory-120-ko.png" width="280" alt="1.2.0 Korean inventory with isolated test ownership"></p>

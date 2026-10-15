@@ -12,6 +12,7 @@ from datetime import date, datetime, timedelta
 from runtime import KST, MISSING, GameError, atomic_write_json, game_clock, game_date, read_json, store_lock, validate_user_id
 import art
 import dungeons
+import collectibles
 import journeys
 import personality
 
@@ -82,6 +83,7 @@ def validate_state(st, uid):
     try:
         require(isinstance(st, dict) and st["user_id"] == uid)
         dungeons.validate(st)
+        collectibles.validate(st)
         journeys.validate(st)
         personality.validate(st)
         require(type(st["version"]) is int and st["version"] in (2, 3, 4))
@@ -339,7 +341,7 @@ def cmd_status(st):
                stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"), image=art.describe(st),
                walk_choice=copy.deepcopy(st.get("_walk_choice")), record=st["record"], walk_energy={k: v for k, v in walk_energy(st).items() if k != "updated_at"}, quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
                personality=personality.view(st), memories=journeys.context(st), journey=copy.deepcopy(st.get("journey", {}).get("current")),
-               dungeons=dungeons.view(st, today(), type_mult),
+               dungeons=dungeons.view(st, today(), type_mult), collectibles=collectibles.view(st),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
 
 def cmd_personality(st, raw):
@@ -533,6 +535,7 @@ def cmd_dungeon_choice(st, choice, token):
            'coins_awarded':reward,'complete':complete}
     st['coins'] = st.get('coins',0)+reward
     if complete:
+        run['item_awarded'] = collectibles.award(st, key)
         if key not in state['cleared']: state['cleared'].append(key)
         if key in state['discovered']: state['discovered'].remove(key)
         state['expires_at'].pop(key,None)

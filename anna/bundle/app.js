@@ -111,6 +111,7 @@ function render(){
   $('#resetting').hidden=!resetting;
   if(resetting)forgetCachedData();
   const s=resetting?null:view?.status;
+  itemCatalog.update(s?.collectibles);
   $('#removed').hidden=!view?.erased;
   $('#reset-game').hidden=resetting||!s;
   if(view?.erased)forgetCachedData();
@@ -151,6 +152,7 @@ function render(){
   drawChat();birth?.render();stories?.render();dungeons?.render();renderPixel();renderPersonality();
 }
 function forgetCachedData(){
+  itemCatalog.clear();
   persona?.clear();
   pixels?.clear();pixelNotice='';dungeons?.close();$('#pixel-pet').removeAttribute('src');$('#pixel-pet').hidden=true;
   birth?.clear();stories?.clear();storyDialog?.clear();

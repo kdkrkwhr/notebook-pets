@@ -31,3 +31,7 @@ The shipped UI was rendered with the isolated test SDK; capture made no Anna AI 
 The installed Anna app was checked separately: sixteen decoded images and matching code/art hashes, a working detail view and preserved user data. See [0.9.0 deployment verification](../../anna/releases/RELEASE_090.md).
 
 The item illustrations were generated with the built-in image generation tool; their [source files and exact prompts](../../assets/items-v1/README.md) are distinct from these UI screenshots.
+
+## 1.2.0 inventory
+
+[Mobile Korean inventory](inventory-120-ko.png) shows the shipped 1.2.0 UI with two owned items in an isolated test fixture, not production ownership. Captured by the inventory browser test at 360×740; no Anna storage or AI requests.

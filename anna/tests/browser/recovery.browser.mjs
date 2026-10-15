@@ -56,11 +56,11 @@ test('item book opens only after creating a pet, filters and details never call 
  const callsBefore=await p.evaluate(()=>window.hostTest.calls.length);
  assert.equal(await p.locator('#item-catalog').isVisible(),false);
  await p.locator('#open-items').click();assert.equal(await p.locator('[data-item]').count(),24);
- assert.match(await p.locator('#item-catalog-notice').innerText(),/later update/);
+ assert.match(await p.locator('#item-catalog-notice').innerText(),/one unowned regional item/);
  await p.locator('#item-region').selectOption('icekingdom');assert.equal(await p.locator('[data-item]').count(),4);
  await p.locator('#item-slot').selectOption('head');assert.equal(await p.locator('[data-item]').count(),1);
  await p.locator('[data-item="frost-crown"]').click();assert.equal(await p.locator('#item-detail-name').innerText(),'Frost Crown');
- assert.match(await p.locator('#item-detail-reward').innerText(),/not set yet/);
+ assert.match(await p.locator('#item-detail-reward').innerText(),/three standard items/);
  assert.match(await p.locator('#item-detail-fit').innerText(),/never add/);
  assert.equal(await p.locator('#item-detail-image').evaluate(img=>img.decode().then(()=>img.naturalWidth>0)),true);
  await p.keyboard.press('Escape');assert.equal(await p.locator('#item-detail').isVisible(),false);assert.equal(await p.locator('#item-catalog').isVisible(),true);
@@ -70,7 +70,7 @@ test('item book opens only after creating a pet, filters and details never call 
   await p.locator('#item-region').selectOption(region);assert.equal(await p.locator('[data-item]').count(),4);
   assert.equal(await p.locator('#item-region option:checked').innerText(),label);
   for(const card of await p.locator('[data-item]').all()){
-   await card.click();assert.match(await p.locator('#item-detail-reward').innerText(),/future|not set yet/);
+   await card.click();assert.match(await p.locator('#item-detail-reward').innerText(),/unowned standard|three standard items/);
    assert.equal(await p.locator('#item-detail-image').evaluate(img=>img.decode().then(()=>img.naturalWidth>0)),true);
    await p.locator('#close-item-detail').click();
   }
@@ -78,6 +78,26 @@ test('item book opens only after creating a pet, filters and details never call 
  await p.locator('#close-items').click();assert.equal(await p.locator('#open-items').evaluate(e=>document.activeElement===e),true);
  assert.equal(await p.evaluate(()=>JSON.stringify(window.hostTest.state)),before);
  assert.equal(await p.evaluate(()=>window.hostTest.calls.length),callsBefore);
+});
+
+test('owned inventory refreshes, survives reopening and never spends AI or coins while browsing',async t=>{
+ const p=await setup(t);await start(p);
+ await p.evaluate(()=>{window.hostTest.state.save.status.collectibles={'ember-horns':1,'frost-crown':1};localStorage.setItem('test-host',JSON.stringify(window.hostTest.state));});
+ await p.locator('#refresh').click();await idle(p);
+ const before=await p.evaluate(()=>JSON.stringify(window.hostTest.state));
+ const callsBefore=await p.evaluate(()=>window.hostTest.calls.length);
+ await p.locator('#open-inventory').click();assert.equal(await p.locator('[data-item]').count(),2);
+ await p.locator('[data-item="frost-crown"]').click();assert.equal(await p.locator('#item-detail-owned').innerText(),'Owned');
+ await p.locator('#close-item-detail').click();await p.locator('#item-owned').selectOption('missing');assert.equal(await p.locator('[data-item]').count(),22);
+ await p.locator('#close-items').click();
+ assert.equal(await p.evaluate(()=>JSON.stringify(window.hostTest.state)),before);assert.equal(await p.evaluate(()=>window.hostTest.calls.length),callsBefore);
+ await p.reload();await idle(p);await p.setViewportSize({width:360,height:740});await p.locator('#language').selectOption('ko');await idle(p);
+ await p.locator('#open-inventory').click();assert.equal(await p.locator('[data-item]').count(),2);
+ assert.match(await p.locator('#item-count').innerText(),/보유 2종/);assert.equal(await p.locator('#item-catalog').evaluate(e=>e.scrollWidth<=e.clientWidth+1),true);
+ if(process.env.ANNA_INVENTORY_CAPTURE)await p.screenshot({path:process.env.ANNA_INVENTORY_CAPTURE});
+ await p.locator('#close-items').click();
+ await p.evaluate(()=>{window.hostTest.state.save.status.collectibles={};localStorage.setItem('test-host',JSON.stringify(window.hostTest.state));});
+ await p.locator('#refresh').click();await idle(p);await p.locator('#open-inventory').click();assert.equal(await p.locator('[data-item]').count(),0);assert.equal(await p.locator('#item-empty').isVisible(),true);
 });
 
 test('Korean item book fits a narrow screen and distinguishes body requirements from surrounding effects',async t=>{
@@ -916,7 +936,7 @@ test('changing companion or portrait refreshes the dungeon silhouette without ga
 
 
 test('paid checkpoint stops, resumes after reload and accepts an explicit route before next paid stage',async t=>{
- const p=await setup(t,{walkOutcome:'quiet',stageChoices:true});await start(p);await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
+ const p=await setup(t,{walkOutcome:'quiet',stageChoices:true,collectionReward:'ember-horns'});await start(p);await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
  await p.locator('[data-dungeon="hellgate"]').click();await p.locator('#dungeon-enter').click();await idle(p);
  await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.phase==='choice',null,{timeout:20000});
  const camera=await p.locator('#dungeon-map').getAttribute('data-camera');
@@ -936,6 +956,9 @@ test('paid checkpoint stops, resumes after reload and accepts an explicit route 
  assert.equal(await p.locator('#dungeon-risk').isVisible(),true);
  if(process.env.ANNA_STAGE_CAPTURE)await p.locator('#dungeon-dialog').screenshot({path:process.env.ANNA_STAGE_CAPTURE.replace('.png','-mobile.png')});
  await p.locator('#dungeon-risk').click();await idle(p);assert.equal((await calls(p,'dungeon_risk')).length,1);
+ await p.locator('#dungeon-enter').click();await idle(p);await p.locator('#dungeon-safe').click();await idle(p);
+ assert.match(await p.locator('#dungeon-result').innerText(),/Collected: Ember Horns/);
+ await p.locator('#dungeon-close').click();await p.locator('#open-inventory').click();assert.equal(await p.locator('[data-item="ember-horns"][data-owned="true"]').count(),1);
 });
 
 test('expansion art loads distinct previews and transparent three-pose bosses without game or AI requests',async t=>{

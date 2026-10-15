@@ -1,4 +1,4 @@
-// Catalog definitions only. Acquisition and equipment are not enabled in this release.
+// Cosmetic catalog. Regional rewards are granted by the game engine; equipment is deferred.
 export const regions=['common','hellgate','icekingdom','dreamforest','sunkenpalace','clockworkcity'];
 export const slots=['head','neck','back','aura'];
 const item=(id,region,slot,name,description,rarity='standard',reward='regional')=>({id,region,slot,name,description,rarity,reward,icon:`assets/items-v1/${id}.png`});

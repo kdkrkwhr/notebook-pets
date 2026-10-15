@@ -1,3 +1,7 @@
+# Item rewards · 1.2.0 / tool 0.8.0
+
+Final guardian wins now award one unowned regional cosmetic, with three standard items before the rare fourth reward. Intermediate rooms, defeat and replay do not grant extra items. Coins and stage charges remain unchanged. See [item contract](ITEMS.md). Earlier sections below describe the implementation at each release.
+
 # Five regions · 1.1.1 / tool 0.7.0
 
 1.1.1은 신규 두 지역의 발견 카드에 전용 환경 그림을, 최종 전투에 전용 보스의 대기·공격 준비·공격 자세를 연결한다. 실제 이동은 다섯 지역 모두 기존 방·복도와 경로 선택 맵을 사용한다. 새 배경 그림을 이동 가능한 타일맵으로 사용하지 않는다. 아트는 개발 중 내장 이미지 생성 도구로 제작해 앱에 포함하며, 플레이할 때 AI를 호출하지 않는다. [아트와 프롬프트](../../assets/dungeons-v2/EXPANSION_111.md), [1.1.1 배포 기록](../releases/RELEASE_111.md).

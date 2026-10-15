@@ -45,6 +45,24 @@ personal = worker({'command':'personality','profile':json.dumps(profile),
 assert personal['view']['status']['personality']['origin'] == profile
 assert personal['state']['xp'] == cared['state']['xp']
 
+# Exercise the copied collectibles module in the actual standalone worker.
+from datetime import datetime, timedelta, timezone
+import time
+reward_state = personal['state']
+reward_state['training_bonus'] = {'atk':1000, 'def':1000, 'hp':1000}
+reward_state['dungeons'] = {'date':datetime.now(timezone(timedelta(hours=9))).date().isoformat(),
+    'discovered':['hellgate'], 'cleared':[], 'misses':0, 'last_run':None,
+    'expires_at':{'hellgate':time.time()+86400}}
+entry = worker({'command':'explore_hellgate','state':reward_state,'request_id':'build-entry'})
+entry['state']['dungeons']['expedition'].update(index=entry['result']['dungeon_visit']['room_count']-1,event='fork')
+reward = worker({'command':'dungeon_safe','state':entry['state'],
+    'choice_id':entry['result']['dungeon_visit']['choice_id'],'request_id':'build-reward'})
+assert reward['result']['dungeon_run']['item_awarded'] == 'ember-horns'
+assert reward['view']['status']['collectibles'] == {'ember-horns':1}
+replay = worker({'command':'dungeon_safe','state':reward['state'],
+    'choice_id':entry['result']['dungeon_visit']['choice_id'],'request_id':'build-reward'})
+assert replay['state'] == reward['state']
+
 protocol = subprocess.run([str(binary)], input='\n'.join(json.dumps({'jsonrpc':'2.0','id':i,'method':method}) for i,method in [(1,'initialize'),(2,'describe')])+'\n',
                           capture_output=True, text=True, encoding='utf-8', timeout=30, check=True)
 frames = [json.loads(line) for line in protocol.stdout.splitlines()]

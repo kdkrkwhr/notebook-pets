@@ -7,12 +7,69 @@ from unittest.mock import patch
 import test_p0
 import engine
 import dungeons
+import collectibles
 
 
 class DungeonTests(unittest.TestCase):
     setUp = test_p0.RuntimeTests.setUp
     seed = test_p0.RuntimeTests.seed
     parallel = test_p0.RuntimeTests.parallel
+
+    def final_stage(self, key='hellgate'):
+        self.opened(training_bonus={'atk':1000,'def':1000,'hp':1000})
+        ex=self.enter(key)
+        st=engine.load_state('123')
+        ex.update(index=ex['room_count']-1,event='fork')
+        st['dungeons']['expedition']=ex
+        engine.save_state(st)
+        return ex
+
+    def test_collectibles_old_save_read_only_and_final_reward_retry(self):
+        self.seed()
+        before=(self.state/'123.json').read_bytes()
+        self.assertEqual(engine.execute('123','status')['collectibles'],{})
+        self.assertEqual((self.state/'123.json').read_bytes(),before)
+        ex=self.final_stage()
+        run=self.choose(ex)
+        self.assertTrue(run['complete'])
+        self.assertEqual(run['item_awarded'],'ember-horns')
+        before=copy.deepcopy(engine.load_state('123'))
+        self.assertEqual(self.choose(ex),run)
+        self.assertEqual(engine.load_state('123'),before)
+        self.assertEqual(engine.execute('123','status')['collectibles'],{'ember-horns':1})
+
+    def test_all_regions_award_standard_then_rare_and_stop_without_duplicates(self):
+        for region,rewards in collectibles.REWARDS.items():
+            ex=self.final_stage(region)
+            for index in range(6):
+                if index:
+                    st=engine.load_state('123')
+                    st['dungeons']['cleared']=[]
+                    st['dungeons']['discovered']=[region]
+                    st['dungeons']['expires_at']={region:engine.time.time()+86400}
+                    st['dungeons']['expedition']=copy.deepcopy(ex)
+                    st['dungeons']['expedition']['choice_id']=f'{index:032x}'
+                    engine.save_state(st)
+                current=engine.execute('123','status')['dungeons']['expedition']
+                run=self.choose(current,request=f'{region}-{index}')
+                self.assertEqual(run['item_awarded'],rewards[index] if index<4 else None)
+                self.assertEqual(engine.execute('123','status')['collectibles'],dict.fromkeys(rewards[:min(index+1,4)],1))
+                collectibles.validate(engine.load_state('123'))
+
+    def test_parallel_final_choices_award_one_item_only(self):
+        ex=self.final_stage()
+        results=self.parallel([['engine/engine.py','123','dungeon_safe',ex['choice_id']] for _ in range(4)])
+        self.assertEqual(sum(r['ok'] for r in results),1)
+        self.assertEqual(engine.execute('123','status')['collectibles'],{'ember-horns':1})
+
+    def test_invalid_ownership_is_rejected_and_partial_or_lost_stages_award_nothing(self):
+        for value in ([],{'unknown':1},{'ember-horns':True},{'ember-horns':2},{'ember-horns':0}):
+            with self.assertRaises(ValueError):collectibles.validate({'collectibles':value})
+        self.opened(training_bonus={'atk':1000,'def':1000,'hp':1000})
+        ex=self.enter();run=self.choose(ex)
+        self.assertFalse(run['complete'])
+        self.assertNotIn('item_awarded',run)
+        self.assertEqual(engine.execute('123','status')['collectibles'],{})
 
     def opened(self, **changes):
         return self.seed(dungeons={'date': engine.today(), 'discovered': list(dungeons.CATALOG),

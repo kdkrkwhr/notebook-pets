@@ -190,6 +190,9 @@ def validate_stage(run):
     ensure(run['choice'] in ('safe', 'risk'))
     ensure(run['outcome'] in ('win', 'lose', 'draw'))
     ensure(run['complete'] == (room['kind'] == 'boss' and run['outcome'] == 'win'))
+    if 'item_awarded' in run:
+        import collectibles
+        ensure(run['complete'] and (run['item_awarded'] is None or run['item_awarded'] in collectibles.REWARDS[run['dungeon_id']]))
     ensure(run['coins_awarded'] == (REWARD if run['complete'] else 0) + run['route_coins'])
     ensure(type(run['route_coins']) is int and run['route_coins'] in (0, 2))
     ensure(not run['route_coins'] or run['choice'] == 'risk')

@@ -6,6 +6,26 @@ from receipts import prefix, byte_size, MAX_SAVE_BYTES
 
 
 class DungeonStorageTests(unittest.IsolatedAsyncioTestCase):
+    async def test_final_reward_is_atomic_replayed_and_private(self):
+        first=await self.client.invoke({'command':'explore_hellgate','request_id':'entry'})
+        ex=self.storage.value['dungeons']['expedition']
+        ex.update(index=ex['room_count']-1,event='fork')
+        request={'command':'dungeon_safe','choice_id':ex['choice_id'],'request_id':'final'}
+        before=copy.deepcopy(self.storage.document)
+        self.storage.fail=True
+        with self.assertRaises(Exception):await self.client.invoke(request)
+        self.assertEqual(self.storage.document,before)
+        self.storage.fail=False
+        result=await self.client.invoke(request)
+        self.assertEqual(result['dungeon_run']['item_awarded'],'ember-horns')
+        self.assertEqual(result['status']['collectibles'],{'ember-horns':1})
+        before=copy.deepcopy(self.storage.document)
+        replay=await GameClient(self.storage).invoke(request)
+        self.assertEqual(replay['dungeon_run'],result['dungeon_run'])
+        self.assertEqual(self.storage.document,before)
+        self.assertEqual((await GameClient(MemoryAPS()).invoke({'command':'start','name':'Other','request_id':'other'}))['status']['collectibles'],{})
+        self.assertLess(byte_size(self.storage.document),MAX_SAVE_BYTES)
+
     async def asyncSetUp(self):
         self.storage = MemoryAPS()
         self.client = GameClient(self.storage)

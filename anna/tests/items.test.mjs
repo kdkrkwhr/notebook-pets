@@ -28,3 +28,13 @@ test('region, slot and localized text filters combine without changing the catal
  assert.deepEqual(selectItems({region:'nonexistent'}),[]);
  assert.equal(JSON.stringify(items),before);
 });
+
+test('server reward IDs cover precisely the 20 regional cosmetics in standard then rare order',async()=>{
+ const {execFileSync}=await import('node:child_process');
+ const rewards=JSON.parse(execFileSync('python',['-B','-X','utf8','-c','import sys,json;sys.path.insert(0,"../engine");from collectibles import REWARDS;print(json.dumps(REWARDS))'],{encoding:'utf8'}));
+ for(const [region,ids] of Object.entries(rewards)){
+  assert.equal(ids.length,4);assert.deepEqual(new Set(ids),new Set(items.filter(i=>i.region===region).map(i=>i.id)));
+  assert.ok(ids.slice(0,3).every(id=>items.find(i=>i.id===id).rarity==='standard'));
+  assert.equal(items.find(i=>i.id===ids[3]).rarity,'rare');
+ }
+});

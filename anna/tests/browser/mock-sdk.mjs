@@ -60,7 +60,7 @@ const runtime={
       const complete=ex.index===2,coins=complete?10:0;
       const run={...combat,id:'fixture-run',format:'stage-v1',dungeon_id:ex.dungeon_id,choice:a.command.slice(8),event:ex.event,trap_damage:0,route_coins:0,coins_awarded:coins,complete,room_count:3,rooms:[{index:ex.index,kind:complete?'boss':'battle',enemy:complete?'guardian':ex.index?'bat':'slime',start_hp:12,combat}]};
       d.last_run=run;d.coins+=coins;d.expedition=complete?{}:{...ex,index:ex.index+1,phase:'next'};extra.dungeon_run=run;
-      if(complete)d.entries.find(e=>e.id===ex.dungeon_id).discovered=false;
+      if(complete){d.entries.find(e=>e.id===ex.dungeon_id).discovered=false;if(faults.collectionReward){run.item_awarded=faults.collectionReward;state.save.status.collectibles??={};state.save.status.collectibles[faults.collectionReward]=1;}}
      }
     }
     if(!faults.stageChoices&&a.command.startsWith('explore_')){
