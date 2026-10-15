@@ -12,6 +12,7 @@
 | 시작 그림과 성장 그림 | [STARTER_ART.md](STARTER_ART.md) |
 | 다섯 던전과 픽셀 탐험 | [DUNGEONS.md](DUNGEONS.md) |
 | 24종 아이템 도감·착용 계획 | [ITEMS.md](ITEMS.md) |
+| 나만의 홈·성격 기반 AI 꾸미기 기획 (1.4.x 이내 목표) | [HOME_DECORATION.md](HOME_DECORATION.md) |
 | 새로 시작·삭제 후 다시 시작 | [RESET.md](RESET.md) |
 | 개인정보 삭제 계약 | [DATA_REMOVAL.md](DATA_REMOVAL.md) |
 | 저장·요청 재시도 계약 | [STORAGE_POLICY.md](STORAGE_POLICY.md) |
