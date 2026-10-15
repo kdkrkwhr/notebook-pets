@@ -6,6 +6,7 @@ Anna 테스트 앱 배포별 기록이다. 최신이 위에 온다.
 
 | 버전 | 날짜 | 요약 |
 | --- | --- | --- |
+| [1.1.0 · Sunken Palace and Forgotten Clockwork City](RELEASE_110.md) | 2026-10-15 | App **1.1.0**, game tool **0.7.0**. Two new dungeon regions with procedural art; owner draft installed, review candidate 1.0.0 untouched, `apps cut` pending. |
 | [1.0.0 · 2.5D dungeon companion](RELEASE_100.md) | 2026-10-14 | App **1.0.0**, unchanged game tool **0.6.0**. The owner asked to number the app as 1.x from now on; 1.0.0 cont… |
 | [0.10.1 · Item book after meeting, art choice layout, dungeon scene fix](RELEASE_0101.md) | 2026-10-14 | App **0.10.1**, unchanged game tool **0.6.0**. Owner test deployment was verified on **2026-10-14 KST**. The s… |
 | [0.10.0 · JRPG notebook theme](RELEASE_0100.md) | 2026-10-14 | App **0.10.0**, unchanged game tool **0.6.0**. Phase 1 of the UI/UX overhaul: a warm notebook palette with JRP… |

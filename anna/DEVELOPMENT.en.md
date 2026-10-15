@@ -2,7 +2,7 @@
 
 [Back to the user guide](README.en.md) · [한국어](DEVELOPMENT.md)
 
-The current owner test app is **1.0.0**, with game tool **0.6.0**. The review candidate is **1.0.0**. See the [latest deployment record](releases/RELEASE_100.md).
+The current owner test app is **1.1.0** (installed working draft, no immutable version yet), with game tool **0.7.0**. The review candidate is **1.0.0**. See the [latest deployment record](releases/RELEASE_110.md).
 
 ## Development
 
