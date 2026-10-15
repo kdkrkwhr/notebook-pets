@@ -1,5 +1,7 @@
 # Anna 작업 인계
 
+웹 트랙 추가(2026-10-15): `main`/`release-web`에 [GitHub Pages 웹 프리뷰](../web/README.md)를 구현했다. Anna 소스·게임 도구는 변경하지 않아 재배포하지 않았으며, 마지막 확인된 Anna 앱 1.2.1 / 도구 0.8.1 / working revision 53은 아래 기록을 따른다. Pages 배포 결과는 [웹 릴리즈 기록](../web/RELEASE.md)에 별도 기록한다.
+
 [사용 안내](README.md) · [개발·배포](DEVELOPMENT.md) · [이전 인계 이력](HANDOFF_HISTORY.md)
 
 ## 현재 상태 (2026-10-15 기준)

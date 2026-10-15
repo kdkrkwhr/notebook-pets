@@ -1,5 +1,7 @@
 # 공통 코어와 플랫폼 확장
 
+> 웹 후속 구현: [GitHub Pages 프리뷰](../web/README.md). `release-web`에서 정적 배포하며, Pyodide module worker·IndexedDB revision/CAS·JSON 백업·Gemini BYOK 단일 턴 대화를 제공한다. 아래의 1단계 설명은 당시 완료 범위이며 현재 웹 구현 범위/제한은 웹 안내를 따른다.
+
 2026-10-15 사용자 선언을 기준으로 한다. 노트버디는 JRPG 노트 테마의 AI 펫 육성·던전 게임이며, Python 규칙 엔진이 재화·능력치·타이머·전투·보상을 결정한다. LLM은 페르소나와 표현을 담당하며 임의로 게임 상태를 변경하지 않는다.
 
 ## 소스와 배포 트랙

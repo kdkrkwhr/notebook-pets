@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>노트버디 · 모험 공책</title><link rel="stylesheet" href="./style.css"></head>
+<body><main><header><small>NOTEBUDDY / WEB PREVIEW</small><h1>나의 모험 공책</h1><p>작은 친구와 함께 쓰는 오늘의 이야기</p></header>
+<p id="notice" role="status">게임 엔진을 준비하고 있습니다…</p>
+<section><h2 id="pet-name">아직 비어 있는 첫 페이지</h2><p id="summary">친구에게 이름을 지어 주세요.</p><form id="birth"><label>친구 이름 <input id="name" maxlength="80" value="노트버디" required></label><button>첫 만남</button></form><div id="actions"></div><div id="choices"></div><p id="result" aria-live="polite"></p></section>
+<section><h2>성장 기록</h2><pre id="details">아직 기록이 없습니다.</pre></section>
+<section><h2>친구와 대화</h2><p>개인 API 키로 Gemini에 직접 요청합니다. 입력한 대화와 펫 정보가 제공자에게 전송됩니다. API 이용료는 키 소유자에게 부과될 수 있습니다.</p><label>Gemini API 키 <input id="key" type="password" autocomplete="off" placeholder="이 탭에서만 사용"></label><label>모델 <input id="model" value="gemini-2.5-flash" maxlength="100"></label><form id="chat"><label>할 말 <input id="message" maxlength="2000" required></label><button>말 걸기</button></form><p id="reply" aria-live="polite"></p><button id="forget">키 지우기</button></section>
+<section><h2>공책 보관</h2><p>이 브라우저에만 저장됩니다. 브라우저 데이터를 삭제하기 전에 백업해 주세요. 다른 기기로 자동 동기화되지 않습니다.</p><button id="export">백업 내려받기</button><label>백업 가져오기 <input id="import" type="file" accept="application/json,.json"></label><p>가져오기는 이름과 레벨을 확인한 뒤 현재 공책을 교체합니다. API 키는 백업에 포함되지 않습니다.</p></section>
+<footer>Python 규칙 엔진 · 기기 내 저장 · AI 없이도 플레이 가능</footer></main><script type="module" src="./app.js"></script></body></html>
