@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>집과 마당 · 움직임 미리보기</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div><span class="eyebrow">NOTEBOOK PETS · VISUAL STUDY 01</span><h1>집과 마당</h1></div>
+    <p>친구가 머무는 작은 세계</p>
+    <span class="preview">움직임 미리보기</span>
+  </header>
+  <main>
+    <canvas id="world" aria-label="친구가 자동으로 집과 마당을 오가는 픽셀 장면"></canvas>
+    <div class="place"><span class="dot"></span><span id="place">햇살 드는 마당</span></div>
+    <div class="camera" aria-label="화면 확대 축소"><button id="zoom-out" aria-label="축소">−</button><output id="zoom">3×</output><button id="zoom-in" aria-label="확대">+</button></div>
+    <div id="loading" role="status">집과 친구를 준비하고 있어요…</div>
+    <div class="caption"><span id="activity" role="status">마당을 둘러보고 있어요</span><small id="detail">집 안팎을 자동으로 오가요</small></div>
+  </main>
+  <footer>
+    <div class="controls"><button id="pause">잠깐 멈추기</button><button id="yard">마당부터 보기</button><button id="inside">집 안 보기</button></div>
+    <label><input id="guides" type="checkbox"> 발밑·가림 기준 보기</label>
+    <small>예시 친구로 보는 시제품 · 기존 친구와 저장 데이터는 바뀌지 않아요</small>
+  </footer>
+  <script type="module" src="scene.mjs"></script>
+</body>
+</html>
