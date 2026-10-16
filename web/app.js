@@ -119,7 +119,7 @@ async function refresh(keepKey=false){
   const labels={hp:'체력',atk:'공격',def:'방어',spd:'속도',feed:'밥 주기',play:'놀기',train:'훈련',walk:'산책',battle:'배틀',attendance:'출석'};
   const stats=Object.entries(current.stats??{}).map(([k,v])=>`${labels[k]??k} ${v}`).join(' · ');
   const tasks=(current.quest?.tasks??[]).map(t=>`${labels[t.command]??t.command} ${t.progress}/${t.target}`).join('\n');
-  text('stats',stats);text('quest-date',current.quest.date);$('quests').replaceChildren();
+  text('stats',`${stats} · 일반 전투 ${current.record?.win??0}승 ${current.record?.lose??0}패 ${current.record?.draw??0}무`);text('quest-date',current.quest.date);$('quests').replaceChildren();
   for(const task of current.quest.tasks){const li=document.createElement('li');li.className=task.complete?'done':'';li.textContent=`${task.complete?'✓':'○'} ${task.label??labels[task.command]??task.command} · ${task.progress} / ${task.target}`;$('quests').append(li);}
   text('quest-reward',current.quest.claimed?'오늘의 보상을 받았어요.':`보상 · 경험치 ${current.quest.reward.xp} · 희귀 사료 ${current.quest.reward.rare_feed}`);
   const album=(await calculate(saved.state,'album')).result.album;

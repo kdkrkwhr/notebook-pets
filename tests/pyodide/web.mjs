@@ -23,6 +23,15 @@ try{
  await page.screenshot({path:path.join(shots,'welcome-desktop.png')});
  await page.locator('#name').fill('웹 테스트');await page.locator('#birth button').click();await page.waitForFunction(()=>document.querySelector('#pet-name').textContent==='웹 테스트');
  await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);
+ assert(await page.locator('#dungeon-section').isVisible());
+ assert.match(await page.locator('#stats').innerText(),/일반 전투 0승 0패 0무/);
+ assert.match(await page.locator('[data-i18n="battleRecordHelp"]').innerText(),/던전 결과는 포함하지 않아요/);
+ const guidanceBefore=await page.evaluate(async()=>{const m=await import('./store.js');return m.snapshot(await m.openStore());});
+ await page.locator('#dungeon-section summary').click();
+ assert.match(await page.locator('[data-i18n="dungeonRegionsHelp"]').innerText(),/다섯 지역/);
+ assert.match(await page.locator('#dungeon-section [data-i18n="dungeonDate"]').innerText(),/자동 교체나 시간 초기화는 없으며/);
+ assert.deepEqual(await page.evaluate(async()=>{const m=await import('./store.js');return m.snapshot(await m.openStore());}),guidanceBefore);
+
  await page.waitForFunction(()=>document.querySelector('#pet-image').naturalWidth>0);assert.equal(await page.locator('#album .album-item').count(),4);await page.waitForFunction(()=>document.querySelector('.brand img').naturalWidth>0);await page.screenshot({path:path.join(shots,'game-desktop.png'),fullPage:true});
  await page.getByRole('button',{name:'아이템 둘러보기',exact:true}).click();assert.equal(await page.locator('.item-card').count(),24);await page.locator('#close-items').click();
  await page.getByRole('button',{name:'밥 주기',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#details').textContent.includes('경험치 10'));
