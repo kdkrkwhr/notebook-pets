@@ -25,3 +25,9 @@
 Anna 소스 `4f9257e`, 웹 소스 `e7d015d`. JS 89·브라우저 103·strict 및 로컬 웹 기본/저장/백업·홈/던전·테마 검사가 통과했다. 안내 확인 중 저장 스냅샷 동일·AI 요청 0회를 확인했다. [Pages 배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38886276977) 성공 후 실제 공개 URL의 HTML·공통 모듈 빌드 일치, 1120/360px·입장 설명·저장 보존·AI 0회·페이지 오류 0을 확인했다. release와 release-web의 Windows/Linux/Pyodide 공통 CI도 성공했다.
 
 **Anna 테스트 배포 완료:** 사용자 로그인 승인 후 **working revision 60 / 소유자 초안 `0.0.0-draft`**을 설치했다. 앱 버전·심사 후보 **1.4.5 / ID 1417 / pending_review**와 공유 소개·스크린샷을 유지했다. 새 cut은 없으며 `dirty_vs_latest_cut=true`다. 도구 **0.9.1 / Executa 760** 재사용, 설치 응답 `already_satisfied`, 실제 클라우드 manifest 0.9.1/running을 확인했다. 공식 WM/호스트 브리지로 설치 번들을 실행해 Connected·한영 안내·360px·기존 지옥문 선택 보존, 코드 3개 HTTP 200/해시 일치와 HTML 소스/DOM을 확인했다. 앱 저장 4종 값/ETag와 게임 inspect 응답은 작업 전후 동일하고 AI 호출은 0이다. 일반 대시보드의 쿠키 로그인/사용자 브라우저 재접속은 별도 확인 범위다. [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38886273836)도 통과했다. 상세 검증 범위는 [현재 인계](../HANDOFF.md)를 따른다.
+
+## 후속: Anna에서 가구 구매 버튼이 반응하지 않던 문제 (2026-10-16, 버전 유지)
+
+기존 `window.confirm()`이 Anna iframe의 `allow-modals` 없는 sandbox에서 차단돼 구매가 즉시 취소됐다. 앱 내부 확인 dialog로 교체해 가구명·가격·보관함·명시적 ‘꾸며 줘’ 흐름을 안내하고 취소/Esc를 지원한다. 권한·게임 규칙·가격·AI 호출 조건은 변경하지 않았다. 구매만으로 자동 배치하거나 AI를 호출하지 않는다.
+
+소스 `29ac4cc`, **working revision 61 / 소유자 초안 `0.0.0-draft`** 설치 완료. 도구 0.9.1/Executa 760 재사용, 버전·심사 후보 1.4.5/ID 1417·공유 소개 유지. JS 89·브라우저 104·strict 통과. 같은 sandbox와 실제 Python 코어로 구매·잔액·소유·배치 불변·취소·응답 유실 재시도의 중복 차감 방지를 확인했다. 실제 설치 번들에서는 한영·모바일 확인창·취소/Esc·코드 일치를 검증하고 사용자 코인은 쓰지 않았다. 저장 4종 값/ETag 및 게임 inspect 동일, AI 0회. 웹 0.4.2 유지, 소스 `c8c5457`의 [Pages 배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38889927900) 완료. 실제 공개 URL의 격리 공책에서 구매·코인 100→90·소유·배치 불변·취소/Esc·360px·코드 바이트 일치·AI 0회를 확인했다. release와 release-web의 공통 Windows/Linux/Pyodide CI도 통과했다. 상세 결과는 [현재 인계](../HANDOFF.md)를 따른다.
