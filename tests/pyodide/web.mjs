@@ -1,3 +1,4 @@
+import {execFileSync} from 'node:child_process';
 import assert from 'node:assert/strict';
 import {readFile,mkdir} from 'node:fs/promises';
 import {createServer} from 'node:http';
@@ -90,3 +91,7 @@ try{
  const bornAgain=await page.evaluate(async()=>{const m=await import('./store.js');return m.load(await m.openStore());});assert.notEqual(bornAgain.state.pet_id,stale.state.pet_id);assert.equal(bornAgain.state.xp,0);assert.deepEqual(errors,[]);
  console.log(JSON.stringify({url:base,pyodideWorker:true,persistence:true,cas:true,backup:true,byokMock:true,noKeyPersistence:true,reset:true,staleResetBlocked:true,restart:true,errors}));
 }finally{if(browser)await browser.close();await new Promise(r=>server.close(r));}
+
+// Keep provider coverage in the existing Pages check entry point.
+execFileSync(process.execPath,['--test',fileURLToPath(new URL('./local-ai.test.mjs',import.meta.url))],{stdio:'inherit'});
+await import('./web-local-ai.mjs');

@@ -7,7 +7,7 @@ import hashlib
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'web' / 'dist'
 OUT.mkdir(exist_ok=True)
-for name in ('app.js', 'store.js', 'worker.js', 'style.css', 'models.js', 'visuals.js', 'gemini.js'):
+for name in ('app.js', 'store.js', 'worker.js', 'style.css', 'models.js', 'visuals.js', 'gemini.js', 'local-ai.js', 'ai.js', 'ai-settings.js', 'LOCAL_AI.md'):
     shutil.copyfile(ROOT / 'web' / name, OUT / name)
 anna = ROOT / 'anna' / 'bundle'
 shared_html = (anna / 'index.html').read_text(encoding='utf-8')

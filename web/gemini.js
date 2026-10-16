@@ -4,12 +4,13 @@ export async function dataURL(blob){
 }
 export function createGemini(settings){
   const controllers=new Set(),urls=new Set();let closed=false;
-  async function request(model,body,timeout){
+  async function request(model,body,timeout,signal){
     if(closed)throw Error('Companion changed');
     const key=settings().key;
     if(!key)throw Error('설정에서 Gemini API 키를 입력해 주세요.');
     if(!/^gemini-[a-zA-Z0-9._-]{1,100}$/.test(model))throw Error('모델 이름을 확인해 주세요.');
     const controller=new AbortController();controllers.add(controller);
+    const abort=()=>controller.abort();if(signal?.aborted)controller.abort();signal?.addEventListener('abort',abort,{once:true});
     const timer=setTimeout(()=>controller.abort(),timeout);
     try{
       const response=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,{
@@ -17,18 +18,18 @@ export function createGemini(settings){
       });
       if(!response.ok)throw Error(`AI 요청 실패 (${response.status}). 키·모델·할당량을 확인해 주세요.`);
       const result=await response.json();if(closed)throw Error('Companion changed');return result;
-    }finally{clearTimeout(timer);controllers.delete(controller);}
+    }finally{clearTimeout(timer);controllers.delete(controller);signal?.removeEventListener('abort',abort);}
   }
   return {
-    llm:{async complete(options){
+    llm:{async complete(options,{signal}={}){
       const result=await request(settings().model,{
         systemInstruction:{parts:[{text:options.systemPrompt}]},
-        contents:options.messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content.text}]})),
-        generationConfig:{maxOutputTokens:1024,temperature:options.temperature??.35,responseMimeType:'application/json'}
-      },60000);
+        contents:options.messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:typeof m.content==='string'?m.content:m.content.text}]})),
+        generationConfig:{maxOutputTokens:options.maxTokens??1024,temperature:options.temperature??.35,...(options.json===false?{}:{responseMimeType:'application/json'})}
+      },60000,signal);
       return {content:{text:result.candidates?.[0]?.content?.parts?.filter(p=>!p.thought).map(p=>p.text??'').join('')??''}};
     }},
-    image:{async generate(options){
+    image:{async generate(options,{signal}={}){
       const references=[];
       for(const url of options.reference_image_urls??[]){
         // References are local Blob URLs; never ask a provider to fetch private URLs.
@@ -39,7 +40,7 @@ export function createGemini(settings){
       const result=await request(settings().imageModel,{
         contents:[{role:'user',parts:[{text:options.prompt},...references]}],
         generationConfig:{responseModalities:['TEXT','IMAGE'],imageConfig:{aspectRatio:'1:1'}}
-      },240000);
+      },240000,signal);
       const part=result.candidates?.[0]?.content?.parts?.find(p=>!p.thought&&(p.inlineData||p.inline_data));
       const inline=part?.inlineData??part?.inline_data,mime=inline?.mimeType??inline?.mime_type;
       if(!inline?.data||!['image/png','image/jpeg','image/webp'].includes(mime)||inline.data.length>28000000)throw Error('이미지 응답이 없거나 너무 커요.');
