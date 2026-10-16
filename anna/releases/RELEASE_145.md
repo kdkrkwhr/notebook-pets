@@ -41,3 +41,13 @@ Anna 소스 `c8cf0de`를 working revision **62 / 0.0.0-draft**로 설치했고 �
 웹 **0.5.0** 소스 `73c3cbc`에 Git으로 통합했고 [Pages 배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38894499755)와 공통 CI 성공, 실제 공개 모듈·반응형·저장 불변을 확인했다. JS 91·strict 및 새 실패 회귀 검사 통과. [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38894333095)의 브라우저 105·저장/프로토콜·독립 패키지 검사와 공통 CI도 성공했다.
 
 dora의 기존 실패 원인과 실제 Anna 이미지 생성 성공은 아직 확인하지 못했다. 이번 변경으로 생성 오류가 해결됐다고 간주하지 않으며, Anna 측 요청 로그나 실패 출력이 필요하다. [상세 인계](../HANDOFF.md).
+
+## 2026-10-17 · 분리된 동작 부속 부위 판독 수정
+
+정상 4×4 시트의 떨어진 꼬리 끝·작은 장식을 추가 프레임으로 세어 거부하던 재현 오류를 수정했다. 16개 주요 몸체의 불균등 간격을 유지하면서 같은 프레임에만 귀속되는 가까운 작은 부위를 포함한다. 추가 큰 캐릭터·모호한 경계·잘림·누락·겹침·과도한 부위는 계속 거부한다. 원본 이미지 수정이나 AI 재생성은 하지 않는다. 이전 실패한 잎 장식 시트까지 포함해 동일한 실제 PNG 4종이 모두 수용됐다.
+
+Anna 소유자 초안 **1.4.5 소스 / revision 63 / 0.0.0-draft** 설치 완료, 소스 `a489aa1`. 실제 설치 모듈이 실패 시트를 16프레임으로 판독하며 원본 코드 해시가 로컬과 일치한다. 게임·앱 저장 4종 값/ETag·소개·심사 후보 보존, 추가 AI 0회. 도구 0.9.1 / Executa 760은 변경 없이 클라우드 loaded/running을 확인했다.
+
+로컬 **JS 91 / 브라우저 106 / strict**, 분리 부위 생성/저장 복구를 포함한 웹 통합 검사 통과. [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38927806778)와 [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38927806437)의 UI·브라우저·저장/프로토콜·패키지 검사 모두 성공했다. 웹 0.5.0을 유지한 채 [Pages 배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38928214360)를 완료했고 실제 공개 URL에서 로드된 모듈·실패 시트 판독·1120/360px·저장 불변·외부 요청/페이지 오류 0을 확인했다.
+
+**기존 심사 후보 1.4.5 / ID 1417은 교체하지 않았다.** dora 스크린샷의 이전 표시 문제와 분리 부위 판독 오류를 구분하며, 당시 실패 원인이나 원본 없는 실패 결과 복구를 증명하지 않는다. [상세 인계](../HANDOFF.md).
