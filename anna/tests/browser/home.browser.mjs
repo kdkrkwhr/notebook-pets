@@ -46,7 +46,9 @@ test('new artwork prepares movement once; home only offers save recovery and nev
  const {page,state}=await setup(t),before=structuredClone(state());page.on('dialog',d=>d.accept());
  await page.evaluate(()=>{
   const c=document.createElement('canvas');c.width=c.height=512;const ctx=c.getContext('2d');
-  for(let y=0;y<4;y++)for(let x=0;x<4;x++){ctx.fillStyle=['#ca682b','#864a30','#7c9957','#467c92'][y];ctx.fillRect(x*128+40,y*128+38,42+x*2,58);}
+  // Most poses have a detached tail tip: saving/recovery must retain it without
+  // mistaking it for another frame or requesting a replacement image.
+  for(let y=0;y<4;y++)for(let x=0;x<4;x++){ctx.fillStyle=['#ca682b','#864a30','#7c9957','#467c92'][y];ctx.fillRect(x*128+40,y*128+38,42+x*2,58);ctx.fillRect(x*128+88,y*128+60,14,14);}
   hostTest.faults.homeSpriteSheet=c.toDataURL();hostTest.faults.homeSpriteSave=true;
  });
  assert.equal(await page.locator('#home-sprite').count(),0);
