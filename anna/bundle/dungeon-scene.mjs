@@ -2,6 +2,7 @@ import {WORLD,THEMES,layout,worldPoint,routePoint,paintRoom} from './dungeon-map
 import {drawEnemy,BOSS_ART} from './dungeon-enemies.mjs';
 import {drawAvatar,facing,turnToward} from './dungeon-avatar.mjs';
 import {pixelCanvas} from './pixel-pet.mjs';
+import {readHomeSprite} from './home-sprite.mjs';
 import {journey,WALK_MS,ROUND_MS,EXIT_MS,REST_MS,totalDuration} from './dungeon-journey.mjs';
 export {WORLD,WALK_MS,ROUND_MS};
 export const routePosition=progress=>routePoint(progress);
@@ -17,7 +18,14 @@ export function paintDungeon(canvas,key){
  return asset(key).then(img=>{if(canvas.isConnected){c.drawImage(img,110,230,1340,754,0,0,480,270);canvas.dataset.art='ready';}}).catch(()=>{canvas.dataset.art='failed';});
 }
 export function createDungeonScene(canvas,explorer){
- const c=canvas.getContext('2d');let key='hellgate',atlas=null,ready=false,generation=0,portrait=null,terrain=null,terrainKey='',turn=1,turnAt=null;
+ const c=canvas.getContext('2d');let key='hellgate',atlas=null,ready=false,generation=0,portrait=null,sprite=null,terrain=null,terrainKey='',turn=1,turnAt=null;
+ async function loadCompanion(identity,sources){
+  if(identity.sprite){
+   try{const r=await fetch(identity.sprite,{cache:'no-store'});if(!r.ok)throw Error('Movement unavailable');return {sprite:await readHomeSprite(await r.blob()),portrait:null};}
+   catch{/* Fall back only to this companion's own portrait. No AI calls. */}
+  }
+  return {sprite:null,portrait:await loadPortrait(sources)};
+ }
  async function loadPortrait(sources){
   for(const src of new Set(sources.filter(Boolean))){
    // The home screen already shows these signed URLs without CORS; a cached copy fails a CORS read.
@@ -40,13 +48,13 @@ export function createDungeonScene(canvas,explorer){
  }
  return {
   async load(region,identity={}){
-   const ticket=++generation;ready=false;portrait=null;key=region;turnAt=null;explorer.hidden=true;canvas.dataset.art='loading';c.clearRect(0,0,canvas.width,canvas.height);
+   const ticket=++generation;ready=false;portrait=null;sprite=null;key=region;turnAt=null;explorer.hidden=true;canvas.dataset.art='loading';canvas.dataset.sprite='loading';c.clearRect(0,0,canvas.width,canvas.height);
    const sources=[explorer.src,identity.fallback];
    const spec=BOSS_ART[region];
-   try{const [original,currentPortrait]=await Promise.all([asset(spec.file),loadPortrait(sources)]);if(ticket!==generation)return false;atlas=document.createElement('canvas');atlas.width=84*spec.columns;atlas.height=(spec.rows||3)*spec.cellHeight;atlas.getContext('2d').drawImage(original,0,0,atlas.width,atlas.height);portrait=currentPortrait;ready=true;canvas.dataset.art='ready';return true;}
-   catch{if(ticket===generation)canvas.dataset.art='failed';return false;}
+   try{const [original,companion]=await Promise.all([asset(spec.file),loadCompanion(identity,sources)]);if(ticket!==generation)return false;atlas=document.createElement('canvas');atlas.width=84*spec.columns;atlas.height=(spec.rows||3)*spec.cellHeight;atlas.getContext('2d').drawImage(original,0,0,atlas.width,atlas.height);portrait=companion.portrait;sprite=companion.sprite;ready=true;canvas.dataset.art='ready';canvas.dataset.sprite=sprite?'home':'portrait';return true;}
+   catch{if(ticket===generation){canvas.dataset.art='failed';canvas.dataset.sprite='missing';}return false;}
   },
-  clear(){++generation;ready=false;portrait=null;explorer.removeAttribute('src');c.clearRect(0,0,canvas.width,canvas.height);canvas.dataset.art='empty';},
+  clear(){++generation;ready=false;portrait=null;sprite=null;explorer.removeAttribute('src');c.clearRect(0,0,canvas.width,canvas.height);canvas.dataset.art='empty';canvas.dataset.sprite='missing';},
   draw({elapsed=0,run=null,finished=false,reduced=false}={}){
    if(!ready)return;
    // The decoded portrait belongs to this load only; late/failed loads cannot reuse another pet.
@@ -70,7 +78,7 @@ export function createDungeonScene(canvas,explorer){
    let hx=hero[0],hy=hero[1];if(impact&&state.frame?.dodged_me&&!reduced)hy+=Math.sin((beat-.45)/.21*Math.PI)*25;
    const frame=walking&&!reduced?Math.floor(elapsed/140)%4:0;
    turn=turnToward(turn,direction,reduced||turnAt===null?Infinity:elapsed-turnAt);turnAt=elapsed;
-   drawAvatar(c,hx,hy,{portrait,direction,frame,walking:walking&&!reduced,turn,scale:2.1,hit:impact&&!state.frame?.dodged_me,fallen:finished&&run?.hp_me<=0});
+   drawAvatar(c,hx,hy,{sprite,portrait,direction,frame,walking:walking&&!reduced,turn,scale:2.1,hit:impact&&!state.frame?.dodged_me,fallen:finished&&run?.hp_me<=0});
    if(battle&&beat>.65&&beat<.9){c.strokeStyle='#ffedbd';c.lineWidth=4;c.beginPath();c.moveTo(hx+12,hy-35);c.lineTo(boss[0]-10,boss[1]-25);c.stroke();}
    if(battle&&beat>.55){
     const prev=state.turn?room.combat.turns[state.turn-1]:{hp_me:room.start_hp,hp_enemy:room.combat.max_hp_enemy};

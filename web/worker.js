@@ -3,8 +3,8 @@ let py;
 const ready=(async()=>{
   py=await loadPyodide({indexURL:'./pyodide/'});
   py.FS.mkdir('/core');
-  const modules=['engine','domain','ports','game_api','art','dungeons','collectibles','journeys','personality'];
-  async function get(url){const response=await fetch(url);if(!response.ok)throw Error(`불러오기 실패: ${url}`);return response.text();}
+  const modules=['engine','domain','ports','game_api','art','dungeons','collectibles','journeys','personality','home','home_world'];
+  async function get(url){const response=await fetch(url+new URL(import.meta.url).search);if(!response.ok)throw Error(`불러오기 실패: ${url}`);return response.text();}
   await Promise.all(modules.map(async name=>py.FS.writeFile(`/core/${name}.py`,await get(`./core/${name}.py`))));
   py.globals.set('rules_json',await get('./data/game_data.json'));
   py.globals.set('templates_json',await get('./data/image_prompts.json'));
@@ -19,7 +19,13 @@ def execute(raw):
     ids=iter(p['ids'])
     context=ExecutionContext(rules,templates,p['now'],random.Random(p['seed']),lambda:next(ids))
     r=transition(p['state'],p['command'],context,arguments=p['arguments'],request_id=p['requestId'])
-    return json.dumps(dict(result=r.result,state=r.state,changed=r.changed),ensure_ascii=False)
+    status=transition(r.state,'status',context).result
+    home=transition(r.state,'home',context).result if r.state else {}
+    album=transition(r.state,'album',context).result.get('album') if r.state else None
+    view=dict(r.result,status=status,home=home.get('home'),home_candidates=home.get('home_candidates'),album=album)
+    if r.state:
+        view.update(pet_id=r.state['pet_id'],stage=r.state['stage'],species_key=r.state['species'],element_key=r.state['element'])
+    return json.dumps(dict(result=r.result,state=r.state,changed=r.changed,view=view),ensure_ascii=False)
 `);
 })();
 self.onmessage=async({data})=>{

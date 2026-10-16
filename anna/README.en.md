@@ -10,9 +10,9 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-Owner test update **1.2.1** uses game tool **0.8.1**. The store candidate remains **1.0.0 pending review**, not publicly released.
+Owner test update **1.4.3** uses game tool **0.9.1**. The store candidate remains **1.0.0 pending review**, not publicly released.
 
-In 1.2.1, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common items, shops and equipment are deferred. Collection and browsing make no AI requests.
+Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
 ## Your first meeting
 
@@ -49,13 +49,13 @@ Everyday adventures and the five dungeon collections each offer one head, neck, 
   <img src="../docs/screenshots/items-catalog-112-ko.png" width="900" alt="All twenty-four items in the Korean item book; the same interface also supports English">
 </p>
 
-In 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common items, shops and equipment are deferred. Collection and browsing make no AI requests.
+In 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
 ## Return to your friend
 
 Growth, recent conversation and artwork are stored separately for each user. Resume a pending story with **Continue walk**. Reopening the app does not require creating your companion again.
 
-Chat, care reactions, personality, walk stories, drawing/photo analysis and new portraits use **the signed-in Anna account's AI allowance**. Random companions also use AI for initial personality creation. Browsing the book and converting a portrait to pixels make no additional AI calls. Existing companions without a personality can use **Meet your personality**.
+Chat, care reactions, personality, walk stories, drawing/photo analysis and new portraits use **the signed-in Anna account's AI allowance**. Random companions also use AI for initial personality and directional movement creation. Browsing the book and converting a portrait to pixels make no additional AI calls. Existing companions without a personality can use **Meet your personality**.
 
 Switching between English and Korean changes the interface and new replies while keeping names and previous conversations intact. To create a different companion, use **Start over** and confirm what will be deleted. Deleted companions and records cannot be recovered. [Privacy and data guide](PRIVACY.md)
 
@@ -66,3 +66,15 @@ Switching between English and Korean changes the interface and new replies while
 Screenshots show the real UI with separate test data. Mori is an actual Anna-generated result; the item book is from 1.1.2. [Screenshot sources](../docs/screenshots/README.md)
 
 <p align="center"><img src="../docs/screenshots/inventory-120-ko.png" width="280" alt="1.2.0 Korean inventory with isolated test ownership"></p>
+
+## My home
+
+Open **My home**, buy furniture with game coins, then choose **Decorate**. Your companion chooses among validated layouts using its saved personality and carries the furniture into place. One room includes a free resting nest and eleven purchasable objects; each request places at most three stored objects. Undo restores the previous layout while keeping your purchases.
+
+Decorate makes one bounded layout-selection request. Purchases, room visits, movement, idle life, undo and save-only retries use no AI. Room geometry, furniture and the companion are rendered separately.
+
+In **1.4.3**, the home becomes a large pixel garden and separate indoor room. Your friend automatically follows paths through the door, changes poses with direction, and passes behind objects. Follow the camera, zoom in or pause to watch. Furniture opens in a separate panel.
+
+New companions and newly saved portraits, including growth portraits, automatically prepare matching directional poses with one image AI request. Home and dungeons share that saved sheet. There is no separate create/remake button; a growth-stage number alone does not request new poses.
+
+A failed pose request leaves the companion and portrait intact and never retries AI automatically. If only saving failed, keep the page open and use **Retry saving movement** in My home; this uses no AI. Existing companions without poses get them with their next new portrait, while dungeons use their current portrait as a fallback. Equipment is not implemented yet; its final equipped portrait will use the same appearance-save flow.

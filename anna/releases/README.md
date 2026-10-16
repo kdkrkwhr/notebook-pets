@@ -6,6 +6,10 @@ Anna 테스트 앱 배포별 기록이다. 최신이 위에 온다.
 
 | 버전 | 날짜 | 요약 |
 | --- | --- | --- |
+| [1.4.3 · Shared movement](RELEASE_143.md) | 2026-10-16 | 수동 동작 생성 제거, 이미지 저장 시 한 번 준비, 홈·던전 동작 공유. ID 1413 / revision 57, 도구 0.9.1·심사 1.0.0 유지. |
+| [1.4.2 · Home & garden](RELEASE_142.md) | 2026-10-16 | 넓은 픽셀 홈, 개인 참조 스프라이트, 저장 재시도. 앱·클라우드 도구 0.9.1 실행 확인, PC 오프라인. 심사 1.0.0 유지. |
+| [1.4.1 · Home portrait recovery](RELEASE_141.md) | 2026-10-16 | 홈 초상화 로딩 중 닫기·재열기 후 이전 그림이 남는 오류 수정. ID 1408 / revision 55, 도구 0.9.0 유지, 심사 1.0.0 유지. |
+| [1.4.0 · My little home](RELEASE_140.md) | 2026-10-16 | Personality-based placement, 12 furniture assets, authoritative purchase/layout rules and local animation. App ID 1403 / revision 54 installed; PC/cloud tool 0.9.0 running. Two-platform CI passed; review 1.0.0 preserved. |
 | [1.2.1 · Portable core](RELEASE_121.md) | 2026-10-15 | Pure execution inputs, storage ports and fileless Anna worker. App 1.2.1 / ID 1402 / revision 53 installed; PC/cloud tool 0.8.1 running. Core/Pyodide/Anna CI passed. Review 1.0.0 preserved. |
 | [1.2.0 · Dungeon collection and inventory](RELEASE_120.md) | 2026-10-15 | Regional item rewards, owned/missing catalog and inventory. App 1.2.0 / ID 1400 / revision 52 installed; PC/cloud tool 0.8.0 running, Windows/Linux CI passed. Review 1.0.0 preserved. |
 | [1.1.2 · Expanded item catalog](RELEASE_112.md) | 2026-10-15 | 왕궁·태엽도시 아이템 8종 추가, 총 24종 도감. ID 1394 / revision 51 테스트 설치·실행 확인, 도구 0.7.0 유지. 수집·착용은 예정, 심사 1.0.0 유지. |

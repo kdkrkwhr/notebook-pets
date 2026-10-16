@@ -1,4 +1,5 @@
-// Animate the companion's actual pixel portrait; species alone cannot describe its appearance.
+import {drawHomeSprite} from './home-sprite.mjs';
+// Prefer the same directional poses used at home. The portrait is a legacy fallback.
 export const TURN_MS=180;
 export function facing(dx,dy){return Math.abs(dx)>Math.abs(dy)?dx<0?'left':'right':dy<0?'up':'down';}
 // -1 faces left, 1 faces right; values in between are the card mid-turn. Vertical travel keeps the last side.
@@ -20,7 +21,8 @@ function lit(portrait,side,edge,back){
  }
  b.globalCompositeOperation='source-over';return buffer;
 }
-export function drawAvatar(c,x,y,{portrait,direction='down',frame=0,scale=2,hit=false,fallen=false,turn=direction==='left'?-1:1,walking=frame>0}={}){
+export function drawAvatar(c,x,y,{sprite,portrait,direction='down',frame=0,scale=2,hit=false,fallen=false,turn=direction==='left'?-1:1,walking=frame>0}={}){
+ if(sprite){drawHomeSprite(c,sprite,x,y,{direction,frame:walking?[0,1,2,1][frame%4]:1,height:32*scale,hit,fallen});return;}
  if(!portrait)return;
  // A single portrait has no invented rear anatomy. Depth comes from turning, squash, lean, size and light only.
  const side=turn<0?-1:1,width=Math.max(.12,Math.abs(turn)),depth=direction==='up'?.92:direction==='down'?1.04:1;

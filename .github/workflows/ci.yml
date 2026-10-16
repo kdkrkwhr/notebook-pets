@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [release-web]
+    branches: [release-web, release]
   pull_request:
     branches: [release-web, release]
   workflow_dispatch:

@@ -14,6 +14,10 @@ LABELS = {
     '밥 주기': 'Feed', '훈련': 'Train', '산책': 'Walk',
 }
 ERRORS = {
+    'home_conflict':('The room changed. Refresh and request again.','방이 바뀌었어요. 확인 후 다시 요청해 주세요.'),
+    'home_owned':('You already own this furniture.','이미 가지고 있는 가구예요.'),
+    'home_coins':('Not enough coins. Earn more through adventures.','코인이 부족해요. 모험에서 코인을 모아 주세요.'),
+    'home_no_previous':('There is no previous layout to restore.','되돌릴 배치가 없어요.'),
     'walk_choice_pending': ('Finish your pending walk choice first.', '진행 중인 산책 선택을 먼저 마쳐 주세요.'),
     'walk_choice_stale': ('This choice has already ended. Refresh to check.', '이미 끝난 선택이에요. 새로고침해 확인해 주세요.'),
     'dungeon_locked': ('Discover this dungeon on a walk today first.', '산책으로 오늘의 던전을 먼저 발견해 주세요.'),
@@ -111,6 +115,9 @@ def localize(response, command, language='en'):
     value = copy.deepcopy(response)
     value['language'] = language
     value['msg'] = _message(value, command, language)
+    if language=='en':
+        for furniture in value.get('home',{}).get('catalog',[]):furniture['name']=furniture['en']
+        for candidate in value.get('home_candidates',[]):candidate['name']=candidate['en']
     if command == 'help':
         value['commands'] = [c for c in value.get('commands', []) if c not in {'rank', 'reset', 'owner', 'clearowner'}]
     if language == 'en':

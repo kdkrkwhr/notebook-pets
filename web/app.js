@@ -3,6 +3,11 @@ import {listModels} from './models.js';
 import {createTitleScreen} from './title-screen.mjs';
 import {createItemCatalog} from './item-catalog.mjs';
 import {translateDocument} from './i18n.mjs';
+import {createHome} from './home.mjs';
+import {createHomeSprite} from './home-sprite.mjs';
+import {createDungeons} from './dungeon.mjs';
+import {createVisuals,portraitPNG,exportNotebook,importVisuals} from './visuals.js';
+import {createGemini} from './gemini.js';
 const $=id=>document.getElementById(id);
 translateDocument(document,'ko');
 const titleScreen=createTitleScreen(document,{privacy:()=>$('backup-dialog').showModal()});
@@ -14,10 +19,34 @@ $('open-album').onclick=()=>catalog.open('album');
 for(const b of document.querySelectorAll('[data-prompt]'))b.onclick=()=>{$('message').value=b.dataset.prompt;$('message').focus();};
 const worker=new Worker('./worker.js',{type:'module'});
 const pending=new Map();let serial=0,db,busy=false,current,resetSnapshot=null,sessionPetId=null,chatController=null,modelController=null,sessionEpoch=0;
+let view=null,visuals=null,sprites=null,storeEpoch=null,selectedPortrait=null,previewURL='';
+const home=createHome({document,language:()=> 'ko',anna:()=>visuals.api,active:activeView,invoke:invokeHome,
+  saved:next=>{view=next;current=next.status;},locked:()=>busy,busy:lock,
+  sprite:()=>view&&visuals?.sprite(view),spritePending:()=>sprites?.hasPending()??false,retrySprite:()=>sprites?.retry()});
+const dungeons=createDungeons({document,language:()=> 'ko',view:()=>view,locked:()=>busy,
+  act:(command,args={})=>act(command,args.choice_id?[args.choice_id]:[]),pixelUrl:()=>'',
+  spriteUrl:()=>view&&visuals?.sprite(view),portraitUrl:()=>view&&visuals?.portrait(view)});
+const imageLabel=document.createElement('label');imageLabel.htmlFor='image-model';imageLabel.textContent='픽셀 동작 이미지 모델';
+const imageModel=document.createElement('input');imageModel.id='image-model';imageModel.value='gemini-2.5-flash-image';imageModel.maxLength=100;imageModel.autocomplete='off';
+const imageHelp=document.createElement('p');imageHelp.className='muted small';imageHelp.textContent='이미지 생성 권한이 있는 Gemini 모델 ID를 입력해요. 새 캐릭터 생성·새 그림 저장 때만 동작 이미지를 한 번 요청해요. API 키가 없으면 생성하지 않아요.';
+$('model-status').after(imageLabel,imageModel,imageHelp);
+$('settings-heading').textContent='AI 설정';
+const birthHint=document.createElement('p');birthHint.className='muted small';birthHint.textContent='개인 동작을 함께 만들려면 먼저 설정에서 API 키를 입력해 주세요. 그림은 Google에 전송되고 이미지 생성 요금이 발생할 수 있어요.';$('birth').after(birthHint);
+const settings=()=>({key:$('key').value.trim(),model:$('model').value,imageModel:$('image-model').value.trim()});
+async function activeView(){const s=await load(db),r=await calculate(s.state,'status');return {...r.view,request_id_prefix:`nb2:${s.epoch??0}:`};}
+async function invokeHome(command,args={}){
+  const s=await load(db);
+  if(args.request_id&&!args.request_id.startsWith(`nb2:${s.epoch??0}:`))throw Error('Companion changed');
+  const r=await calculate(s.state,command,args.home_payload?[args.home_payload]:[],args.request_id??null);
+  if(r.changed)await commit(db,s.revision,r.state);
+  await refresh();return {...view,...r.result};
+}
 const resetButton=document.createElement('button');resetButton.id='open-reset';resetButton.className='danger';resetButton.textContent='현재 공책 초기화…';resetButton.disabled=true;
 $('backup-dialog').append(resetButton);
 function clearSession(){
   sessionEpoch++;chatController?.abort();chatController=null;modelController?.abort();modelController=null;
+  sprites?.clear();visuals?.clear();sprites=null;visuals=null;home.clear();dungeons.close();view=null;
+  selectedPortrait=null;if(previewURL)URL.revokeObjectURL(previewURL);previewURL='';$('portrait-preview').hidden=true;$('portrait-file').value='';$('appearance-dialog').close();
   document.querySelectorAll('#messages .message').forEach(n=>n.remove());$('chat-empty').hidden=false;
   for(const id of ['key','message','reset-phrase'])$(id).value='';
   for(const id of ['reply','key-status','backup-status','model-status'])text(id,'');
@@ -53,7 +82,7 @@ function calculate(state,command,args=[],requestId=null){
     worker.postMessage({id,payload:{state,command,arguments:args,requestId,now:Date.now()/1000,seed:crypto.getRandomValues(new Uint32Array(1))[0],ids:Array.from({length:64},()=>crypto.randomUUID().replaceAll('-',''))}});
   });
 }
-function lock(value){busy=value;document.querySelectorAll('#actions button,#choices button,#dungeon-list button,#birth button,#import,#export,#refresh,#claimquest,#open-reset,#confirm-reset').forEach(b=>b.disabled=value);if(!value){$('claimquest').disabled=!current?.quest?.ready;$('confirm-reset').disabled=$('reset-phrase').value!=='초기화';}}
+function lock(value){busy=value;document.querySelectorAll('#actions button,#choices button,#dungeon-list button,#birth button,#import,#export,#refresh,#claimquest,#open-reset,#confirm-reset,#open-home,#open-appearance,#save-portrait,#portrait-file').forEach(b=>b.disabled=value);if(!value){$('claimquest').disabled=!current?.quest?.ready;$('confirm-reset').disabled=$('reset-phrase').value!=='초기화';$('save-portrait').disabled=!selectedPortrait;}dungeons.render();}
 function button(parent,label,command,args=[]){const b=document.createElement('button');b.textContent=label;b.onclick=()=>act(command,args);parent.append(b);}
 function text(id,value){$(id).textContent=value??'';}
 function message(role,content){
@@ -62,17 +91,24 @@ function message(role,content){
   const name=document.createElement('strong');name.className='message-label';name.textContent=role==='user'?'나':current.name;
   const body=document.createElement('p');body.className='message-body';body.textContent=content;box.append(name,body);$('messages').append(box);$('messages').scrollTop=$('messages').scrollHeight;
 }
-const regions={hellgate:'지옥문',icekingdom:'얼음왕국',dreamforest:'몽환의 숲',sunkenpalace:'침몰한 왕궁',clockworkcity:'잊혀진 태엽도시'};
-function portrait(image){return `./assets/starters-v1/${image.species}_${image.element}_stage1.png`;}
-async function refresh(){
-  const saved=await load(db);current=(await calculate(saved.state,'status')).result;
-  const petId=saved.state?.pet_id??null;if(petId!==sessionPetId){clearSession();sessionPetId=petId;}
+async function refresh(keepKey=false){
+  const saved=await load(db),result=await calculate(saved.state,'status');current=result.result;
+  const petId=saved.state?.pet_id??null,epoch=saved.epoch??0;
+  if(petId!==sessionPetId||epoch!==storeEpoch){
+    const key=keepKey?$('key').value:'';clearSession();$('key').value=key;sessionPetId=petId;storeEpoch=epoch;
+    if(petId){
+      const visual=createVisuals(db,epoch,petId,createGemini(settings));visuals=visual;
+      sprites=createHomeSprite({anna:()=>visual.api,upload:visual.upload,active:async()=>{const player=await load(db);visual.guard(player);return activeView();},saved:async()=>{await refresh();}});
+    }
+  }
+  view={...result.view,request_id_prefix:`nb2:${epoch}:`};
   $('welcome').hidden=!!saved.state;$('game').hidden=!saved.state;document.body.classList.toggle('has-pet',!!saved.state);
   $('pet-name').textContent=current.name??'아직 비어 있는 첫 페이지';
-  if(!saved.state)return;
+  if(!saved.state){home.clear();dungeons.close();return;}
   if(!current.ok)throw Error(current.msg);
+  await visuals.refresh();home.update(view);
   text('pet-type',`${current.species} · ${current.element}`);text('mood',`◌ ${current.mood}`);text('pet-title',current.title);text('level',`Lv. ${current.level}`);text('stage-label',current.stage_label);text('xp-label',`${current.xp} / ${current.xp_next} XP`);
-  $('pet-image').src=portrait(current.image);$('pet-image').alt=current.name;
+  $('pet-image').src=visuals.portrait(view);$('pet-image').alt=current.name;
   $('xp').max=current.xp_next;$('xp').value=current.xp;
   for(const key of ['satiety','intimacy']){text(key,`${current[key]} / 100`);$(key+'-bar').value=current[key];}
   const inventory=saved.state.inventory??{};text('inventory',`사료 ${inventory.normal_feed??0} · 희귀 사료 ${inventory.rare_feed??0}`);
@@ -86,24 +122,30 @@ async function refresh(){
   const album=(await calculate(saved.state,'album')).result.album;
   for(const target of ['album','collection-album']){
     $(target).replaceChildren();
-    for(const entry of album.entries??[]){const card=document.createElement('div');card.className='album-item'+(entry.reached?'':' locked');const img=document.createElement('img');img.src=entry.reached?portrait(current.image):'./icon.svg';img.alt=entry.reached?`${current.name} ${entry.label} 기록`:'아직 만나지 않은 모습';const label=document.createElement('strong');label.textContent=entry.label;const note=document.createElement('small');note.textContent=entry.reached?(entry.current?'지금 함께하는 모습':'함께한 성장 기록'):`Lv. ${entry.min_level}에 만나요`;card.append(img,label,note);$(target).append(card);}
+    for(const entry of album.entries??[]){const card=document.createElement('div');card.className='album-item'+(entry.reached?'':' locked');const img=document.createElement('img');img.src=entry.reached?visuals.stagePortrait(view,entry.stage):'./icon.svg';img.alt=entry.reached?`${current.name} ${entry.label} 기록`:'아직 만나지 않은 모습';const label=document.createElement('strong');label.textContent=entry.label;const note=document.createElement('small');note.textContent=entry.reached?(entry.current?'지금 함께하는 모습':'함께한 성장 기록'):`Lv. ${entry.min_level}에 만나요`;card.append(img,label,note);$(target).append(card);}
   }
   catalog.update(current.collectibles);
   $('details').textContent=saved.state?`경험치 ${current.xp} / ${current.xp_next}\n포만감 ${current.satiety} · 친밀도 ${current.intimacy}\n${stats}\n\n오늘의 퀘스트\n${tasks}\n${current.quest?.claimed?'오늘의 보상 수령 완료':''}`:'아직 기록이 없습니다.';
   $('choices').replaceChildren();
   if(current.walk_choice?.choice_id){const hint=document.createElement('p');hint.textContent='산책길에서 무언가를 발견했어요. 어떻게 할까요?';$('choices').append(hint);for(const [label,cmd] of [['주워 보기','walk_collect'],['지나가기','walk_leave']])button($('choices'),label,cmd,[current.walk_choice.choice_id]);}
   if(current.encounter){const hint=document.createElement('p');hint.textContent='산책 중 다른 친구와 마주쳤어요.';$('choices').append(hint);button($('choices'),'배틀','battle');button($('choices'),'돌아가기','flee');}
-  const ex=current.dungeons?.expedition;
-  if(ex?.phase==='choice'&&ex.choice_id){button($('choices'),'안전하게 진행','dungeon_safe',[ex.choice_id]);button($('choices'),'위험을 감수','dungeon_risk',[ex.choice_id]);}
-  const entries=(current.dungeons?.entries??[]).filter(e=>!e.cleared);$('dungeon-section').hidden=!entries.length; text('coins',`${current.dungeons?.coins??0} 코인`);$('dungeon-list').replaceChildren();
-  for(const entry of entries){const b=document.createElement('button');b.className='dungeon-card';const art=document.createElement('div');art.className='web-dungeon-art';art.style.backgroundImage=`url('./assets/dungeons-v2/${entry.id}.png')`;const name=document.createElement('strong');name.textContent=regions[entry.id];const note=document.createElement('small');note.textContent=`탐험 ${entry.room_count}개 구역 · 산책 에너지 ${entry.cost}`;b.append(art,name,note);b.onclick=()=>act(`explore_${entry.id}`);$('dungeon-list').append(b);}
+  dungeons.render();
+}
+async function prepareMovement(){
+  if(!settings().key){text('notice','그림을 저장했어요. API 키가 없어 개인 동작은 생성하지 않았어요.');return;}
+  text('notice','그림에 맞는 방향별 픽셀 동작을 만들고 있어요…');
+  try{await sprites.sync(view);await visuals.refresh();text('notice',visuals.sprite(view)?'그림과 동작을 저장했어요. 홈과 던전에서 같은 친구를 만나요.':'그림은 저장했어요. 이 그림의 동작은 이미 요청된 상태라 추가로 생성하지 않았어요.');}
+  catch{await refresh();text('notice',sprites?.hasPending()?'그림은 저장했어요. 동작 저장은 홈에서 다시 시도할 수 있어요. AI를 다시 호출하지 않아요.':'그림은 저장했지만 동작 생성은 완료하지 못했어요. 키·이미지 모델·할당량 또는 응답 그림을 확인해 주세요. 자동으로 재요청하지 않아요.');}
 }
 async function act(command,args=[]){
   if(busy)return;lock(true);
   try{const saved=await load(db);const candidate=await calculate(saved.state,command,args,crypto.randomUUID());
     if(candidate.changed)await commit(db,saved.revision,candidate.state);
     $('result').textContent=candidate.result.msg??JSON.stringify(candidate.result);
-    await refresh();$('notice').textContent=candidate.changed?'이 브라우저에 저장했습니다.':'행동 결과를 확인해 주세요.';
+    await refresh(command==='start'&&!saved.state);$('notice').textContent=candidate.changed?'이 브라우저에 저장했습니다.':'행동 결과를 확인해 주세요.';
+    if(candidate.result.dungeon_visit)dungeons.visit(candidate.result.dungeon_visit);
+    if(candidate.result.dungeon_run)dungeons.show(candidate.result.dungeon_run);
+    if(command==='start'&&!saved.state&&candidate.changed&&candidate.result.ok)await prepareMovement();
     if($('choices').children.length){$('choices').scrollIntoView({block:'nearest'});$('choices').querySelector('button')?.focus();}
   }catch(error){$('notice').textContent=error.message;}finally{lock(false);}
 }
@@ -114,16 +156,37 @@ for(const [label,cmd,icon,hint] of [['밥 주기','feed','◡','사료 1개'],['
 $('claimquest').onclick=()=>act('claimquest');
 $('refresh').onclick=async()=>{if(busy)return;lock(true);try{await refresh();text('notice','친구의 소식을 확인했어요.');}catch(e){text('notice',e.message);}finally{lock(false);}};
 $('birth').onsubmit=e=>{e.preventDefault();act('start',[$('name').value]);};
-$('export').onclick=async()=>{try{const {state}=await load(db);if(!state)throw Error('먼저 친구를 만나 주세요.');const url=URL.createObjectURL(new Blob([JSON.stringify({format:'notebuddy-web',version:1,state})],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='notebuddy-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){$('notice').textContent=e.message;}};
+$('export').onclick=async()=>{if(busy)return;lock(true);try{const backup=await exportNotebook(db);const url=URL.createObjectURL(new Blob([JSON.stringify(backup)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='notebuddy-backup.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}catch(e){$('notice').textContent=e.message;}finally{lock(false);}};
 $('import').onchange=async()=>{
   if(busy)return;lock(true);
-  try{const file=$('import').files[0];if(!file)return;if(file.size>2000000)throw Error('백업은 2MB 이하여야 합니다.');const saved=await load(db);const backup=JSON.parse(await file.text());
-    if(backup.format!=='notebuddy-web'||backup.version!==1||!backup.state)throw Error('지원하지 않는 백업 형식입니다.');
+  try{const file=$('import').files[0];if(!file)return;if(file.size>55000000)throw Error('백업은 55MB 이하여야 합니다.');const saved=await load(db);const backup=JSON.parse(await file.text());
+    if(backup.format!=='notebuddy-web'||![1,2].includes(backup.version)||!backup.state)throw Error('지원하지 않는 백업 형식입니다.');
     const check=await calculate(backup.state,'status');if(!check.result.ok)throw Error('게임 데이터가 올바르지 않습니다.');
+    const restored=await importVisuals(backup);
     if(!confirm(`${check.result.name} (Lv.${check.result.level}) 공책으로 현재 저장을 교체할까요?`))return;
-    await commit(db,saved.revision,backup.state);await refresh();$('notice').textContent='백업을 가져왔습니다.';$('backup-status').textContent='백업을 가져왔습니다.';
+    await commit(db,saved.revision,backup.state,restored,true);await refresh();$('notice').textContent='백업을 가져왔습니다.';$('backup-status').textContent='백업을 가져왔습니다.';
   }catch(e){$('notice').textContent=e.message;$('backup-status').textContent=e.message;}finally{$('import').value='';lock(false);}
 };
+let appearanceView=null,selectionTicket=0;
+$('open-appearance').onclick=()=>{
+  if(busy)return;appearanceView=view;selectedPortrait=null;selectionTicket++;$('portrait-file').value='';$('save-portrait').disabled=true;$('portrait-preview').hidden=true;text('appearance-status','');$('appearance-dialog').showModal();
+};
+$('portrait-file').onchange=async()=>{
+  const ticket=++selectionTicket;selectedPortrait=null;$('save-portrait').disabled=true;
+  try{
+    const blob=await portraitPNG($('portrait-file').files[0]);if(ticket!==selectionTicket||!$('appearance-dialog').open)return;
+    selectedPortrait=blob;if(previewURL)URL.revokeObjectURL(previewURL);previewURL=URL.createObjectURL(blob);$('portrait-preview').src=previewURL;$('portrait-preview').hidden=false;$('save-portrait').disabled=false;text('appearance-status','미리보기를 확인하고 저장해 주세요.');
+  }catch(e){if(ticket===selectionTicket)text('appearance-status',e.message);}
+};
+$('save-portrait').onclick=async()=>{
+  if(busy||!selectedPortrait)return;lock(true);
+  try{
+    const next=await activeView();if(next.pet_id!==appearanceView.pet_id||next.stage!==appearanceView.stage)throw Error('친구나 성장 단계가 바뀌었어요. 닫고 다시 확인해 주세요.');
+    const changed=await visuals.savePortrait(appearanceView,selectedPortrait);selectedPortrait=null;await refresh();$('appearance-dialog').close();
+    if(changed)await prepareMovement();else text('notice','이미 저장된 그림이에요. 동작을 다시 생성하지 않았어요.');
+  }catch(e){text('appearance-status',e.message);}finally{lock(false);}
+};
+$('appearance-dialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();});
 $('forget').onclick=()=>{modelController?.abort();$('key').value='';$('key-status').textContent='API 키를 지웠습니다.';text('model-status','');};
 $('key').addEventListener('input',()=>{modelController?.abort();text('model-status','');});
 $('load-models').onclick=async()=>{

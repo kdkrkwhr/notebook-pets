@@ -35,6 +35,17 @@ won = transition(candidate, 'dungeon_safe', context, arguments=[ex['choice_id']]
 assert won.result['ok'], won.result
 replay = transition(won.state, 'dungeon_safe', context, arguments=[ex['choice_id']], request_id='win')
 assert won.state['collectibles'] == {'ember-horns':1}
+home_state = copy.deepcopy(fed.state)
+home_state['coins'] = 30
+payload = dict(pet_id=home_state['pet_id'], revision=0, item_id='desk')
+bought = transition(home_state, 'home_buy', context, arguments=[json.dumps(payload)], request_id='home-buy')
+assert bought.result['ok'] and bought.state['coins'] == 20
+plan = transition(bought.state, 'home', context)
+selection = dict(pet_id=home_state['pet_id'], revision=1, candidate_id=plan.result['home_candidates'][0]['id'], reason='A quiet corner.')
+decorated = transition(bought.state, 'home_apply', context, arguments=[json.dumps(selection)], request_id='home-apply')
+assert decorated.result['ok'] and 'desk' in decorated.state['home']['layout']
+assert not transition(decorated.state, 'home_apply', context, arguments=[json.dumps(selection)], request_id='home-apply').changed
+
 json.dumps({'platform':sys.platform,'xp':read.result['xp'],
             'owned':won.result['dungeon_run']['item_awarded'],
             'sameReplay':replay.result==won.result and not replay.changed,

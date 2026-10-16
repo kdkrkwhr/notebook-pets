@@ -45,7 +45,8 @@ try{
  await page.locator('#chat button').click();await page.waitForFunction(()=>document.querySelector('#messages').textContent.includes('안녕!'));assert.equal(await page.locator('#messages .message img').count(),0);
  const after=await page.evaluate(async()=>{const m=await import('./store.js');return m.load(await m.openStore());});assert.deepEqual(before.state,after.state);
  await page.locator('#open-backup').click();const downloadPromise=page.waitForEvent('download');await page.locator('#export').click();const download=await downloadPromise;const backup=JSON.parse(await readFile(await download.path(),'utf8'));assert.equal(backup.state.name,'웹 테스트');assert(!JSON.stringify(backup).includes('FAKE-TEST-KEY'));
- page.once('dialog',dialog=>dialog.accept());await page.locator('#import').setInputFiles({name:'backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});await page.waitForFunction(()=>document.querySelector('#notice').textContent.includes('バックアップ')||document.querySelector('#notice').textContent.includes('백업을 가져왔'));
+ assert.equal(backup.version,2);const legacyBackup={format:backup.format,version:1,state:backup.state};
+ page.once('dialog',dialog=>dialog.accept());await page.locator('#import').setInputFiles({name:'backup.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(legacyBackup))});await page.waitForFunction(()=>document.querySelector('#notice').textContent.includes('バックアップ')||document.querySelector('#notice').textContent.includes('백업을 가져왔'));
  await page.reload();await page.waitForFunction(()=>document.querySelector('#pet-name').textContent==='웹 테스트',{},{timeout:120000});assert.equal(await page.locator('#key').inputValue(),'');assert.deepEqual(errors,[]);
  await page.locator('#title-start').click();
  for(const width of [375,390,760,1280]){

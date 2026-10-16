@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 13 October 2026. This notice describes the Notebuddy 0.5.0 source candidate; previously submitted versions keep their versioned notices. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 16 October 2026. This notice describes the Notebuddy 1.4.3 source candidate; previously submitted versions keep their versioned notices. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -49,6 +49,12 @@ The app prepares a pixel companion after first creation and after a newly saved 
 Derived PNGs and their source paths use the existing `portraits/` prefix and `notebuddy/art-v1` index, separated by companion and growth stage. Reset, removal and unused-portrait cleanup include these images. A replacement pixel image can leave an unreferenced file until cleanup, just like a replaced portrait. Dungeon maps and automatic movement use bundled code and the saved image, with no per-expedition image-generation request. Dungeon discoveries and rewards reset at midnight Korea time; accumulated coins and the last replay remain. There is no background/offline auto-farming.
 
 ## AI processing
+
+### Shared home and dungeon movement images (1.4.3)
+
+When you create a companion or save new portrait artwork, including a new growth portrait, the app also sends that portrait as a reference to Anna's image service to prepare directional pixel poses. This uses one additional image request; random companions also use it. The creation screens disclose this usage. A bundled starter portrait is first uploaded to your app file storage for this reference. Chat messages are not included. Home and dungeons share the saved poses. Opening either scene, purchases, movement and reopening never request poses. A stage number alone does not request poses before new artwork is saved. There is no separate create/remake button. Equipment is not implemented yet.
+
+The saved sheet, companion ID, growth stage, source-image path and a request reservation are stored in your existing app artwork index and `portraits/` files. Only matching entries are shown. The reservation prevents repeated paid requests for the same artwork after a failure or duplicate save. Failed pose creation does not undo the portrait or game. Reset and data removal include these files. Save retries reuse a received image while the page remains open; closing before saving may lose that temporary result. Missing poses in a dungeon fall back to the current companion's locally converted portrait. Furniture selection uses a separate explicitly requested Decorate call with supplied candidates and saved temperament.
 
 When you send a chat message, the app sends up to 12 recent messages, including that message, and a current companion-status snapshot to Anna’s AI service. The snapshot includes the companion’s name and game status. The service uses these to generate a reply. AI replies do not directly award XP or change game statistics.
 
