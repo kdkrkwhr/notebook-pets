@@ -1,6 +1,7 @@
 import {openStore,load,commit} from './store.js';
 import {listModels} from './models.js';
 import {createTitleScreen} from './title-screen.mjs';
+import {createThemes} from './themes.mjs';
 import {createItemCatalog} from './item-catalog.mjs';
 import {translateDocument} from './i18n.mjs';
 import {createHome} from './home.mjs';
@@ -10,6 +11,8 @@ import {createVisuals,portraitPNG,exportNotebook,importVisuals} from './visuals.
 import {createGemini} from './gemini.js';
 const $=id=>document.getElementById(id);
 translateDocument(document,'ko');
+let preferences;try{preferences=window.localStorage;}catch{preferences=null;}
+createThemes(document,preferences,()=> 'ko');
 const titleScreen=createTitleScreen(document,{privacy:()=>$('backup-dialog').showModal()});
 const catalog=createItemCatalog(document,()=> 'ko');catalog.render();titleScreen.show();
 for(const [button,dialog] of [['open-settings','settings-dialog'],['chat-settings','settings-dialog'],['open-backup','backup-dialog']])$(button).onclick=()=>$(dialog).showModal();

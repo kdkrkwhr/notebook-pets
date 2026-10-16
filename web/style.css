@@ -1,4 +1,7 @@
 /* Platform layout only: Anna's style.css and theme.css are shared at build time. */
+html[data-theme]:not([data-theme="notebook"]) .web-choices{background:var(--surface)}
+html[data-theme]:not([data-theme="notebook"]) .album-item img{mix-blend-mode:normal;background:#fffaf0;border-radius:6px}
+@media(max-width:480px){.masthead .header-controls{flex:0 0 125px}}
 .web-world-actions{display:flex;align-items:center;flex-wrap:wrap;gap:12px;margin:0 0 24px}
 #appearance-dialog{width:min(520px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:24px}#appearance-dialog p{margin:16px 0;line-height:1.8}#portrait-preview{display:block;width:180px;height:180px;object-fit:contain;margin:16px auto}#image-model{width:100%;min-height:48px;font-family:inherit;padding:10px}
 #model{width:100%;min-height:48px;padding:10px;font-family:inherit}#load-models{margin-top:12px;max-width:100%}

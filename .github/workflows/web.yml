@@ -23,6 +23,7 @@ jobs:
       - run: python web/build.py
       - run: node tests/pyodide/web.mjs
       - run: node tests/pyodide/web-world.mjs
+      - run: node tests/pyodide/web-themes.mjs
       - uses: actions/upload-pages-artifact@v3
         with:
           path: web/dist
