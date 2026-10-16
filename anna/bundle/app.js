@@ -1,7 +1,7 @@
 import {createItemCatalog} from './item-catalog.mjs';
 import {createHome} from './home.mjs';
 import {createHomeSprite,currentHomeSprite,homeSpriteKey} from './home-sprite.mjs';
-let homeUI,homeSprites;
+let homeUI,homeSprites,homeMovementNotice='';
 import {createTitleScreen} from './title-screen.mjs';
 import {createBirthSteps} from './birth-steps.mjs';
 import {createPersonality,axes as personalityAxes} from './personality.mjs';
@@ -17,7 +17,7 @@ import {createReactions,reactionEvent} from './reactions.mjs';
 let reactions;
 import {createBattle} from './battle.mjs';
 import {createDungeons} from './dungeon.mjs';
-import {createPixelPet,currentPixel,pixelKey} from './pixel-pet.mjs';
+import {createPixelPet,currentPixel,pixelKey,pixelSource} from './pixel-pet.mjs';
 import { AnnaAppRuntime } from '/static/anna-apps/_sdk/latest/index.js';
 import {unwrap,starter,imageKey,mergeHistory,errorText,newAction} from './model.mjs';
 import {t,loadLanguage,saveLanguage,translateDocument,chatPrompt} from './i18n.mjs';
@@ -82,6 +82,7 @@ function drawChat(){
 }
 function previousPortrait(v){for(let stage=v.stage-1;stage>=1;stage--){const url=urls[imageKey(v,stage)];if(url)return url;}return starter(v);}
 function pixelUrl(){return view?.status&&currentPixel(view,art)?urls[pixelKey(view)]:null;}
+function homeSpriteUrl(){return view?.status&&currentHomeSprite(view,art)?urls[homeSpriteKey(view)]:null;}
 function renderPixel(){
   const url=pixelUrl(),img=$('#pixel-pet');img.hidden=!url;$('#pixel-empty').hidden=!!url;
   if(url){img.src=url;img.alt=view.status.name;}
@@ -122,6 +123,7 @@ function render(){
   $('#welcome').hidden=resetting||!!s||view?.code!=='not_started';$('#game').hidden=!s;
   if(!s){birth?.render();birthSteps.render();return;}
   renderPersonality();
+  text('#home-movement-status',homeMovementNotice?tr(homeMovementNotice):'');
   text('#name',s.name);text('#pet-type',`${s.species} · ${s.element}`);text('#mood',`◌ ${s.mood}`);
   renderWalkEnergy();
   text('#title',s.title);text('#level',`Lv. ${s.level}`);text('#stage-label',s.stage_label);
@@ -156,7 +158,7 @@ function render(){
   drawChat();birth?.render();stories?.render();dungeons?.render();renderPixel();renderPersonality();
 }
 function forgetCachedData(){
-  homeUI?.clear();homeSprites?.clear();
+  homeUI?.clear();homeSprites?.clear();homeMovementNotice='';text('#home-movement-status','');
   itemCatalog.clear();
   persona?.clear();
   pixels?.clear();pixelNotice='';dungeons?.close();$('#pixel-pet').removeAttribute('src');$('#pixel-pet').hidden=true;
@@ -241,7 +243,7 @@ async function act(command,extra={},retry=false){
   if(started){
     await birth.started(view);
     const source=art[`${view?.pet_id}/birth-source`];
-    if(view?.status&&(!source||['done','abandoned'].includes(source.phase))){await setupPersonality(true);await preparePixel();}
+    if(view?.status&&(!source||source.phase==='abandoned')){await setupPersonality(true);controls(true);try{await syncPortraitVisuals(await assertActive());await readExtras();render();}finally{controls(false);}}
   }
 }
 async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
@@ -307,9 +309,20 @@ async function generate(){
     const active=await assertActive();
     if(p.key!==imageKey(active)){pendingImage=null;throw new PartnerChangedError();}
     art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));urls[p.key]=(await anna.files.download_url({path:p.path})).get_url;pendingImage=null;
-    await pixels.sync(active,p.blob);await readExtras();render();notice(tr('imageSaved'));
+    await syncPortraitVisuals(active,p.blob);await readExtras();render();notice(tr('imageSaved'));
   }catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else notice(pendingImage?tr('imagePending'):tr('imageFailed',{error:problem(error)}));}
   finally{text('#draw',tr(pendingImage?'retryImage':'draw'));controls(false);}
+}
+// Every committed appearance uses this path: birth and new growth portraits now,
+// and the final equipped portrait when equipment is implemented. Viewing is read-only.
+async function syncPortraitVisuals(snapshot,blob){
+  const source=pixelSource(snapshot,art);
+  await pixels.sync(snapshot,blob);
+  homeMovementNotice='homeMovementWorking';render();
+  try{await homeSprites.sync({...snapshot,source_path:source});homeMovementNotice=view?.status&&currentHomeSprite(view,art)?'':'homeMovementFailed';}
+  catch{homeMovementNotice=homeSprites.hasPending()?'homeMovementPending':'homeMovementFailed';}
+  if(view?.pet_id!==snapshot.pet_id||view?.erased||view?.reset_pending)homeMovementNotice='';
+  render();
 }
 async function privacyCall(args){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'privacy',args},{timeoutMs:60000}));}
 async function previewRemoval(){
@@ -422,7 +435,7 @@ birth=createBirthFlow({
   locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest||pendingImage),
   controls,assertActive,upload:uploadPortrait,isPartnerChanged:error=>error instanceof PartnerChangedError,
   save:async merge=>{art=await saveMerged(ART,merge);return art;},
-  portraitSaved:async(snapshot,blob)=>{await setupPersonality(true);await pixels.sync(snapshot,blob);},
+  portraitSaved:async(snapshot,blob)=>{await setupPersonality(true);await syncPortraitVisuals(snapshot,blob);},
   reload:async()=>{await readExtras();render();},
   clearMessage:()=>{birthNotice=null;for(const id of ['#birth-status','#birth-recovery-status']){text(id,'');$(id).hidden=true;}},
   message:birthMessage,
@@ -465,7 +478,7 @@ stories=createWalkStories({anna:()=>anna,active:assertActive,language:()=>langua
 pixels=createPixelPet({anna:()=>anna,art:()=>art,assertActive,upload:uploadPortrait,
   saved:value=>{art=value;},message:key=>{pixelNotice=key;renderPixel();}});
 dungeons=createDungeons({document,view:()=>view,language:()=>language,
-  locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),act,pixelUrl,
+  locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),act,pixelUrl,spriteUrl:homeSpriteUrl,
   portraitUrl:()=>view?urls[imageKey(view)]||starter(view):'icon.svg'});
 
 function renderPersonality(){
@@ -509,10 +522,10 @@ persona=createPersonality({anna:()=>anna,active:assertActive,
 });
 
 translate();
-homeSprites=createHomeSprite({anna:()=>anna,active:assertActive,upload:uploadPortrait,saved:async value=>{art=value;await readExtras();render();}});
+homeSprites=createHomeSprite({anna:()=>anna,active:assertActive,upload:uploadPortrait,saved:async value=>{art=value;homeMovementNotice='';await readExtras();render();}});
 homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertActive,invoke,
  saved:next=>{adoptView(next);render();},locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),busy:controls,
- sprite:()=>view?.status&&currentHomeSprite(view,art)?urls[homeSpriteKey(view)]:null,
- spritePending:()=>homeSprites.hasPending(),generateSprite:()=>homeSprites.generate()});
+ sprite:homeSpriteUrl,
+ spritePending:()=>homeSprites.hasPending(),retrySprite:()=>homeSprites.retry()});
 titleScreen.show();
 await refresh();

@@ -120,10 +120,11 @@ test('Korean item book fits a narrow screen and distinguishes body requirements 
  assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
 });
 
-test('pixel companion is saved at birth without AI, and conversion produces a transparent 64px PNG',async t=>{
+test('local dungeon pixel conversion stays free; birth separately prepares one home movement sheet',async t=>{
  const p=await setup(t);await start(p);
  await p.waitForFunction(()=>window.hostTest.state.kv['notebuddy/art-v1']?.['isolated-fixture/pixel-stage-1']);
  assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
+ assert.equal((await calls(p,'home-image')).length,1);
  assert.equal(await p.locator('#pixel-pet').isVisible(),true);
  const result=await p.evaluate(async()=>{
   const {pixelatePortrait}=await import('./pixel-pet.mjs');
@@ -134,6 +135,33 @@ test('pixel companion is saved at birth without AI, and conversion produces a tr
  });
  assert.deepEqual([result.width,result.height,result.type,result.corner],[64,64,'image/png',0]);assert.ok(result.opaque>100);
  await p.reload();await idle(p);assert.equal(await p.locator('#pixel-pet').isVisible(),true);assert.equal((await calls(p,'finalize')).length,0);
+});
+
+test('movement follows new portraits and growth artwork, never visits or unchanged evolution artwork',async t=>{
+ const p=await setup(t);await start(p);
+ assert.equal((await calls(p,'home-image')).length,1);
+ assert.equal(await p.locator('#home-sprite').count(),0);
+ await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'home-image')).length,1);
+ await fault(p,{evolve:2});await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.equal((await calls(p,'home-image')).length,1,'a stage number alone does not request poses');
+ await p.locator('#draw-evolved').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'home-image')).length,2);
+ const art=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);
+ assert.equal(art['isolated-fixture/home-sprite-stage-2'].source_path,art['isolated-fixture/stage-2'].path);
+ assert.equal(art['isolated-fixture/home-sprite-stage-2'].stage,2);
+ await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
+ await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.equal((await calls(p,'home-image')).length,1,'a replacement portrait gets its own poses');
+});
+
+test('movement failure preserves a new companion and portrait without automatic retries',async t=>{
+ const p=await setup(t,{homeImage:true});await start(p);
+ assert.equal(await p.locator('#name').innerText(),'Recovery buddy');assert.equal((await calls(p,'home-image')).length,1);
+ assert.match(await p.locator('#home-movement-status').innerText(),/companion is saved/);
+ await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'home-image')).length,1);
+ await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.equal((await calls(p,'home-image')).length,2);assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
+ await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
 });
 
 test('pixel save failure preserves the companion and retries without paid generation',async t=>{
@@ -865,7 +893,28 @@ test('legacy six-room result visits distinct rooms and pauses without spending a
  assert.equal((await calls(p,'image')).length,0);
 });
 
-test('dungeon avatar preserves distinct silhouettes with the same colors and animates without AI',async t=>{
+test('dungeon uses the saved home sheet with identical directional frames and no extra AI',async t=>{
+ const p=await setup(t,{walkOutcome:'quiet'});await start(p);
+ await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
+ await p.locator('[data-dungeon="hellgate"]').click();await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.sprite==='home');
+ const used=await calls(p,'home-image');assert.equal(used.length,1);
+ const result=await p.evaluate(async()=>{
+  const {readHomeSprite,drawHomeSprite}=await import('./home-sprite.mjs'),{drawAvatar}=await import('./dungeon-avatar.mjs');
+  const sheet=document.createElement('canvas');sheet.width=sheet.height=256;const a=sheet.getContext('2d');
+  for(let row=0;row<4;row++)for(let col=0;col<4;col++){a.fillStyle=`rgb(${40+row*55},${40+col*55},90)`;a.fillRect(col*64+18,row*64+16,24,32);}
+  const parsed=await readHomeSprite(await new Promise(r=>sheet.toBlob(r))),canvas=document.createElement('canvas');canvas.width=canvas.height=96;const c=canvas.getContext('2d');const checks=[],poses=new Set();
+  for(const direction of ['down','left','right','up'])for(const frame of [0,1,2,3]){
+   c.clearRect(0,0,96,96);drawHomeSprite(c,parsed,48,90,{direction,frame:[0,1,2,1][frame]});const home=canvas.toDataURL();poses.add(home);
+   c.clearRect(0,0,96,96);drawAvatar(c,48,90,{sprite:parsed,direction,frame,walking:true,scale:1});checks.push(home===canvas.toDataURL());
+  }
+  return {checks,poses:poses.size};
+ });
+ assert(result.checks.every(Boolean));assert.equal(result.poses,12);
+ await p.locator('#dungeon-close').click();await p.locator('[data-dungeon="hellgate"]').click();await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.sprite==='home');
+ assert.equal((await calls(p,'home-image')).length,1);assert.equal((await calls(p,'explore_hellgate')).length,0);
+});
+
+test('legacy dungeon portrait fallback preserves distinct silhouettes and animates without AI',async t=>{
  const p=await setup(t);await start(p);
  const result=await p.evaluate(async()=>{
   const {drawAvatar}=await import('./dungeon-avatar.mjs');

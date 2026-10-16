@@ -1,9 +1,18 @@
 import {ART,ErasedError,erased,mergeSaved} from './data.mjs';
 import {pixelSource,clearWhiteBorder} from './pixel-pet.mjs';
 export const homeSpriteKey=v=>`${v.pet_id}/home-sprite-stage-${v.stage}`;
+const requestKey=v=>`${v.pet_id}/home-sprite-request-stage-${v.stage}`;
 export function currentHomeSprite(v,art){
  const e=art?.[homeSpriteKey(v)];
  return e?.format==='home-sprite-v1'&&e.pet_id===v.pet_id&&e.stage===v.stage&&e.source_path===pixelSource(v,art)&&e.path?.startsWith(`portraits/${v.pet_id}/`)?e:null;
+}
+export function drawHomeSprite(c,sheet,x,y,{direction='down',frame=1,height=32,hit=false,fallen=false}={}){
+ const row={down:0,left:1,right:2,up:3}[direction]??0,box=sheet.frames[row*4+frame];
+ const scale=height/sheet.maxHeight,w=Math.max(1,Math.round(box[2]*scale)),h=Math.max(1,Math.round(box[3]*scale));
+ c.save();c.imageSmoothingEnabled=false;
+ c.fillStyle='#26392c55';c.beginPath();c.ellipse(Math.round(x),Math.round(y),height*.28,height/16,0,0,Math.PI*2);c.fill();
+ if(hit)c.filter='brightness(1.6)';if(fallen)c.globalAlpha=.45;
+ c.drawImage(sheet.canvas,...box,Math.round(x-w/2),Math.round(y-h),w,h);c.restore();
 }
 export const HOME_SPRITE_PROMPT='Use the supplied image as the identity reference for this exact companion. Create a top-down pixel RPG sprite sheet, exactly FOUR equal columns and FOUR equal rows on a square canvas. Rows in order: DOWN/front, LEFT, RIGHT, UP/back. Columns: walking pose A, neutral, walking pose B, idle blink. Match the reference species, silhouette, colors, face, markings, accessories and exact number of heads, limbs and wings. Never add legs to a legless creature: use its own natural slither, bounce or hover anatomy. Each cell contains ONE entire companion at the same scale, centered horizontally, feet or body resting at the same baseline. Keep generous EMPTY padding of at least 12% on EVERY side of every cell. Clearly different directions and limb/body poses, not a repeated portrait. Crisp pixel art with a limited palette, no antialiasing. Transparent background if supported, otherwise pure white. No scenery, cast shadow, text, letters, labels, borders or grid lines. Exactly 16 separate frames. Preserve identity over embellishment.';
 
@@ -46,11 +55,14 @@ export async function readHomeSprite(blob){
 }
 
 export function createHomeSprite(h){
- let pending=null;
- async function generate(){
+ let pending=null,running=null;
+ async function generate(expected){
   const snapshot=await h.active(),old=(await h.anna().storage.get({key:ART})).value||{};
   if(erased(old))throw new ErasedError();
   const source=pixelSource(snapshot,old),owner=snapshot.pet_id,stage=snapshot.stage;
+  if(expected&&(expected.pet_id!==owner||expected.stage!==stage))throw Error('Companion changed');
+  if(expected?.source_path&&expected.source_path!==source)throw Error('Artwork changed');
+  if(currentHomeSprite(snapshot,old)){pending=null;return false;}
   const guard=async()=>{
    const active=await h.active(),saved=(await h.anna().storage.get({key:ART})).value||{};
    if(erased(saved))throw new ErasedError();
@@ -59,12 +71,24 @@ export function createHomeSprite(h){
   try{
    if(pending&&(pending.owner!==owner||pending.stage!==stage||pending.source!==source)){pending=null;throw Error('Companion changed; start again');}
    if(!pending){
-    await guard();let reference;
+    if(old[requestKey(snapshot)]?.source_path===source)return false;
+    await guard();let reference,referencePath=source;
     if(source.startsWith('portraits/'))reference=(await h.anna().files.download_url({path:source})).get_url;
     else{
      const response=await fetch(source);if(!response.ok)throw Error('Reference unavailable');
-     const path=`portraits/${owner}/home-reference-${crypto.randomUUID()}.png`;await h.upload(path,await response.blob());reference=(await h.anna().files.download_url({path})).get_url;
+     referencePath=`portraits/${owner}/home-reference-${crypto.randomUUID()}.png`;await h.upload(referencePath,await response.blob());reference=(await h.anna().files.download_url({path:referencePath})).get_url;
     }
+    // Claim this exact artwork before the paid call. Lost responses, concurrent
+    // windows and a retried portrait save must not generate the same poses again.
+    let claimed=false;
+    await mergeSaved(h.anna().storage,ART,latest=>{
+     claimed=false;
+     if(pixelSource(snapshot,latest||{})!==source)throw Error('Artwork changed');
+     if(currentHomeSprite(snapshot,latest)||latest?.[requestKey(snapshot)]?.source_path===source)return latest;
+     claimed=true;
+     return {...latest,[requestKey(snapshot)]:{path:referencePath,source_path:source,at:Date.now()}};
+    });
+    if(!claimed)return false;
     await guard();
     const result=await h.anna().image.generate({prompt:HOME_SPRITE_PROMPT,reference_image_urls:[reference],n:1,size:'1024x1024',quality:'medium',resolution:'1K',output_format:'png'},{timeoutMs:240000});
     const url=result?.images?.[0]?.url;if(!url)throw Error('No sprite returned');
@@ -82,5 +106,6 @@ export function createHomeSprite(h){
    await guard();pending=null;await h.saved(art);return true;
   }catch(error){if(error instanceof ErasedError||/changed/.test(error.message))pending=null;throw error;}
  }
- return {generate,hasPending:()=>!!pending,clear(){pending=null;}};
+ function sync(expected){if(!running)running=generate(expected).finally(()=>{running=null;});return running;}
+ return {sync,retry:()=>pending?sync():Promise.resolve(false),hasPending:()=>!!pending,clear(){pending=null;}};
 }

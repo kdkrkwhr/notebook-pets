@@ -55,7 +55,7 @@ In 1.2.0, each final guardian clear grants one unowned regional item: three stan
 
 Growth, recent conversation and artwork are stored separately for each user. Resume a pending story with **Continue walk**. Reopening the app does not require creating your companion again.
 
-Chat, care reactions, personality, walk stories, drawing/photo analysis and new portraits use **the signed-in Anna account's AI allowance**. Random companions also use AI for initial personality creation. Browsing the book and converting a portrait to pixels make no additional AI calls. Existing companions without a personality can use **Meet your personality**.
+Chat, care reactions, personality, walk stories, drawing/photo analysis and new portraits use **the signed-in Anna account's AI allowance**. Random companions also use AI for initial personality and directional movement creation. Browsing the book and converting a portrait to pixels make no additional AI calls. Existing companions without a personality can use **Meet your personality**.
 
 Switching between English and Korean changes the interface and new replies while keeping names and previous conversations intact. To create a different companion, use **Start over** and confirm what will be deleted. Deleted companions and records cannot be recovered. [Privacy and data guide](PRIVACY.md)
 
@@ -75,4 +75,6 @@ Decorate makes one bounded layout-selection request. Purchases, room visits, mov
 
 In **1.4.2**, the home becomes a large pixel garden and separate indoor room. Your friend automatically follows paths through the door, changes poses with direction, and passes behind objects. Follow the camera, zoom in or pause to watch. Furniture opens in a separate panel.
 
-Choose **Create movement** to generate directional poses from your own companion's current portrait. This explicitly uses one image AI request; the saved sheet is reused when walking or reopening. A different companion, growth stage or replacement portrait cannot reuse an old sheet. **Retry saving** reuses a received result without another AI call while the page remains open. This is separate from the existing free dungeon pixel conversion. An unavailable sheet is never replaced with another user's sample character.
+New companions and newly saved portraits, including growth portraits, automatically prepare matching directional poses with one image AI request. Home and dungeons share that saved sheet. There is no separate create/remake button; a growth-stage number alone does not request new poses.
+
+A failed pose request leaves the companion and portrait intact and never retries AI automatically. If only saving failed, keep the page open and use **Retry saving movement** in My home; this uses no AI. Existing companions without poses get them with their next new portrait, while dungeons use their current portrait as a fallback. Equipment is not implemented yet; its final equipped portrait will use the same appearance-save flow.

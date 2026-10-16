@@ -55,7 +55,7 @@ Tell them about your day in the conversation area. Replies draw on their saved p
 
 Version **1.4.2** adds a spacious pixel home. Watch your friend wander through the garden and enter their room, follow the camera, zoom in or pause. Buy furniture in the shop and ask your friend to choose its placement.
 
-**Create movement** generates four-direction poses from your own companion's current artwork. This uses an explicit image AI request once, then reuses the saved result for movement and reopening. [Home guide](anna/README.en.md)
+**New companions and newly saved growth portraits also get matching directional poses.** Home and dungeons share these poses, with no separate remake button. Each new artwork uses one movement image request; walking and reopening reuse the saved result. [Home guide](anna/README.en.md)
 
 ## Keep their growth in an album
 
@@ -130,7 +130,7 @@ Future equipment will take each companion's body shape into account. A friend wi
 
 The Anna app supports **English and Korean**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.
 
-Chat, care reactions, personality and walk-story generation, reference analysis and new portraits use **the signed-in user's Anna AI allowance**. Random companions also use AI to initialize personality. Selecting or previewing a file, browsing the item book and converting a portrait to pixels do not call AI.
+Chat, care reactions, personality and walk-story generation, reference analysis and new portraits use **the signed-in user's Anna AI allowance**. Random companions also use AI to initialize personality and directional movement. Selecting or previewing a file, browsing the item book and converting a portrait to pixels do not call AI.
 
 ## What comes next?
 

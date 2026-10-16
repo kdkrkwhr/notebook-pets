@@ -39,21 +39,24 @@ test('malformed AI output preserves room and ownership; no automatic retries',as
  const before=structuredClone(state());await page.evaluate(()=>hostTest.faults.homeMalformed=true);await page.locator('#home-decorate').click();await page.waitForFunction(()=>!document.querySelector('#home-close').disabled);assert.deepEqual(state(),before);assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length),1);
 });
 
-test('personal movement uses one reference image call and save-only retry; home never auto-generates',async t=>{
+test('new artwork prepares movement once; home only offers save recovery and never regeneration',async t=>{
  const {page,state}=await setup(t),before=structuredClone(state());page.on('dialog',d=>d.accept());
  await page.evaluate(()=>{
   const c=document.createElement('canvas');c.width=c.height=512;const ctx=c.getContext('2d');
   for(let y=0;y<4;y++)for(let x=0;x<4;x++){ctx.fillStyle=['#ca682b','#864a30','#7c9957','#467c92'][y];ctx.fillRect(x*128+40,y*128+38,42+x*2,58);}
-  hostTest.faults.homeSpriteSheet=c.toDataURL();hostTest.faults.save=true;
+  hostTest.faults.homeSpriteSheet=c.toDataURL();hostTest.faults.homeSpriteSave=true;
  });
- assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='image').length),0);
- await page.locator('#home-sprite').click();await page.waitForFunction(()=>document.querySelector('#home-sprite').textContent==='Retry saving');
- const first=await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='image'));
+ assert.equal(await page.locator('#home-sprite').count(),0);
+ assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),0);
+ await page.locator('#home-close').click();await page.locator('#draw').click();await page.locator('#confirm-draw').click();await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);
+ await page.locator('#open-home').click();await page.waitForFunction(()=>!document.querySelector('#home-sprite-retry').hidden);
+ const first=await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image'));
  assert.equal(first.length,1);assert.equal(first[0].options.reference_image_urls.length,1);
- await page.evaluate(()=>hostTest.faults.save=false);await page.locator('#home-sprite').click();await page.waitForFunction(()=>document.querySelector('#home-sprite').textContent==='Remake movement');
+ await page.evaluate(()=>hostTest.faults.save=false);await page.locator('#home-sprite-retry').click();await page.waitForFunction(()=>document.querySelector('#home-sprite-retry').hidden);
  const saved=await page.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);const entry=Object.values(saved).find(e=>e.format==='home-sprite-v1');assert(entry);assert(entry.path.startsWith(`portraits/${state().pet_id}/`));assert.equal(entry.pet_id,state().pet_id);
  await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');
- assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='image').length),1);assert.deepEqual(state(),before);
+ assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),1);assert.deepEqual(state(),before);
  await page.locator('#home-shop-close').click();await page.locator('#home-inside').click();await page.locator('#home-pause').click();await page.locator('#home-close').click();await page.locator('#open-home').click();
- assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='image').length),1);
+ assert.equal(await page.locator('#home-sprite').count(),0);assert.equal(await page.locator('#home-sprite-retry').isVisible(),false);
+ assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),1);
 });

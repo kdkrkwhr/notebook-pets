@@ -1,9 +1,8 @@
 import {createHomeWalk,roomPoint} from './home-walk.mjs';
-import {readHomeSprite} from './home-sprite.mjs';
+import {readHomeSprite,drawHomeSprite} from './home-sprite.mjs';
 export {routeAt} from './home-walk.mjs';
 const indices={house:0,tree:1,bush:2,bench:3,bookshelf:4,desk:5,nest:6,plant:7,rug:8};
 const extraIndices={lamp:0,'side-table':1,cushion:2,'wall-art':3,curtain:4,tea:5,basket:6,mailbox:7};
-const directions={down:0,left:1,right:2,up:3};
 export function createHomeScene(canvas){
  const ctx=canvas.getContext('2d'),reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const camera={x:320,y:240,zoom:innerWidth<500?1:2};
@@ -90,9 +89,7 @@ function fence(c,x,y){line(c,'#64482e',x,y-4,16,3);line(c,'#ab8247',x,y-5,16,2);
   ctx.drawImage(sheet,...box,Math.round(o.x-o.w/2),Math.round(o.y-h),o.w,h);
  }
  function drawPet(){
-  if(!pet)return;const box=pet.frames[directions[s.direction]*4+s.frame],scale=32/pet.maxHeight,w=Math.max(1,Math.round(box[2]*scale)),h=Math.max(1,Math.round(box[3]*scale));
-  ellipse(ctx,'#26392c55',s.x,s.y,9,2);
-  ctx.drawImage(pet.canvas,...box,Math.round(s.x-w/2),Math.round(s.y-h),w,h);
+  if(!pet)return;drawHomeSprite(ctx,pet,s.x,s.y,{direction:s.direction,frame:s.frame});
   const carry=movement.carried();if(carry){const [sheet,b]=source(carry),width=22,height=Math.round(width*b[3]/b[2]);ctx.drawImage(sheet,...b,Math.round(s.x+12),Math.round(s.y-height-10),width,height);}
  }
  function render(dt=0){

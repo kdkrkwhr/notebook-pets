@@ -18,6 +18,7 @@
 
 # Home decoration constraints (2026-10-16)
 
+- User preference (2026-10-16): no manual movement generation/remake button. Prepare directional poses when a new companion or new portrait is saved, including new evolution artwork; a stage number alone does not request images. Home and dungeon reuse the same personal sheet without AI on entry or movement. Future equipment must use the same appearance-save flow when it changes the portrait. Save-only recovery may remain and must not generate again.
 - Confirmed visual direction: a coherent 2D top-down pixel tile world with a house exterior and yard, entering a separate interior through the door. The user's farming-game screenshot is the camera/scale/style reference, not a request for farming. Do not use the current dungeon's portrait animation as the quality target. Use direction/action sprite frames, consistent pixel scale, grounded feet/body, depth occlusion and natural movement/idle transitions. Validate a small moving prototype before integrating the larger home; prototype/concept work does not bump or deploy Anna versions.
 - Users buy furniture; only the companion chooses placement. No manual coordinate/drag editor.
 - Only an explicit Decorate request invokes one bounded LLM selection. Purchases, viewing, transport/idle animations, undo and save-only retry never invoke AI. Do not auto-decorate after buying or reopening.

@@ -102,7 +102,7 @@ export function createDungeons(h){
     const ticket=++previewTicket;
     stop();selected=key;run=saved;finished=false;elapsed=0;ambient=0;artReady=false;paused=false;
     portrait();
-    void scene.load(key,{fallback:h.portraitUrl()}).then(ok=>{if(ticket!==previewTicket||!dialog.open)return;artReady=ok;if(!ok){stop();$('#dungeon-phase').textContent=tr('dungeonArtFailed');}render();scene.draw({elapsed,run,finished,reduced:reduced()});});
+    void scene.load(key,{sprite:h.spriteUrl(),fallback:h.portraitUrl()}).then(ok=>{if(ticket!==previewTicket||!dialog.open)return;artReady=ok;if(!ok){stop();$('#dungeon-phase').textContent=tr('dungeonArtFailed');}render();scene.draw({elapsed,run,finished,reduced:reduced()});});
     $('#dungeon-heading').textContent=tr(`dungeon_${key}`);
     $('#dungeon-boss-name').textContent=tr(`boss_${key}`);
     $('#dungeon-phase').textContent=tr(`dungeonScene_${key}`);
