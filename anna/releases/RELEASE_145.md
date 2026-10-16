@@ -31,3 +31,13 @@ Anna 소스 `4f9257e`, 웹 소스 `e7d015d`. JS 89·브라우저 103·strict 및
 기존 `window.confirm()`이 Anna iframe의 `allow-modals` 없는 sandbox에서 차단돼 구매가 즉시 취소됐다. 앱 내부 확인 dialog로 교체해 가구명·가격·보관함·명시적 ‘꾸며 줘’ 흐름을 안내하고 취소/Esc를 지원한다. 권한·게임 규칙·가격·AI 호출 조건은 변경하지 않았다. 구매만으로 자동 배치하거나 AI를 호출하지 않는다.
 
 소스 `29ac4cc`, **working revision 61 / 소유자 초안 `0.0.0-draft`** 설치 완료. 도구 0.9.1/Executa 760 재사용, 버전·심사 후보 1.4.5/ID 1417·공유 소개 유지. JS 89·브라우저 104·strict 통과. 같은 sandbox와 실제 Python 코어로 구매·잔액·소유·배치 불변·취소·응답 유실 재시도의 중복 차감 방지를 확인했다. 실제 설치 번들에서는 한영·모바일 확인창·취소/Esc·코드 일치를 검증하고 사용자 코인은 쓰지 않았다. 저장 4종 값/ETag 및 게임 inspect 동일, AI 0회. 웹 0.4.2 유지, 소스 `c8c5457`의 [Pages 배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38889927900) 완료. 실제 공개 URL의 격리 공책에서 구매·코인 100→90·소유·배치 불변·취소/Esc·360px·코드 바이트 일치·AI 0회를 확인했다. release와 release-web의 공통 Windows/Linux/Pyodide CI도 통과했다. 상세 결과는 [현재 인계](../HANDOFF.md)를 따른다.
+
+## 동작 준비 실패 표시·진단 · 2026-10-16
+
+정적 픽셀 미리보기의 “던전 준비 완료” 표현을 바꾸고 방향 동작과 구분했다. 동작 준비 실패는 참고 이미지/요청/응답/다운로드/시트 검증/저장 단계로 구분하며, 저장 가능한 기존 요청 기록에는 원문 오류나 서명 URL 없이 단계만 보관한다. 요청 중복 방지·저장만 재시도·삭제/교체 가드를 유지한다.
+
+Anna 소스 `c8cf0de`를 working revision **62 / 0.0.0-draft**로 설치했고 실제 한영·360px·설치 모듈 일치·화면 확인 전후 앱/게임 저장 동일·AI 0·예외 0을 확인했다. 버전 **1.4.5**, 게임 도구 **0.9.1 / 기존 Executa 760**, 심사 후보 **1.4.5 / ID 1417 / pending_review**를 유지한다. 새 심사 제출이나 공개 출시는 하지 않았다.
+
+웹 **0.5.0** 소스 `73c3cbc`에 Git으로 통합했고 [Pages 배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38894499755)와 공통 CI 성공, 실제 공개 모듈·반응형·저장 불변을 확인했다. JS 91·strict 및 새 실패 회귀 검사 통과. [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38894333095)의 브라우저 105·저장/프로토콜·독립 패키지 검사와 공통 CI도 성공했다.
+
+dora의 기존 실패 원인과 실제 Anna 이미지 생성 성공은 아직 확인하지 못했다. 이번 변경으로 생성 오류가 해결됐다고 간주하지 않으며, Anna 측 요청 로그나 실패 출력이 필요하다. [상세 인계](../HANDOFF.md).
