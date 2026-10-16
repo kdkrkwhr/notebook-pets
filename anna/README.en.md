@@ -10,7 +10,7 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-Owner test update **1.4.2** uses game tool **0.9.1**. The store candidate remains **1.0.0 pending review**, not publicly released.
+Owner test update **1.4.3** uses game tool **0.9.1**. The store candidate remains **1.0.0 pending review**, not publicly released.
 
 Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
@@ -73,7 +73,7 @@ Open **My home**, buy furniture with game coins, then choose **Decorate**. Your 
 
 Decorate makes one bounded layout-selection request. Purchases, room visits, movement, idle life, undo and save-only retries use no AI. Room geometry, furniture and the companion are rendered separately.
 
-In **1.4.2**, the home becomes a large pixel garden and separate indoor room. Your friend automatically follows paths through the door, changes poses with direction, and passes behind objects. Follow the camera, zoom in or pause to watch. Furniture opens in a separate panel.
+In **1.4.3**, the home becomes a large pixel garden and separate indoor room. Your friend automatically follows paths through the door, changes poses with direction, and passes behind objects. Follow the camera, zoom in or pause to watch. Furniture opens in a separate panel.
 
 New companions and newly saved portraits, including growth portraits, automatically prepare matching directional poses with one image AI request. Home and dungeons share that saved sheet. There is no separate create/remake button; a growth-stage number alone does not request new poses.
 

@@ -8,7 +8,7 @@
 
 Notebuddy is a companion game about growing alongside one AI friend. Start with a drawing, a photo or a surprise companion. Share your day, build a routine, discover stories and pixel dungeons on walks, and keep a little album of your friend's growth.
 
-The current Anna owner test app is **1.4.2**, with a notebook theme, a 2.5D companion and **five dungeons**, including illustrated previews and bosses for both new regions. Version **1.0.0 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 16, 2026.
+The current Anna owner test app is **1.4.3**, with a notebook theme, a 2.5D companion and **five dungeons**, including illustrated previews and bosses for both new regions. Version **1.0.0 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 16, 2026.
 
 [![Anna app tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml/badge.svg?branch=release)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml)
 
@@ -53,7 +53,7 @@ Tell them about your day in the conversation area. Replies draw on their saved p
 
 ## A home and garden to share
 
-Version **1.4.2** adds a spacious pixel home. Watch your friend wander through the garden and enter their room, follow the camera, zoom in or pause. Buy furniture in the shop and ask your friend to choose its placement.
+Version **1.4.3** adds a spacious pixel home. Watch your friend wander through the garden and enter their room, follow the camera, zoom in or pause. Buy furniture in the shop and ask your friend to choose its placement.
 
 **New companions and newly saved growth portraits also get matching directional poses.** Home and dungeons share these poses, with no separate remake button. Each new artwork uses one movement image request; walking and reopening reuse the saved result. [Home guide](anna/README.en.md)
 
@@ -125,7 +125,7 @@ Future equipment will take each companion's body shape into account. A friend wi
 
 | Edition | Availability |
 | --- | --- |
-| **Anna app** | The screens and features above are in owner test version **1.4.2**. Public store release awaits **1.0.0 review**. [App user guide](anna/README.en.md) |
+| **Anna app** | The screens and features above are in owner test version **1.4.3**. Public store release awaits **1.0.0 review**. [App user guide](anna/README.en.md) |
 | **Open-source engine, Discord and AI agents** | Run or connect the project yourself. The Anna interface, continuing stories and item book have their own feature scope. [Setup and integration guide](docs/DEVELOPMENT.en.md) |
 
 The Anna app supports **English and Korean**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.
