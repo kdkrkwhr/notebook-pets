@@ -22,6 +22,7 @@ try{
  await page.screenshot({path:path.join(shots,'title-desktop.png')});await page.locator('#title-start').click();
  await page.screenshot({path:path.join(shots,'welcome-desktop.png')});
  await page.locator('#name').fill('웹 테스트');await page.locator('#birth button').click();await page.waitForFunction(()=>document.querySelector('#pet-name').textContent==='웹 테스트');
+ await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);
  await page.waitForFunction(()=>document.querySelector('#pet-image').naturalWidth>0);assert.equal(await page.locator('#album .album-item').count(),4);await page.waitForFunction(()=>document.querySelector('.brand img').naturalWidth>0);await page.screenshot({path:path.join(shots,'game-desktop.png'),fullPage:true});
  await page.getByRole('button',{name:'아이템 둘러보기',exact:true}).click();assert.equal(await page.locator('.item-card').count(),24);await page.locator('#close-items').click();
  await page.getByRole('button',{name:'밥 주기',exact:true}).click();await page.waitForFunction(()=>document.querySelector('#details').textContent.includes('경험치 10'));
