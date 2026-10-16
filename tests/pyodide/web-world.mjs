@@ -25,7 +25,13 @@ try{
   });
   const base=process.env.WEB_URL??`http://127.0.0.1:${server.address().port}/notebook-pets/`;
   const sheet=await readFile(new URL('../../prototypes/pixel-home/assets/companion.png',import.meta.url));
-  let imageReply=sheet.toString('base64'),held=null,holdImage=false,badDecision=false;
+  // Exercise detached tips through generation, IndexedDB save-only recovery and
+  // shared home/dungeon loading, without another paid request or image repair.
+  let imageReply=await page.evaluate(()=>{
+    const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d');ctx.fillStyle='#45815b';
+    for(let row=0;row<4;row++)for(let col=0;col<4;col++){ctx.fillRect(col*64+16,row*64+12,28,38);ctx.fillRect(col*64+48,row*64+32,8,8);}
+    return c.toDataURL().split(',')[1];
+  }),held=null,holdImage=false,badDecision=false;
   await page.route('https://generativelanguage.googleapis.com/**',async route=>{
     const body=route.request().postDataJSON();assert.equal(route.request().headers()['x-goog-api-key'],'WORLD-TEST-KEY');assert(!route.request().url().includes('WORLD-TEST-KEY'));
     const kind=body.generationConfig.responseModalities?'image':'layout';calls.push({kind,body});
