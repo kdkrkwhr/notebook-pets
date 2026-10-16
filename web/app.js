@@ -3,9 +3,9 @@ import {listModels} from './models.js';
 import {createTitleScreen} from './title-screen.mjs';
 import {createThemes} from './themes.mjs';
 import {createItemCatalog} from './item-catalog.mjs';
-import {translateDocument} from './i18n.mjs';
+import {translateDocument,t} from './i18n.mjs';
 import {createHome} from './home.mjs';
-import {createHomeSprite} from './home-sprite.mjs';
+import {createHomeSprite,movementFailureKey} from './home-sprite.mjs';
 import {createDungeons} from './dungeon.mjs';
 import {createVisuals,portraitPNG,exportNotebook,importVisuals} from './visuals.js';
 import {createAI,imageReady} from './ai.js';
@@ -135,7 +135,7 @@ async function prepareMovement(){
   if(!imageReady(settings())){text('notice','그림을 저장했어요. 이미지 AI 설정이 준비되지 않아 개인 동작은 생성하지 않았어요.');return;}
   text('notice','그림에 맞는 방향별 픽셀 동작을 만들고 있어요…');
   try{await sprites.sync(view);await visuals.refresh();text('notice',visuals.sprite(view)?'그림과 동작을 저장했어요. 홈과 던전에서 같은 친구를 만나요.':'그림은 저장했어요. 이 그림의 동작은 이미 요청된 상태라 추가로 생성하지 않았어요.');}
-  catch(error){await refresh();text('notice',sprites?.hasPending()?'그림은 저장했어요. 동작 저장은 홈에서 다시 시도할 수 있어요. AI를 다시 호출하지 않아요.':'그림은 저장했지만 동작 생성은 완료하지 못했어요. 이미지 AI 연결·모델·워크플로 또는 응답 그림을 확인해 주세요. 자동으로 재요청하지 않아요. '+error.message);}
+  catch(error){await refresh();text('notice',t('ko',movementFailureKey(error,sprites?.hasPending())));}
 }
 async function act(command,args=[]){
   if(busy)return;lock(true);
