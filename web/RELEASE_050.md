@@ -32,3 +32,11 @@ Anna의 공통 동작 준비 모듈을 Git merge로 통합했다. 정적 픽셀 
 소스 `73c3cbc`, [Pages 빌드·배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38894499755) 및 [공통 Linux/Windows/Pyodide CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38894499628) 성공. 실제 공개 URL의 HTML·home-sprite/i18n/웹 모듈 원본 일치, 1120/360px·기존 로컬 모델 목록·저장 불변·AI 요청 0·페이지 오류 0을 확인했다. 기본/제공자/홈/던전/테마 검사가 통과했다.
 
 이번 후속은 dora의 Anna 오류 화면에 대한 별도 수정이다. Anna는 **1.4.5 소스 / working revision 62 / 소유자 테스트 초안**으로 반영했고 심사 후보와 게임 도구는 유지한다. 실제 Anna의 생성 실패 원인은 스크린샷만으로 확정하지 못했으며, 생성 자체가 해결됐다는 검증은 아니다. [Anna 인계](../anna/HANDOFF.md).
+
+## 분리된 동작 부속 부위 판독 · 2026-10-17 (0.5.0 유지)
+
+정상 4×4 시트의 작은 꼬리 끝·장식이 떨어져 있으면 추가 프레임으로 세던 오류를 공통 판독기에서 수정했다. 불균등한 행/열의 실제 간격 안에서 가까운 작은 부위만 모호함 없이 묶는다. 큰 별도 캐릭터·셀 경계·잘림·누락·겹침은 계속 거부한다. AI 재생성이나 원본 PNG 수정은 없다. 이전 실패 네발 친구를 포함한 동일 PNG 4종이 모두 16프레임으로 읽힌다.
+
+배포 소스 `b81fa41f2780d1f31c0b5782d143ec2f6dbb62f2`, [Pages 검사·배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38928214360)와 [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38928214277) 성공. 분리 부위가 있는 입력으로 웹 생성/저장만 재시도/홈·던전 재사용 통합 검사를 통과했다. 실제 공개 URL에서 로드된 모듈의 빌드 일치·기존 실패 PNG의 16프레임 판독·1120/360px·저장 불변·외부 요청 및 페이지 오류 0을 확인했다. 사용자 저장소는 건드리지 않았다.
+
+Anna 소유자 테스트 초안은 **revision 63**, 심사 후보 **1.4.5 / ID 1417**은 교체하지 않았다. dora의 과거 실패 원인은 해당 원본 응답이나 로그 없이 확정하지 못하며, 버려진 생성 결과를 복구한 작업도 아니다. [최종 인계](../anna/HANDOFF.md).
