@@ -6,11 +6,11 @@
 
 | 항목 | 값 |
 | --- | --- |
-| Anna 앱 | **1.4.5 / ID 1417 / working revision 59**, 소유자 테스트 실제 설치 |
-| 안내 변경 | Git 반영, Anna 테스트 앱 배포 차단: 이 Mac에 Anna PAT 없음 |
+| Anna 앱 | **1.4.5 소스 / 소유자 초안 `0.0.0-draft` / working revision 60**, 설치·실제 번들 연결 검증 |
+| 안내 변경 | 한국어·영어·모바일 안내를 Anna 테스트 초안과 공개 웹에 반영 완료 |
 | 게임 도구 | **0.9.1 / Executa version 760**, 변경 없음, 클라우드 실행 확인, PC 오프라인 |
 | 스토어 | **1.4.5 / ID 1417 / pending_review**, 요청에 따라 후보 교체, 기존 소개·스크린샷 유지 |
-| 검증 | JS 89 · 브라우저 103 · strict, 실제 개인 시트 보정·네 방향·네 동작 확인, 게임 데이터 보존 |
+| 검증 | JS 89 · 브라우저 103 · strict · Windows/Linux/Pyodide CI, 실제 설치 안내·클라우드 도구·저장 보존 확인 |
 | 공개 웹 | **0.4.2**, Pages 배포와 실제 URL의 공통 모듈·1120/360px·저장 검증 완료 |
 | 제한 | 대표 체형 4종 중 3종 수용·네발 잎 장식 시트 판독 거부. 생성물 의미 검수 필요, 실제 Anna 참조 생성 미검증, 아바타 착용 미구현 |
 
@@ -26,8 +26,10 @@
 - 던전 미발견·클리어·만료 후에도 발견 안내는 남기되, 미발견 던전 입장 카드는 노출하지 않는다. 다섯 지역·레벨 해금 없음·한 번에 한 던전·산책 25%·당일 클리어 지역의 한국 시간 자정 재편입을 설명한다.
 - 발견 후 24시간 만료·자동 교체/타이머 초기화 없음·입장 완료 스테이지의 선택 보존, 새 탐험/패배 후 재도전 최대 HP·같은 탐험 내 체력 유지·쉼터 회복을 설명한다. HP 안내는 입장 버튼 위에 표시한다.
 - 검증: JS **89**, strict 통과. 브라우저 **103** 통과. 웹 기본/저장/백업·홈/던전·7개 테마 통합 검사 통과. 로컬 웹 1120/360px·입장 안내·저장 스냅샷 동일·AI 0회·페이지 오류 0 확인.
-- **Anna 배포 차단**: `anna-app apps status notebuddy`가 `no PAT on disk and ANNA_APP_PAT not set`으로 실패했다. 작업 revision을 새로 업로드하거나 실제 설치 UI/실행 도구를 확인하지 못했다. 마지막 설치 기록은 **1.4.5 / ID 1417 / working revision 59**, 도구 **0.9.1 / Executa version 760**이며 이번 작업의 재검증 값이 아니다. 심사 후보·공유 소개·그림·게임·대화 저장에는 접근하거나 변경하지 않았다. Windows/Linux 도구는 코드 변경이 없어 새 패키지 배포 대상이 아니다.
-- 공개 웹 **0.4.2** 유지, [Pages 빌드·배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38886276977) 성공. 실제 공개 URL의 HTML·공통 번역·던전·앱 JS가 로컬 빌드와 동일하며 1120/360px·새 친구의 미발견 안내·입장 HP/만료 설명·저장 스냅샷 동일·AI 0회·페이지 오류 0을 확인했다. 별도 브라우저 컨텍스트로 사용자 저장소를 격리했다. [release 공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38886273807)와 [웹 공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38886277180) Windows/Linux/Pyodide 성공. Anna Windows/Linux 패키지 CI는 기록 시점 진행 중이다.
+- **Anna 배포 완료**: 사용자 로그인 승인 후 working revision **60** 업로드와 소유자 초안 **`0.0.0-draft`** 설치에 성공했다. 새 불변 버전은 만들지 않아 **1.4.5 / ID 1417 / pending_review** 후보와 공유 소개·스크린샷·로고·지원 링크를 유지했다. `dirty_vs_latest_cut=true`는 설명 변경이 테스트 초안에만 반영됐음을 뜻한다. 기존 Executa **0.9.1 / version 760**을 재사용했고 설치 응답은 `already_satisfied`, 클라우드 실제 플러그인 manifest **0.9.1 / enabled=true / running=true / last_error=null**을 확인했다. PC는 오프라인이며 도구 코드·패키지는 변경하지 않았다.
+- 실제 검증: 설치 번들을 플랫폼의 공식 창 관리자·호스트 브리지에 연결해 **Connected**, 한국어·영어 승패/발견/만료/HP 안내와 실제 진행 중인 지옥문 선택의 보존, 360px 화면을 확인했다. 모의 게임/AI 응답은 쓰지 않았고 AI 호출 0·브라우저 예외 0이다. 개발자 PAT는 일반 대시보드의 브라우저 세션 로그인을 대신하지 못해 공식 WM/브리지를 별도 테스트 호스트에 올렸다. 사용자 일반 브라우저의 재접속은 별도 확인 범위다. 설치 번역·던전·CSS 3개 HTTP 200/SHA-256 소스 일치, HTML은 Node 인증 요청 HTTP 200/소스 일치 및 실제 DOM으로 확인했다(iframe 직접 fetch는 플랫폼 403).
+- 설치 전후와 실제 화면 확인 후 앱 저장 **아트·대화·산책 이야기·성격 초안** 값/ETag 및 게임 개인정보 inspect 응답이 동일하다. 생성·전투·산책·구매·꾸미기·리셋·삭제는 실행하지 않았다. 개인 스냅샷·검증 화면은 Git 제외 `.local/anna-guidance/`에만 보관한다.
+- 공개 웹 **0.4.2** 유지, [Pages 빌드·배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38886276977) 성공. 실제 공개 URL의 HTML·공통 번역·던전·앱 JS가 로컬 빌드와 동일하며 1120/360px·새 친구의 미발견 안내·입장 HP/만료 설명·저장 스냅샷 동일·AI 0회·페이지 오류 0을 확인했다. 별도 브라우저 컨텍스트로 사용자 저장소를 격리했다. [release 공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38886273807)와 [웹 공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38886277180) Windows/Linux/Pyodide 성공. [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38886273836)도 UI·브라우저·저장/프로토콜·패키지 검사를 모두 통과했다.
 
 # 1.4.5 · 방향별 동작 일관성 보정과 심사 후보 교체 · 2026-10-16
 
