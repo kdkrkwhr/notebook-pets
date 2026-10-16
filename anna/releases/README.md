@@ -6,6 +6,7 @@ Anna 테스트 앱 배포별 기록이다. 최신이 위에 온다.
 
 | 버전 | 날짜 | 요약 |
 | --- | --- | --- |
+| [1.4.6 · Latest fixes in review](RELEASE_146.md) | 2026-10-17 | 최신 검증본 revision 64 / ID 1426, 심사 후보 1.4.6으로 교체. |
 | [1.4.5 · Directional pose consistency](RELEASE_145.md) | 2026-10-16 | 대표 방향 보정·체형 회귀 검사. ID 1417 / revision 59, 도구 0.9.1, 심사 후보 1.4.5로 교체. |
 | [1.4.4 · Notebook themes](RELEASE_144.md) | 2026-10-16 | 일곱 테마, Anna 1.4.4·웹 0.4.1 배포. |
 | [1.4.3 · Shared movement](RELEASE_143.md) | 2026-10-16 | 수동 동작 생성 제거, 이미지 저장 시 한 번 준비, 홈·던전 동작 공유. ID 1413 / revision 57, 도구 0.9.1·심사 1.0.0 유지. |
