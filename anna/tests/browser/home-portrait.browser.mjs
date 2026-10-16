@@ -40,6 +40,46 @@ const begin=(p,pet,source)=>p.evaluate(([pet,source])=>window.begin(pet,source),
 const finish=(p,request,color,load)=>p.evaluate(async({request,color,load})=>{window.finish(request,color);await window.loads[load];},{request,color,load});
 const sprite=p=>p.evaluate(()=>window.sprite());
 
+test('home and dungeon preserve direction, gait and grounded body proportions',async t=>{
+ const p=await setup(t);
+ const result=await p.evaluate(async()=>{
+  const {drawHomeSprite}=await import('/home-sprite.mjs');
+  const {drawAvatar}=await import('/dungeon-avatar.mjs');
+  const directions=['down','left','right','up'],checks=[];
+  for(const [name,w,h] of [['wide-legless',90,32],['tall',30,88],['winged',96,50],['round',60,60]]){
+   const canvas=document.createElement('canvas');canvas.width=512;canvas.height=512;
+   const frames=[],source=canvas.getContext('2d');
+   for(let row=0;row<4;row++)for(let frame=0;frame<4;frame++){
+    const x=frame*128+10,y=row*128+10;frames.push([x,y,w,h]);
+    source.fillStyle=`rgb(${40+row*50},${40+frame*50},80)`;source.fillRect(x,y,w,h);
+    // An asymmetric marker catches accidental horizontal flipping.
+    source.fillStyle='#fff';source.fillRect(x,y,Math.ceil(w/4),h);
+   }
+   const sheet={canvas,frames,maxHeight:h};
+   for(const [row,direction] of directions.entries())for(let gait=0;gait<4;gait++){
+    const target=document.createElement('canvas');target.width=320;target.height=240;
+    const ctx=target.getContext('2d'),draw=ctx.drawImage.bind(ctx);let box;
+    ctx.drawImage=(...args)=>{box=args.slice(5);draw(...args);};
+    const verify=(expectedFrame)=>{
+     const [x,y,width,height]=box;
+     if(y+height!==160||Math.abs(x+width/2-160)>.5||x<0||x+width>320)throw Error('Body anchor or clipping: '+name);
+     const pixel=[...ctx.getImageData(Math.floor(x+width*.6),Math.floor(y+height/2),1,1).data];
+     if(pixel[0]!==40+row*50||pixel[1]!==40+expectedFrame*50)throw Error('Wrong direction or gait: '+name);
+     const marker=[...ctx.getImageData(Math.ceil(x+1),Math.floor(y+height/2),1,1).data];
+     if(marker[0]!==255)throw Error('Unexpected mirror: '+name);
+     ctx.clearRect(0,0,320,240);
+    };
+    drawHomeSprite(ctx,sheet,160,160,{direction,frame:gait});verify(gait);
+    drawAvatar(ctx,160,160,{sprite:sheet,direction,frame:gait,walking:true,scale:2});verify([0,1,2,1][gait]);
+    drawAvatar(ctx,160,160,{sprite:sheet,direction,frame:gait,walking:false,scale:2});verify(1);
+   }
+   checks.push(name);
+  }
+  return checks;
+ });
+ assert.deepEqual(result,['wide-legless','tall','winged','round']);
+});
+
 test('home reopens an interrupted replacement sprite and caches only the completed image',async t=>{
  const p=await setup(t);
  const first=await begin(p,'pet-a','/sprite/red');await finish(p,0,'red',first);
