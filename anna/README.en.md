@@ -10,11 +10,15 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-Owner test update **1.4.3** uses game tool **0.9.1**. The store candidate remains **1.0.0 pending review**, not publicly released.
+Owner test update **1.4.4** uses game tool **0.9.1**. The store candidate remains **1.0.0 pending review**, not publicly released.
 
 Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
 ## Your first meeting
+
+Choose **◐ Theme** in the header to change your notebook's mood. Seven themes include Notebook, Quiet Night and all five dungeon settings. Changes preview immediately and stay on this device. Artwork and game-world colors remain intact; choosing themes uses no AI. The public web version offers the same themes.
+
+![Seven theme choices](../docs/screenshots/themes-144-ko.png)
 
 1. Open **Notebuddy** in the installed Anna test app. English is the default; choose **한국어** in the header for Korean.
 2. Name your companion and choose **Surprise me** or **From a drawing or photo**.

@@ -1,0 +1,68 @@
+/* Local appearance palettes. World canvases and artwork retain their own colors. */
+:root,[data-palette="notebook"]{--surface:#fffdf6;--hover:#fdf0d2;--user-surface:#e9f0dc;--action:#55794a;--action-hover:#3d5a34;--action-ink:#fffaf0;--danger-surface:#fff2ec;--danger-ink:#913e32;--title-shadow:#e8be6f}
+[data-palette="notebook"]{--ink:#3d3226;--paper:#fffaf0;--page:#f2ead8;--grid:#e4d8bf;--frame:#d9c6a2;--muted:#6d5d49;--gold:#a86519;--green:#55794a}
+:root[data-theme="night"],[data-palette="night"]{color-scheme:dark;--ink:#e6edf5;--ink-soft:#bbc8da;--paper:#1b2533;--page:#101725;--grid:#1b293b;--frame:#455568;--muted:#abb9cc;--green:#93cba7;--green-dark:#b6dfb2;--gold:#efc780;--surface:#222f40;--hover:#30445b;--user-surface:#2b3d46;--action:#355f4b;--action-hover:#284a3a;--action-ink:#fffaf0;--danger-surface:#472c37;--danger-ink:#ffc4bf;--title-shadow:#3e5879}
+:root[data-theme="hellgate"],[data-palette="hellgate"]{color-scheme:dark;--ink:#ffeddf;--ink-soft:#e4bbab;--paper:#241a1b;--page:#150e12;--grid:#2d1b20;--frame:#604039;--muted:#c9ada4;--green:#f3a36e;--green-dark:#ffbd8b;--gold:#ffb85f;--surface:#332326;--hover:#50312c;--user-surface:#402a29;--action:#844135;--action-hover:#6b3026;--action-ink:#fffaf0;--danger-surface:#4d272e;--danger-ink:#ffc4bf;--title-shadow:#783c2a}
+:root[data-theme="icekingdom"],[data-palette="icekingdom"]{color-scheme:light;--ink:#17394b;--ink-soft:#385d70;--paper:#f8fcff;--page:#eef8fc;--grid:#d3e8f0;--frame:#8dbccc;--muted:#456474;--green:#29647e;--green-dark:#17435c;--gold:#985b17;--surface:#e2f1f8;--hover:#d4eaf7;--user-surface:#dcebf3;--action:#245d77;--action-hover:#17435c;--action-ink:#fff;--danger-surface:#ffe9e6;--danger-ink:#913e32;--title-shadow:#aed5e7}
+:root[data-theme="dreamforest"],[data-palette="dreamforest"]{color-scheme:dark;--ink:#e2f4d8;--ink-soft:#c2d8b7;--paper:#19312a;--page:#0f201d;--grid:#1c322b;--frame:#4c6953;--muted:#b5c8ad;--green:#a8d281;--green-dark:#c4eda4;--gold:#e4d68b;--surface:#243d31;--hover:#36533c;--user-surface:#304738;--action:#3c633d;--action-hover:#2b492e;--action-ink:#fffaf0;--danger-surface:#492f32;--danger-ink:#ffc4bf;--title-shadow:#49653d}
+:root[data-theme="sunkenpalace"],[data-palette="sunkenpalace"]{color-scheme:dark;--ink:#ddf3f2;--ink-soft:#b7d9dc;--paper:#112f3b;--page:#0b1d29;--grid:#183441;--frame:#3c6571;--muted:#a4c7ce;--green:#7bd4c9;--green-dark:#aaeadf;--gold:#e8c87f;--surface:#1b3c48;--hover:#285461;--user-surface:#214b51;--action:#256669;--action-hover:#194c50;--action-ink:#fffaf0;--danger-surface:#472d3b;--danger-ink:#ffc4bf;--title-shadow:#326c76}
+:root[data-theme="clockworkcity"],[data-palette="clockworkcity"]{color-scheme:dark;--ink:#fff0cd;--ink-soft:#e0ceb0;--paper:#322920;--page:#231d19;--grid:#392d21;--frame:#75604a;--muted:#cdbd9f;--green:#e3c079;--green-dark:#ffdda2;--gold:#edb96b;--surface:#403429;--hover:#58432e;--user-surface:#4d3f2d;--action:#785629;--action-hover:#5d4120;--action-ink:#fffaf0;--danger-surface:#542e29;--danger-ink:#ffd0bf;--title-shadow:#846333}
+:root[data-theme="notebook"]{color-scheme:light}
+:root[data-theme]:not([data-theme="notebook"]){--line:var(--frame)}
+
+/* Keep the original notebook styling intact. Only alternate palettes need these overrides. */
+html[data-theme]:not([data-theme="notebook"]) {
+ body,button,input,select,dialog{color:var(--ink)}
+ input,select{background:var(--surface)}
+ input::placeholder{color:var(--muted);opacity:1}
+ button:hover:not(:disabled),.item-card:hover:not(:disabled),.title-menu button:hover,.title-menu button:focus-visible{background:var(--hover)}
+ .primary{background:var(--action);color:var(--action-ink)}
+ .primary:hover:not(:disabled){background:var(--action-hover)}
+ .danger{background:var(--danger-surface);color:var(--danger-ink);border-color:var(--danger-ink);box-shadow:0 3px 0 var(--danger-ink)}
+ #erase-error,#reset-error,#portraits-error{color:var(--danger-ink)}
+ .actions button,.story-choice,.message,.badge,.result,.notice,.pixel-companion,.growth-note,.birth-orbit,.story-ending,.story-influence,.encounter,.item-card,.home-item,.dungeon-card{background:var(--surface);color:var(--ink)}
+ .message.user{background:var(--user-surface)}
+ .stats,.actions small,.album-item small,.image-caption,.scribble,.welcome p:not(.eyebrow),.dungeon-card span{color:var(--muted)}
+ .stats,.chat-card>.card-top,.chat-bottom{border-color:var(--frame)}
+ progress,progress::-webkit-progress-bar{background:var(--surface)}
+ progress::-webkit-progress-value{background:var(--green)}
+ #intimacy-bar::-webkit-progress-value{background:var(--gold)}
+ .birth-steps [data-state="current"]{background:var(--hover)}
+ .collection-tabs [role="tab"]{background:var(--surface)}
+ .collection-tabs [aria-selected="true"]{background:var(--paper)}
+ .item-book-notice,.item-card .item-ownership{background:var(--user-surface);color:var(--ink)}
+ .item-card .item-card-meta{color:var(--muted)}
+ .item-card[data-rarity="rare"] .item-card-meta{color:var(--gold)}
+ .portrait img,.album-image img,.welcome>img,.fighter img{mix-blend-mode:normal}
+ .portrait img,.album-image,.welcome>img,.fighter img{background:#fffaf0;border-radius:6px}
+ .battle-scene{background:linear-gradient(var(--surface),var(--page))}
+ #title-screen{background-image:radial-gradient(ellipse at center,var(--paper) 0 35%,transparent 75%),linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px)}
+ .title-logo,.title-logo span{text-shadow:3px 3px 0 var(--title-shadow)}
+ .title-menu button{color:var(--ink)}
+ #home-dialog{background:var(--paper)}
+ .home-world-controls button,.home-world-controls output,#home-empty{background:var(--paper);color:var(--ink);border-color:var(--frame)}
+ .home-world-controls button[aria-pressed="true"]{background:var(--user-surface)}
+ #story-resume{background:var(--user-surface);color:var(--ink);border-color:var(--frame)}
+}
+/* The dungeon has its own dark HUD, independently of the surrounding notebook. */
+#dungeon-dialog .muted{color:#c9c4b9}#dungeon-dialog .dungeon-choice h3{color:#fff1d2}
+
+#theme-dialog{width:min(800px,calc(100vw - 24px));max-width:800px;max-height:calc(100dvh - 24px);padding:24px;overflow:auto}
+#theme-heading{margin:0 0 8px;font-size:22px}
+#theme-help{margin:0 0 20px;color:var(--muted);line-height:1.7}
+#theme-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.theme-option{position:relative;display:flex;flex-direction:column;gap:8px;min-width:0;margin:0;padding:10px;cursor:pointer;border:2px solid var(--frame);border-radius:6px;background:var(--paper);color:var(--ink);font-family:var(--pixel)}
+.theme-option:has(input:checked){border-color:var(--green);box-shadow:0 0 0 2px var(--green)}
+.theme-option:has(input:focus-visible){outline:3px solid var(--gold);outline-offset:4px}
+.theme-preview{height:76px;display:flex;align-items:center;justify-content:center;gap:18px;border-radius:3px;background-color:var(--page);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:12px 12px}
+.theme-symbol{font-size:34px;color:var(--green);line-height:1}
+.theme-mini-window{display:flex;flex-direction:column;gap:6px;width:68px;padding:10px;border:2px solid var(--ink);background:var(--paper);box-shadow:3px 3px 0 var(--frame)}
+.theme-mini-window i{display:block;height:4px;background:var(--frame)}
+.theme-mini-window i:first-child{width:60%;background:var(--green)}
+.theme-mini-window i:last-child{width:70%;background:var(--gold)}
+.theme-name{font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.theme-description{font-size:11px;line-height:1.6;color:var(--muted)}
+.theme-selected{min-height:18px;margin-top:auto;color:var(--green);font-size:11px}
+.theme-footer{display:flex;justify-content:flex-end;margin-top:22px}
+#theme-status{color:var(--muted);font-size:12px;line-height:1.6}
+@media(max-width:600px){#theme-dialog{padding:18px 14px}#theme-heading{font-size:19px}#theme-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.theme-preview{gap:12px;height:64px}.theme-mini-window{width:52px;padding:8px}.theme-symbol{font-size:28px}.theme-description{font-size:10px}.theme-name{font-size:12px}}
