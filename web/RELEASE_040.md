@@ -21,4 +21,10 @@ Anna `release`의 1.4.3까지 변경을 Git으로 통합하고 웹의 저장소�
 
 ## 배포
 
-배포 준비 완료. GitHub Pages 배포와 공개 URL 검증 결과는 완료 후 이곳에 기록한다.
+배포 완료: https://kdkrkwhr.github.io/notebook-pets/ · 최종 배포 소스 **`f7220eb896e9b922e57b5867105a8db2bf560828`**, 기능 통합 **`fcfb05ec6028bbbb623d8341d482353faa76f759`**.
+
+- 최종 [Pages 빌드·Chromium·배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38842620201)와 [Windows/Linux·Pyodide 코어 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38842620052) 성공. 최초 기능 커밋의 [Pages](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38842279781)·[코어 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38842279761)도 통과했다.
+- 공개 URL의 별도 Edge 컨텍스트에서 기존 웹 회귀와 새 홈·동작·던전·그림 백업·AI 호출 횟수·늦은 저장 차단 검증 모두 통과. 사용자 브라우저/Anna 저장은 변경하지 않았다.
+- 공개 HTML의 `data-web-version=0.4.0` 확인. JS/Worker/홈·던전 모듈/코어/아트 **16개 파일**이 로컬 빌드와 SHA-256 일치(텍스트 줄바꿈 정규화).
+- 공개 URL 테스트에서 이름 표시가 앨범 렌더 완료보다 앞설 수 있음을 확인해 테스트가 생성 작업 완료를 기다리도록 보완했다(`f7220eb`). 런타임 코드는 동일하다.
+- Anna `release` 작업 폴더는 `ab7fde5`로 유지되고 깨끗하다. 웹의 `anna/bundle`과 `engine`은 해당 Anna 릴리즈 원본과 동일하다.
