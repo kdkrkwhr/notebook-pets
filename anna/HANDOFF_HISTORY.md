@@ -4,6 +4,17 @@
 
 ---
 
+# 1.4.0 · 성격 기반 나만의 홈 · 2026-10-16
+
+앱 **1.4.0 / ID 1403 / working revision 54**, 도구 **0.9.0 / Executa version 758**, 배포 소스 **`f53e7bc`**. `release`에 커밋·푸시하고 소유자 테스트 앱을 설치했다. 설치 버전은 `0.0.0-draft`, `dirty_vs_latest_cut=false`다.
+
+- 분리된 2D 바닥·벽·가구와 기존 친구 그림을 사용한다. 무료 둥지+구매 가구 11종, 보관함, 성격에 따른 배치 선택, 이동·마법 운반·생활 연출, 이전 배치 복원을 구현했다. 수동 배치는 없다.
+- ‘꾸며 줘’에만 AI 최대 1회(응답 최대 160토큰). 구매·보기·이동·생활·되돌리기·저장 확인은 0회. 코어가 가격·소유·코인·충돌·출입구·2×2 경로·revision을 검사하고 AI는 최대 4개 후보 중 하나만 고른다. 한 요청에 최대 3개를 배치한다.
+- [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38761143332)와 [Anna CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38761143190)의 Windows/Linux 검증이 통과했다. CI 기준 `9c3d694`, 두 OS 실행 파일에서 구매·배치·중복 재시도와 던전 보상까지 검사했다. 이후 UI 벽걸이 높이 조정은 홈 브라우저 2개 재검증 및 설치 파일 해시 일치로 확인했다.
+- 검증된 CI 패키지를 두 실행기에 설치해 실제 **0.9.0 / loaded=true / running=true** 확인. 원래 클라우드 기본값을 복원했다. 실제 설치 UI Connected, 방 열기·가구 12종·기존 장식 초상화 표시 정상. UI/가구 파일 6개 HTTP 200 및 소스 SHA-256 일치.
+- 게임 ETag와 아트·대화·이야기·성격 초안의 값/ETag 모두 동일. 친구·XP 유지, 홈 revision 0, 둥지와 24코인 그대로다. 실제 사용자 구매나 유료 AI 요청은 하지 않았으며, AI 1회 계약은 실제 코어+모의 제공자로 검증했다.
+- 공유 소개·기존 스크린샷 6개·심사 후보 1.0.0 모두 유지. 재심사·공개 출시는 하지 않았다. 홈 UI의 웹 이식은 별도다. [전체 배포 기록](releases/RELEASE_140.md) · [기획 및 구현 범위](docs/HOME_DECORATION.md).
+
 # 1.2.1 · 공통 코어 분리와 메모리 기반 Anna 작업자 · 2026-10-15
 
 앱 **1.2.1 / ID 1402 / working revision 53**, 도구 **0.8.1 / Executa version 757**. 소스 **`506e1f141b02a615d44a60ef5c97cf61a5ff9d87`**를 `main`과 기존 Anna 배포 브랜치 `release`에 반영했다. 소유자 테스트 앱은 같은 내용의 `0.0.0-draft`로 설치됐고 `dirty_vs_latest_cut=false`다. 심사 후보 **1.0.0 / ID 1383 / pending_review** 및 공유 소개는 유지했다.

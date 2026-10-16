@@ -8,7 +8,7 @@
 
 Notebuddy is a companion game about growing alongside one AI friend. Start with a drawing, a photo or a surprise companion. Share your day, build a routine, discover stories and pixel dungeons on walks, and keep a little album of your friend's growth.
 
-The current Anna owner test app is **1.4.1**, with a notebook theme, a 2.5D companion and **five dungeons**, including illustrated previews and bosses for both new regions. Version **1.0.0 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 16, 2026.
+The current Anna owner test app is **1.4.2**, with a notebook theme, a 2.5D companion and **five dungeons**, including illustrated previews and bosses for both new regions. Version **1.0.0 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 16, 2026.
 
 [![Anna app tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml/badge.svg?branch=release)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml)
 
@@ -50,6 +50,12 @@ Feed your friend, offer a treat, play, train and help them rest. Watch their ful
 Tell them about your day in the conversation area. Replies draw on their saved personality, recent conversation and shared experiences. They also offer a short reaction after care.
 
 **Personality grows with experience.** A name and appearance inspire their initial voice and habits. Care, training, walks and adventure choices gradually influence curiosity, warmth, energy and caution. You can inspect these changes in the personality panel and hear them reflected in conversations and walk stories. Chat text alone does not directly change trait scores.
+
+## A home and garden to share
+
+Version **1.4.2** adds a spacious pixel home. Watch your friend wander through the garden and enter their room, follow the camera, zoom in or pause. Buy furniture in the shop and ask your friend to choose its placement.
+
+**Create movement** generates four-direction poses from your own companion's current artwork. This uses an explicit image AI request once, then reuses the saved result for movement and reopening. [Home guide](anna/README.en.md)
 
 ## Keep their growth in an album
 
@@ -119,7 +125,7 @@ Future equipment will take each companion's body shape into account. A friend wi
 
 | Edition | Availability |
 | --- | --- |
-| **Anna app** | The screens and features above are in owner test version **1.4.1**. Public store release awaits **1.0.0 review**. [App user guide](anna/README.en.md) |
+| **Anna app** | The screens and features above are in owner test version **1.4.2**. Public store release awaits **1.0.0 review**. [App user guide](anna/README.en.md) |
 | **Open-source engine, Discord and AI agents** | Run or connect the project yourself. The Anna interface, continuing stories and item book have their own feature scope. [Setup and integration guide](docs/DEVELOPMENT.en.md) |
 
 The Anna app supports **English and Korean**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.

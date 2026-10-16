@@ -10,7 +10,7 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-Owner test update **1.4.1** uses game tool **0.9.0**. The store candidate remains **1.0.0 pending review**, not publicly released.
+Owner test update **1.4.2** uses game tool **0.9.1**. The store candidate remains **1.0.0 pending review**, not publicly released.
 
 Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
@@ -67,8 +67,12 @@ Screenshots show the real UI with separate test data. Mori is an actual Anna-gen
 
 <p align="center"><img src="../docs/screenshots/inventory-120-ko.png" width="280" alt="1.2.0 Korean inventory with isolated test ownership"></p>
 
-## My home (1.4.0)
+## My home
 
 Open **My home**, buy furniture with game coins, then choose **Decorate**. Your companion chooses among validated layouts using its saved personality and carries the furniture into place. One room includes a free resting nest and eleven purchasable objects; each request places at most three stored objects. Undo restores the previous layout while keeping your purchases.
 
-Only Decorate makes one bounded AI request. Purchases, room visits, movement, idle life, undo and save-only retries use no AI. Room geometry, individual furniture sprites and the existing portrait are rendered separately. Initial character motion uses portrait movement and carrying effects.
+Decorate makes one bounded layout-selection request. Purchases, room visits, movement, idle life, undo and save-only retries use no AI. Room geometry, furniture and the companion are rendered separately.
+
+In **1.4.2**, the home becomes a large pixel garden and separate indoor room. Your friend automatically follows paths through the door, changes poses with direction, and passes behind objects. Follow the camera, zoom in or pause to watch. Furniture opens in a separate panel.
+
+Choose **Create movement** to generate directional poses from your own companion's current portrait. This explicitly uses one image AI request; the saved sheet is reused when walking or reopening. A different companion, growth stage or replacement portrait cannot reuse an old sheet. **Retry saving** reuses a received result without another AI call while the page remains open. This is separate from the existing free dungeon pixel conversion. An unavailable sheet is never replaced with another user's sample character.
