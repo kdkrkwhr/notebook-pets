@@ -27,7 +27,7 @@ export function createDungeons(h){
       if(!entry||remaining(entry)<=0){card.remove();continue;}
       card.querySelector('.dungeon-countdown').textContent=countdown(entry);
     }
-    $('#dungeon-section').hidden=!$('#dungeon-list').childElementCount&&!state.expedition?.id;
+    $('#dungeon-section').hidden=false;
     if(dialog.open){
       $('#dungeon-countdown').hidden=!!run;
       if(!run){
@@ -127,7 +127,7 @@ export function createDungeons(h){
   function render(){
     const view=h.view(),state=view?.status?.dungeons;
     const entries=state?.entries?.filter(entry=>entry.discovered&&DUNGEON_IDS.includes(entry.id)&&remaining(entry)>0)||[];
-    $('#dungeon-section').hidden=!entries.length&&!state?.expedition?.id;
+    $('#dungeon-section').hidden=!state;
     $('#dungeon-list').replaceChildren();
     if(!state)return;
     $('#dungeon-coins').textContent=tr('dungeonCoins',{coins:state.coins});
