@@ -10,6 +10,12 @@
 OLLAMA_ORIGINS=https://kdkrkwhr.github.io OLLAMA_NO_CLOUD=1 ollama serve
 ```
 
+이 프로젝트에서 우선 사용할 모델은 `qwen3.5:4b-q4_K_M`입니다. 같은 이름의 기본 `qwen3.5:4b`는 Apple Silicon에서 MLX 모델이 선택될 수 있으며, 이번에 확인한 Ollama 0.40.5의 MLX 실행은 JSON 강제 출력을 501로 거부했습니다. 가구 배치에는 GGUF 모델을 명시하세요. 기존 `qwen3:8b`도 대화·배치 실검증을 통과했습니다. `vision` 표시는 이미지 이해 기능이며 이미지 생성 기능이 아닙니다.
+
+```sh
+ollama pull qwen3.5:4b-q4_K_M
+```
+
 개발 주소로 접속한다면 `OLLAMA_ORIGINS`에 해당 출처(예: `http://localhost:8080`)를 허용하세요. 출처에는 `/notebook-pets/` 경로를 넣지 않습니다.
 
 웹의 **설정 → 대화·가구 배치 → Ollama**에서 `http://localhost:11434`를 입력하고 **연결하고 설치된 모델 보기**를 누른 뒤 모델을 선택합니다. 연결 확인은 목록만 읽으며 추론하지 않습니다. 실제 요청 전 모델 정보를 확인해 클라우드 모델을 거부합니다. 작은 모델은 JSON 후보 선택에 실패할 수 있으며, 검증되지 않은 배치는 적용하지 않습니다. 모델 다운로드는 앱이 자동 실행하지 않습니다.

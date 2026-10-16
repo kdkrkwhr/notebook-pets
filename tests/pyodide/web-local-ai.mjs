@@ -70,7 +70,7 @@ try{
   await page.evaluate(async()=>{const m=await import('./store.js'),db=await m.openStore(),s=await m.load(db);s.state.coins=100;await m.commit(db,s.revision,s.state);});await page.locator('#refresh').click();await idle();
   await page.locator('#open-home').click();await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');await page.locator('#home-inside').click();await page.locator('#home-yard').click();await page.locator('#home-shop-toggle').click();
   await page.locator('.home-item').filter({hasText:'독서 책상'}).getByRole('button').click();await page.locator('#home-purchase-confirm').click();await idle();assert.equal((await state()).player.state.coins,90);assert.equal(count('/prompt'),1);
-  const beforeDecorate=(await state()).player.revision;await page.locator('#home-decorate').click();await idle();assert((await state()).player.revision>beforeDecorate,'real or mocked model must select a valid candidate');assert((await state()).player.state.home.reason);
+  const beforeDecorate=(await state()).player.revision;await page.locator('#home-decorate').click();await idle();assert((await state()).player.revision>beforeDecorate,'model candidate rejected: '+await page.locator('#home-status').innerText());assert((await state()).player.state.home.reason);
   await page.locator('#home-undo').click();await idle();
   if(!realOllama){const prior=(await state()).player.state;badDecision=true;await page.locator('#home-decorate').click();await idle();assert.deepEqual((await state()).player.state,prior);badDecision=false;}
   await page.locator('#home-close').click();assert.equal(count('/prompt'),1);
