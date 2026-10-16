@@ -174,17 +174,30 @@ test('pixel save failure preserves the companion and retries without paid genera
  assert.equal((await calls(p,'image')).length,0);
 });
 
-test('undiscovered dungeons stay hidden through care, missed walks and reload',async t=>{
+test('discovery guidance stays visible without exposing undiscovered dungeon cards',async t=>{
  const p=await setup(t,{walkDiscovery:false});await start(p);
- assert.equal(await p.locator('#dungeon-section').isVisible(),false);
+ const before=await p.evaluate(()=>({state:JSON.stringify(window.hostTest.state),calls:window.hostTest.calls.length}));
+ assert.match(await p.locator('[data-i18n="battleRecordHelp"]').innerText(),/Dungeon results do not count/);
+ await p.locator('#dungeon-section summary').click();
+ assert.match(await p.locator('[data-i18n="dungeonRegionsHelp"]').innerText(),/Five regions/);
+ assert.match(await p.locator('#dungeon-section [data-i18n="dungeonDate"]').innerText(),/without an automatic replacement/);
+ assert.deepEqual(await p.evaluate(()=>({state:JSON.stringify(window.hostTest.state),calls:window.hostTest.calls.length})),before);
+ await p.locator('#language').selectOption('ko');
+ assert.match(await p.locator('[data-i18n="battleRecordHelp"]').innerText(),/일반 전투만/);
+ assert.match(await p.locator('[data-i18n="dungeonRegionsHelp"]').innerText(),/다섯 지역/);
+ await p.setViewportSize({width:360,height:800});
+ assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
+ await p.locator('#language').selectOption('en');
+ await p.setViewportSize({width:1120,height:800});
+ assert.equal(await p.locator('#dungeon-section').isVisible(),true);
  assert.equal(await p.locator('[data-dungeon]').count(),0);
  assert.equal(await p.locator('#pixel-pet').isVisible(),true);
  await p.locator('[data-action="feed"]').click();await idle(p);
- assert.equal(await p.locator('#dungeon-section').isVisible(),false);
+ assert.equal(await p.locator('#dungeon-section').isVisible(),true);
  await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
  assert.equal(await p.locator('[data-dungeon]').count(),0);
  await p.reload();await idle(p);
- assert.equal(await p.locator('#dungeon-section').isVisible(),false);
+ assert.equal(await p.locator('#dungeon-section').isVisible(),true);
  await p.locator('#story-resume').click();await p.locator('[data-action="flee"]').click();await idle(p);await finishWalk(p);
  await fault(p,{walkDiscovery:true});await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
  assert.equal(await p.locator('#dungeon-section').isVisible(),true);
@@ -197,6 +210,8 @@ test('undiscovered dungeons stay hidden through care, missed walks and reload',a
 test('dungeon completion saves results without adding a history panel',async t=>{
  const p=await setup(t,{walkOutcome:'quiet'});await start(p);await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
  await p.locator('[data-dungeon="hellgate"]').click();await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.art==='ready');assert.equal(await p.locator('#dungeon-enter').isEnabled(),true);
+ assert.match(await p.locator('[data-i18n="dungeonHealthHelp"]').innerText(),/starts at full HP/);
+ assert.match(await p.locator('[data-i18n="dungeonHealthHelp"]').innerText(),/HP carries between stages/);
  const size=await p.evaluate(()=>{const d=document.querySelector('#dungeon-dialog').getBoundingClientRect(),m=document.querySelector('#dungeon-map').getBoundingClientRect();return {width:d.width,height:d.height,map:m.width,vw:innerWidth,vh:innerHeight};});
  assert.ok(size.width>=size.vw*.9&&size.height>=size.vh*.9);assert.ok(size.map>620,JSON.stringify(size));
  await p.locator('#dungeon-enter').click();await idle(p);
@@ -206,7 +221,7 @@ test('dungeon completion saves results without adding a history panel',async t=>
  await p.locator('#dungeon-skip').click();assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
  await p.locator('#dungeon-skip').click();assert.equal((await calls(p,'explore_hellgate')).length,1);
  await p.reload();await idle(p);assert.match(await p.locator('#dungeon-coins').innerText(),/10/);
- assert.equal(await p.locator('#dungeon-replay').count(),0);assert.equal(await p.locator('#dungeon-section').isVisible(),false);
+ assert.equal(await p.locator('#dungeon-replay').count(),0);assert.equal(await p.locator('#dungeon-section').isVisible(),true);
  assert.equal((await calls(p,'explore_hellgate')).length,0);
 });
 
@@ -257,7 +272,7 @@ test('dungeon countdown expires and old saved results do not expose an expired e
  await p.locator('#dungeon-close').click();
  await p.evaluate(()=>{window.hostTest.state.save.status.dungeons.entries[0].expires_at=Date.now()/1000-1;});
  await p.locator('#refresh').click();await idle(p);assert.equal(await p.locator('[data-dungeon]').count(),0);
- assert.equal(await p.locator('#dungeon-replay').count(),0);assert.equal(await p.locator('#dungeon-section').isVisible(),false);
+ assert.equal(await p.locator('#dungeon-replay').count(),0);assert.equal(await p.locator('#dungeon-section').isVisible(),true);
  assert.equal((await calls(p,'explore_hellgate')).length,1);
 });
 
@@ -888,7 +903,7 @@ test('legacy six-room result visits distinct rooms and pauses without spending a
  assert.match(await p.locator('#dungeon-result').innerText(),/10 coins/);
  assert.equal((await calls(p,'explore_hellgate')).length,1);
  await p.locator('#dungeon-close').click();await p.reload();await idle(p);
- assert.equal(await p.locator('#dungeon-section').isVisible(),false);assert.equal(await p.locator('#dungeon-replay').count(),0);
+ assert.equal(await p.locator('#dungeon-section').isVisible(),true);assert.equal(await p.locator('#dungeon-replay').count(),0);
  assert.equal((await calls(p,'explore_hellgate')).length,0);
  assert.equal((await calls(p,'image')).length,0);
 });
@@ -1076,7 +1091,7 @@ test('mobile puts care before chat and keeps completed adventure history off the
  const p=await setup(t);await start(p);await p.setViewportSize({width:360,height:780});
  const order=await p.evaluate(()=>['.pet-card','.care-card','.chat-card'].map(s=>document.querySelector(s).getBoundingClientRect().top));
  assert.ok(order[0]<order[1]&&order[1]<order[2]);assert.equal(await p.locator('#dungeon-replay').count(),0);
- assert.equal(await p.locator('#dungeon-section').isVisible(),false);assert.equal(await p.locator('#walk-story').isVisible(),false);
+ assert.equal(await p.locator('#dungeon-section').isVisible(),true);assert.equal(await p.locator('#walk-story').isVisible(),false);
  const width=await p.evaluate(()=>({client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth}));assert.ok(width.scroll<=width.client);
 });
 
