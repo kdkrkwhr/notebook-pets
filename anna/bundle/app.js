@@ -1,4 +1,5 @@
 import {createItemCatalog} from './item-catalog.mjs';
+import {createThemes} from './themes.mjs';
 import {createHome} from './home.mjs';
 import {createHomeSprite,currentHomeSprite,homeSpriteKey} from './home-sprite.mjs';
 let homeUI,homeSprites,homeMovementNotice='';
@@ -32,6 +33,7 @@ import {CHAT,ART,ErasedError,mergeSaved,removeAppData} from './data.mjs';
 let preferences;
 try{preferences=window.localStorage;}catch{preferences=null;}
 let language=loadLanguage(preferences);
+const appearance=createThemes(document,preferences,()=>language);
 const itemCatalog=createItemCatalog(document,()=>language);
 const titleScreen=createTitleScreen(document,{privacy:()=>$('#privacy-dialog').showModal()});
 const birthSteps=createBirthSteps(document);
@@ -46,7 +48,7 @@ $('#draw-evolved').addEventListener('click',()=>$('#draw').click());
 function notice(message=''){ $('#notice').textContent=message;$('#notice').hidden=!message; }
 function controls(value){
   busy=value;
-  document.querySelectorAll('button,input,select').forEach(e=>{if(!e.closest('#title-screen'))e.disabled=value;});
+  document.querySelectorAll('button,input,select').forEach(e=>{if(!e.closest('#title-screen,#theme-dialog')&&e.id!=='open-theme')e.disabled=value;});
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingResetRequest||view?.reset_pending))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
   $('#retry-chat').hidden=!pendingChat;
   $('#retry-reaction').hidden=!reactions?.hasUnsaved();
@@ -60,7 +62,7 @@ function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
 function translate(){
   translateDocument(document,language);$('#language').value=language;
-  itemCatalog.render();
+  itemCatalog.render();appearance.render();
   if(birthNotice)birthMessage(birthNotice.key,birthNotice.values);
   text('#draw',tr(pendingImage?'retryImage':'draw'));
 }
@@ -339,6 +341,7 @@ async function cleanupRemovedData(){
   try{
     await removeAppData(anna,()=>privacyCall({action:'inspect'}));
     try{preferences?.removeItem('notebuddy/language-v1');}catch{/* No personal content is stored in this preference. */}
+    appearance.clear();
     notice(tr('cleanupChecked'));
   }catch{notice(tr('cleanupPending'));}
 }

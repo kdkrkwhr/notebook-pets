@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 16 October 2026. This notice describes the Notebuddy 1.4.3 source candidate; previously submitted versions keep their versioned notices. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 16 October 2026. This notice describes the Notebuddy 1.4.4 source candidate; previously submitted versions keep their versioned notices. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -13,7 +13,7 @@ Last updated: 16 October 2026. This notice describes the Notebuddy 1.4.3 source 
 | Dungeon discoveries, daily clears, coins and latest expedition result | Stored with private game progress. Results and charges are committed together before animation; replaying or skipping cannot grant another reward. The latest result remains available across a daily reset until replaced. |
 | Normalized reference drawing/photo and extracted visual features | The PNG reference (longest side at most 1024 pixels) and up to 1200 characters of visible features are saved in Anna file/app storage to create and later redraw the companion. Original filenames and source image metadata are not saved by this app. |
 | Latest walk story, selected ending and up to 64 recent story request identifiers | Saved in Anna app storage to resume a choice and suppress repeated requests. Starting over or removing saved data clears this record. |
-| Language choice | Saved in this browser’s local storage. It is not synced across devices by Notebuddy. |
+| Language and theme choices | Saved in this browser’s local storage. It is not synced across devices by Notebuddy. |
 
 The app does not request your real name, email, contacts or a separate API key. You choose your companion’s name and anything you type into chat. Avoid entering sensitive personal information. Anna authenticates access to the account’s saved data; Notebuddy’s game commands do not accept another user’s account ID.
 
@@ -94,7 +94,7 @@ In Notebuddy, open **Privacy & data → Remove my saved data**. Read the confirm
 
 This permanently ends the existing game. Its saved name, progress and action results are replaced by a minimal removal marker. The app then replaces its saved recent chat and portrait index with minimal markers and asks Anna to delete files under this app’s `portraits/` prefix, including replaced portraits. Removal does not automatically start a new game. A later explicit reset returns to the first-meeting screen after remaining app data and portrait files are cleared; a new companion is created only when the user completes that screen. The markers contain only a removal flag, remain associated with your Anna account’s app/tool storage, and have no expiry configured. They prevent normal requests from recreating the game or conversation until an explicit, confirmed new-companion reset replaces them. The new game retains a random request namespace and reset identifier, not the deleted name or progress.
 
-If cleanup is interrupted, reopen the app and choose **Check and retry data cleanup**. A cleanup error does not mean everything was removed. “Cleanup checked” means the app observed its chat/index markers and an empty portrait file list at that check, not a guarantee about physical erasure or other active clients. Pending uploads and old windows may write afterward: stop them and check again. Already-issued image download links may remain usable until they expire or platform removal takes effect. The browser language preference is cleared after successful cleanup; the current window retains its selected language until closed.
+If cleanup is interrupted, reopen the app and choose **Check and retry data cleanup**. A cleanup error does not mean everything was removed. “Cleanup checked” means the app observed its chat/index markers and an empty portrait file list at that check, not a guarantee about physical erasure or other active clients. Pending uploads and old windows may write afterward: stop them and check again. Already-issued image download links may remain usable until they expire or platform removal takes effect. The browser language and theme preferences are cleared after successful cleanup; the current window retains its selected language until closed.
 
 If game progress changed after the confirmation preview, removal is refused: refresh and review the confirmation again. If the result is uncertain, refresh to check whether the game ended and resume cleanup. The app does not offer this removal flow for a missing game save, because Anna’s current APIs do not provide the first-write protection needed for that case. Concurrent initial creation and old in-flight unconditional writes remain known limitations. Complete erasure has not been verified under every concurrent-client scenario.
 
@@ -102,11 +102,11 @@ For cases this flow cannot handle or questions, use [Notebuddy project support](
 
 Anna’s APIs describe storage deletion as soft deletion, and file removal can involve later cleanup. Removing app-visible records is not a promise of immediate physical erasure, revocation of already-issued image URLs, or removal from platform/provider logs and backups. For Anna-account data and platform retention, use Anna’s account/support facilities.
 
-You can separately clear the app’s browser language preference through your browser’s site-data controls. This only removes the local preference; it does not delete your saved companion, conversation or portraits.
+You can separately clear the app’s browser language and theme preferences through your browser’s site-data controls. This only removes the local preference; it does not delete your saved companion, conversation or portraits.
 
 ## Technical reference
 
-The current app uses tool key `notebuddy/game-v1`, app keys `notebuddy/chat-v1`, `notebuddy/art-v1` and `notebuddy/walk-story-v1`, app files under `portraits/`, and browser key `notebuddy/language-v1`. Older development installations may hold separate records. These identifiers help scope a future authenticated deletion request; users should not post their values publicly.
+The current app uses tool key `notebuddy/game-v1`, app keys `notebuddy/chat-v1`, `notebuddy/art-v1` and `notebuddy/walk-story-v1`, app files under `portraits/`, and browser keys `notebuddy/language-v1` and `notebuddy/theme-v1`. Older development installations may hold separate records. These identifiers help scope a future authenticated deletion request; users should not post their values publicly.
 
 Anna documents the underlying mechanisms in [Persistent Storage](https://anna.partners/developers/reference/executa-persistent-storage.md), [app storage](https://anna.partners/developers/reference/host-api-storage.md) and [app files](https://anna.partners/developers/reference/host-api-files.md). The data practices above describe this app’s current implementation, not a certification of Anna’s compliance or a substitute for Anna’s own policies.
 
