@@ -14,8 +14,8 @@
   "required_executas": [
     {
       "tool_id": "bundled:notebuddy",
-      "version": "0.9.0",
-      "min_version": "0.9.0"
+      "version": "0.9.1",
+      "min_version": "0.9.1"
     }
   ],
   "optional_executas": [],

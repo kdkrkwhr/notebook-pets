@@ -69,6 +69,8 @@ payload = dict(pet_id=home_state['pet_id'], revision=0, item_id='desk')
 bought = worker({'command':'home_buy','state':home_state,'home_payload':json.dumps(payload),'request_id':'build-home-buy'})
 assert bought['state']['coins'] == 20
 plan = worker({'command':'home','state':bought['state']})
+assert plan['result']['home']['world']['yard']['tour'][-1]['next'] == 'inside'
+assert plan['result']['home']['world']['inside']['tour'][-1]['next'] == 'yard'
 selection = dict(pet_id=home_state['pet_id'], revision=1, candidate_id=plan['result']['home_candidates'][0]['id'], reason='A quiet corner.')
 decorated = worker({'command':'home_apply','state':bought['state'],'home_payload':json.dumps(selection),'request_id':'build-home-apply'})
 assert 'desk' in decorated['view']['home']['layout']

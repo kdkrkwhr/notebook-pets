@@ -1,6 +1,7 @@
 import {createItemCatalog} from './item-catalog.mjs';
 import {createHome} from './home.mjs';
-let homeUI;
+import {createHomeSprite,currentHomeSprite,homeSpriteKey} from './home-sprite.mjs';
+let homeUI,homeSprites;
 import {createTitleScreen} from './title-screen.mjs';
 import {createBirthSteps} from './birth-steps.mjs';
 import {createPersonality,axes as personalityAxes} from './personality.mjs';
@@ -50,7 +51,7 @@ function controls(value){
   $('#retry-chat').hidden=!pendingChat;
   $('#retry-reaction').hidden=!reactions?.hasUnsaved();
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
-  if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage||birth?.hasOutput()||pixels?.hasPending()))$('#clean-portraits').disabled=true;
+  if(!value&&(!anna||pendingRemoval||pendingAction||pendingImage||birth?.hasOutput()||pixels?.hasPending()||homeSprites?.hasPending()))$('#clean-portraits').disabled=true;
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
   if(!value&&anna&&!pendingRemoval&&!pendingAction&&!pendingResetRequest&&!view?.reset_pending&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
   birth?.render();stories?.render();dungeons?.render();renderPixel();renderPersonality();
@@ -155,7 +156,7 @@ function render(){
   drawChat();birth?.render();stories?.render();dungeons?.render();renderPixel();renderPersonality();
 }
 function forgetCachedData(){
-  homeUI?.clear();
+  homeUI?.clear();homeSprites?.clear();
   itemCatalog.clear();
   persona?.clear();
   pixels?.clear();pixelNotice='';dungeons?.close();$('#pixel-pet').removeAttribute('src');$('#pixel-pet').hidden=true;
@@ -272,7 +273,7 @@ async function retryChat(){
   controls(true);notice();try{await persistChat();}finally{controls(false);}
 }
 async function cleanupPortraits(){
-  if(busy||pendingAction||pendingRemoval||pendingImage||birth?.hasOutput()||pixels?.hasPending())return;
+  if(busy||pendingAction||pendingRemoval||pendingImage||birth?.hasOutput()||pixels?.hasPending()||homeSprites?.hasPending())return;
   if(!$('#portraits-quiescent').checked){text('#portraits-error',tr('portraitsConfirm'));return;}
   $('#portraits-dialog').close();controls(true);notice();
   try{
@@ -405,7 +406,7 @@ document.querySelectorAll('[data-action]').forEach(button=>button.addEventListen
 $('#retry-action').addEventListener('click',()=>pendingAction&&act(pendingAction.command,{},true));
 $('#chat-form').addEventListener('submit',chat);
 $('#retry-chat').addEventListener('click',retryChat);
-$('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval||birth?.hasOutput()||pixels?.hasPending())return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
+$('#clean-portraits').addEventListener('click',()=>{if(busy||pendingImage||pendingAction||pendingRemoval||birth?.hasOutput()||pixels?.hasPending()||homeSprites?.hasPending())return;$('#portraits-quiescent').checked=false;text('#portraits-error','');$('#portraits-dialog').showModal();});
 $('#confirm-clean-portraits').addEventListener('click',cleanupPortraits);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
 $('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
@@ -508,8 +509,10 @@ persona=createPersonality({anna:()=>anna,active:assertActive,
 });
 
 translate();
+homeSprites=createHomeSprite({anna:()=>anna,active:assertActive,upload:uploadPortrait,saved:async value=>{art=value;await readExtras();render();}});
 homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertActive,invoke,
  saved:next=>{adoptView(next);render();},locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),busy:controls,
- portrait:()=>view?urls[imageKey(view)]||starter(view):'icon.svg'});
+ sprite:()=>view?.status&&currentHomeSprite(view,art)?urls[homeSpriteKey(view)]:null,
+ spritePending:()=>homeSprites.hasPending(),generateSprite:()=>homeSprites.generate()});
 titleScreen.show();
 await refresh();

@@ -50,6 +50,12 @@ Derived PNGs and their source paths use the existing `portraits/` prefix and `no
 
 ## AI processing
 
+### Home movement images (1.4.2)
+
+When you explicitly choose **Create movement**, the app sends the current companion portrait as an image reference to Anna's image service to create directional pixel poses. A bundled starter portrait is first uploaded to your app file storage for this reference. Chat messages are not included. This request uses your Anna image allowance; the existing dungeon pixel conversion remains a local conversion without AI. Opening the home, purchases, movement and reopening do not generate poses automatically.
+
+The saved sheet, companion ID, growth stage and source-image path are stored in your existing app artwork index and `portraits/` files. Only matching entries are shown. Reset and data removal include these files. Save retries reuse a received image while the page remains open; closing before saving may lose that temporary result. Furniture selection uses a separate explicitly requested Decorate call with supplied candidates and saved temperament.
+
 When you send a chat message, the app sends up to 12 recent messages, including that message, and a current companion-status snapshot to Anna’s AI service. The snapshot includes the companion’s name and game status. The service uses these to generate a reply. AI replies do not directly award XP or change game statistics.
 
 When you explicitly confirm a new portrait, the app sends a generated description of the companion’s species, element, growth stage and visual style to Anna’s image service. The app does not append your chat transcript to that image prompt. The generated image is downloaded and saved in Anna file storage.

@@ -95,9 +95,11 @@ def validate(st):
             if not isinstance(p,list) or len(p)!=2 or any(type(v) is not int for v in p) or not 0<=p[0]<=WIDTH-2 or not 0<=p[1]<=HEIGHT-2:raise ValueError('Invalid home route')
 
 def view(st):
+    from home_world import world
     h=state(st)
+    roam=path(h['layout'],cells('nest',h['layout']['nest']))
     return {**h,'pet_id':st.get('pet_id'),'coins':st.get('coins',0),'catalog':[{'id':k,**copy.deepcopy(v)} for k,v in CATALOG.items()],
-            'width':WIDTH,'height':HEIGHT,'door':list(DOOR),'roam':path(h['layout'],cells('nest',h['layout']['nest']))}
+            'width':WIDTH,'height':HEIGHT,'door':list(DOOR),'roam':roam,'world':world(h,CATALOG,roam)}
 
 def motions(old,new):
     moved=[k for k in CATALOG if old.get(k)!=new.get(k)]
