@@ -227,3 +227,5 @@ h1,h2,p,label,.actions b,.actions small{word-break:keep-all;overflow-wrap:break-
 @media(max-width:520px){.item-book-teaser{flex-direction:column;align-items:flex-start}.item-book-samples img{width:64px;height:64px}.item-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.item-card-art{height:120px;margin:6px}.item-card img{width:105px;height:105px}.item-card strong{font-size:12px;margin:5px 10px 7px}.item-card-meta{margin:0 10px;font-size:10px}.item-filters{gap:10px}.item-filters label{flex:1 1 100px}.item-filters .item-search-label{flex:1 1 150px}.item-book-header h2{font-size:19px}.item-detail-body{padding:18px 22px 24px}.item-detail-body h2{font-size:23px}}
 @media(prefers-reduced-motion:reduce){.item-card{transition:none}.item-card:hover:not(:disabled){transform:none}}
 .story-influence { padding: .8rem 1rem; margin: .8rem 0; background: #eef3e8; border-left: 3px solid #78956d; border-radius: .5rem; line-height: 1.7; }
+
+.dungeon-health-help{flex:1 1 100%;font-size:12px;line-height:1.6}
