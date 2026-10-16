@@ -6,4 +6,12 @@
 
 홈·던전의 방향/보행 프레임 선택과 접지·좌우 반전 여부를 4종 체형으로 검사하는 브라우저 회귀 검사를 추가했다. 구매·보기·이동·재입장·저장 재시도는 AI를 호출하지 않으며 생성·재생성 버튼이나 자동 재요청을 추가하지 않는다. 게임 도구는 변경 없는 0.9.1을 재사용한다.
 
-배포 및 최종 심사 후보 교체 결과는 검증 완료 후 이 문서와 HANDOFF.md에 기록한다.
+배포 완료: **Anna 1.4.5 / ID 1417 / working revision 59**, 도구 **0.9.1 / Executa version 760**. 소유자 초안 설치와 실제 홈의 네 방향·네 동작, 설치 코드 3개 HTTP 200 / SHA-256 일치를 확인했다. `dirty_vs_latest_cut=false`. 심사 후보는 사용자 요청에 따라 **1.0.0에서 1.4.5 / pending_review로 교체**했다. 공개 출시는 하지 않았다.
+
+로컬 **JS 89 / 브라우저 103 / strict**, 웹 홈/던전/그림/저장 통합 검사가 통과했다. [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38849480005)와 [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38849480039)의 UI·브라우저·저장/프로토콜·패키지 자체 검사 모두 성공했다. 도구 패키지는 기존 검증된 Windows/Linux 0.9.1을 재사용했고 클라우드 0.9.1 loaded/running을 확인했다. PC 로컬 실행은 이번에 확인하지 않았다.
+
+공개 웹 **0.4.2**로 Git merge 통합과 [Pages 배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38849826706)를 완료했다. [실제 URL](https://kdkrkwhr.github.io/notebook-pets/)에서 로드된 공통 모듈이 빌드와 일치하며 1120/360px·저장 동일·AI 0회·페이지 오류 0을 확인했다. 사용자 웹 저장소는 변경하지 않았다.
+
+게임·대화·이야기·성격 초안 값·ETag와 도구 inspect 응답은 보존했다. 아트는 대상 시트와 복구 항목만 변경했으며 소개·스크린샷 6개와 지원 정보는 유지했다. 빈 cover_url은 플랫폼 저장 시 null/빈 문자열로 정규화됐다. 소스는 `8489187`, 웹 배포 소스는 `339181e`다.
+
+제한: 대표 머리의 방향은 고쳤지만 모든 보조 머리를 완전한 측면으로 정렬한 것은 아니다. 공통 프롬프트만으로 모든 생성물의 방향·외형을 보장하지 않는다. 다른 체형의 실제 생성물과 Anna 제공자의 참조 이미지 생성 성공은 별도 검증이 필요하다. [상세 인계](../HANDOFF.md).
