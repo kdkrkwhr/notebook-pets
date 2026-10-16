@@ -56,8 +56,12 @@ try{
   await page.locator('#home-close').click();await page.setViewportSize({width:1280,height:900});
   // Test-owned local fixture: coins and one discovered dungeon; no live user save.
   await page.evaluate(async()=>{const m=await import('./store.js'),db=await m.openStore(),s=await m.load(db);s.state.coins=100;s.state.dungeons={date:new Date(Date.now()+9*3600000).toISOString().slice(0,10),discovered:['hellgate'],expires_at:{hellgate:Date.now()/1000+86400},cleared:[],misses:0};await m.commit(db,s.revision,s.state);});await refresh();
-  await page.locator('#open-home').click();await page.locator('#home-shop-toggle').click();page.on('dialog',d=>d.accept());
-  await page.locator('.home-item').filter({hasText:'독서 책상'}).getByRole('button').click();await idle();assert.equal(count('layout'),0);assert.equal(count('image'),1);assert.equal((await state()).player.state.coins,90);
+  await page.locator('#open-home').click();await page.locator('#home-shop-toggle').click();
+  const purchaseBefore=await state();
+  const desk=page.locator('.home-item').filter({hasText:'독서 책상'}).getByRole('button');
+  await desk.click();assert(await page.locator('#home-purchase-dialog').isVisible());assert.deepEqual(await state(),purchaseBefore);
+  await page.locator('#home-purchase-cancel').click();assert.deepEqual(await state(),purchaseBefore);
+  await desk.click();await page.locator('#home-purchase-confirm').click();await page.waitForFunction(()=>document.querySelector('#home-status').textContent.includes('독서 책상')&&!document.querySelector('#refresh').disabled);await idle();assert.equal(count('layout'),0);assert.equal(count('image'),1);assert.equal((await state()).player.state.coins,90);
   await page.locator('#home-decorate').click();await idle();assert.equal(count('layout'),1);assert.equal((await state()).player.state.home.reason,'차분하게 쉴 수 있는 방이에요.');
   await page.locator('#home-undo').click();await idle();assert.equal(count('layout'),1);
   const beforeBad=(await state()).player.state;badDecision=true;await page.locator('#home-decorate').click();await idle();assert.deepEqual((await state()).player.state,beforeBad);badDecision=false;assert.equal(count('layout'),2);
@@ -78,6 +82,7 @@ try{
   // Portable backup includes art and survives restore without any AI invocation.
   const backup=await page.evaluate(async()=>{const m=await import('./store.js'),v=await import('./visuals.js');return v.exportNotebook(await m.openStore());});
   assert.equal(backup.version,2);assert(Object.keys(backup.visuals.files).length>=2);assert(!JSON.stringify(backup).includes('WORLD-TEST-KEY'));
+  page.on('dialog',d=>d.accept()); // Backup replacement still uses a browser confirmation in the top-level web page.
   await page.locator('#open-backup').click();await page.locator('#import').setInputFiles({name:'world.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});await idle();await page.waitForFunction(()=>document.querySelector('#backup-status').textContent.includes('가져왔'));
   await page.locator('#backup-dialog [data-close]').click();await page.locator('#open-home').click();await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');await page.locator('#home-close').click();assert.equal(count('image'),2);
   // Advancing the stage alone never creates a new image or reuses stage-one poses.
