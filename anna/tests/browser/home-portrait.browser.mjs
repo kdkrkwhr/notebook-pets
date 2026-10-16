@@ -40,6 +40,39 @@ const begin=(p,pet,source)=>p.evaluate(([pet,source])=>window.begin(pet,source),
 const finish=(p,request,color,load)=>p.evaluate(async({request,color,load})=>{window.finish(request,color);await window.loads[load];},{request,color,load});
 const sprite=p=>p.evaluate(()=>window.sprite());
 
+test('a directional sheet retains detached nearby tail tips without accepting extra characters or ambiguous fragments',async t=>{
+ const p=await setup(t);
+ const result=await p.evaluate(async()=>{
+  const {readHomeSprite}=await import('/home-sprite.mjs');
+  const inspect=async kind=>{
+   const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d');ctx.fillStyle='#285d46';
+   for(let row=0;row<4;row++)for(let col=0;col<4;col++){
+    if(kind==='missing'&&row===3&&col===3)continue;
+    const dx=kind==='unevenTips'?[0,-3,2,-1][col]:0,dy=kind==='unevenTips'?[0,3,-2,1][row]:0;
+    ctx.fillRect(col*64+16+dx,row*64+12+dy,28,38);
+    if(kind==='tips'||kind==='unevenTips')ctx.fillRect(col*64+48+dx,row*64+32+dy,8,8);
+   }
+   if(kind==='extra')ctx.fillRect(48,4,28,38);
+   if(kind==='remote')ctx.fillRect(2,2,8,8);
+   if(kind==='between')ctx.fillRect(58,32,8,8);
+   if(kind==='missing')ctx.fillRect(240,240,8,8);
+   if(kind==='clipped')ctx.fillRect(0,20,17,16);
+   if(kind==='large')ctx.fillRect(48,14,10,30);
+   if(kind==='many')for(const x of [4,48])for(const y of [20,32,44])ctx.fillRect(x,y,8,8);
+   const blob=await new Promise(resolve=>c.toBlob(resolve));
+   try{const s=await readHomeSprite(blob);return {accepted:true,frames:s.frames};}catch(e){return {accepted:false,error:e.message};}
+  };
+  const results={};for(const kind of ['plain','tips','unevenTips','extra','remote','between','missing','clipped','large','many'])results[kind]=await inspect(kind);
+  return results;
+ });
+ assert.equal(result.plain.accepted,true);
+ assert.equal(result.tips.accepted,true,'separate tail tips belong to the adjacent body, not extra animation frames');
+ assert.equal(result.tips.frames.length,16);
+ assert.deepEqual(result.tips.frames[0],[16,12,40,38],'the frame must include the whole detached tip');
+ assert.equal(result.unevenTips.accepted,true,'uneven generated gutters must not be cut at fixed quarter cells');
+ for(const kind of ['extra','remote','between','missing','clipped','large','many'])assert.equal(result[kind].accepted,false,kind+' must not become a valid sheet');
+});
+
 test('home and dungeon preserve direction, gait and grounded body proportions',async t=>{
  const p=await setup(t);
  const result=await p.evaluate(async()=>{

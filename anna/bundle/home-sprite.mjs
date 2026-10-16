@@ -49,17 +49,54 @@ export async function readHomeSprite(blob){
      if(xx>=0&&xx<w&&yy>=0&&yy<h&&!seen[j]&&pixels.data[j*4+3]>64){seen[j]=1;queue[tail++]=j;}
     }
    }
-   if(count>w*h/1600)parts.push([l,t,r-l+1,b-t+1]);
+   if(count>w*h/1600)parts.push([l,t,r-l+1,b-t+1,count]);
   }
-  if(parts.length!==16)throw Error('Expected sixteen separate sprite frames');
-  parts.sort((a,b)=>(a[1]+a[3]/2)-(b[1]+b[3]/2));const frames=[];
+  if(parts.length<16)throw Error('Expected sixteen separate sprite frames');
+  let bodies=parts;
+  if(parts.length>16){
+   // A tail tip or floating ornament may be disconnected from its body. Keep
+   // sixteen dominant bodies and join only small, nearby, unambiguous pieces.
+   // Never drop a fragment, guess between neighbours or chain distant pieces.
+   const ranked=[...parts].sort((a,b)=>b[4]-a[4]),anchors=ranked.slice(0,16);
+   const merged=anchors.map(p=>p.slice(0,4)),added=anchors.map(()=>0);
+   const ordered=[...anchors].sort((a,b)=>(a[1]+a[3]/2)-(b[1]+b[3]/2));
+   const rows=Array.from({length:4},(_,r)=>ordered.slice(r*4,r*4+4).sort((a,b)=>a[0]-b[0]));
+   const top=rows.map(row=>Math.min(...row.map(p=>p[1]))),bottom=rows.map(row=>Math.max(...row.map(p=>p[1]+p[3])));
+   const slots=new Map();
+   for(let r=0;r<4;r++){
+    if(r&&top[r]<=bottom[r-1])throw Error('Overlapping sprite rows');
+    for(let col=0;col<4;col++){
+     const body=rows[r][col],prev=rows[r][col-1],next=rows[r][col+1];
+     if(prev&&prev[0]+prev[2]>=body[0])throw Error('Overlapping sprite columns');
+     slots.set(body,[prev?(prev[0]+prev[2]+body[0])/2:0,r?(bottom[r-1]+top[r])/2:0,next?(body[0]+body[2]+next[0])/2:w,r<3?(bottom[r]+top[r+1])/2:h]);
+    }
+   }
+   for(const piece of ranked.slice(16)){
+    const candidates=anchors.flatMap((body,i)=>{
+     const [left,top,right,bottom]=slots.get(body);
+     if(piece[0]<=left||piece[1]<=top||piece[0]+piece[2]>=right||piece[1]+piece[3]>=bottom)return [];
+     const dx=Math.max(body[0]-piece[0]-piece[2],piece[0]-body[0]-body[2],0);
+     const dy=Math.max(body[1]-piece[1]-piece[3],piece[1]-body[1]-body[3],0);
+     return piece[4]<=body[4]*.2&&Math.hypot(dx,dy)<=Math.min(body[2],body[3])*.18?[i]:[];
+    });
+    if(candidates.length!==1)throw Error('Ambiguous detached sprite part');
+    const i=candidates[0],box=merged[i];added[i]+=piece[4];
+    if(added[i]>anchors[i][4]*.3)throw Error('Too many detached sprite parts');
+    const l=Math.min(box[0],piece[0]),t=Math.min(box[1],piece[1]);
+    merged[i]=[l,t,Math.max(box[0]+box[2],piece[0]+piece[2])-l,Math.max(box[1]+box[3],piece[1]+piece[3])-t];
+   }
+   bodies=merged;
+  }
+  bodies=bodies.map(p=>p.slice(0,4));
+  bodies.sort((a,b)=>(a[1]+a[3]/2)-(b[1]+b[3]/2));const frames=[];
   for(let row=0;row<4;row++){
-   const group=parts.slice(row*4,row*4+4).sort((a,b)=>a[0]-b[0]);
+   const group=bodies.slice(row*4,row*4+4).sort((a,b)=>a[0]-b[0]);
    const cy=group.map(f=>f[1]+f[3]/2);
    if(Math.max(...cy)-Math.min(...cy)>h/8)throw Error('Invalid sprite rows');
    for(let i=0;i<4;i++){const f=group[i];if(f[0]<2||f[1]<2||f[0]+f[2]>w-2||f[1]+f[3]>h-2||f[2]>w*.32||f[3]>h*.32||(i&&group[i-1][0]+group[i-1][2]>=f[0]))throw Error('Clipped or overlapping frame');}
    frames.push(...group);
   }
+  for(let row=1;row<4;row++)if(Math.min(...frames.slice(row*4,row*4+4).map(f=>f[1]))<=Math.max(...frames.slice((row-1)*4,row*4).map(f=>f[1]+f[3])))throw Error('Overlapping sprite rows');
   const heights=frames.map(f=>f[3]);if(Math.max(...heights)/Math.min(...heights)>1.8)throw Error('Inconsistent sprite scale');
   return {canvas,frames,maxHeight:Math.max(...heights)};
  }finally{bitmap.close();}
