@@ -23,7 +23,7 @@ const runtime={
   if(faults.permission)throw Error('permission denied');
   if(faults.home&&a.command?.startsWith('home')){
    const response=await fetch('/fixture-home',{method:'POST',body:JSON.stringify(a)}),result=await response.json();
-   if(a.command==='home_apply'&&faults.homeLost){faults.homeLost=false;throw Error('Home save reply lost');}
+   if(a.command==='home_apply'&&faults.homeLost||a.command==='home_buy'&&faults.homeBuyLost){faults.homeLost=false;faults.homeBuyLost=false;throw Error('Home save reply lost');}
    state.save={...state.save,...clone(result)};state.sequence++;write(state);return {...result,request_id_prefix:`nb2:${state.sequence}:`};
   }
   if(request.method==='reset'){
