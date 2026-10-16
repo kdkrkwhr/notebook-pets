@@ -1,6 +1,6 @@
-# NoteBuddy Web · 0.4.1
+# NoteBuddy Web · 0.4.2
 
-[웹에서 플레이](https://kdkrkwhr.github.io/notebook-pets/) · [이번 업데이트](RELEASE_041.md) · [이전 버전](RELEASE_040.md)
+[웹에서 플레이](https://kdkrkwhr.github.io/notebook-pets/) · [이번 업데이트](RELEASE_042.md) · [이전 버전](RELEASE_041.md)
 
 브라우저 안에서 친구를 돌보고, 산책하다 발견한 던전을 탐험하고, 집과 마당을 구경할 수 있어요. 게임은 이 브라우저에 저장돼요. Anna 계정과 자동으로 동기화되지는 않아요.
 
