@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {currentHomeSprite,homeSpriteKey,createHomeSprite} from '../bundle/home-sprite.mjs';
+import {currentHomeSprite,homeSpriteKey,createHomeSprite,homeMovementStatus,movementFailureKey} from '../bundle/home-sprite.mjs';
 import {ART,TOMBSTONE} from '../bundle/data.mjs';
 test('home sprites belong to one companion, stage and exact source artwork',()=>{
  const v={pet_id:'a',stage:1},entry={path:'portraits/a/home-sprite.png',pet_id:'a',stage:1,format:'home-sprite-v1',source_path:'portraits/a/original.png'};
@@ -45,4 +45,30 @@ test('an existing matching movement sheet never makes an AI request',async()=>{
  const v={pet_id:'a',stage:1},art={'a/stage-1':{path:'portraits/a/old.png'},[homeSpriteKey({pet_id:'a',stage:1})]:{path:'portraits/a/sheet.png',format:'home-sprite-v1',pet_id:'a',stage:1,source_path:'portraits/a/old.png'}};
  const service=createHomeSprite({active:async()=>v,anna:()=>({storage:{get:async()=>({value:art})}})});
  assert.equal(await service.sync(v),false);
+});
+
+test('movement failure saves only its stage code and survives reopening without generation',async()=>{
+ let art={'a/stage-1':{path:'portraits/a/first.png'}},images=0;
+ const host={active:async()=>({pet_id:'a',stage:1}),upload:async()=>{},saved:()=>{},anna:()=>({
+  storage:{get:async()=>({value:art}),set:async({value})=>{art=value;}},
+  files:{download_url:async()=>({get_url:'https://private.example/signed-secret'})},
+  image:{generate:async()=>{images++;throw Error('private provider token and prompt');}}
+ })};
+ await assert.rejects(createHomeSprite(host).sync(),error=>movementFailureKey(error)==='homeMovementServiceFailed');
+ assert.equal(art['a/home-sprite-request-stage-1'].failure,'generate');
+ assert(!JSON.stringify(art).includes('private provider'));assert(!JSON.stringify(art).includes('signed-secret'));
+ assert.equal(homeMovementStatus({pet_id:'a',stage:1},art),'homeMovementServiceFailed');
+ await createHomeSprite(host).sync();assert.equal(images,1);
+ assert.equal(homeMovementStatus({pet_id:'a',stage:2},art),'');
+ assert.equal(homeMovementStatus({pet_id:'a',stage:1},{...art,'a/stage-1':{path:'portraits/a/new.png'}}),'');
+});
+
+test('legacy unfinished requests and old save failures never advertise a lost retry result',()=>{
+ const v={pet_id:'a',stage:1};
+ for(const failure of [undefined,'save','download','unknown']){
+  const art={'a/stage-1':{path:'portraits/a/first.png'},'a/home-sprite-request-stage-1':{path:'portraits/a/first.png',source_path:'portraits/a/first.png',failure}};
+  assert.equal(homeMovementStatus(v,art),'homeMovementInterrupted');
+ }
+ assert.equal(movementFailureKey({movementPhase:'validate'}),'homeMovementInvalid');
+ assert.equal(movementFailureKey({movementPhase:'save'},true),'homeMovementPending');
 });

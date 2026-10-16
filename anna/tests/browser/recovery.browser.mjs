@@ -158,10 +158,26 @@ test('movement failure preserves a new companion and portrait without automatic 
  const p=await setup(t,{homeImage:true});await start(p);
  assert.equal(await p.locator('#name').innerText(),'Recovery buddy');assert.equal((await calls(p,'home-image')).length,1);
  assert.match(await p.locator('#home-movement-status').innerText(),/companion is saved/);
+ assert.match(await p.locator('#home-movement-status').innerText(),/movement:generate/);
+ assert.match(await p.locator('#pixel-status').innerText(),/Static pixel preview/);
+ assert.doesNotMatch(await p.locator('#pixel-status').innerText(),/Ready for dungeon/);
  await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'home-image')).length,1);
  await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
  assert.equal((await calls(p,'home-image')).length,2);assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
  await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
+ assert.match(await p.locator('#home-movement-status').innerText(),/movement:generate/);
+});
+
+test('unreadable movement sheet is distinguished from service failure and survives reload',async t=>{
+ const p=await setup(t,{homeSpriteSheet:'data:image/png;base64,YmFk'});await start(p);
+ assert.match(await p.locator('#home-movement-status').innerText(),/movement:validate/);
+ assert.equal(await p.locator('#pixel-pet').isVisible(),true);
+ assert.equal((await calls(p,'home-image')).length,1);
+ const data=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);
+ assert.equal(data['isolated-fixture/home-sprite-request-stage-1'].failure,'validate');
+ assert(!data['isolated-fixture/home-sprite-stage-1']);
+ await p.reload();await idle(p);assert.match(await p.locator('#home-movement-status').innerText(),/movement:validate/);assert.equal((await calls(p,'home-image')).length,0);
+ await p.locator('#language').selectOption('ko');await idle(p);assert.match(await p.locator('#pixel-status').innerText(),/정적인 픽셀 미리보기/);assert.match(await p.locator('#home-movement-status').innerText(),/4 × 4 동작 시트/);
 });
 
 test('pixel save failure preserves the companion and retries without paid generation',async t=>{

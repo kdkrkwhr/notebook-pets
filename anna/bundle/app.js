@@ -1,7 +1,7 @@
 import {createItemCatalog} from './item-catalog.mjs';
 import {createThemes} from './themes.mjs';
 import {createHome} from './home.mjs';
-import {createHomeSprite,currentHomeSprite,homeSpriteKey} from './home-sprite.mjs';
+import {createHomeSprite,currentHomeSprite,homeSpriteKey,homeMovementStatus,movementFailureKey} from './home-sprite.mjs';
 let homeUI,homeSprites,homeMovementNotice='';
 import {createTitleScreen} from './title-screen.mjs';
 import {createBirthSteps} from './birth-steps.mjs';
@@ -125,7 +125,8 @@ function render(){
   $('#welcome').hidden=resetting||!!s||view?.code!=='not_started';$('#game').hidden=!s;
   if(!s){birth?.render();birthSteps.render();return;}
   renderPersonality();
-  text('#home-movement-status',homeMovementNotice?tr(homeMovementNotice):'');
+  const movementStatus=homeMovementNotice||homeMovementStatus(view,art);
+  text('#home-movement-status',movementStatus?tr(movementStatus):'');
   text('#name',s.name);text('#pet-type',`${s.species} · ${s.element}`);text('#mood',`◌ ${s.mood}`);
   renderWalkEnergy();
   text('#title',s.title);text('#level',`Lv. ${s.level}`);text('#stage-label',s.stage_label);
@@ -322,7 +323,7 @@ async function syncPortraitVisuals(snapshot,blob){
   await pixels.sync(snapshot,blob);
   homeMovementNotice='homeMovementWorking';render();
   try{await homeSprites.sync({...snapshot,source_path:source});homeMovementNotice=view?.status&&currentHomeSprite(view,art)?'':'homeMovementFailed';}
-  catch{homeMovementNotice=homeSprites.hasPending()?'homeMovementPending':'homeMovementFailed';}
+  catch(error){homeMovementNotice=movementFailureKey(error,homeSprites.hasPending());}
   if(view?.pet_id!==snapshot.pet_id||view?.erased||view?.reset_pending)homeMovementNotice='';
   render();
 }
@@ -525,7 +526,7 @@ persona=createPersonality({anna:()=>anna,active:assertActive,
 });
 
 translate();
-homeSprites=createHomeSprite({anna:()=>anna,active:assertActive,upload:uploadPortrait,saved:async value=>{art=value;homeMovementNotice='';await readExtras();render();}});
+homeSprites=createHomeSprite({anna:()=>anna,active:assertActive,upload:uploadPortrait,failed:value=>{art=value;},saved:async value=>{art=value;homeMovementNotice='';await readExtras();render();}});
 homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertActive,invoke,
  saved:next=>{adoptView(next);render();},locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),busy:controls,
  sprite:homeSpriteUrl,

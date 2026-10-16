@@ -2,6 +2,17 @@ import {ART,ErasedError,erased,mergeSaved} from './data.mjs';
 import {pixelSource,clearWhiteBorder} from './pixel-pet.mjs';
 export const homeSpriteKey=v=>`${v.pet_id}/home-sprite-stage-${v.stage}`;
 const requestKey=v=>`${v.pet_id}/home-sprite-request-stage-${v.stage}`;
+const failureKeys={reference:'homeMovementReferenceFailed',generate:'homeMovementServiceFailed',response:'homeMovementResponseFailed',download:'homeMovementDownloadFailed',validate:'homeMovementInvalid',save:'homeMovementSaveFailed'};
+export function movementFailureKey(error,pending=false){
+ return pending?'homeMovementPending':failureKeys[error?.movementPhase]||'homeMovementFailed';
+}
+export function homeMovementStatus(v,art){
+ if(currentHomeSprite(v,art))return 'homeMovementReady';
+ const request=art?.[requestKey(v)];
+ if(request?.source_path!==pixelSource(v,art||{}))return '';
+ // A result kept only in the previous tab cannot be offered for save-only retry.
+ return request.failure==='save'||request.failure==='download'?'homeMovementInterrupted':failureKeys[request.failure]||'homeMovementInterrupted';
+}
 export function currentHomeSprite(v,art){
  const e=art?.[homeSpriteKey(v)];
  return e?.format==='home-sprite-v1'&&e.pet_id===v.pet_id&&e.stage===v.stage&&e.source_path===pixelSource(v,art)&&e.path?.startsWith(`portraits/${v.pet_id}/`)?e:null;
@@ -68,6 +79,7 @@ export function createHomeSprite(h){
    if(erased(saved))throw new ErasedError();
    if(active.pet_id!==owner||active.stage!==stage||pixelSource(active,saved)!==source)throw Error('Companion or artwork changed');
   };
+  let phase='reference';
   try{
    if(pending&&(pending.owner!==owner||pending.stage!==stage||pending.source!==source)){pending=null;throw Error('Companion changed; start again');}
    if(!pending){
@@ -90,13 +102,18 @@ export function createHomeSprite(h){
     });
     if(!claimed)return false;
     await guard();
+    phase='generate';
     const result=await h.anna().image.generate({prompt:HOME_SPRITE_PROMPT,reference_image_urls:[reference],n:1,size:'1024x1024',quality:'medium',resolution:'1K',output_format:'png'},{timeoutMs:240000});
+    phase='response';
     const url=result?.images?.[0]?.url;if(!url)throw Error('No sprite returned');
     pending={owner,stage,source,url,path:`portraits/${owner}/home-sprite-${crypto.randomUUID()}.png`};
    }
    const p=pending;await guard();
+   phase='download';
    if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw Error('Sprite download failed');p.blob=await response.blob();}
+   phase='validate';
    if(!p.checked){try{await readHomeSprite(p.blob);p.checked=true;}catch(error){pending=null;throw error;}}
+   phase='save';
    await guard();if(!p.uploaded){await h.upload(p.path,p.blob);p.uploaded=true;}
    await guard();
    const art=await mergeSaved(h.anna().storage,ART,latest=>{
@@ -104,7 +121,20 @@ export function createHomeSprite(h){
     return {...latest,[homeSpriteKey(snapshot)]:{path:p.path,format:'home-sprite-v1',pet_id:owner,stage,source_path:source,at:Date.now()}};
    });
    await guard();pending=null;await h.saved(art);return true;
-  }catch(error){if(error instanceof ErasedError||/changed/.test(error.message))pending=null;throw error;}
+  }catch(error){
+   if(error instanceof ErasedError||/changed/.test(error.message)){pending=null;throw error;}
+   // Keep only a bounded stage code; never persist provider messages or signed URLs.
+   try{
+    await guard();
+    const saved=await mergeSaved(h.anna().storage,ART,latest=>{
+     if(pixelSource(snapshot,latest||{})!==source)throw Error('Artwork changed');
+     if(currentHomeSprite(snapshot,latest)||latest?.[requestKey(snapshot)]?.source_path!==source)throw Error('Request changed');
+     return {...latest,[requestKey(snapshot)]:{...latest[requestKey(snapshot)],failure:phase}};
+    });
+    h.failed?.(saved);
+   }catch{/* Diagnostics must never replace the original failure or revive old data. */}
+   const failure=new Error('Movement preparation failed');failure.movementPhase=phase;throw failure;
+  }
  }
  function sync(expected){if(!running)running=generate(expected).finally(()=>{running=null;});return running;}
  return {sync,retry:()=>pending?sync():Promise.resolve(false),hasPending:()=>!!pending,clear(){pending=null;}};
