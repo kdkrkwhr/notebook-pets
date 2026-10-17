@@ -18,6 +18,8 @@ npx anna-app executa register --tool-id dev-notebuddy-dev
 npm run dev:live
 ```
 
+The development launcher forces UTF-8 for the Python bridge JSON streams, preventing Windows CP949 corruption and storage failures with Korean text. Use isolated development storage and a request cap for paid tests. See the [2026-10-17 paid test record](docs/PAID_TEST_20261017.md) (Korean).
+
 Open http://localhost:5180/. Live development uses real Anna storage and AI allowance. Development and installed-app storage are separate.
 
 ```powershell

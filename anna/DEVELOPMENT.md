@@ -18,6 +18,8 @@ npx anna-app executa register --tool-id dev-notebuddy-dev
 npm run dev:live
 ```
 
+개발 실행 스크립트는 Python 브리지의 JSON 입출력을 UTF-8로 고정합니다. Windows에서 한글 이름·성격 전달 시 CP949 변환으로 저장이 실패하는 문제를 막습니다. 유료 기능은 별도 개발 저장소에서 호출 수를 제한해 검사하세요. [2026-10-17 유료 검사](docs/PAID_TEST_20261017.md).
+
 `http://localhost:5180/`에서 실행합니다. 로그인은 브라우저의 기기 인증을 이용하며 앱에 API 키를 넣지 않습니다. `dev:live`는 실제 Anna 저장소와 AI를 사용합니다. 대화·이미지 생성은 계정 사용량을 소모하므로 자동 회귀 테스트에서는 호출하지 않습니다.
 
 CLI 0.1.57 앱 테스트 도구는 도구 저장소 소유자를 `dev-<app-slug>`로 사용합니다. 이 때문에 `dev-notebuddy-dev` 등록이 필요합니다. 독립 Executa 테스트는 `tool-dev-notebuddy`를 사용합니다. 운영 앱은 플랫폼이 발급한 `tool-kdkrkwhr-notebuddy-game-hc8mw4gu`를 사용합니다. 개발용과 운영용의 저장 데이터는 다릅니다.
