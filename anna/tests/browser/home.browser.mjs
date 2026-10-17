@@ -57,7 +57,7 @@ test('new artwork waits for home choice; one explicit generation and save-only r
  assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),0);
  await page.locator('#open-home').click();await page.locator('#home-appearance-generate').click();await page.waitForFunction(()=>!document.querySelector('#home-sprite-retry').hidden);
  const first=await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image'));
- assert.equal(first.length,1);assert.equal(first[0].options.reference_image_urls.length,1);
+ assert.equal(first.length,1);assert.equal(first[0].options.reference_image_urls,undefined);assert.match(first[0].options.prompt,/saved visual observations/);
  await page.evaluate(()=>hostTest.faults.save=false);await page.locator('#home-sprite-retry').click();await page.waitForFunction(()=>document.querySelector('#home-sprite-retry').hidden);
  const saved=await page.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);const entry=Object.values(saved).find(e=>e.format==='home-sprite-v1');assert(entry);assert(entry.path.startsWith(`portraits/${state().pet_id}/`));assert.equal(entry.pet_id,state().pet_id);
  await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');

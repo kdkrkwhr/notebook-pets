@@ -1,3 +1,5 @@
+import {createHints} from './hints.mjs';
+let hints;
 import {createItemCatalog} from './item-catalog.mjs';
 import {createThemes} from './themes.mjs';
 import {createHome} from './home.mjs';
@@ -77,7 +79,7 @@ function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
 function translate(){
   translateDocument(document,language);$('#language').value=language;
-  itemCatalog.render();appearance.render();
+  itemCatalog.render();appearance.render();hints?.render();
   if(birthNotice)birthMessage(birthNotice.key,birthNotice.values);
   text('#draw',tr(pendingImage?'retryImage':'draw'));
 }
@@ -562,5 +564,6 @@ homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertAct
  sprite:homeSpriteUrl,
   needsAppearance:()=>!!view?.status&&homeNeedsChoice(view,art),prepareAppearance:chooseHomeAppearance,
  spritePending:()=>homeSprites.hasPending(),retrySprite:()=>homeSprites.retry()});
+hints=createHints(document,()=>language);
 titleScreen.show();
 await refresh();

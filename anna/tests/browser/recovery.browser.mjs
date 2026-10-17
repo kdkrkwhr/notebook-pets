@@ -653,7 +653,7 @@ test('artwork first meeting validates source then saves a referenced baby; reope
  assert.equal((await calls(p,'home-image')).length,0,'portrait birth never requests home movement');
  const reference='data:image/png;base64,cGVyc29uYWwtcG9ydHJhaXQtcmVmZXJlbmNl';
  await p.evaluate(({path,reference})=>{hostTest.faults.portraits={[path]:reference};},{path:saved['isolated-fixture/stage-1'].path,reference});
- await chooseHome(p);assert.equal((await calls(p,'home-image')).length,1);assert.equal((await calls(p,'home-image'))[0].options.reference_image_urls[0],reference);
+ await chooseHome(p);assert.equal((await calls(p,'home-image')).length,1);assert.equal((await calls(p,'home-image'))[0].options.reference_image_urls,undefined);assert.match((await calls(p,'home-image'))[0].options.prompt,/round face and gold ears/);
  await fault(p,{portraits:{}});
  await p.reload();await idle(p);assert.equal((await calls(p,'image')).length,0);
  assert.match(await p.locator('#image-caption').innerText(),/portrait/i);
@@ -1302,9 +1302,9 @@ test('welcome steps follow the start form and the art choice keeps its preview b
  await p.locator('#pet-name').fill('Mori');assert.equal(await p.locator('#birth-steps [aria-current=step]').getAttribute('data-step'),'meet');
  await p.locator('#birth-mode').selectOption('art');assert.equal(await p.locator('#birth-steps [aria-current=step]').getAttribute('data-step'),'mode');
  const layout=await p.evaluate(()=>{const preview=document.querySelector('#birth-art-choice .art-source-preview');preview.src='assets/starters-v1/plant_nature_stage1.png';preview.hidden=false;
-  const b=document.querySelector('#choose-art').getBoundingClientRect(),i=preview.getBoundingClientRect(),n=document.querySelector('#birth-art-choice p').getBoundingClientRect();
-  return {overlap:!(b.right<=i.left||i.right<=b.left||b.bottom<=i.top||i.bottom<=b.top),centered:Math.abs((b.top+b.bottom)/2-(i.top+i.bottom)/2)<2,noteBelow:n.top>=Math.max(b.bottom,i.bottom)};});
- assert.deepEqual(layout,{overlap:false,centered:true,noteBelow:true});
+  const b=document.querySelector('#choose-art').getBoundingClientRect(),i=preview.getBoundingClientRect(),n=document.querySelector('#birth-art-choice p');
+  return {overlap:!(b.right<=i.left||i.right<=b.left||b.bottom<=i.top||i.bottom<=b.top),centered:Math.abs((b.top+b.bottom)/2-(i.top+i.bottom)/2)<2,noteHidden:n.hidden};});
+ assert.deepEqual(layout,{overlap:false,centered:true,noteHidden:true});
 });
 
 
@@ -1349,4 +1349,23 @@ test('care AI help stays compact and opens on hover, keyboard or touch without t
  await p.keyboard.press('Escape');assert.equal(await tip.isVisible(),false);
  await p.setViewportSize({width:360,height:800});await help.click();assert.equal(await tip.isVisible(),true);
  const box=await tip.boundingBox();assert.ok(box.x>=0&&box.x+box.width<=360);
+});
+
+test('secondary explanations use bounded tooltips while action costs and errors stay visible',async t=>{
+ const p=await setup(t);await start(p);const text=p.locator('[data-i18n="imageUsage"]');
+ assert.equal(await text.isVisible(),false);const id=await text.getAttribute('id'),button=p.locator('[data-hint-for="'+id+'"]');
+ await button.hover();assert.equal(await text.isVisible(),true);await p.keyboard.press('Escape');assert.equal(await text.isVisible(),false);
+ await p.setViewportSize({width:360,height:800});await button.click();const box=await text.boundingBox();assert.ok(box.x>=0&&box.x+box.width<=360);await p.locator('#name').click();assert.equal(await text.isVisible(),false);
+ assert.equal(await p.locator('[data-i18n="feedHint"]').isVisible(),true);
+ await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-help').isVisible(),false);
+ await p.locator('[data-hint-for="home-appearance-help"]').click();assert.equal(await p.locator('#home-appearance-help').isVisible(),true);
+ assert.match(await p.locator('#home-appearance-generate').innerText(),/1 AI image/);
+});
+
+test('legacy home image service failure offers an explicit corrected choice and never retries on reopen',async t=>{
+ const p=await setup(t);await start(p);
+ await p.evaluate(()=>{const a=hostTest.state.kv['notebuddy/art-v1'],pet='isolated-fixture',pixel=a[pet+'/pixel-stage-1'];a[pet+'/home-sprite-stage-1']={...pixel,format:'home-default-v1',pet_id:pet,stage:1};a[pet+'/home-sprite-request-stage-1']={source_path:pixel.source_path,trigger:'home-choice-v1',failure:'generate'};localStorage.setItem('test-host',JSON.stringify(hostTest.state));});
+ await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
+ await chooseHome(p);const generated=await calls(p,'home-image');assert.equal(generated.length,1);assert.equal(generated[0].options.reference_image_urls,undefined);
+ await p.reload();await idle(p);await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),false);assert.equal((await calls(p,'home-image')).length,0);
 });

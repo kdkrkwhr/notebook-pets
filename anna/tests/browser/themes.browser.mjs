@@ -50,7 +50,7 @@ test('all themes preview immediately, persist after reload and do not call the g
  await page.locator('#language').selectOption('ko');await page.locator('#open-theme').click();
  assert.equal(await page.locator('#theme-heading').innerText(),'내 공책의 분위기');
  assert.match(await page.locator('.theme-selected').last().innerText(),/선택 중/);
- await page.locator('input:checked').press('ArrowLeft');assert.equal(await page.locator('html').getAttribute('data-theme'),'sunkenpalace');
+ await page.locator('#theme-dialog input:checked').press('ArrowLeft');assert.equal(await page.locator('html').getAttribute('data-theme'),'sunkenpalace');
  await page.keyboard.press('Escape');assert.equal(await page.locator('#theme-dialog').isVisible(),false);
 });
 
