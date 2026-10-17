@@ -2,14 +2,14 @@
 
 [사용 안내](README.md) · [개발·배포](DEVELOPMENT.md) · [이전 기록](HANDOFF_HISTORY.md)
 
-## 현재 상태 (2026-10-17)
+## 현재 상태 (2026-10-18)
 
 | 항목 | 값 |
 | --- | --- |
-| Anna 테스트 앱 | **1.4.8 / working revision 73 / 소유자 초안 0.0.0-draft** |
-| 심사 | **1.4.7 / ID 1427 / pending_review**, 명시 요청 전 변경 금지 |
+| Anna 테스트 앱 | **1.4.9 / working revision 74 / 소유자 초안 0.0.0-draft** |
+| 심사 | **1.4.8 / ID 1437 / pending_review**, 명시 요청 전 변경 금지 |
 | 게임 도구 | **0.9.1 / Executa 760**, 변경 없음 |
-| 검증 | JS 92 · 전체 브라우저 117 · 14개 언어/폭 조합 · 5개 창 · strict |
+| 검증 | JS 92 · 전체 브라우저 116 · 14개 언어/폭 조합 · 5개 창 · strict |
 | 공개 웹 | 기존 배포 유지, 이번 배포 제외 |
 | 제한 | 실제 이동 시트 생성·표시 확인, 스타일 차이 가능 / 전체 CI 진행 중 |
 
@@ -17,24 +17,18 @@
 
 ---
 
-# 1.4.8 후속 · 앨범 간소화와 산책 발견 공개 순서 수정 · 2026-10-18
+# 1.4.9 test-only: remove manual portrait redraw - 2026-10-18
 
-성장 앨범의 **사용하지 않는 그림 정리** 버튼·확인 창·삭제 실행 연결과 **픽셀 모습** 미리보기·준비 버튼·중복 이동 상태 문구를 제거했다. 기존 원본/초상화/픽셀 파일과 ART 기록은 삭제하지 않았다. 무료 내부 픽셀 변환과 마이홈·던전 개인 시트 재사용은 유지한다.
+Source **60a5257**, Anna **1.4.9 / working revision 74 / installed 0.0.0-draft**. Removed album redraw, growth redraw, confirmation dialog and manual image generation/retry. Initial drawing/photo birth, saved artwork, home appearance choice remain. Evolved messages no longer suggest redraw.
 
-- 산책 시작 응답에 이미 포함되는 새 던전이 이야기 선택/전투 결과 전에 홈 카드로 나타나던 순서를 수정했다. 새 카드는 산책 결과를 확인하고 돌아온 뒤 공개한다. 발견 소식의 주 화면은 산책 결과이며, 뒤쪽 돌봄 결과 문구에 던전 이름을 먼저 붙이지 않는다. **발견 확률·저장 시점·보상·만료 시간 등 Python 규칙은 변경하지 않았다.**
-- 완료 전 창 닫기/재접속/1초 타이머 갱신으로 새 카드를 노출하지 않는다. 이미 확인한 발견은 현재 탭 sessionStorage의 최대 5개 ID/만료 시각 표시 기록으로 유지하고, 원래 게임 상태에서 유효한 항목만 표시한다. 친구 교체/삭제 시 해당 표시 기록을 비운다. 결과의 던전 살펴보기는 카드 공개 후 미리보기를 열며 입장 횟수를 쓰지 않는다. UI 표시용 기록은 게임의 권위 있는 데이터가 아니다.
-- JS **92**, 전체 브라우저 **117**, strict 모두 통과. 별도 대상 회귀 8개에서 새 발견 순서·미완료 이야기/새로고침·이미 본 발견 유지·제거한 UI·파일 보존·무료 홈 대체를 검증했다. 한국어/영어 × 7개 폭 14조합과 360px 주요 창 5개도 넘침/겹침 없이 통과. 유료 Anna AI **0회**, 실제 소유자 산책/보상/삭제 명령 0회.
-- 소스 **`c93143c`**, Anna **1.4.8 / working revision 73 / 설치 0.0.0-draft**. 설치 app.js SHA-256 **`a681dcc04e4f4dbb6a5759b76610f465c9961e29553184df17600aff42f3caca`** 로컬 일치. 실제 설치에서 제거 UI 0개·성장 그림 유지·마이홈 directional/ready·Connected 확인. 배포 전후 저장 4종과 게임 inspect 모두 동일, 소개·스크린샷 등 스토어 내용 동일. 도구 **0.9.1 / Executa 760** 변경 없음, loaded/running, 설치 실패 0개.
-- [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39048070936)는 성공했고 [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39048070819)는 기록 시 진행 중이다. 로컬 전체 117개 성공과 원격 패키지 CI 진행 상태를 구분한다.
-- Git release push와 Anna 테스트 앱만 반영. **심사 1.4.7 / ID 1427 / pending_review 유지**, dirty_vs_latest_cut=true. cut/심사 교체/공개 Anna 출시/Pages 배포/release-web push 없음. 심사 변경에는 매번 새 명시 요청이 필요하다.
+- Installed app: no redraw controls or manual generator, existing portrait visible, Connected. Installed app.js SHA-256 **ca84e281181b8ea8816a9d65a1ea47d4b57d67f1044c5ad95a2d62f9ef94acb7** matches source.
+- ART/chat/walk-story/personality KV unchanged across install. Tool 0.9.1 / Executa 760 remains loaded/running; install failures zero. Listing unchanged. No paid AI calls or public web deployment.
+- Owner coins: private backup and ETag conditional write changed only coins from 0 to 100; full value readback matched and live tool returned 100. Later home/request records and balance changed through ongoing play (53 at last check); preserved rather than resetting live progress.
+- Validation: JS 92, strict passed; full browser 116 passed (449 seconds). GitHub Tests 39049179731 passed; Anna packaging 39049179684 in progress.
+- Review remains **1.4.8 / ID 1437 / pending_review**. No review replacement for this later request.
 
-# 1.4.8 후속 · 화면 전반의 정보·조작 구분과 반응형 정리 · 2026-10-18
+---
 
-사용자 스크린샷의 길쭉한 안내 아이콘은 일반 게임 버튼의 min-height 40px와 테마 그림자가 도움말 버튼에까지 적용된 결과였다. 이전 우측 액션 그룹 배치는 안내를 실행 버튼처럼 보이게 했다. 마지막 로드되는 ui-polish.css에서 정보 컨트롤을 명확히 분리하고 제목 옆의 보조 표시로 정리했다.
+# 1.4.8 review replacement explicitly requested - 2026-10-18
 
-- 제목과 안내는 왼쪽 그룹, 실행 버튼/날짜/코인은 오른쪽 그룹으로 구분했다. 정보 아이콘은 28px 영역, 테두리/그림자 없음, hover/키보드 초점/클릭 유지. 채팅 사용 안내도 제목에 배치하고 능력치 설명은 수치 행에 통합했다. 코인 배지는 조작 버튼보다 약하게 표시한다.
-- 모바일 상단을 브랜드·연결 상태 / 조작 메뉴 두 줄로 정리했다. 360px 한국어 화면에서 약 220px였던 상단 높이가 **124px**로 줄었다. 760px까지 같은 구조를 사용한다. 픽셀 미리보기와 긴 안내/복구 버튼은 좁은 화면에서 크기·간격·줄바꿈을 조정했다.
-- 한국어/영어 × 1120·820·768·760·640·390·360px **14개 조합**에서 문서 가로 넘침·헤더 그룹 겹침 0, 모든 표시 도움말 그림자 없음/높이 32px 이하 확인. 테마·도감·개인정보·초상화 확인·마이홈 **5개 창**의 360px 넘침 없음 확인. 테마 브라우저 **3개**, 관련 회귀 **5개**, strict 통과. 테마별 대비·저장·키보드 동작도 기존 검사를 통과했다. 시각 검증은 격리된 합성 친구와 로컬 SDK를 사용하며 실제 유료 AI **0회**다.
-- 소스 **`c0a4215`**, Anna **1.4.8 / working revision 72 / 설치 0.0.0-draft** 반영. 실제 설치의 던전·퀘스트·앨범·채팅 아이콘은 제목 그룹, 높이 약 28px, border 0px, shadow none, 액션 겹침 없음 확인. 설치 ui-polish.css SHA-256 **`7c84f39a30f9bd7a425b4400c6d2cff569aa215099e78302a263a8a1e7bcec77`** 로컬 일치. Connected와 배포 전후 저장 4종·게임 inspect·스토어 항목 동일 확인. 도구 **0.9.1 / Executa 760** 변경 없음, loaded/running, 설치 실패 0개.
-- [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39047149011)와 [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39047148976)는 기록 시 진행 중이다. 최종 전체 CI 성공으로 주장하지 않는다. 로컬 시각 증거는 .local/ui-review-before, .local/ui-review-polished, .local/ui-review-final에 보관했고 개인정보 이미지나 실행 상태를 공용 번들에 넣지 않았다.
-- Git release push와 Anna 테스트 앱만 반영. **심사 1.4.7 / ID 1427 / pending_review 유지**, dirty_vs_latest_cut=true. cut/심사 교체/공개 Anna 출시/Pages 배포/release-web push 없음. 심사는 매번 새 명시 요청이 필요하다.
+User explicitly requested review reflection. Cut tested **c93143c / working revision 73** as **1.4.8 / ID 1437** and submitted. Verified **pending_review**. Includes album cleanup/pixel-preview removal and delayed dungeon reveal after walk result acknowledgement. Tool remains **0.9.1 / Executa 760 / ID 1193**. JS 92 and browser 117 passed; GitHub Tests 39048070936 and Windows/Linux packaging 39048070819 passed. No public release. Subsequent manual-redraw removal belongs only to the 1.4.9 test draft.
