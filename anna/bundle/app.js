@@ -1,7 +1,7 @@
 import {createItemCatalog} from './item-catalog.mjs';
 import {createThemes} from './themes.mjs';
 import {createHome} from './home.mjs';
-import {createHomeSprite,currentHomeSprite,homeSpriteKey,homeMovementStatus,movementFailureKey} from './home-sprite.mjs';
+import {createHomeSprite,currentHomeSprite,currentHomeAppearance,homeNeedsChoice,homeSpriteKey,homeMovementStatus,movementFailureKey} from './home-sprite.mjs';
 let homeUI,homeSprites,homeMovementNotice='';
 import {createTitleScreen} from './title-screen.mjs';
 import {createBirthSteps} from './birth-steps.mjs';
@@ -84,7 +84,12 @@ function drawChat(){
 }
 function previousPortrait(v){for(let stage=v.stage-1;stage>=1;stage--){const url=urls[imageKey(v,stage)];if(url)return url;}return starter(v);}
 function pixelUrl(){return view?.status&&currentPixel(view,art)?urls[pixelKey(view)]:null;}
-function homeSpriteUrl(){return view?.status&&currentHomeSprite(view,art)?urls[homeSpriteKey(view)]:null;}
+function homeSpriteUrl(){
+ if(!view?.status)return null;
+ const entry=currentHomeAppearance(view,art);
+ if(entry?.format==='home-sprite-v1'&&urls[homeSpriteKey(view)])return urls[homeSpriteKey(view)];
+ return {kind:'default',url:entry&&urls[homeSpriteKey(view)]||pixelUrl()||urls[imageKey(view)]||starter(view)};
+}
 function renderPixel(){
   const url=pixelUrl(),img=$('#pixel-pet');img.hidden=!url;$('#pixel-empty').hidden=!!url;
   if(url){img.src=url;img.alt=view.status.name;}
@@ -322,13 +327,20 @@ async function generate(){
 // Every committed appearance uses this path: birth and new growth portraits now,
 // and the final equipped portrait when equipment is implemented. Viewing is read-only.
 async function syncPortraitVisuals(snapshot,blob){
-  const source=pixelSource(snapshot,art);
   await pixels.sync(snapshot,blob);
-  homeMovementNotice='homeMovementWorking';render();
-  try{await homeSprites.sync({...snapshot,source_path:source});homeMovementNotice=view?.status&&currentHomeSprite(view,art)?'':'homeMovementFailed';}
-  catch(error){homeMovementNotice=movementFailureKey(error,homeSprites.hasPending());}
-  if(view?.pet_id!==snapshot.pet_id||view?.erased||view?.reset_pending)homeMovementNotice='';
+  homeMovementNotice='homeChoiceAvailable';
   render();
+}
+async function chooseHomeAppearance(mode){
+ const snapshot=await assertActive();
+ if(mode==='default'){await homeSprites.useDefault();homeMovementNotice='';return 'default';}
+ try{await homeSprites.choose({...snapshot,source_path:pixelSource(snapshot,art)});homeMovementNotice='';return 'generated';}
+ catch(error){
+  if(error instanceof ErasedError||/changed/.test(error.message))throw error;
+  homeMovementNotice=movementFailureKey(error,homeSprites.hasPending());
+  if(homeSprites.hasPending())return 'pending';
+  await homeSprites.useDefault();return 'failed-default';
+ }
 }
 async function privacyCall(args){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'privacy',args},{timeoutMs:60000}));}
 async function previewRemoval(){
@@ -485,7 +497,7 @@ stories=createWalkStories({anna:()=>anna,active:assertActive,language:()=>langua
 pixels=createPixelPet({anna:()=>anna,art:()=>art,assertActive,upload:uploadPortrait,
   saved:value=>{art=value;},message:key=>{pixelNotice=key;renderPixel();}});
 dungeons=createDungeons({document,view:()=>view,language:()=>language,
-  locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),act,pixelUrl,spriteUrl:homeSpriteUrl,
+  locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),act,pixelUrl,spriteUrl:()=>view?.status&&currentHomeAppearance(view,art)?homeSpriteUrl():null,
   portraitUrl:()=>view?urls[imageKey(view)]||starter(view):'icon.svg'});
 
 function renderPersonality(){
@@ -533,6 +545,7 @@ homeSprites=createHomeSprite({anna:()=>anna,active:assertActive,upload:uploadPor
 homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertActive,invoke,
  saved:next=>{adoptView(next);render();},locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),busy:controls,
  sprite:homeSpriteUrl,
+  needsAppearance:()=>!!view?.status&&homeNeedsChoice(view,art),prepareAppearance:chooseHomeAppearance,
  spritePending:()=>homeSprites.hasPending(),retrySprite:()=>homeSprites.retry()});
 titleScreen.show();
 await refresh();

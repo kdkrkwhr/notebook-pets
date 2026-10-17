@@ -1,5 +1,5 @@
 import {createHomeWalk,roomPoint} from './home-walk.mjs';
-import {readHomeSprite,drawHomeSprite} from './home-sprite.mjs';
+import {readHomeAppearance,drawHomeSprite} from './home-sprite.mjs';
 export {routeAt} from './home-walk.mjs';
 const indices={house:0,tree:1,bush:2,bench:3,bookshelf:4,desk:5,nest:6,plant:7,rug:8};
 const extraIndices={lamp:0,'side-table':1,cushion:2,'wall-art':3,curtain:4,tea:5,basket:6,mailbox:7};
@@ -106,6 +106,7 @@ function fence(c,x,y){line(c,'#64482e',x,y-4,16,3);line(c,'#ab8247',x,y-5,16,2);
   for(const e of ordered)e.pet?drawPet():drawObject(e.object);ctx.restore();
   if(s.fade){ctx.fillStyle=`rgba(31,39,27,${Math.min(1,Math.abs(s.fade))})`;ctx.fillRect(0,0,canvas.width,canvas.height);}
   canvas.dataset.place=s.scene;canvas.dataset.sprite=pet?'ready':'missing';
+  canvas.dataset.appearance=pet?.kind==='default'?'default':pet?'directional':'missing';
  }
  function resize(){canvas.width=Math.max(1,Math.round(canvas.clientWidth/camera.zoom));canvas.height=Math.max(1,Math.round(canvas.clientHeight/camera.zoom));previousScene='';render();}
  new ResizeObserver(resize).observe(canvas);
@@ -113,12 +114,14 @@ function fence(c,x,y){line(c,'#64482e',x,y-4,16,3);line(c,'#ab8247',x,y-5,16,2);
  reduced.addEventListener('change',e=>{if(e.matches&&s)s.paused=true;});
  return {ready,
   async set(value,source){
+   const url=typeof source==='string'?source:source?.url,kind=typeof source==='object'?source.kind:undefined;
+   source=url?`${kind||'directional'}:${url}`:'';
    const id=++ticket,cached=pet&&source&&source===petSource&&home?.pet_id===value?.pet_id;
    home=value;jobLayout=null;movement=value?.world?createHomeWalk(value.world):null;s=movement?.state;
    if(s)s.paused=reduced.matches;if(!cached){pet=null;petSource='';}
    if(!active){active=true;last=0;frame=requestAnimationFrame(tick);}resize();
    if(!source||cached)return !!pet;
-   try{const r=await fetch(source,{cache:'no-store'});if(!r.ok)throw Error('Sprite unavailable');const decoded=await readHomeSprite(await r.blob());if(id===ticket){pet=decoded;petSource=source;}return id===ticket;}
+   try{const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw Error('Sprite unavailable');const decoded=await readHomeAppearance(await r.blob(),kind);if(id===ticket){pet=decoded;petSource=source;}return id===ticket;}
    catch{if(id===ticket){pet=null;petSource='';}return false;}
   },
   play(value){
