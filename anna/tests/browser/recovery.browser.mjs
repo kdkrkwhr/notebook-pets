@@ -164,7 +164,7 @@ test('birth prepares only a free pixel preview; home waits for an explicit appea
  await p.waitForFunction(()=>window.hostTest.state.kv['notebuddy/art-v1']?.['isolated-fixture/pixel-stage-1']);
  assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
  assert.equal((await calls(p,'home-image')).length,0);
- assert.equal(await p.locator('#pixel-pet').isVisible(),true);
+ assert.equal(await p.locator('#pixel-pet').count(),0);
  const result=await p.evaluate(async()=>{
   const {pixelatePortrait}=await import('./pixel-pet.mjs');
   const response=await fetch(document.querySelector('#pet-image').src),blob=await pixelatePortrait(await response.blob()),bitmap=await createImageBitmap(blob);
@@ -173,7 +173,7 @@ test('birth prepares only a free pixel preview; home waits for an explicit appea
   return {width:bitmap.width,height:bitmap.height,type:blob.type,corner:data[3],opaque:Array.from(data).filter((v,i)=>i%4===3&&v===255).length};
  });
  assert.deepEqual([result.width,result.height,result.type,result.corner],[64,64,'image/png',0]);assert.ok(result.opaque>100);
- await p.reload();await idle(p);assert.equal(await p.locator('#pixel-pet').isVisible(),true);assert.equal((await calls(p,'finalize')).length,0);
+ await p.reload();await idle(p);assert.equal(await p.locator('#pixel-pet').count(),0);assert.equal((await calls(p,'finalize')).length,0);
 });
 
 test('movement follows new portraits and growth artwork, never visits or unchanged evolution artwork',async t=>{
@@ -197,72 +197,47 @@ test('movement follows new portraits and growth artwork, never visits or unchang
 test('movement failure preserves a new companion and portrait without automatic retries',async t=>{
  const p=await setup(t,{homeImage:true});await start(p);await chooseHome(p);
  assert.equal(await p.locator('#name').innerText(),'Recovery buddy');assert.equal((await calls(p,'home-image')).length,1);
- assert.match(await p.locator('#home-movement-status').innerText(),/companion is saved/);
- assert.match(await p.locator('#home-movement-status').innerText(),/movement:generate/);
- assert.match(await p.locator('#pixel-status').innerText(),/Static pixel preview/);
- assert.doesNotMatch(await p.locator('#pixel-status').innerText(),/Ready for dungeon/);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
  await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'home-image')).length,1);
  await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
  assert.equal((await calls(p,'home-image')).length,1);await chooseHome(p);
  assert.equal((await calls(p,'home-image')).length,2);assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
  await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
- assert.match(await p.locator('#home-movement-status').innerText(),/movement:generate/);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
 });
 
 test('unreadable movement sheet is distinguished from service failure and survives reload',async t=>{
  const p=await setup(t,{homeSpriteSheet:'data:image/png;base64,YmFk'});await start(p);await chooseHome(p);
- assert.match(await p.locator('#home-movement-status').innerText(),/movement:validate/);
- assert.equal(await p.locator('#pixel-pet').isVisible(),true);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
+ assert.equal(await p.locator('#pixel-pet').count(),0);
  assert.equal((await calls(p,'home-image')).length,1);
  const data=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);
  assert.equal(data['isolated-fixture/home-sprite-request-stage-1'].failure,'validate');
  assert.equal(data['isolated-fixture/home-sprite-stage-1'].format,'home-default-v1');
  assert.match(data['isolated-fixture/home-sprite-request-stage-1'].path,/home-sprite-/,'the unreadable paid result is retained privately');
- await p.reload();await idle(p);assert.match(await p.locator('#home-movement-status').innerText(),/movement:validate/);assert.equal((await calls(p,'home-image')).length,0);
- await p.locator('#language').selectOption('ko');await idle(p);assert.match(await p.locator('#pixel-status').innerText(),/정적인 픽셀 미리보기/);assert.match(await p.locator('#home-movement-status').innerText(),/4 × 4 동작 시트/);
+ await p.reload();await idle(p);assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);assert.equal((await calls(p,'home-image')).length,0);
+ await p.locator('#language').selectOption('ko');await idle(p);assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
 });
 
-test('pixel save failure preserves the companion and retries without paid generation',async t=>{
+test('pixel save failure keeps home free fallback available without exposing album maintenance',async t=>{
  const p=await setup(t,{pixelUpload:true});await start(p);
- assert.equal(await p.locator('#name').innerText(),'Recovery buddy');assert.match(await p.locator('#pixel-status').innerText(),/unfinished/);
- await p.locator('#prepare-pixel').click();await idle(p);
- assert.equal(await p.locator('#pixel-pet').isVisible(),true);
- const uploads=(await calls(p,'finalize')).filter(x=>x.path.includes('/pixel-'));
- assert.equal(uploads.length,2);assert.equal(uploads[0].path,uploads[1].path);
- assert.equal((await calls(p,'image')).length,0);
+ assert.equal(await p.locator('#name').innerText(),'Recovery buddy');assert.equal(await p.locator('#prepare-pixel').count(),0);
+ await p.locator('#open-home').click();await p.locator('#home-appearance-default').click();await idle(p);
+ assert.equal(await p.locator('#home-canvas').getAttribute('data-appearance'),'default');assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'home-image')).length,0);
 });
 
-test('discovery guidance stays visible without exposing undiscovered dungeon cards',async t=>{
- const p=await setup(t,{walkDiscovery:false});await start(p);
- const before=await p.evaluate(()=>({state:JSON.stringify(window.hostTest.state),calls:window.hostTest.calls.length}));
- assert.match(await p.locator('[data-i18n="battleRecordHelp"]').innerText(),/Dungeon results do not count/);
- await p.locator('#dungeon-section summary').click();
- assert.match(await p.locator('[data-i18n="dungeonRegionsHelp"]').innerText(),/Five regions/);
- assert.match(await p.locator('#dungeon-section [data-i18n="dungeonDate"]').innerText(),/without an automatic replacement/);
- assert.deepEqual(await p.evaluate(()=>({state:JSON.stringify(window.hostTest.state),calls:window.hostTest.calls.length})),before);
- await p.locator('#language').selectOption('ko');
- assert.match(await p.locator('[data-i18n="battleRecordHelp"]').innerText(),/일반 전투만/);
- assert.match(await p.locator('[data-i18n="dungeonRegionsHelp"]').innerText(),/다섯 지역/);
- await p.setViewportSize({width:360,height:800});
- assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
- await p.locator('#language').selectOption('en');
- await p.setViewportSize({width:1120,height:800});
- assert.equal(await p.locator('#dungeon-section').isVisible(),true);
- assert.equal(await p.locator('[data-dungeon]').count(),0);
- assert.equal(await p.locator('#pixel-pet').isVisible(),true);
- await p.locator('[data-action="feed"]').click();await idle(p);
- assert.equal(await p.locator('#dungeon-section').isVisible(),true);
- await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
- assert.equal(await p.locator('[data-dungeon]').count(),0);
- await p.reload();await idle(p);
- assert.equal(await p.locator('#dungeon-section').isVisible(),true);
- await p.locator('#story-resume').click();await p.locator('[data-action="flee"]').click();await idle(p);await finishWalk(p);
- await fault(p,{walkDiscovery:true});await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
- assert.equal(await p.locator('#dungeon-section').isVisible(),true);
- assert.equal(await p.locator('[data-dungeon]').count(),1);
- assert.equal(await p.locator('[data-dungeon="icekingdom"]').count(),0);
- assert.match(await p.locator('#action-result').innerText(),/Discovered: Hellgate/);
- await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon]').count(),1);
+test('new discovery appears in the outing before becoming a home card',async t=>{
+ const p=await setup(t,{walkOutcome:'xp',walkDiscovery:false});await start(p);
+ assert.equal(await p.locator('[data-dungeon]').count(),0);await fault(p,{walkDiscovery:true});
+ await p.locator('[data-action="walk"]').click();await idle(p);
+ assert.equal(await p.locator('[data-dungeon]').count(),0);assert.equal(await p.locator('#walk-discovery').isVisible(),false);
+ await p.locator('#story-choices button').last().click();await idle(p);
+ assert.equal(await p.locator('#walk-discovery').isVisible(),true);assert.equal(await p.locator('[data-dungeon]').count(),0);
+ await p.locator('#story-done').click();assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
+ await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
 });
 
 test('dungeon completion saves results without adding a history panel',async t=>{
@@ -438,7 +413,7 @@ test('chat failure restores draft, failed save warns, saved exchange survives re
 });
 test('portrait upload retry does not generate twice and survives reopen',async t=>{
  const p=await setup(t);await start(p);await fault(p,{upload:true});await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.match(await p.locator('#draw').innerText(),/Retry saving/);assert.equal(await p.locator('#clean-portraits').isDisabled(),true);await p.locator('#draw').click();await idle(p);
+ assert.match(await p.locator('#draw').innerText(),/Retry saving/);assert.equal(await p.locator('#clean-portraits').count(),0);await p.locator('#draw').click();await idle(p);
  assert.equal((await calls(p,'image')).length,1);
  const generated=(await calls(p,'image'))[0].options;
  assert.match(generated.prompt,/plain white background/);
@@ -474,18 +449,11 @@ test('pending chat is discarded when the game is removed before retry',async t=>
  assert.equal(await p.locator('#messages').innerText(),'');assert.equal((await calls(p,'llm')).length,1);
  assert.equal(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']),undefined);
 });
-test('portrait cleanup confirms intent, retries failures and preserves current and earlier stages',async t=>{
- const p=await setup(t);await start(p);
- await p.evaluate(()=>{
-  const s=window.hostTest.state;s.kv['notebuddy/art-v1']={'isolated-fixture/stage-1':{path:'portraits/pet/baby.png'},'isolated-fixture/stage-2':{path:'portraits/pet/current.png'}};
-  s.files={'portraits/pet/baby.png':'a','portraits/pet/current.png':'b','portraits/pet/old.png':'c'};
- });
- await p.locator('#clean-portraits').click();await p.locator('#confirm-clean-portraits').click();assert.match(await p.locator('#portraits-error').innerText(),/check the box/);assert.equal((await calls(p,'delete')).length,0);
- await p.locator('#portraits-dialog button').first().click();assert.equal((await calls(p,'delete')).length,0);
- await fault(p,{delete:true});await p.locator('#clean-portraits').click();await p.locator('#portraits-quiescent').check();await p.locator('#confirm-clean-portraits').click();await idle(p);assert.match(await p.locator('#notice').innerText(),/could not finish/);
- await fault(p,{delete:false});await p.locator('#clean-portraits').click();await p.locator('#portraits-quiescent').check();await p.locator('#confirm-clean-portraits').click();await idle(p);
- assert.match(await p.locator('#notice').innerText(),/Removed 1/);assert.equal(await p.locator('#name').innerText(),'Recovery buddy');
- assert.deepEqual((await calls(p,'delete')).map(c=>c.path),['portraits/pet/old.png']);assert.equal((await calls(p,'image')).length,0);
+test('album hides maintenance and pixel panels while preserving all existing artwork',async t=>{
+ const p=await setup(t);await start(p);const before=await p.evaluate(()=>JSON.stringify(hostTest.state.kv['notebuddy/art-v1']));
+ assert.equal(await p.locator('#clean-portraits,#portraits-dialog,.pixel-companion,#prepare-pixel,#home-movement-status').count(),0);
+ await p.locator('#refresh').click();await idle(p);await p.reload();await idle(p);
+ assert.equal(await p.evaluate(()=>JSON.stringify(hostTest.state.kv['notebuddy/art-v1'])),before);assert.equal((await calls(p,'delete')).length,0);assert.equal((await calls(p,'image')).length,0);
 });
 
 async function resetDialog(p){await p.locator('#reset-game').click();await idle(p);}
@@ -856,7 +824,7 @@ test('replacement during birth generation never applies the old artwork to the n
 test('lost birth index acknowledgement retains a save-only retry even after refresh',async t=>{
  const p=await setup(t,{lostBirthSave:true});await artwork(p);await artStart(p);
  assert.match(await p.locator('#birth-recovery-status').innerText(),/saving is unfinished/);
- assert.equal(await p.locator('#clean-portraits').isDisabled(),true);
+ assert.equal(await p.locator('#clean-portraits').count(),0);
  await p.locator('#refresh').click();await idle(p);assert.equal(await p.locator('#retry-birth').isVisible(),true);
  await p.locator('#retry-birth').click();await idle(p);
  assert.equal((await calls(p,'image')).length,1);assert.equal(await p.locator('#birth-recovery').isVisible(),false);
@@ -1368,4 +1336,25 @@ test('legacy home image service failure offers an explicit corrected choice and 
  await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
  await chooseHome(p);const generated=await calls(p,'home-image');assert.equal(generated.length,1);assert.equal(generated[0].options.reference_image_urls,undefined);
  await p.reload();await idle(p);await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),false);assert.equal((await calls(p,'home-image')).length,0);
+});
+
+
+test('a quiet journey never reveals a dungeon behind an unfinished or reopened story',async t=>{
+ const p=await setup(t,{journey:true,walkOutcome:'quiet',llm:true});await start(p);
+ await p.locator('[data-action="walk"]').click();await idle(p);assert.equal(await p.locator('[data-dungeon]').count(),0);
+ await p.waitForFunction(()=>document.querySelector('#story-choices button'));
+ await p.locator('#story-close').click();await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon]').count(),0);
+ await p.locator('#story-resume').click();await p.locator('#story-choices button').last().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ assert.equal(await p.locator('#walk-discovery').isVisible(),true);assert.equal(await p.locator('[data-dungeon]').count(),0);
+ await p.waitForTimeout(1200);assert.equal(await p.locator('[data-dungeon]').count(),0,'timer never publishes an unacknowledged discovery');
+ await p.locator('#walk-dungeon').click();assert.equal(await p.locator('#dungeon-dialog').isVisible(),true);assert.equal((await calls(p,'explore_hellgate')).length,0);
+ await p.locator('#dungeon-close').click();assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
+});
+
+test('already acknowledged discoveries remain visible during later pending walks and reloads',async t=>{
+ const p=await setup(t,{walkOutcome:'xp'});await start(p);await p.locator('[data-action="walk"]').click();await idle(p);
+ await p.locator('#story-choices button').last().click();await idle(p);await p.locator('#story-done').click();
+ assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
+ await p.locator('[data-action="walk"]').click();await idle(p);await p.locator('#story-close').click();
+ assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
 });
