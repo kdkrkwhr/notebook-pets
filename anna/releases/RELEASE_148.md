@@ -1,3 +1,16 @@
+# 1.4.8 후속 · 화면 전반의 정보·조작 구분과 반응형 정리 · 2026-10-18
+
+사용자 스크린샷의 길쭉한 안내 아이콘은 일반 게임 버튼의 min-height 40px와 테마 그림자가 도움말 버튼에까지 적용된 결과였다. 이전 우측 액션 그룹 배치는 안내를 실행 버튼처럼 보이게 했다. 마지막 로드되는 ui-polish.css에서 정보 컨트롤을 명확히 분리하고 제목 옆의 보조 표시로 정리했다.
+
+- 제목과 안내는 왼쪽 그룹, 실행 버튼/날짜/코인은 오른쪽 그룹으로 구분했다. 정보 아이콘은 28px 영역, 테두리/그림자 없음, hover/키보드 초점/클릭 유지. 채팅 사용 안내도 제목에 배치하고 능력치 설명은 수치 행에 통합했다. 코인 배지는 조작 버튼보다 약하게 표시한다.
+- 모바일 상단을 브랜드·연결 상태 / 조작 메뉴 두 줄로 정리했다. 360px 한국어 화면에서 약 220px였던 상단 높이가 **124px**로 줄었다. 760px까지 같은 구조를 사용한다. 픽셀 미리보기와 긴 안내/복구 버튼은 좁은 화면에서 크기·간격·줄바꿈을 조정했다.
+- 한국어/영어 × 1120·820·768·760·640·390·360px **14개 조합**에서 문서 가로 넘침·헤더 그룹 겹침 0, 모든 표시 도움말 그림자 없음/높이 32px 이하 확인. 테마·도감·개인정보·초상화 확인·마이홈 **5개 창**의 360px 넘침 없음 확인. 테마 브라우저 **3개**, 관련 회귀 **5개**, strict 통과. 테마별 대비·저장·키보드 동작도 기존 검사를 통과했다. 시각 검증은 격리된 합성 친구와 로컬 SDK를 사용하며 실제 유료 AI **0회**다.
+- 소스 **`c0a4215`**, Anna **1.4.8 / working revision 72 / 설치 0.0.0-draft** 반영. 실제 설치의 던전·퀘스트·앨범·채팅 아이콘은 제목 그룹, 높이 약 28px, border 0px, shadow none, 액션 겹침 없음 확인. 설치 ui-polish.css SHA-256 **`7c84f39a30f9bd7a425b4400c6d2cff569aa215099e78302a263a8a1e7bcec77`** 로컬 일치. Connected와 배포 전후 저장 4종·게임 inspect·스토어 항목 동일 확인. 도구 **0.9.1 / Executa 760** 변경 없음, loaded/running, 설치 실패 0개.
+- [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39047149011)와 [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39047148976)는 기록 시 진행 중이다. 최종 전체 CI 성공으로 주장하지 않는다. 로컬 시각 증거는 .local/ui-review-before, .local/ui-review-polished, .local/ui-review-final에 보관했고 개인정보 이미지나 실행 상태를 공용 번들에 넣지 않았다.
+- Git release push와 Anna 테스트 앱만 반영. **심사 1.4.7 / ID 1427 / pending_review 유지**, dirty_vs_latest_cut=true. cut/심사 교체/공개 Anna 출시/Pages 배포/release-web push 없음. 심사는 매번 새 명시 요청이 필요하다.
+
+---
+
 # 1.4.8 · 안내 아이콘 제목 행 우측 정렬 · 2026-10-18
 
 제목 행 정렬 후속: ⓘ가 제목 아래 별도 줄을 차지하던 배치를 고쳤다. 던전·퀘스트·앨범은 기존 날짜/코인/버튼과 안내 아이콘을 제목 행 오른쪽 액션 그룹으로 묶고 아이콘을 맨 오른쪽에 둔다. 그 외 제목도 동일한 행을 사용하고 그림판 도움말은 기존 도구 행에 둔다. 소스 **`071d503`**, Anna **1.4.8 / working revision 71 / 설치 0.0.0-draft** 반영. 실제 설치의 세 카드 모두 `inHeader/rightmost/withinHeader=true` 확인. 설치 hints.mjs UTF-8 디코딩 후 SHA-256 **`f6a4dfbc5e38cc1c54420226493f1f86af1d2f8bf989193ca9fb11a20f81cc5b`**가 로컬 BOM 제외 바이트와 일치한다. 관련 브라우저 **4개** 및 strict 통과, 저장 4종·게임 inspect·스토어 항목 동일. 유료 AI 0회, 도구 0.9.1 유지, 심사 후보 **1.4.7 유지**, 웹 배포 없음. [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39046543300)와 [Anna CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39046543331)는 기록 시 진행 중이다.
