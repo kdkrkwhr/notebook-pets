@@ -28,7 +28,7 @@ import {cleanUnusedPortraits} from './portraits.mjs';
 
 const $=selector=>document.querySelector(selector);
 const TOOL=window.__ANNA_TOOL_IDS__?.notebuddy||'tool-dev-notebuddy';
-import {CHAT,ART,ErasedError,mergeSaved,removeAppData} from './data.mjs';
+import {CHAT,ART,erased,ErasedError,mergeSaved,removeAppData} from './data.mjs';
 // Accessing localStorage itself can throw in a restricted iframe.
 let preferences;
 try{preferences=window.localStorage;}catch{preferences=null;}
@@ -197,6 +197,9 @@ async function readExtras(){
   if(view?.erased||view?.reset_pending||pendingResetRequest){forgetCachedData();return;}
 
   const results=await Promise.allSettled([anna.storage.get({key:CHAT}),anna.storage.get({key:ART})]);
+  // An interrupted cleanup can leave the tool and app records out of sync.
+  // Block paid work before it produces an answer that cannot be saved.
+  if(results.some(r=>r.status==='fulfilled'&&erased(r.value.value))){view={erased:true};forgetCachedData();return;}
   if(results[0].status==='fulfilled')history=mergeHistory(results[0].value.value,pendingChat||[]);
   if(results[1].status==='fulfilled')art=results[1].value.value||{};
   if(results.some(r=>r.status==='rejected'))notice(tr('extrasError'));

@@ -48,6 +48,20 @@ async function finishWalk(p){
 }
 async function calls(p,method){return p.evaluate(m=>window.hostTest.calls.filter(x=>x.args?.command===m||m==='walk'&&x.args?.command==='walk_begin'||x.method===m),method);}
 
+test('an app removal marker blocks paid work even when the tool still returns an active companion',async t=>{
+ const p=await setup(t);await start(p);
+ for(const key of ['notebuddy/art-v1','notebuddy/chat-v1']){
+  await p.evaluate(key=>{window.hostTest.state.kv[key]={_notebuddy_erased:1};},key);
+  const before=await p.evaluate(()=>window.hostTest.calls.filter(c=>['image','home-image','llm'].includes(c.method)).length);
+  await p.locator('#refresh').click();await idle(p);
+  assert.equal(await p.locator('#restart-removed').isVisible(),true);
+  assert.equal(await p.locator('#draw').isVisible(),false);
+  assert.equal(await p.locator('#chat-input').isVisible(),false);
+  assert.equal(await p.evaluate(()=>window.hostTest.calls.filter(c=>['image','home-image','llm'].includes(c.method)).length),before);
+  await p.evaluate(key=>{delete window.hostTest.state.kv[key];},key);
+ }
+});
+
 test('item book opens only after creating a pet, filters and details never call AI or mutate storage',async t=>{
  const p=await setup(t);
  assert.equal(await p.locator('#open-items').isVisible(),false);
