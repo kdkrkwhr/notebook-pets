@@ -1338,3 +1338,15 @@ test('turning care AI OFF skips queued reactions while allowing the sent respons
  assert.equal((await calls(p,'feed')).length,1);assert.equal((await calls(p,'snack')).length,1);
  assert.equal((await calls(p,'llm')).length,1);assert.equal(await p.locator('[data-reaction-state="pending"]').count(),0);
 });
+
+test('care AI help stays compact and opens on hover, keyboard or touch without toggling care',async t=>{
+ const p=await setup(t);await start(p);const help=p.locator('#care-ai-help'),tip=p.locator('#care-ai-tooltip');
+ assert.equal(await tip.isVisible(),false);await help.hover();assert.equal(await tip.isVisible(),true);
+ await p.keyboard.press('Escape');assert.equal(await tip.isVisible(),false);
+ await help.click();assert.equal(await tip.isVisible(),true);assert.equal(await p.locator('#care-ai-enabled').isChecked(),true);
+ await p.locator('#chat-input').click();assert.equal(await tip.isVisible(),false);
+ await help.focus();await p.keyboard.press('Tab');await p.keyboard.press('Shift+Tab');assert.equal(await tip.isVisible(),true);
+ await p.keyboard.press('Escape');assert.equal(await tip.isVisible(),false);
+ await p.setViewportSize({width:360,height:800});await help.click();assert.equal(await tip.isVisible(),true);
+ const box=await tip.boundingBox();assert.ok(box.x>=0&&box.x+box.width<=360);
+});

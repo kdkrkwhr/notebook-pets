@@ -38,6 +38,16 @@ let careAiEnabled=true;
 try{careAiEnabled=preferences?.getItem(CARE_AI_KEY)!=='off';}catch{}
 $('#care-ai-enabled').checked=careAiEnabled;
 $('#care-ai-enabled').addEventListener('change',()=>{careAiEnabled=$('#care-ai-enabled').checked;try{preferences?.setItem(CARE_AI_KEY,careAiEnabled?'on':'off');}catch{}});
+const careHelp=$('#care-ai-help'),careTooltip=$('#care-ai-tooltip');
+let careHelpPinned=false;
+function showCareHelp(show){careTooltip.hidden=!show;careHelp.setAttribute('aria-expanded',String(show));}
+careHelp.addEventListener('pointerenter',()=>showCareHelp(true));
+careHelp.parentElement.addEventListener('pointerleave',()=>{if(!careHelpPinned&&!careHelp.matches(':focus-visible'))showCareHelp(false);});
+careHelp.addEventListener('focus',()=>{if(careHelp.matches(':focus-visible'))showCareHelp(true);});
+careHelp.addEventListener('blur',()=>{careHelpPinned=false;showCareHelp(false);});
+careHelp.addEventListener('click',()=>{careHelpPinned=!careHelpPinned;showCareHelp(careHelpPinned);});
+document.addEventListener('pointerdown',event=>{if(!careHelp.parentElement.contains(event.target)){careHelpPinned=false;showCareHelp(false);}});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'){careHelpPinned=false;showCareHelp(false);}});
 const appearance=createThemes(document,preferences,()=>language);
 const itemCatalog=createItemCatalog(document,()=>language);
 const titleScreen=createTitleScreen(document,{privacy:()=>$('#privacy-dialog').showModal()});
