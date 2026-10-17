@@ -42,7 +42,7 @@ test('malformed AI output preserves room and ownership; no automatic retries',as
  const before=structuredClone(state());await page.evaluate(()=>hostTest.faults.homeMalformed=true);await page.locator('#home-decorate').click();await page.waitForFunction(()=>!document.querySelector('#home-close').disabled);assert.deepEqual(state(),before);assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length),1);
 });
 
-test('new artwork prepares movement once; home only offers save recovery and never regeneration',async t=>{
+test('new artwork waits for home choice; one explicit generation and save-only recovery',async t=>{
  const {page,state}=await setup(t),before=structuredClone(state());page.on('dialog',d=>d.accept());
  await page.evaluate(()=>{
   const c=document.createElement('canvas');c.width=c.height=512;const ctx=c.getContext('2d');
@@ -54,7 +54,8 @@ test('new artwork prepares movement once; home only offers save recovery and nev
  assert.equal(await page.locator('#home-sprite').count(),0);
  assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),0);
  await page.locator('#home-close').click();await page.locator('#draw').click();await page.locator('#confirm-draw').click();await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);
- await page.locator('#open-home').click();await page.waitForFunction(()=>!document.querySelector('#home-sprite-retry').hidden);
+ assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),0);
+ await page.locator('#open-home').click();await page.locator('#home-appearance-generate').click();await page.waitForFunction(()=>!document.querySelector('#home-sprite-retry').hidden);
  const first=await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image'));
  assert.equal(first.length,1);assert.equal(first[0].options.reference_image_urls.length,1);
  await page.evaluate(()=>hostTest.faults.save=false);await page.locator('#home-sprite-retry').click();await page.waitForFunction(()=>document.querySelector('#home-sprite-retry').hidden);

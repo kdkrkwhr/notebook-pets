@@ -1,5 +1,5 @@
 import {ART,ErasedError,erased,mergeSaved} from './data.mjs';
-import {pixelSource,clearWhiteBorder} from './pixel-pet.mjs';
+import {pixelSource,clearWhiteBorder,pixelCanvas,pixelatePortrait,currentPixel} from './pixel-pet.mjs';
 export const homeSpriteKey=v=>`${v.pet_id}/home-sprite-stage-${v.stage}`;
 const requestKey=v=>`${v.pet_id}/home-sprite-request-stage-${v.stage}`;
 const failureKeys={reference:'homeMovementReferenceFailed',generate:'homeMovementServiceFailed',response:'homeMovementResponseFailed',download:'homeMovementDownloadFailed',validate:'homeMovementInvalid',save:'homeMovementSaveFailed'};
@@ -7,11 +7,23 @@ export function movementFailureKey(error,pending=false){
  return pending?'homeMovementPending':failureKeys[error?.movementPhase]||'homeMovementFailed';
 }
 export function homeMovementStatus(v,art){
+ if(currentHomeAppearance(v,art)?.format==='home-default-v1')return failureKeys[art?.[requestKey(v)]?.failure]||'homeDefaultReady';
  if(currentHomeSprite(v,art))return 'homeMovementReady';
  const request=art?.[requestKey(v)];
  if(request?.source_path!==pixelSource(v,art||{}))return '';
  // A result kept only in the previous tab cannot be offered for save-only retry.
  return request.failure==='save'||request.failure==='download'?'homeMovementInterrupted':failureKeys[request.failure]||'homeMovementInterrupted';
+}
+export function currentHomeAppearance(v,art){
+ const entry=art?.[homeSpriteKey(v)];
+ return currentHomeSprite(v,art)||(entry?.format==='home-default-v1'&&entry.pet_id===v.pet_id&&entry.stage===v.stage&&entry.source_path===pixelSource(v,art)&&entry.path?.startsWith(`portraits/${v.pet_id}/`)?entry:null);
+}
+export function homeNeedsChoice(v,art){return !currentHomeAppearance(v,art)&&!(art?.[requestKey(v)]?.source_path===pixelSource(v,art)&&art[requestKey(v)].trigger==='home-choice-v1');}
+export async function readHomeAppearance(blob,kind){
+ if(kind!=='default')return readHomeSprite(blob);
+ const bitmap=await createImageBitmap(blob);
+ try{const canvas=pixelCanvas(bitmap);return {canvas,frames:Array.from({length:16},()=>[0,0,canvas.width,canvas.height]),maxHeight:canvas.height,kind:'default'};}
+ finally{bitmap.close();}
 }
 export function currentHomeSprite(v,art){
  const e=art?.[homeSpriteKey(v)];
@@ -104,13 +116,13 @@ export async function readHomeSprite(blob){
 
 export function createHomeSprite(h){
  let pending=null,running=null;
- async function generate(expected){
+ async function generate(expected,homeChoice=false){
   const snapshot=await h.active(),old=(await h.anna().storage.get({key:ART})).value||{};
   if(erased(old))throw new ErasedError();
   const source=pixelSource(snapshot,old),owner=snapshot.pet_id,stage=snapshot.stage;
   if(expected&&(expected.pet_id!==owner||expected.stage!==stage))throw Error('Companion changed');
   if(expected?.source_path&&expected.source_path!==source)throw Error('Artwork changed');
-  if(currentHomeSprite(snapshot,old)){pending=null;return false;}
+  if(currentHomeAppearance(snapshot,old)){pending=null;return false;}
   const guard=async()=>{
    const active=await h.active(),saved=(await h.anna().storage.get({key:ART})).value||{};
    if(erased(saved))throw new ErasedError();
@@ -120,7 +132,7 @@ export function createHomeSprite(h){
   try{
    if(pending&&(pending.owner!==owner||pending.stage!==stage||pending.source!==source)){pending=null;throw Error('Companion changed; start again');}
    if(!pending){
-    if(old[requestKey(snapshot)]?.source_path===source)return false;
+    if(old[requestKey(snapshot)]?.source_path===source&&(!homeChoice||old[requestKey(snapshot)].trigger==='home-choice-v1'))return false;
     await guard();let reference,referencePath=source;
     if(source.startsWith('portraits/'))reference=(await h.anna().files.download_url({path:source})).get_url;
     else{
@@ -133,9 +145,9 @@ export function createHomeSprite(h){
     await mergeSaved(h.anna().storage,ART,latest=>{
      claimed=false;
      if(pixelSource(snapshot,latest||{})!==source)throw Error('Artwork changed');
-     if(currentHomeSprite(snapshot,latest)||latest?.[requestKey(snapshot)]?.source_path===source)return latest;
+     if(currentHomeAppearance(snapshot,latest)||latest?.[requestKey(snapshot)]?.source_path===source&&(!homeChoice||latest[requestKey(snapshot)].trigger==='home-choice-v1'))return latest;
      claimed=true;
-     return {...latest,[requestKey(snapshot)]:{path:referencePath,source_path:source,at:Date.now()}};
+     return {...latest,[requestKey(snapshot)]:{path:referencePath,source_path:source,at:Date.now(),...(homeChoice?{trigger:'home-choice-v1'}:{})}};
     });
     if(!claimed)return false;
     await guard();
@@ -148,13 +160,21 @@ export function createHomeSprite(h){
    const p=pending;await guard();
    phase='download';
    if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw Error('Sprite download failed');p.blob=await response.blob();}
+   phase='save';
+   await guard();if(!p.uploaded){await h.upload(p.path,p.blob);p.uploaded=true;}
+   // Keep the paid result even when its grid cannot be decoded. No signed URL
+   // is persisted and later save/decoder recovery never needs another AI call.
+   await guard();await mergeSaved(h.anna().storage,ART,latest=>{
+    if(pixelSource(snapshot,latest||{})!==source)throw Error('Artwork changed');
+    return {...latest,[requestKey(snapshot)]:{...latest[requestKey(snapshot)],path:p.path}};
+   });
    phase='validate';
    if(!p.checked){try{await readHomeSprite(p.blob);p.checked=true;}catch(error){pending=null;throw error;}}
    phase='save';
-   await guard();if(!p.uploaded){await h.upload(p.path,p.blob);p.uploaded=true;}
    await guard();
    const art=await mergeSaved(h.anna().storage,ART,latest=>{
     if(pixelSource(snapshot,latest||{})!==source)throw Error('Artwork changed');
+    if(currentHomeAppearance(snapshot,latest)?.format==='home-default-v1')throw Error('Appearance choice changed');
     return {...latest,[homeSpriteKey(snapshot)]:{path:p.path,format:'home-sprite-v1',pet_id:owner,stage,source_path:source,at:Date.now()}};
    });
    await guard();pending=null;await h.saved(art);return true;
@@ -173,6 +193,21 @@ export function createHomeSprite(h){
    const failure=new Error('Movement preparation failed');failure.movementPhase=phase;throw failure;
   }
  }
- function sync(expected){if(!running)running=generate(expected).finally(()=>{running=null;});return running;}
- return {sync,retry:()=>pending?sync():Promise.resolve(false),hasPending:()=>!!pending,clear(){pending=null;}};
+ async function useDefault(){
+  const snapshot=await h.active(),old=(await h.anna().storage.get({key:ART})).value||{},source=pixelSource(snapshot,old);
+  if(erased(old))throw new ErasedError();
+  if(currentHomeAppearance(snapshot,old))return false;
+  const guard=async()=>{const active=await h.active(),latest=(await h.anna().storage.get({key:ART})).value||{};if(erased(latest))throw new ErasedError();if(active.pet_id!==snapshot.pet_id||active.stage!==snapshot.stage||pixelSource(active,latest)!==source)throw Error('Companion or artwork changed');};
+  let path=currentPixel(snapshot,old)?.path;
+  if(!path){const url=source.startsWith('portraits/')?(await h.anna().files.download_url({path:source})).get_url:source;const r=await fetch(url);if(!r.ok)throw Error('Portrait unavailable');const blob=await pixelatePortrait(await r.blob());await guard();path=`portraits/${snapshot.pet_id}/home-default-${crypto.randomUUID()}.png`;await h.upload(path,blob);}
+  await guard();const saved=await mergeSaved(h.anna().storage,ART,latest=>{
+   if(pixelSource(snapshot,latest||{})!==source)throw Error('Artwork changed');
+   if(currentHomeAppearance(snapshot,latest))return latest;
+   const request=latest?.[requestKey(snapshot)];
+   if(request?.source_path===source&&request.trigger==='home-choice-v1'&&!request.failure)throw Error('Appearance choice changed');
+   return {...latest,[homeSpriteKey(snapshot)]:{path,format:'home-default-v1',pet_id:snapshot.pet_id,stage:snapshot.stage,source_path:source,at:Date.now()}};
+  });await guard();await h.saved(saved);return true;
+ }
+ function sync(expected,homeChoice=false){if(!running)running=generate(expected,homeChoice).finally(()=>{running=null;});return running;}
+ return {sync,choose:expected=>sync(expected,true),useDefault,retry:()=>pending?sync():Promise.resolve(false),hasPending:()=>!!pending,clear(){pending=null;}};
 }

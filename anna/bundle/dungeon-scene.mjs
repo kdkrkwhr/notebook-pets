@@ -2,7 +2,7 @@ import {WORLD,THEMES,layout,worldPoint,routePoint,paintRoom} from './dungeon-map
 import {drawEnemy,BOSS_ART} from './dungeon-enemies.mjs';
 import {drawAvatar,facing,turnToward} from './dungeon-avatar.mjs';
 import {pixelCanvas} from './pixel-pet.mjs';
-import {readHomeSprite} from './home-sprite.mjs';
+import {readHomeAppearance} from './home-sprite.mjs';
 import {journey,WALK_MS,ROUND_MS,EXIT_MS,REST_MS,totalDuration} from './dungeon-journey.mjs';
 export {WORLD,WALK_MS,ROUND_MS};
 export const routePosition=progress=>routePoint(progress);
@@ -21,7 +21,7 @@ export function createDungeonScene(canvas,explorer){
  const c=canvas.getContext('2d');let key='hellgate',atlas=null,ready=false,generation=0,portrait=null,sprite=null,terrain=null,terrainKey='',turn=1,turnAt=null;
  async function loadCompanion(identity,sources){
   if(identity.sprite){
-   try{const r=await fetch(identity.sprite,{cache:'no-store'});if(!r.ok)throw Error('Movement unavailable');return {sprite:await readHomeSprite(await r.blob()),portrait:null};}
+   try{const source=identity.sprite;const r=await fetch(typeof source==='string'?source:source.url,{cache:'no-store'});if(!r.ok)throw Error('Movement unavailable');return {sprite:await readHomeAppearance(await r.blob(),source.kind),portrait:null};}
    catch{/* Fall back only to this companion's own portrait. No AI calls. */}
   }
   return {sprite:null,portrait:await loadPortrait(sources)};

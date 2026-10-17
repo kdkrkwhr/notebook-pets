@@ -37,6 +37,9 @@ async function setup(t,faults={}){
 async function idle(p){await p.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled&&document.querySelector('#messages').dataset.reactionBusy!=='true');await p.evaluate(()=>{if(document.querySelector('#title-screen').open)document.querySelector('#title-start').click();});}
 async function fault(p,value){await p.evaluate(v=>Object.assign(window.hostTest.faults,v),value);}
 async function start(p){await p.locator('#pet-name').fill('Recovery buddy');await p.locator('#start-form button').click();await idle(p);}
+async function chooseHome(p,mode='generate'){
+ await p.locator('#open-home').click();await p.locator('#home-appearance-'+mode).click();await idle(p);await p.locator('#home-close').click();
+}
 async function finishWalk(p){
  if(await p.locator('#walk-story').isVisible()){
   if(await p.locator('#story-usage').isVisible()){
@@ -47,6 +50,28 @@ async function finishWalk(p){
  }
 }
 async function calls(p,method){return p.evaluate(m=>window.hostTest.calls.filter(x=>x.args?.command===m||m==='walk'&&x.args?.command==='walk_begin'||x.method===m),method);}
+
+test('first home visit offers a paid choice; free default persists and a new portrait asks again',async t=>{
+ const p=await setup(t);await start(p);assert.equal((await calls(p,'home-image')).length,0);
+ await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),true);
+ await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.appearance==='default');
+ await p.locator('#home-appearance-default').click();await idle(p);
+ assert.equal(await p.locator('#home-appearance-choice').isVisible(),false);assert.equal((await calls(p,'home-image')).length,0);
+ const entry=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']['isolated-fixture/home-sprite-stage-1']);assert.equal(entry.format,'home-default-v1');
+ await p.locator('#home-inside').click();await p.locator('#home-yard').click();await p.locator('#home-close').click();
+ await p.reload();await idle(p);await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),false);await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.appearance==='default');assert.equal((await calls(p,'home-image')).length,0);
+ await p.locator('#home-close').click();await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'home-image')).length,0);
+ await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),true);
+});
+
+test('one explicit home generation is reused; failure sets a visible free default without another request',async t=>{
+ const p=await setup(t,{homeImage:true});await start(p);await p.locator('#open-home').click();
+ await p.locator('#home-appearance-generate').click();await idle(p);
+ assert.equal((await calls(p,'home-image')).length,1);assert.match(await p.locator('#home-status').innerText(),/default image is set/);
+ await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.appearance==='default');
+ assert.equal(await p.locator('#home-appearance-choice').isVisible(),false);await p.locator('#home-close').click();
+ await p.reload();await idle(p);await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),false);assert.equal((await calls(p,'home-image')).length,0);
+});
 
 test('an app removal marker blocks paid work even when the tool still returns an active companion',async t=>{
  const p=await setup(t);await start(p);
@@ -134,11 +159,11 @@ test('Korean item book fits a narrow screen and distinguishes body requirements 
  assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
 });
 
-test('local dungeon pixel conversion stays free; birth separately prepares one home movement sheet',async t=>{
+test('birth prepares only a free pixel preview; home waits for an explicit appearance choice',async t=>{
  const p=await setup(t);await start(p);
  await p.waitForFunction(()=>window.hostTest.state.kv['notebuddy/art-v1']?.['isolated-fixture/pixel-stage-1']);
  assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
- assert.equal((await calls(p,'home-image')).length,1);
+ assert.equal((await calls(p,'home-image')).length,0);
  assert.equal(await p.locator('#pixel-pet').isVisible(),true);
  const result=await p.evaluate(async()=>{
   const {pixelatePortrait}=await import('./pixel-pet.mjs');
@@ -152,24 +177,25 @@ test('local dungeon pixel conversion stays free; birth separately prepares one h
 });
 
 test('movement follows new portraits and growth artwork, never visits or unchanged evolution artwork',async t=>{
- const p=await setup(t);await start(p);
+ const p=await setup(t);await start(p);await chooseHome(p);
  assert.equal((await calls(p,'home-image')).length,1);
  assert.equal(await p.locator('#home-sprite').count(),0);
  await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'home-image')).length,1);
  await fault(p,{evolve:2});await p.locator('[data-action="feed"]').click();await idle(p);
  assert.equal((await calls(p,'home-image')).length,1,'a stage number alone does not request poses');
  await p.locator('#draw-evolved').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'home-image')).length,2);
+ assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'home-image')).length,1);await chooseHome(p);assert.equal((await calls(p,'home-image')).length,2);
  const art=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);
  assert.equal(art['isolated-fixture/home-sprite-stage-2'].source_path,art['isolated-fixture/stage-2'].path);
  assert.equal(art['isolated-fixture/home-sprite-stage-2'].stage,2);
  await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
  await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.equal((await calls(p,'home-image')).length,0);await chooseHome(p);
  assert.equal((await calls(p,'home-image')).length,1,'a replacement portrait gets its own poses');
 });
 
 test('movement failure preserves a new companion and portrait without automatic retries',async t=>{
- const p=await setup(t,{homeImage:true});await start(p);
+ const p=await setup(t,{homeImage:true});await start(p);await chooseHome(p);
  assert.equal(await p.locator('#name').innerText(),'Recovery buddy');assert.equal((await calls(p,'home-image')).length,1);
  assert.match(await p.locator('#home-movement-status').innerText(),/companion is saved/);
  assert.match(await p.locator('#home-movement-status').innerText(),/movement:generate/);
@@ -177,19 +203,21 @@ test('movement failure preserves a new companion and portrait without automatic 
  assert.doesNotMatch(await p.locator('#pixel-status').innerText(),/Ready for dungeon/);
  await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'home-image')).length,1);
  await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
+ assert.equal((await calls(p,'home-image')).length,1);await chooseHome(p);
  assert.equal((await calls(p,'home-image')).length,2);assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
  await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
  assert.match(await p.locator('#home-movement-status').innerText(),/movement:generate/);
 });
 
 test('unreadable movement sheet is distinguished from service failure and survives reload',async t=>{
- const p=await setup(t,{homeSpriteSheet:'data:image/png;base64,YmFk'});await start(p);
+ const p=await setup(t,{homeSpriteSheet:'data:image/png;base64,YmFk'});await start(p);await chooseHome(p);
  assert.match(await p.locator('#home-movement-status').innerText(),/movement:validate/);
  assert.equal(await p.locator('#pixel-pet').isVisible(),true);
  assert.equal((await calls(p,'home-image')).length,1);
  const data=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);
  assert.equal(data['isolated-fixture/home-sprite-request-stage-1'].failure,'validate');
- assert(!data['isolated-fixture/home-sprite-stage-1']);
+ assert.equal(data['isolated-fixture/home-sprite-stage-1'].format,'home-default-v1');
+ assert.match(data['isolated-fixture/home-sprite-request-stage-1'].path,/home-sprite-/,'the unreadable paid result is retained privately');
  await p.reload();await idle(p);assert.match(await p.locator('#home-movement-status').innerText(),/movement:validate/);assert.equal((await calls(p,'home-image')).length,0);
  await p.locator('#language').selectOption('ko');await idle(p);assert.match(await p.locator('#pixel-status').innerText(),/정적인 픽셀 미리보기/);assert.match(await p.locator('#home-movement-status').innerText(),/4 × 4 동작 시트/);
 });
@@ -622,6 +650,11 @@ test('artwork first meeting validates source then saves a referenced baby; reope
  assert.equal(await p.locator('#birth-recovery').isVisible(),false);
  const saved=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']);
  assert.equal(saved['isolated-fixture/birth-source'].phase,'done');assert.ok(saved['isolated-fixture/stage-1'].path);
+ assert.equal((await calls(p,'home-image')).length,0,'portrait birth never requests home movement');
+ const reference='data:image/png;base64,cGVyc29uYWwtcG9ydHJhaXQtcmVmZXJlbmNl';
+ await p.evaluate(({path,reference})=>{hostTest.faults.portraits={[path]:reference};},{path:saved['isolated-fixture/stage-1'].path,reference});
+ await chooseHome(p);assert.equal((await calls(p,'home-image')).length,1);assert.equal((await calls(p,'home-image'))[0].options.reference_image_urls[0],reference);
+ await fault(p,{portraits:{}});
  await p.reload();await idle(p);assert.equal((await calls(p,'image')).length,0);
  assert.match(await p.locator('#image-caption').innerText(),/portrait/i);
 });
@@ -939,7 +972,7 @@ test('legacy six-room result visits distinct rooms and pauses without spending a
 });
 
 test('dungeon uses the saved home sheet with identical directional frames and no extra AI',async t=>{
- const p=await setup(t,{walkOutcome:'quiet'});await start(p);
+ const p=await setup(t,{walkOutcome:'quiet'});await start(p);await chooseHome(p);
  await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
  await p.locator('[data-dungeon="hellgate"]').click();await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.sprite==='home');
  const used=await calls(p,'home-image');assert.equal(used.length,1);
