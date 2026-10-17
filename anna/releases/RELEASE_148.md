@@ -1,3 +1,9 @@
+# 1.4.8 · 안내 아이콘 제목 행 우측 정렬 · 2026-10-18
+
+제목 행 정렬 후속: ⓘ가 제목 아래 별도 줄을 차지하던 배치를 고쳤다. 던전·퀘스트·앨범은 기존 날짜/코인/버튼과 안내 아이콘을 제목 행 오른쪽 액션 그룹으로 묶고 아이콘을 맨 오른쪽에 둔다. 그 외 제목도 동일한 행을 사용하고 그림판 도움말은 기존 도구 행에 둔다. 소스 **`071d503`**, Anna **1.4.8 / working revision 71 / 설치 0.0.0-draft** 반영. 실제 설치의 세 카드 모두 `inHeader/rightmost/withinHeader=true` 확인. 설치 hints.mjs UTF-8 디코딩 후 SHA-256 **`f6a4dfbc5e38cc1c54420226493f1f86af1d2f8bf989193ca9fb11a20f81cc5b`**가 로컬 BOM 제외 바이트와 일치한다. 관련 브라우저 **4개** 및 strict 통과, 저장 4종·게임 inspect·스토어 항목 동일. 유료 AI 0회, 도구 0.9.1 유지, 심사 후보 **1.4.7 유지**, 웹 배포 없음. [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39046543300)와 [Anna CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39046543331)는 기록 시 진행 중이다.
+
+---
+
 # 1.4.8 후속 · 홈 이미지 생성 복구와 보조 설명 툴팁 · 2026-10-18
 
 현재 소유자의 홈 요청은 판독/저장 이전 generate 단계에서 실패했다. 격리 개발 앱의 실제 비교에서 참조 URL과 data URL, image.edit는 각각 HTTP 502를 반환했고, 저장 외형 설명을 사용한 image.generate만 21초에 openai/gpt-image-2 PNG 1024×1024를 반환했다. **이미지 API 4회 / 성공 1장 / 별도 텍스트·분석·초상화 생성 0회**. 실패의 실제 과금 여부는 확인하지 못했다. [상세 기록](docs/HOME_IMAGE_TEST_20261018.md).

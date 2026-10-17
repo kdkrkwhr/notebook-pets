@@ -6,7 +6,7 @@
 
 | 항목 | 값 |
 | --- | --- |
-| Anna 테스트 앱 | **1.4.8 / working revision 70 / 소유자 초안 0.0.0-draft** |
+| Anna 테스트 앱 | **1.4.8 / working revision 71 / 소유자 초안 0.0.0-draft** |
 | 심사 | **1.4.7 / ID 1427 / pending_review**, 명시 요청 전 변경 금지 |
 | 게임 도구 | **0.9.1 / Executa 760**, 변경 없음 |
 | 검증 | JS 92 · 전체 브라우저 110 통과 후 실패 4개 수정·관련 6개 재통과 · strict |
@@ -19,12 +19,14 @@
 
 # 1.4.8 후속 · 홈 이미지 생성 복구와 보조 설명 툴팁 · 2026-10-18
 
+제목 행 정렬 후속: ⓘ가 제목 아래 별도 줄을 차지하던 배치를 고쳤다. 던전·퀘스트·앨범은 기존 날짜/코인/버튼과 안내 아이콘을 제목 행 오른쪽 액션 그룹으로 묶고 아이콘을 맨 오른쪽에 둔다. 그 외 제목도 동일한 행을 사용하고 그림판 도움말은 기존 도구 행에 둔다. 소스 **`071d503`**, Anna **1.4.8 / working revision 71 / 설치 0.0.0-draft** 반영. 실제 설치의 세 카드 모두 `inHeader/rightmost/withinHeader=true` 확인. 설치 hints.mjs UTF-8 디코딩 후 SHA-256 **`f6a4dfbc5e38cc1c54420226493f1f86af1d2f8bf989193ca9fb11a20f81cc5b`**가 로컬 BOM 제외 바이트와 일치한다. 관련 브라우저 **4개** 및 strict 통과, 저장 4종·게임 inspect·스토어 항목 동일. 유료 AI 0회, 도구 0.9.1 유지, 심사 후보 **1.4.7 유지**, 웹 배포 없음. [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39046543300)와 [Anna CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39046543331)는 기록 시 진행 중이다.
+
 현재 소유자의 홈 요청은 판독/저장 이전 generate 단계에서 실패했다. 격리 개발 앱의 실제 비교에서 참조 URL과 data URL, image.edit는 각각 HTTP 502를 반환했고, 저장 외형 설명을 사용한 image.generate만 21초에 openai/gpt-image-2 PNG 1024×1024를 반환했다. **이미지 API 4회 / 성공 1장 / 별도 텍스트·분석·초상화 생성 0회**. 실패의 실제 과금 여부는 확인하지 못했다. [상세 기록](docs/HOME_IMAGE_TEST_20261018.md).
 
 - 저장된 원본 분석 설명 → 성격의 외형 설명 → 게임 이미지 프롬프트를 재사용해 이미지 1회를 요청하도록 수정했다. 현재 성장 단계를 포함하고 참조 URL은 보내지 않는다. 추가 분석/자동 유료 대체 재시도는 없다. 이전 방식의 생성 실패로 기본 모습에 머물던 친구에게만 명시적인 첫 선택을 다시 제공하며 재접속만으로 AI를 요청하지 않는다.
 - 성공 원본을 비공개 보관하고 16프레임 판독·방향 행을 확인했다. 친구/단계/원본/ART ETag를 재검증하고 소유자 홈 시트와 요청 기록만 조건부 복구했다. 초상화·대화·게임 상태는 보존했다. 실제 설치에서 directional/ready·빈 경고 숨김·실내 캐릭터를 육안 확인했다. 복구 추가 AI 0회. 외형 설명 기반이므로 초상화와 세부 스타일 차이는 남는다.
 - 채팅·앨범·던전·그림판·마이홈 등 **17곳의 보조 설명**을 ⓘ 툴팁으로 옮겼다. hover/클릭/키보드 초점으로 표시, Esc/바깥 클릭/초점 이탈로 닫기, 모바일과 화면 경계·스크롤·언어 변경·동적 제목 갱신을 고려했다. 오류·진행 상태·행동 비용·파괴적 확인 문구는 상시 표시한다. 이미 접혀 있던 아이템 착용 설명은 중복 툴팁으로 만들지 않았다.
-- 소스 **`24d90bb`**, Anna **1.4.8 / working revision 70 / 소유자 설치 0.0.0-draft**. 실제 설치 app.js SHA-256 **`32ef3a7bec2a4f9b48865214c8ee295fad6cfde289f21a176ff27d8dd341d0e4`** 로컬 일치. 설치의 툴팁 숨김/표시/Esc/화면 범위·홈 시트를 확인했다. 배포 전후 저장 4종·게임 inspect와 스토어 소개/스크린샷 등 모두 동일. 도구 **0.9.1 / Executa 760** 변경 없음, 클라우드 loaded/running, 설치 실패 Executa 0개.
+- 소스 **`24d90bb`**, Anna **1.4.8 / working revision 71 / 소유자 설치 0.0.0-draft**. 실제 설치 app.js SHA-256 **`32ef3a7bec2a4f9b48865214c8ee295fad6cfde289f21a176ff27d8dd341d0e4`** 로컬 일치. 설치의 툴팁 숨김/표시/Esc/화면 범위·홈 시트를 확인했다. 배포 전후 저장 4종·게임 inspect와 스토어 소개/스크린샷 등 모두 동일. 도구 **0.9.1 / Executa 760** 변경 없음, 클라우드 loaded/running, 설치 실패 Executa 0개.
 - JS **92**와 strict 통과. 전체 브라우저 **114개 중 110 통과**, 참조 인자 기대값·중복 설명·그림판 설명 배치·테마 라디오 선택자에서 실패한 4개를 수정하고 **관련 6개(실패 4 + 툴팁 + 새 복구 경로) 재검증 모두 통과**. 마지막 hover 유지 보완 후 툴팁 검사도 재통과했다. 이번 [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39046187885)와 [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39046187829)는 기록 시 진행 중이며 최종 전체 CI 성공으로 주장하지 않는다.
 - `release` Git push와 Anna 테스트 앱만 반영. **심사 1.4.7 / ID 1427 / pending_review 유지**, dirty_vs_latest_cut=true. cut/심사 교체/공개 Anna 출시/Pages 배포/release-web push 없음. 테스트용 image.edit 권한과 개발 서버는 종료·제거했다. 심사 변경에는 매번 새 명시 요청이 필요하다.
 
