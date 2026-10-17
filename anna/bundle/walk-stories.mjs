@@ -76,7 +76,7 @@ export function createWalkStories(h){
     }catch{if(token===epoch){current=fromGame(view);feedback=current?'':'storyLoadFailed';}}
     if(token===epoch)render();
   }
-  async function start(event){
+  async function start(event,useAi=true){
     if(!event||working)return;
     const token=epoch;working=true;feedback='';render();
     try{
@@ -88,7 +88,7 @@ export function createWalkStories(h){
       });
       if(!reserved)return;
       let story=event.journey?journeyStory(event.journey,event.language):basicStory(event.language),fallback=true;
-      try{
+      if(typeof useAi==='function'?useAi():useAi)try{
         const response=await h.anna().llm.complete({systemPrompt:storyPrompt(event),messages:[{role:'user',content:{type:'text',text:'Create the walk vignette.'}}],maxTokens:900,temperature:.8,modelPreferences:{costPriority:1,speedPriority:.8}},{timeoutMs:45000});
         if(response.stopReason==='contentFilter')throw Error('Refused');
         story=parseStory(response.content?.text);if(event.journey)story.choices=journeyStory(event.journey,event.language).choices;fallback=false;

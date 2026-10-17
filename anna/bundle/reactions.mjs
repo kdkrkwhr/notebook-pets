@@ -33,8 +33,10 @@ export function createReactions(h){
     try{
       while(queue.length){
         const event=queue.shift(),token=epoch;
+        if(h.enabled?.()===false){overlay.delete(event.id);h.render();continue;}
         try{
           await persist(event,token,true);
+          if(h.enabled?.()===false){event.state='done';event.text=h.disabledText();await persist(event,token);continue;}
           overlay.set(event.id,record(event));h.render();
           const reply=await h.anna().llm.complete({systemPrompt:reactionPrompt(event),messages:[{role:'user',content:{type:'text',text:'React to the completed action.'}}],maxTokens:160,temperature:.7,modelPreferences:{costPriority:1,speedPriority:.8}});
           await guard(event,token);

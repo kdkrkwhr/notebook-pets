@@ -1,6 +1,9 @@
 // English is the default. Only presentation preferences live in browser storage.
 export const LANGUAGE_KEY = 'notebuddy/language-v1';
 export const messages = {
+  careAiLabel:['AI care and action responses','돌봄·행동 AI 반응'],
+  careAiHelp:['OFF applies actions and rewards without AI reactions or AI walk stories. Direct chat still uses AI. Already sent requests may finish.','OFF이면 행동·상태·보상만 처리하고 AI 반응과 AI 산책 이야기는 생성하지 않아요. 직접 보내는 채팅은 AI를 사용해요. 이미 보낸 요청은 완료될 수 있어요.'],
+  careAiSaved:['Action saved.','행동을 처리했어요.'],
   artFinishingFriend:['Portrait saved. Preparing your companion’s personality and little avatar…','그림을 저장했어요. 친구의 성격과 작은 아바타를 준비하고 있어요…'],
 "personalityHeading":["Your companion’s personality", "친구의 성격"],
 "personalityIntro":["A personality inspired by your companion’s name and appearance, shaped slowly by life together.", "이름과 외형에서 시작해 함께한 경험으로 조금씩 달라지는 성격이에요."],

@@ -229,3 +229,5 @@ h1,h2,p,label,.actions b,.actions small{word-break:keep-all;overflow-wrap:break-
 .story-influence { padding: .8rem 1rem; margin: .8rem 0; background: #eef3e8; border-left: 3px solid #78956d; border-radius: .5rem; line-height: 1.7; }
 
 .dungeon-health-help{flex:1 1 100%;font-size:12px;line-height:1.6}
+
+.care-ai-options{padding:12px 22px;border-bottom:1px solid var(--line)}.care-ai-options label{display:flex;align-items:center;gap:9px;font-size:13px;cursor:pointer}.care-ai-options input{width:18px;height:18px;padding:0;flex-shrink:0;accent-color:var(--green)}.care-ai-options small{display:block;margin-top:6px;font-size:11px;line-height:1.6}

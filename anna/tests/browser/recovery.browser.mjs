@@ -1306,3 +1306,35 @@ test('welcome steps follow the start form and the art choice keeps its preview b
   return {overlap:!(b.right<=i.left||i.right<=b.left||b.bottom<=i.top||i.bottom<=b.top),centered:Math.abs((b.top+b.bottom)/2-(i.top+i.bottom)/2)<2,noteBelow:n.top>=Math.max(b.bottom,i.bottom)};});
  assert.deepEqual(layout,{overlap:false,centered:true,noteBelow:true});
 });
+
+
+test('care AI option saves OFF, applies care without AI and keeps direct chat available',async t=>{
+ const p=await setup(t);await start(p);
+ await p.locator('#care-ai-enabled').uncheck();
+ await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
+ assert.equal((await calls(p,'llm')).length,0);
+ assert.equal(await p.locator('[data-reaction-state]').count(),0);
+ await p.reload();await idle(p);assert.equal(await p.locator('#care-ai-enabled').isChecked(),false);
+ await p.locator('[data-action="snack"]').click();await idle(p);assert.equal((await calls(p,'llm')).length,0);
+ await p.locator('#chat-input').fill('Hello');await p.locator('#chat-form button').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,1);
+ await p.locator('#care-ai-enabled').check();await p.locator('[data-action="play"]').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,2);
+});
+
+test('care AI OFF uses a playable quiet-walk fallback without an AI call',async t=>{
+ const p=await setup(t);await start(p);await p.locator('#care-ai-enabled').uncheck();await quietStoryWalk(p);
+ assert.equal((await calls(p,'llm')).length,0);assert.equal(await p.locator('#story-choices button').count(),2);
+ await p.locator('#story-choices button').first().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ assert.equal((await calls(p,'llm')).length,0);await p.locator('#story-done').click();
+ await p.reload();await idle(p);assert.equal(await p.locator('#care-ai-enabled').isChecked(),false);
+});
+
+test('turning care AI OFF skips queued reactions while allowing the sent response to finish',async t=>{
+ const p=await setup(t,{llmDelay:2500});await start(p);
+ await p.locator('[data-action="feed"]').click();await p.waitForFunction(()=>window.hostTest.calls.some(x=>x.method==='llm'));
+ await p.locator('[data-action="snack"]').click();await p.locator('#care-ai-enabled').uncheck();await idle(p);
+ assert.equal((await calls(p,'feed')).length,1);assert.equal((await calls(p,'snack')).length,1);
+ assert.equal((await calls(p,'llm')).length,1);assert.equal(await p.locator('[data-reaction-state="pending"]').count(),0);
+});

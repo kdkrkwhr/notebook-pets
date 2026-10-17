@@ -33,6 +33,11 @@ import {CHAT,ART,erased,ErasedError,mergeSaved,removeAppData} from './data.mjs';
 let preferences;
 try{preferences=window.localStorage;}catch{preferences=null;}
 let language=loadLanguage(preferences);
+const CARE_AI_KEY='notebuddy/care-ai-v1';
+let careAiEnabled=true;
+try{careAiEnabled=preferences?.getItem(CARE_AI_KEY)!=='off';}catch{}
+$('#care-ai-enabled').checked=careAiEnabled;
+$('#care-ai-enabled').addEventListener('change',()=>{careAiEnabled=$('#care-ai-enabled').checked;try{preferences?.setItem(CARE_AI_KEY,careAiEnabled?'on':'off');}catch{}});
 const appearance=createThemes(document,preferences,()=>language);
 const itemCatalog=createItemCatalog(document,()=>language);
 const titleScreen=createTitleScreen(document,{privacy:()=>$('#privacy-dialog').showModal()});
@@ -237,7 +242,7 @@ async function act(command,extra={},retry=false){
     const {command:action,...args}=pendingAction;adoptView(await invoke(action,args));pendingAction=null;render();
     started=view.ok&&action==='start';
     walkStory=storyEvent(action,args.request_id,view,language);
-    reaction=walkStory?null:reactionEvent(action,args.request_id,view,language);
+    reaction=!careAiEnabled||walkStory?null:reactionEvent(action,args.request_id,view,language);
     let message=view.msg;
     if(view.xp_result){message+=` +${view.xp_result.gained} XP`;if(view.xp_result.evolutions?.length)message+=`\n${tr('evolved',{stage:view.status.stage_label})}`;}
     if(view.loot)message+=` · ${tr('loot',{food:view.loot.normal_feed||0,rare:view.loot.rare_feed||0})}`;
@@ -249,7 +254,7 @@ async function act(command,extra={},retry=false){
     else if(view.ok&&view.dungeon_run)dungeons.show(view.dungeon_run);
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;if(outing)storyDialog.result(`${problem(error)} ${tr('uncertain')}`);}
   finally{controls(false);}
-  if(walkStory){storyDialog.begin();void stories.start(walkStory);}
+  if(walkStory){storyDialog.begin();void stories.start(walkStory,()=>careAiEnabled);}
   reactions.enqueue(reaction);
   if(started){
     await birth.started(view);
@@ -444,7 +449,7 @@ document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListen
 $('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
 let reactionNotice='';
 function reactionFeedback(key=''){reactionNotice=key;const e=$('#reaction-status');e.hidden=!key;e.textContent=key?tr(key):'';}
-reactions=createReactions({anna:()=>anna,active:assertActive,saved:saved=>{const local=history.filter(item=>item.kind!=='reaction'&&!saved.some(value=>value.id===item.id));history=mergeHistory(saved,[...local,...(pendingChat||[])]);},render:drawChat,feedback:reactionFeedback});
+reactions=createReactions({enabled:()=>careAiEnabled,disabledText:()=>tr('careAiSaved'),anna:()=>anna,active:assertActive,saved:saved=>{const local=history.filter(item=>item.kind!=='reaction'&&!saved.some(value=>value.id===item.id));history=mergeHistory(saved,[...local,...(pendingChat||[])]);},render:drawChat,feedback:reactionFeedback});
 $('#retry-reaction').addEventListener('click',async()=>{if(busy||pendingAction||pendingRemoval||pendingResetRequest)return;controls(true);try{await reactions.retrySave();}finally{controls(false);}});
 let birthNotice=null;
 function birthMessage(key,values={}){birthNotice={key,values};for(const id of ['#birth-status','#birth-recovery-status']){text(id,tr(key,values));$(id).hidden=false;}notice(['artChecking','artUploading','artGenerating','artSaving'].includes(key)?'':tr(key,values));}
