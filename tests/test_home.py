@@ -35,6 +35,7 @@ class HomeTests(unittest.TestCase):
         for field in ('xp','level','intimacy','satiety','inventory','personality'):
             self.assertEqual(before.get(field),result.state.get(field))
     def test_candidates_are_owned_accessible_and_bounded(self):
+        self.state['coins']=1000
         for key in home.CATALOG:
             if key!='nest':self.assertTrue(self.action('home_buy',item_id=key).result['ok'])
         for _ in range(6):
@@ -49,6 +50,35 @@ class HomeTests(unittest.TestCase):
             self.assertTrue(self.action('home_apply',candidate_id=options[0]['id'],reason='A reading corner.').result['ok'])
         home.validate(self.state)
         self.assertGreater(len(self.state['home']['layout']),5)
+
+    def test_each_garden_item_places_only_outside_and_preserves_walk_routes(self):
+        from home_world import yard_free
+        original=copy.deepcopy(self.state)
+        garden=[k for k,v in home.CATALOG.items() if v.get('area')=='yard']
+        self.assertEqual(len(garden),36)
+        for key in garden:
+            self.state=copy.deepcopy(original)
+            self.assertTrue(self.action('home_buy',item_id=key).result['ok'],key)
+            self.assertNotIn(key,self.state['home']['layout'])
+            options=home.candidates(self.state);self.assertTrue(options,key)
+            coins=self.state['coins']
+            self.assertTrue(self.action('home_apply',candidate_id=options[0]['id'],reason='A garden corner.').result['ok'],key)
+            view=home.view(self.state)
+            self.assertNotIn(key,[o['kind'] for o in view['world']['inside']['objects']])
+            self.assertIn(key,[o['kind'] for o in view['world']['yard']['objects']])
+            for leg in view['world']['yard']['tour']:
+                for point in leg['route']:self.assertTrue(yard_free(*point,view['world']['yard']['objects']))
+            self.assertTrue(self.action('home_undo').result['ok'])
+            self.assertNotIn(key,self.state['home']['layout']);self.assertIn(key,self.state['home']['owned'])
+            self.assertEqual(self.state['coins'],coins)
+
+    def test_garden_rejects_blocked_door_house_overlap_and_duplicate_positions(self):
+        layout={'nest':[7,0],'yard-tulips':[8,2]}
+        self.assertFalse(home.valid_layout(layout,list(layout)))
+        layout={'nest':[7,0],'yard-tulips':[1,1],'yard-roses':[1,1]}
+        self.assertFalse(home.valid_layout(layout,list(layout)))
+        layout={'nest':[7,0],'yard-tulips':[7,1]}
+        self.assertFalse(home.valid_layout(layout,list(layout)))
     def test_stale_candidate_and_wrong_pet_never_change_state(self):
         self.action('home_buy',item_id='desk');options=home.candidates(self.state)
         self.action('home_buy',item_id='plant');old=copy.deepcopy(self.state)

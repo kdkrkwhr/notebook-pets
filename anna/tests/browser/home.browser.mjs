@@ -20,7 +20,7 @@ async function setup(t,sandbox=false){
  await page.addInitScript(save=>{localStorage.setItem('test-host',JSON.stringify({sequence:0,save,kv:{}}));sessionStorage.setItem('test-faults',JSON.stringify({home:true}));},save);
  await page.goto('https://notebuddy.test'+(sandbox?'/sandbox-host':''));
  const ui=sandbox?await (await page.locator('iframe').elementHandle()).contentFrame():page;
- await ui.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled);await ui.locator('#title-start').click();await ui.locator('#open-home').click();await ui.waitForFunction(()=>document.querySelectorAll('.home-item').length===12);
+ await ui.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled);await ui.locator('#title-start').click();await ui.locator('#open-home').click();await ui.waitForFunction(()=>document.querySelectorAll('.home-item').length===48);
  await ui.locator('#home-shop-toggle').click();
  return {page:ui,hostPage:page,state:()=>state};
 }
@@ -37,6 +37,31 @@ test('real core home: buying and motion never invoke AI; one requested decorate,
  await page.setViewportSize({width:375,height:812});assert(await page.locator('#home-dialog').evaluate(e=>e.scrollWidth<=e.clientWidth+1));await page.screenshot({path:fileURLToPath(new URL('mobile.png',shots))});
  await page.locator('#home-close').click();await page.locator('#open-home').click();assert.equal(await llm(),2);
 });
+test('garden catalog filters, buys without AI, places outdoors with one request and undoes safely',async t=>{
+ const {page,state}=await setup(t);
+ await page.locator('[data-area="yard"]').click();assert.equal(await page.locator('.home-item').count(),36);
+ await page.waitForFunction(()=>[...document.querySelectorAll('.home-item img')].every(i=>i.complete&&i.naturalWidth>0));
+ const images=await page.locator('.home-item img').evaluateAll(items=>items.map(i=>i.src));assert.equal(new Set(images).size,36,'each garden object has distinct local art');
+ await page.locator('#home-shop-category').selectOption('flowers');assert.equal(await page.locator('.home-item').count(),6);
+ await page.locator('[data-area="inside"]').click();assert.equal(await page.locator('.home-item').count(),12);assert.equal(await page.locator('#home-shop-category').isVisible(),false);
+ await page.locator('[data-area="yard"]').click();
+ for(const key of ['yard-tulips','yard-garden-bench','yard-pond']){
+  await page.locator(`[data-item="${key}"] button`).click();await page.locator('#home-purchase-confirm').click();
+  await page.waitForFunction(k=>hostTest.state.save.home.owned.includes(k)&&!document.querySelector('#home-close').disabled,key);
+ }
+ assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length),0);assert.deepEqual(state().home.layout,{nest:[7,0]});
+ const coins=state().coins;await page.locator('#home-decorate').click();await page.waitForFunction(()=>!document.querySelector('#home-close').disabled&&Object.keys(hostTest.state.save.home.layout).length===4);
+ assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length),1);
+ const world=worker({command:'status',state:state()}).view.home.world;
+ assert.equal(world.inside.objects.length,1);assert.equal(world.yard.objects.filter(o=>o.kind.startsWith('yard-')).length,3);
+ await page.locator('#home-shop-close').click();await page.locator('#home-yard').click();await page.locator('#home-pause').click();
+ const shots=new URL('../../../.local/home-garden/',import.meta.url);await mkdir(shots,{recursive:true});await page.screenshot({path:fileURLToPath(new URL('yard.png',shots))});
+ await page.locator('#home-shop-toggle').click();await page.setViewportSize({width:360,height:812});
+ assert(await page.locator('#home-shop-panel').evaluate(e=>e.scrollWidth<=e.clientWidth+1));await page.screenshot({path:fileURLToPath(new URL('mobile-shop.png',shots))});
+ await page.locator('#home-shop-close').click();await page.locator('#home-undo').click();await page.waitForFunction(()=>Object.keys(hostTest.state.save.home.layout).length===1&&!document.querySelector('#home-close').disabled);
+ assert.equal(state().coins,coins);assert.equal(state().home.owned.length,4);assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length),1);
+});
+
 test('malformed AI output preserves room and ownership; no automatic retries',async t=>{
  const {page,state}=await setup(t);page.on('dialog',d=>d.accept());await page.locator('.home-item').filter({hasText:'Reading desk'}).getByRole('button').click();await page.locator('#home-purchase-confirm').click();await page.waitForFunction(()=>document.querySelector('#home-status').textContent.startsWith('Reading desk is in storage.')&&!document.querySelector('#home-close').disabled);
  const before=structuredClone(state());await page.evaluate(()=>hostTest.faults.homeMalformed=true);await page.locator('#home-decorate').click();await page.waitForFunction(()=>!document.querySelector('#home-close').disabled);assert.deepEqual(state(),before);assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length),1);

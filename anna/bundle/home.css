@@ -3,3 +3,5 @@
 
 #home-purchase-dialog{width:min(440px,calc(100vw - 32px));max-height:calc(100dvh - 32px);overflow:auto}#home-purchase-dialog h2{font-size:18px;overflow-wrap:anywhere}#home-purchase-dialog p{line-height:1.7}
 .home-appearance-choice{padding:12px;border:1px solid var(--line);background:var(--paper);margin-bottom:10px}.home-appearance-choice h3{font-size:14px;margin:0 0 8px}.home-appearance-choice p{font-size:12px;line-height:1.6;margin:0 0 10px}.home-appearance-choice .birth-buttons{flex-wrap:wrap}.home-appearance-choice button{white-space:normal}
+
+.home-shop-filters{display:grid;gap:10px;margin:8px 0 14px}.home-shop-areas{display:flex;gap:5px}.home-shop-areas button{flex:1;min-width:0;padding:8px 3px;font-size:11px;min-height:38px}.home-shop-areas [aria-pressed=true]{background:var(--action,var(--green));color:var(--action-ink,#fffaf0)}#home-shop-category{width:100%;min-height:38px;font:inherit;font-size:12px;padding:7px;background:var(--paper);color:var(--ink);border:1px solid var(--line)}#home-shop-category[hidden]{display:none}

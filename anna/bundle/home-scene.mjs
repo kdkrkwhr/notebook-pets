@@ -1,5 +1,6 @@
 import {createHomeWalk,roomPoint} from './home-walk.mjs';
 import {readHomeAppearance,drawHomeSprite} from './home-sprite.mjs';
+import {gardenSprite} from './garden-art.mjs';
 export {routeAt} from './home-walk.mjs';
 const indices={house:0,tree:1,bush:2,bench:3,bookshelf:4,desk:5,nest:6,plant:7,rug:8};
 const extraIndices={lamp:0,'side-table':1,cushion:2,'wall-art':3,curtain:4,tea:5,basket:6,mailbox:7};
@@ -7,6 +8,7 @@ export function createHomeScene(canvas){
  const ctx=canvas.getContext('2d'),reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const camera={x:320,y:240,zoom:innerWidth<500?1:2};
  let sheets,atlas,terrain,grassPattern,movement=null,s=null,home=null,pet=null,petSource='',ticket=0,active=false,frame=0,last=0,previousScene='',jobLayout=null;
+ const gardenArt=new Map();
  const load=name=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('Home artwork unavailable'));im.src=new URL(`./assets/home-v2/${name}.png`,import.meta.url).href;});
  const ready=Promise.all([load('objects'),load('extra'),fetch(new URL('./assets/home-v2/atlas.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('Home atlas unavailable');return r.json();})]).then(([objects,extra,metadata])=>{
   sheets={objects,extra};atlas=metadata;terrain={yard:makeTerrain('yard'),inside:makeTerrain('inside')};
@@ -74,10 +76,10 @@ function makeTerrain(scene){
 function post(c,x,y){rect(c,'#64482e',x-2,y-10,7,18);rect(c,'#a77d45',x-1,y-10,5,16);line(c,'#d1a866',x,y-10,3,2);}
 function fence(c,x,y){line(c,'#64482e',x,y-4,16,3);line(c,'#ab8247',x,y-5,16,2);line(c,'#75532f',x,y+2,16,3);post(c,x,y);}
 
- function source(kind){return kind in indices?[sheets.objects,atlas.objects[indices[kind]]]:[sheets.extra,atlas.extra[extraIndices[kind]]];}
+ function source(kind){if(gardenArt.has(kind))return [gardenArt.get(kind),[0,0,64,80]];return kind in indices?[sheets.objects,atlas.objects[indices[kind]]]:[sheets.extra,atlas.extra[extraIndices[kind]]];}
  function objects(){
   if(s.scene!=='inside'||!jobLayout)return home.world[s.scene].objects;
-  return Object.entries(jobLayout).map(([kind,p])=>{
+  return Object.entries(jobLayout).filter(([kind])=>home.catalog.find(i=>i.id===kind)?.area!=='yard').map(([kind,p])=>{
    const item=home.catalog.find(i=>i.id===kind),[w,h]=item.size,original=home.world.inside.objects.find(o=>o.kind===kind);
    return {kind,x:64+(p[0]+w/2)*32,y:item.layer==='wall'?72:64+(p[1]+h)*32-(item.layer==='surface'?20:0),w:original?.w??(item.layer==='surface'?22:Math.max(28,w*32-2)),layer:item.layer};
   });
@@ -118,6 +120,7 @@ function fence(c,x,y){line(c,'#64482e',x,y-4,16,3);line(c,'#ab8247',x,y-5,16,2);
    source=url?`${kind||'directional'}:${url}`:'';
    const id=++ticket,cached=pet&&source&&source===petSource&&home?.pet_id===value?.pet_id;
    home=value;jobLayout=null;movement=value?.world?createHomeWalk(value.world):null;s=movement?.state;
+   for(const item of value?.catalog??[])if(item.art&&!gardenArt.has(item.id))gardenArt.set(item.id,gardenSprite(item.art));
    if(s)s.paused=reduced.matches;if(!cached){pet=null;petSource='';}
    if(!active){active=true;last=0;frame=requestAnimationFrame(tick);}resize();
    if(!source||cached)return !!pet;
@@ -125,7 +128,7 @@ function fence(c,x,y){line(c,'#64482e',x,y-4,16,3);line(c,'#ab8247',x,y-5,16,2);
    catch{if(id===ticket){pet=null;petSource='';}return false;}
   },
   play(value){
-   if(!movement)return;home=value;movement.jump('inside');
+   if(!movement)return;home=value;movement.jump(!value.motion?.length&&Object.keys(value.layout).some(k=>k.startsWith('yard-'))?'yard':'inside');
    if(!pet||reduced.matches||!value.motion?.length){jobLayout=null;return;}
    const work=structuredClone(value.previous??value.layout),legs=[];jobLayout=work;
    for(const step of value.motion){const key=step.item,route=step.route.map(roomPoint);
@@ -136,6 +139,6 @@ function fence(c,x,y){line(c,'#64482e',x,y-4,16,3);line(c,'#ab8247',x,y-5,16,2);
   },
   jump(place){jobLayout=null;movement?.jump(place);render();},paused:()=>!!s?.paused,pause(){if(s)s.paused=!s.paused;return !!s?.paused;},zoom(delta){camera.zoom=Math.max(1,Math.min(5,camera.zoom+delta));resize();return camera.zoom;},
   skip(){jobLayout=null;movement?.stopJob();},stop(){active=false;cancelAnimationFrame(frame);jobLayout=null;ticket++;},
-  thumb(key){if(!sheets)return null;const [sheet,crop]=source(key),b=document.createElement('canvas');b.width=b.height=160;const c=b.getContext('2d'),scale=Math.min(144/crop[2],144/crop[3]);c.imageSmoothingEnabled=false;c.drawImage(sheet,...crop,(160-crop[2]*scale)/2,(160-crop[3]*scale)/2,crop[2]*scale,crop[3]*scale);return b.toDataURL('image/png');}
+  thumb(key,item){if(!sheets)return null;if(item?.art&&!gardenArt.has(key))gardenArt.set(key,gardenSprite(item.art));const [sheet,crop]=source(key),b=document.createElement('canvas');b.width=b.height=160;const c=b.getContext('2d'),scale=Math.min(144/crop[2],144/crop[3]);c.imageSmoothingEnabled=false;c.drawImage(sheet,...crop,(160-crop[2]*scale)/2,(160-crop[3]*scale)/2,crop[2]*scale,crop[3]*scale);return b.toDataURL('image/png');}
  };
 }

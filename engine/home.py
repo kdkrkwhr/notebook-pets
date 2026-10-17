@@ -25,6 +25,58 @@ STYLES = [('reading','독서하기 좋은 방','A reading nook'),('cozy','아늑
           ('open','널찍한 산책 공간','An open living space'),('tidy','차분히 정돈된 방','A tidy room')]
 SLOTS = [(0,0),(2,0),(7,3),(0,3),(2,3),(8,4),(0,5),(7,5),(2,5)]
 
+# Catalog art is rendered locally; buying and viewing never request images.
+GARDEN_ITEMS = [
+ ('tulips','튤립 화단','Tulip bed',4,'flowers','flower','#e97688',0),
+ ('daisies','데이지 화단','Daisy bed',3,'flowers','flower','#fff1cf',1),
+ ('lavender','라벤더 화단','Lavender bed',5,'flowers','flower','#ad8ed1',2),
+ ('sunflowers','해바라기 화단','Sunflower bed',5,'flowers','flower','#f1bd48',3),
+ ('hydrangea','수국 화단','Hydrangea bed',6,'flowers','flower','#81b6dd',4),
+ ('roses','장미 화단','Rose bed',6,'flowers','flower','#c95b70',5),
+ ('cherry','작은 벚나무','Cherry tree',12,'trees','tree','#e9adc0',0),
+ ('maple','단풍나무','Maple tree',10,'trees','tree','#cc743e',1),
+ ('pine','작은 소나무','Little pine',9,'trees','tree','#477953',2),
+ ('lemon','레몬 나무','Lemon tree',11,'trees','tree','#83a44e',3),
+ ('willow','작은 버드나무','Little willow',12,'trees','tree','#83aa78',4),
+ ('topiary','둥근 토피어리','Round topiary',8,'trees','tree','#537c55',5),
+ ('garden-bench','정원 벤치','Garden bench',7,'rest','bench','#a97c50',0),
+ ('white-bench','하얀 벤치','White bench',8,'rest','bench','#e5dfc7',1),
+ ('picnic','피크닉 자리','Picnic blanket',6,'rest','picnic','#ca7970',0),
+ ('garden-table','야외 티 테이블','Garden tea table',9,'rest','table','#9b7450',0),
+ ('parasol','파라솔 쉼터','Parasol corner',12,'rest','parasol','#d4aa71',0),
+ ('hammock','해먹 쉼터','Hammock nook',13,'rest','hammock','#b3be8c',0),
+ ('pond','작은 연못','Little pond',14,'water','pond','#79b7b5',0),
+ ('lily-pond','수련 연못','Water lily pond',16,'water','pond','#77a8a0',1),
+ ('fountain','돌 분수','Stone fountain',18,'water','fountain','#a7b7b1',0),
+ ('birdbath','새들의 물그릇','Bird bath',8,'water','birdbath','#b5beb0',0),
+ ('well','소원 우물','Wishing well',15,'water','well','#bc9b6e',0),
+ ('water-bowl','조약돌 물그릇','Pebble water bowl',5,'water','birdbath','#a5927b',1),
+ ('lantern','정원 등불','Garden lantern',6,'decor','lantern','#e4c877',0),
+ ('mushrooms','버섯 장식','Mushroom cluster',4,'decor','mushroom','#d88268',0),
+ ('stone-cat','고양이 석상','Stone cat',9,'decor','statue','#a1aaa2',0),
+ ('windmill','작은 풍차','Little windmill',11,'decor','windmill','#b19a75',0),
+ ('windchime','바람종','Garden wind chime',7,'decor','chime','#94b5b3',0),
+ ('mailbox','동화 우편함','Storybook mailbox',6,'decor','mailbox','#a96c62',0),
+ ('herbs','허브 상자','Herb planter',4,'natural','planter','#86a56c',0),
+ ('succulents','다육이 상자','Succulent planter',5,'natural','planter','#87b7a4',1),
+ ('fern','양치식물 화분','Fern pot',4,'natural','planter','#599071',2),
+ ('rock-garden','조약돌 정원','Pebble garden',6,'natural','rocks','#b9b5a0',0),
+ ('log-seat','통나무 의자','Log seat',4,'natural','log','#99764e',0),
+ ('butterflies','나비 쉼터','Butterfly shelter',7,'natural','shelter','#c7a373',0),
+]
+for key,ko,en,price,category,kind,color,variant in GARDEN_ITEMS:
+    CATALOG['yard-'+key]={**item(ko,en,price,(1,1),'yard',('rest','curiosity')),
+                          'area':'yard','category':category,
+                          'art':dict(kind=kind,color=color,variant=variant)}
+
+# Two rows of planting pockets, edges and quiet corners. The core still checks
+# every proposed footprint and route against the complete installed garden.
+YARD_SLOTS = [(x,y) for y in (1,3,5,7,9,0,2,4,6,8)
+              for x in (1,3,12,14,0,5,7,9,11,13,15,2,4,6,8,10)]
+
+def yard_layout(layout):
+    return {k:p for k,p in layout.items() if CATALOG[k].get('area')=='yard'}
+
 def initial():
     return dict(version=1,revision=0,owned=['nest'],layout={'nest':[7,0]},previous=None,motion=[],reason='')
 
@@ -58,10 +110,11 @@ def path(layout,target):
     return None
 
 def valid_layout(layout,owned):
-    if not isinstance(layout,dict) or not set(layout)<=set(owned) or layout.get('nest')!=[7,0]:return False
+    if not isinstance(layout,dict) or not set(layout)<=set(owned) or not set(layout)<=set(CATALOG) or layout.get('nest')!=[7,0]:return False
     floor=set();walls=set()
     for key,p in layout.items():
         if not isinstance(p,list) or len(p)!=2 or any(type(v) is not int for v in p):return False
+        if CATALOG[key].get('area')=='yard':continue
         area=cells(key,p)
         if any(x<0 or y<0 or x>=WIDTH or y>=HEIGHT for x,y in area):return False
         layer=CATALOG[key]['layer']
@@ -77,6 +130,8 @@ def valid_layout(layout,owned):
             if p!=expected:return False
     for key,p in layout.items():
         if CATALOG[key]['layer']=='floor' and path(layout,cells(key,p)) is None:return False
+    from home_world import valid_garden
+    if not valid_garden(yard_layout(layout)):return False
     return True
 
 def validate(st):
@@ -102,7 +157,7 @@ def view(st):
             'width':WIDTH,'height':HEIGHT,'door':list(DOOR),'roam':roam,'world':world(h,CATALOG,roam)}
 
 def motions(old,new):
-    moved=[k for k in CATALOG if old.get(k)!=new.get(k)]
+    moved=[k for k in CATALOG if old.get(k)!=new.get(k) and CATALOG[k].get('area')!='yard']
     # Surface props follow their supporting desk. They never acquire floor collision.
     steps=[];working=copy.deepcopy(old)
     for k in moved:
@@ -125,11 +180,13 @@ def candidates(st):
     for index,(style,ko,en) in enumerate(STYLES):
         layout=copy.deepcopy(h['layout']);changes=0
         slots=SLOTS[index:]+SLOTS[:index]
-        missing=[k for k in CATALOG if k in h['owned'] and k not in layout]
+        # Purchases express the player's taste. Newest purchases get a turn even
+        # when older stored furniture cannot fit; no catalog prefix starvation.
+        missing=[k for k in reversed(h['owned']) if k not in layout]
         for k in missing:
             if changes>=3:break
             layer=CATALOG[k]['layer']
-            positions=([[3,3]] if layer=='rug' else [[0,0] if k=='curtain' else [6,0]] if layer=='wall' else
+            positions=([list(p) for p in YARD_SLOTS[index:]+YARD_SLOTS[:index]] if layer=='yard' else [[3,3]] if layer=='rug' else [[0,0] if k=='curtain' else [6,0]] if layer=='wall' else
                        [[layout['desk'][0]+(1 if k=='tea' else 0),layout['desk'][1]]] if layer=='surface' and 'desk' in layout else
                        [] if layer=='surface' else [list(p) for p in slots])
             for p in positions:
@@ -137,10 +194,10 @@ def candidates(st):
                 if valid_layout(proposed,h['owned']):layout=proposed;changes+=1;break
         if not missing:
             # A requested refresh can move one floor object, keeping most of the room familiar.
-            options=[k for k in layout if k!='nest' and CATALOG[k]['layer']=='floor' and not (k=='desk' and any(p in layout for p in ('lamp','tea')))]
+            options=[k for k in layout if k!='nest' and CATALOG[k]['layer'] in ('floor','yard') and not (k=='desk' and any(p in layout for p in ('lamp','tea')))]
             if options:
                 k=options[index%len(options)]
-                for p in slots:
+                for p in (YARD_SLOTS[index:]+YARD_SLOTS[:index] if CATALOG[k]['layer']=='yard' else slots):
                     if list(p)==layout[k]:continue
                     proposed={**layout,k:list(p)}
                     if valid_layout(proposed,h['owned']):layout=proposed;break
