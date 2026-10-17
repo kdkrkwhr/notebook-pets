@@ -1,3 +1,16 @@
+# 1.4.6 후속 · 제한 유료 검사와 요청 전 삭제 상태 차단 · 2026-10-17
+
+사용자 승인 한도 내에서 실제 Anna **이미지 2회 / 텍스트 6회**를 호출했다. 개발용 `notebuddy-dev` 저장소를 사용했으며 운영 친구·그림·대화·게임에 유료 조작을 하지 않았다. [상세 검사와 실수·제한](docs/PAID_TEST_20261017.md).
+
+- 실제 성격·대화·돌봄 반응·참조 이미지 분석, 초상화 응답·업로드·APS 저장·무료 픽셀 변환을 확인했다. 홈 배치와 산책은 실제 모델 응답을 격리 입력으로 검증한 것이며 실제 플레이 전체의 유료 통합 검사는 아니다. 재접속/홈 열기에서 저장 4종 값·ETag 동일, 추가 AI 0회.
+- 오래된 개발용 앱 삭제 표시 때문에 첫 이미지 저장이 차단됐고, 담당자가 제거 화면에서 대기 이미지가 지워지는 점을 놓쳐 두 번째 초상화를 호출했다. 두 원본을 비공개 로컬에 보존했지만 **실제 Anna 이동 시트 생성은 검증하지 못했다.** 추가 호출/한도 초과 없이 종료했다. 과거 dora의 원래 실패 원인도 확정하지 않는다.
+- 아트/대화 삭제 표시가 있으면 유료 기능을 열지 않도록 `readExtras`를 수정하고 두 키의 회귀를 추가했다. Windows 개발 Python 브리지의 CP949 JSON 전달/저장 오류는 개발 실행 UTF-8 환경으로 고쳤다. 도구 패키지는 변경하지 않았다.
+- 소스 **`d7c5d176a28b858cebc0a5c1fa7a92920f54398b`**, Anna **1.4.6 소스 / working revision 65 / 소유자 초안 0.0.0-draft** 업로드·설치 성공. 실제 설치 Connected 및 삭제 표시 차단 코드 확인. 앱 저장 4종 값/ETag·게임 inspect·소개/스크린샷/로고/링크 모두 동일. 클라우드 도구 **0.9.1 / Executa 760** loaded/running, 설치 already_satisfied. PC 실행은 미확인.
+- 로컬 Python 222 통과/초기 1 skip, 도구 70, JS 91, 기존 전체 브라우저 106와 추가 회귀 통과. 수정 후 recovery 96 통과(다른 묶음 11개와 합쳐 최종 107개). 처음 건너뛴 MCP 검사는 의존성을 격리 설치해 해당 묶음 5개 모두 통과했다. strict·Pyodide 실행 통과.
+- [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38986219395)와 [Anna Windows/Linux CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38986219436)의 규칙·107 브라우저·저장/프로토콜·패키지 빌드/실행 검사 모두 성공했다.
+- Git으로 `release-web`에 병합 **`13e43682ef56b497ba4d23962626f45e1558b79f`**, 웹 **0.5.0** 유지. [웹 공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38986229602)와 [Pages 검사·배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/38986229507) 성공. 실제 공개 URL에서 빌드 모듈 일치·1120/360px·16프레임 판독·저장 동일·외부 AI/기타 외부 요청 0·페이지 오류 0 확인. 격리 브라우저만 사용했다.
+- **심사 후보 1.4.6 / ID 1426 / pending_review 유지. 이번 revision 65 수정은 기존 심사본에 포함되지 않으며 `dirty_vs_latest_cut=true`다.** 새 cut/심사 재제출/공개 Anna 출시는 하지 않았다.
+
 # Anna 작업 인계 이력
 
 [현재 인계](HANDOFF.md)에서 옮겨 온 이전 배포·심사 기록이다. 최신이 위에 온다. 내용은 옮길 때 수정하지 않는다.
