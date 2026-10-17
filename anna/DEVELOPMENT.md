@@ -2,7 +2,7 @@
 
 [사용 안내로 돌아가기](README.md) · [English](DEVELOPMENT.en.md)
 
-마당 확장 후보는 **1.4.9 / 도구 0.9.2**이며, 두 운영체제 검증 후 테스트 앱에 설치합니다. 심사 대상은 **1.4.8 / ID 1437**로 별도 유지합니다. 실제 배포 완료 여부는 [최신 인계](HANDOFF.md)와 [배포 기록](releases/RELEASE_149.md)을 기준으로 확인하세요.
+현재 설치된 테스트 앱은 **1.4.9 / working revision 77 / 도구 0.9.2**입니다. 사용자 요청으로 **1.4.9 / ID 1439**를 최신 소개·스크린샷 6장과 함께 심사에 제출했습니다. 상태는 `pending_review`이며 공개 출시는 하지 않았습니다. [최신 인계](HANDOFF.md) · [배포 기록](releases/RELEASE_149.md).
 
 ## 실행
 
@@ -68,7 +68,7 @@ npx anna-app apps push --no-install-local --profile binary
 npx anna-app apps cut <새-버전>
 ```
 
-플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 현재 도구 버전은 0.9.1입니다. UI 테마 업데이트인 1.4.4에서는 기존에 검증한 Windows/Linux 0.9.1 패키지를 유지합니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드해야 합니다.
+플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 현재 도구 버전은 0.9.2입니다. UI 테마 업데이트인 1.4.4에서는 기존에 검증한 Windows/Linux 0.9.1 패키지를 유지합니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드해야 합니다.
 
 `cut`은 검토할 비공개 버전을 만듭니다. `submit-review`는 심사 제출, `release`는 공개이므로 자동 실행하지 않습니다. 심사 전 실제 Anna Agent/Cloud 설치 실행, 소개 이미지·지원 정보, 장기간 저장 크기 및 여러 실행기의 동시 사용을 확인해야 합니다. 실제 설치 초안을 Anna 대시보드에서 실행하여 생성·밥 주기·대화·그림 저장과 재접속 복원까지 확인했습니다. 세부 결과는 HANDOFF.md를 참고하세요.
 

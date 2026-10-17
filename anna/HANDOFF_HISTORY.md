@@ -1,3 +1,10 @@
+# 1.4.8 review replacement explicitly requested - 2026-10-18
+
+User explicitly requested review reflection. Cut tested **c93143c / working revision 73** as **1.4.8 / ID 1437** and submitted. Verified **pending_review**. Includes album cleanup/pixel-preview removal and delayed dungeon reveal after walk result acknowledgement. Tool remains **0.9.1 / Executa 760 / ID 1193**. JS 92 and browser 117 passed; GitHub Tests 39048070936 and Windows/Linux packaging 39048070819 passed. No public release. Subsequent manual-redraw removal belongs only to the 1.4.9 test draft.
+
+
+---
+
 # 1.4.8 후속 · 앨범 간소화와 산책 발견 공개 순서 수정 · 2026-10-18
 
 성장 앨범의 **사용하지 않는 그림 정리** 버튼·확인 창·삭제 실행 연결과 **픽셀 모습** 미리보기·준비 버튼·중복 이동 상태 문구를 제거했다. 기존 원본/초상화/픽셀 파일과 ART 기록은 삭제하지 않았다. 무료 내부 픽셀 변환과 마이홈·던전 개인 시트 재사용은 유지한다.
