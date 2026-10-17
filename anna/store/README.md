@@ -1,20 +1,17 @@
-# Store screenshots — 1.0.0
+# Store screenshots - 1.4.9
 
-Captured on **2026-10-14** from the 1.0.0 UI bundle, using isolated views produced by the actual Python game worker. The featured companion **Mori** is the actual Anna-generated result of the original sprout doodle shown in the editor. The screenshots are browser captures, not generated UI mockups. Listing order:
+Captured from the current shipped UI using disposable real-Python-engine views and the existing Anna-generated Mori reference/portrait. No live user data, new paid AI, or production storage calls. No conversation is fabricated.
 
-1. `02-companion-and-care.png`: **Mori after drawing → Anna analysis → portrait generation**, conversation area and care controls in the notebook theme, 1280 × 1000.
-2. `00-title.png`: the title screen shown on every load, with the bundled starter portraits, 1280 × 900.
-3. `04-draw-your-companion.png`: the same sprout reference entered through the real drawing editor's pointer controls, 1280 × 1000.
-4. `05-pixel-dungeon.png`: actual discovered-dungeon preview and the current companion's pixel silhouette, 1280 × 900. Entry is not pressed.
-5. `06-item-book.png`: the item book preview with its Items / Growth album tabs, opened from Mori's home, 1280 × 1000.
-6. `01-first-meeting.png`: the new-companion form with its three-step guide, 1280 × 1000.
+Listing order (Anna allows six):
+1. 02-companion-and-care.png: companion, chat, care and the optional care-AI checkbox.
+2. 07-home-garden.png: cottage and garden with twelve purchased garden objects.
+3. 08-garden-shop.png: All 48 / Inside 12 / Garden 36 filters and garden styles.
+4. 04-draw-your-companion.png: actual drawing editor and the recorded reference.
+5. 05-pixel-dungeon.png: current dungeon preview before entry, using the same companion.
+6. 06-item-book.png: current 24-design item book, not owned/equipped inventory.
 
-`03-care-and-album.png` (daily quests, growth album, pixel appearance and the item book entry, 1280 × 850) is captured and kept here but not listed, because Anna accepts at most six listing screenshots.
+The title, welcome and simplified growth album are also recaptured but are not in the six listing slots. All six listing captures were visually inspected.
 
-`demo/reference.png` was drawn with `scripts/store_drawing.mjs`. The unmodified app functions `checkArtwork` and `birthPrompt` supplied the normal analysis and generation requests to Anna. Anna returned **plant / nature**, the portrait in `demo/portrait.png`, and a personality using the unchanged `personalityPrompt`/`parsePersonality` flow. Preparation used **three Anna AI calls**: one analysis, one image generation, one personality initialization. `demo/provenance.json` records their results and image hashes, without credentials or signed URLs. The pixel portrait is the existing app's local conversion of this same generated portrait.
+Reproduce: `node scripts/capture_store.mjs` from anna/. The capture browser blocks outside requests and every AI or persistence mutation. The garden fixture starts with 200 disposable demo coins, buys twelve garden objects through the real rules and applies validated candidates without calling an LLM. This does not represent production ownership or an AI-generated decision. Its reason is sample scene copy. The home uses the free local pixel conversion of the recorded portrait, not invented directional poses. Production garden placement, purchases and AI-call bounds are tested separately.
 
-`scripts/store_fixture.py` creates disposable games with those analyzed birth traits, commits the real generated personality through the engine, and performs walk commands until a dungeon is discovered. Game values are not manually edited. `scripts/capture_store.mjs` serves the shipped files in a network-isolated browser with read-only host responses and the recorded art. Capture makes **no additional AI calls or production storage calls**, and no real user's data is changed. Chat is empty; no conversation is fabricated. These captures do not certify native installation or production persistence.
-
-Reproduce from `anna/` with `node scripts/capture_store.mjs` after preparing the existing assets and dependencies. This reuses the recorded Anna outputs, checks the recorded reference and portrait hashes, and refuses a starter-image fallback. The editor redraw is compared with the analyzed reference pixel by pixel (at most 2% of inked pixels may differ, since the editor's on-screen layout can shift stroke rasterization); the 1.0.0 capture differed on 0.0%. The randomly discovered dungeon may differ on a recapture. All seven captures were visually checked before metadata synchronization. `app.json` references the local files in display order; Anna CLI uploads them through the official listing screenshot API.
-
-Earlier sets: the 0.8.1 listing used five captures of the previous UI; installed-runtime verification for each version is recorded in its release notes.
+The original reference, portrait and personality remain in demo/ with provenance.json and checksums. Their historical preparation used three Anna calls; this recapture uses zero. capture.json records the current version, counts, fixture currency and source. These screenshots do not replace installed-runtime or persistence verification, which is recorded in the release notes.

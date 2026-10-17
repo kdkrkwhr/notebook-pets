@@ -4,7 +4,11 @@ export function gardenSprite(art,doc=document){
  const c=canvas.getContext('2d'),color=art.color,v=art.variant||0;
  const r=(x,y,w,h,col=color)=>{c.fillStyle=col;c.fillRect(x,y,w,h);};
  const stone='#8c9487',light='#d5d4bd',wood='#9d754b',dark='#5b5d43',leaf='#628755';
- const oval=(x,y,w,h,col)=>{for(let row=0;row<h;row++){const n=Math.abs((row+.5)/h*2-1),inset=Math.round(w/2*(1-Math.sqrt(1-n*n)));r(x+inset,y+row,w-inset*2,1,col);}};
+ const tint=(col,amount)=>/^#[0-9a-f]{6}$/i.test(col)?'#'+[1,3,5].map(i=>Math.max(0,Math.min(255,parseInt(col.slice(i,i+2),16)+amount)).toString(16).padStart(2,'0')).join(''):col;
+ const oval=(x,y,w,h,col)=>{for(let row=0;row<h;row++){const n=Math.abs((row+.5)/h*2-1),inset=Math.round(w/2*(1-Math.sqrt(1-n*n))),width=w-inset*2,left=x+inset;
+  r(left,y+row,width,1,tint(col,-30));if(width>3&&row>0&&row<h-1){r(left+1,y+row,width-2,1,tint(col,row<h*.35?10:row>h*.7?-16:0));
+   if(h>10)for(let px=left+3;px<left+width-2;px+=4)if((px*17+row*29)%11<3)r(px,y+row,2,1,tint(col,row<h*.55?22:-24));}}
+ };
  const pot=(x,y,w=16)=>{r(x-1,y-1,w+2,4,dark);r(x,y,w,4,'#bb8557');r(x+2,y+4,w-4,10,'#996d4b');r(x+3,y+4,2,8,'#d1a16d');};
  const flower=(x,y,n=0)=>{r(x,y,2,13,leaf);r(x-4,y+6,4,2,'#81a562');r(x+2,y+4,4,2,leaf);r(x-3,y-3,8,5,color);r(x-1,y-5,4,9,color);r(x,y-1,2,2,n?'#a77e42':'#f7d67e');};
  oval(9,71,47,7,'#3d593630');
@@ -17,7 +21,7 @@ export function gardenSprite(art,doc=document){
  case 'tree':
   r(29,37,7,36,dark);r(30,38,4,34,wood);r(23,68,19,5,wood);r(25,47,9,4,wood);r(35,42,9,4,wood);
   if(v===2){for(let i=0;i<3;i++){const w=22+i*11;for(let y=0;y<16;y++)r(32-Math.round(y*w/32),8+i*13+y,Math.max(2,Math.round(y*w/16)),2,color);}}
-  else{oval(8,18,48,32,dark);oval(9,15,44,32,color);oval(17,9,32,23,color);oval(13,18,18,12,v===0?'#f3c8cf':'#9ab979');}
+  else{oval(8,18,48,32,dark);oval(9,15,44,32,color);oval(17,9,32,23,color);oval(13,18,18,12,v===0?'#f3c8cf':'#9ab979');oval(35,26,17,15,tint(color,-10));}
   if(v===3)for(const [x,y] of [[17,27],[39,19],[38,37]])r(x,y,5,6,'#ead16c');
   if(v===4)for(let x=12;x<54;x+=7)r(x,35,3,18+(x%3)*3,color);
   if(v===5){pot(23,58,19);r(30,47,4,13,wood);}
