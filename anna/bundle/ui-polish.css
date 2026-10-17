@@ -1,0 +1,32 @@
+﻿/* Final presentation layer: help controls must not inherit chunky game-button styles. */
+button.explanation-help,button.care-ai-help-button{
+ min-height:28px;width:28px;height:28px;min-width:28px;padding:0;margin:0;
+ border:0;border-radius:50%;box-shadow:none;background:transparent;
+ color:var(--muted);font:16px/1 system-ui,sans-serif;flex-shrink:0;
+}
+button.explanation-help:hover:not(:disabled),button.care-ai-help-button:hover:not(:disabled){background:color-mix(in srgb,var(--ink) 8%,transparent);box-shadow:none;transform:none;color:var(--ink)}
+button.explanation-help:active:not(:disabled),button.care-ai-help-button:active:not(:disabled),button.explanation-help:disabled,button.care-ai-help-button:disabled{box-shadow:none;transform:none}
+.hint-title-group{display:flex;align-items:center;gap:5px;min-width:0;flex:1}
+.hint-title-group>div{min-width:0}.hint-title-group h2,.hint-title-group h3{margin:0;line-height:1.45}
+.hint-header-actions{max-width:50%;gap:10px}.hint-header-actions>.badge{white-space:nowrap}
+.hint-header-actions:empty{display:none}.hint-header.hint-header{gap:16px}
+.hint-title-row{margin-bottom:16px}.section-heading.hint-header{margin-bottom:18px}
+.care-ai-options{padding-block:8px}.care-ai-options label{line-height:1.5}
+.masthead{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center}
+.header-controls{min-width:0}.masthead>.badge{justify-self:end}
+@media(max-width:760px){
+ .masthead{grid-template-columns:minmax(0,1fr) auto;gap:10px 12px;padding:14px 16px}
+ .masthead>.brand{grid-column:1;grid-row:1;min-width:0}.masthead>.badge{grid-column:2;grid-row:1;font-size:10px;padding:6px 8px}
+ .masthead>.header-controls{grid-column:1/-1;grid-row:2;display:flex;max-width:none;gap:8px;flex-wrap:nowrap;width:100%;justify-content:space-between}
+ .header-controls>button,.header-controls>select{font-size:11px;min-height:36px;padding:7px 9px;margin:0;white-space:nowrap}
+ .header-controls>select{min-width:0;max-width:94px}.header-controls>#refresh{width:36px;flex-shrink:0;padding-inline:5px}
+ .brand>span{font-size:20px}.brand small{font-size:10px;letter-spacing:0}.brand img{width:34px;height:34px}
+ .hint-header.hint-header{gap:10px}.hint-title-group{gap:2px}.hint-title-group h2{font-size:17px}.hint-header-actions{gap:8px}
+ .hint-header-actions>.quiet{padding:8px 10px;font-size:11px;line-height:1.5}
+ .hint-header-actions>.muted{font-size:10px}.hint-title-group>.explanation-help{width:26px;min-width:26px;height:28px}
+}
+
+.stats-help-row{display:flex;align-items:center;gap:8px;border-top:1px solid var(--frame);margin-top:20px;padding-top:12px}.stats-help-row>#stats{min-width:0;flex:1;border:0;margin:0;padding:0;text-align:left;word-spacing:2px;line-height:1.7}.hint-header-actions>.badge{background:transparent;border:1px solid var(--frame);color:var(--muted);font-size:11px;padding:6px 8px}
+
+.pixel-companion>div:last-child{min-width:0}.pixel-companion button{max-width:100%;white-space:normal}
+@media(max-width:480px){.pixel-companion{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;padding:12px}.pixel-preview{width:56px;height:56px}.pixel-preview img{width:50px;height:50px}.pixel-companion p{font-size:11px;line-height:1.7}.pixel-companion button{padding:8px 10px;font-size:11px}}

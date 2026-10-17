@@ -23,14 +23,18 @@ export function createHints(document,language){
   const button=document.createElement('button');button.type='button';button.className='explanation-help quiet';button.textContent='ⓘ';
   text.id||=`explanation-${hints.length}`;text.classList.add('explanation-tooltip');text.setAttribute('role','tooltip');text.hidden=true;
   button.dataset.hintFor=text.id;button.setAttribute('aria-describedby',text.id);button.setAttribute('aria-expanded','false');
-  const parent=text.parentElement,heading=parent.querySelector(':scope > .section-heading h2,:scope > h2,:scope > h3,:scope > .home-shop-heading h3');
+  const parent=text.parentElement,heading=parent.querySelector(':scope > .section-heading h2,:scope > h2,:scope > h3,:scope > .home-shop-heading h3')||parent.closest('.chat-card')?.querySelector('.card-top h2');
   if(heading){
-   let row=heading.closest('.section-heading,.home-shop-heading,.hint-title-row');
+   let row=heading.closest('.section-heading,.home-shop-heading,.card-top,.hint-title-row');
    if(!row){row=document.createElement('div');row.className='hint-title-row';heading.before(row);row.append(heading);}
    row.classList.add('hint-header');
+   let group=row.querySelector(':scope > .hint-title-group');
+   if(!group){const branch=[...row.children].find(child=>child.contains(heading));group=document.createElement('div');group.className='hint-title-group';branch.before(group);group.append(branch);}
    let actions=row.querySelector(':scope > .hint-header-actions');
-   if(!actions){actions=document.createElement('div');actions.className='hint-header-actions';for(const child of [...row.children])if(!child.contains(heading))actions.append(child);row.append(actions);}
-   actions.append(button);
+   if(!actions){actions=document.createElement('div');actions.className='hint-header-actions';for(const child of [...row.children])if(child!==group)actions.append(child);if(actions.childElementCount)row.append(actions);}
+   group.append(button);
+  }else if(text.dataset.i18n==='battleRecordHelp'){
+   const stats=parent.querySelector('#stats'),row=document.createElement('div');row.className='stats-help-row';stats.before(row);row.append(stats,button);
   }else{button.classList.add('hint-standalone');const tools=parent.querySelector(':scope > .art-tools');if(tools)tools.append(button);else text.before(button);}
   const h={text,button,heading:heading||parent.closest('section,dialog')?.querySelector('h2,h3')};hints.push(h);
   button.addEventListener('pointerenter',()=>show(h));button.addEventListener('pointerleave',e=>{if(active===h&&!pinned&&!text.contains(e.relatedTarget)&&!button.matches(':focus-visible'))later(h);});
