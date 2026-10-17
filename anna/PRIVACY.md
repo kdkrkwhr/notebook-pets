@@ -11,7 +11,7 @@ Last updated: 16 October 2026. This notice describes the Notebuddy 1.4.4 source 
 | Portrait index and generated portrait files | Saved in Anna app storage and file storage for the growth album. Drawing a replacement changes the displayed portrait; older files are not automatically erased. |
 | Pixel companion images and source-portrait paths | A 64×64 PNG is prepared locally from a completed portrait or bundled starter and saved in the same private portrait index/file storage for dungeon exploration. No AI request is made for conversion. |
 | Dungeon discoveries, daily clears, coins and latest expedition result | Stored with private game progress. Results and charges are committed together before animation; replaying or skipping cannot grant another reward. The latest result remains available across a daily reset until replaced. |
-| Normalized reference drawing/photo and extracted visual features | The PNG reference (longest side at most 1024 pixels) and up to 1200 characters of visible features are saved in Anna file/app storage to create and later redraw the companion. Original filenames and source image metadata are not saved by this app. |
+| Normalized reference drawing/photo and extracted visual features | The PNG reference (longest side at most 1024 pixels) and up to 1200 characters of visible features are saved in Anna file/app storage to create the companion and prepare its optional home appearance. Original filenames and source image metadata are not saved by this app. |
 | Latest walk story, selected ending and up to 64 recent story request identifiers | Saved in Anna app storage to resume a choice and suppress repeated requests. Starting over or removing saved data clears this record. |
 | Language and theme choices | Saved in this browser’s local storage. It is not synced across devices by Notebuddy. |
 
@@ -40,7 +40,7 @@ If the check accepts the source, AI infers a species from its shape and an eleme
 The in-browser editor and uncommitted generated image are held in memory. Closing the page may require reselecting unsaved artwork or making another paid generation request. The app does not automatically regenerate an unfinished custom baby when reopened. Choosing the default appearance does not reroll the companion or erase the saved source file. Existing reset/removal covers these source files and descriptions as well as generated portraits. No new file bucket or browser storage key is introduced.
 
 
-The saved original drawing/photo description is also used for later redraws and growth-stage portraits, prioritizing silhouette, limb count and markings. This is text-guided generation, not a promise of pixel-exact copying or direct image-to-image editing. Random starts still choose both species and element randomly.
+The saved original drawing/photo description is used for the optional home pixel character, prioritizing silhouette, limb count and markings. This is text-guided generation, not a promise of pixel-exact copying or direct image-to-image editing. Random starts still choose both species and element randomly.
 
 ## Pixel companions and dungeon exploration
 
@@ -60,7 +60,7 @@ The saved sheet, companion ID, growth stage, source-image path and a request res
 
 When you send a chat message, the app sends up to 12 recent messages, including that message, and a current companion-status snapshot to Anna’s AI service. The snapshot includes the companion’s name and game status. The service uses these to generate a reply. AI replies do not directly award XP or change game statistics.
 
-When you explicitly confirm a new portrait, the app sends a generated description of the companion’s species, element, growth stage and visual style to Anna’s image service. The app does not append your chat transcript to that image prompt. The generated image is downloaded and saved in Anna file storage.
+When you create a companion from a drawing or photo, the app sends a generated description of the companion’s species, element, growth stage and visual style to Anna’s image service. The app does not append your chat transcript to that image prompt. The generated image is downloaded and saved in Anna file storage.
 
 These calls use your Anna AI allowance. Anna routes AI requests to its supported providers. Notebuddy does not promise a particular provider, training policy, processing country or retention period on their behalf. Review the terms presented by Anna for your account before sending information you consider private.
 

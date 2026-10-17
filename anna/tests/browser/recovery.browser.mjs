@@ -51,7 +51,7 @@ async function finishWalk(p){
 }
 async function calls(p,method){return p.evaluate(m=>window.hostTest.calls.filter(x=>x.args?.command===m||m==='walk'&&x.args?.command==='walk_begin'||x.method===m),method);}
 
-test('first home visit offers a paid choice; free default persists and a new portrait asks again',async t=>{
+test('first home visit offers a paid choice; free default persists without manual redraw',async t=>{
  const p=await setup(t);await start(p);assert.equal((await calls(p,'home-image')).length,0);
  await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),true);
  await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.appearance==='default');
@@ -60,8 +60,7 @@ test('first home visit offers a paid choice; free default persists and a new por
  const entry=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']['isolated-fixture/home-sprite-stage-1']);assert.equal(entry.format,'home-default-v1');
  await p.locator('#home-inside').click();await p.locator('#home-yard').click();await p.locator('#home-close').click();
  await p.reload();await idle(p);await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),false);await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.appearance==='default');assert.equal((await calls(p,'home-image')).length,0);
- await p.locator('#home-close').click();await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'home-image')).length,0);
- await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),true);
+ assert.equal(await p.locator('#draw,#draw-evolved,#draw-dialog').count(),0);
 });
 
 test('one explicit home generation is reused; failure sets a visible free default without another request',async t=>{
@@ -176,23 +175,6 @@ test('birth prepares only a free pixel preview; home waits for an explicit appea
  await p.reload();await idle(p);assert.equal(await p.locator('#pixel-pet').count(),0);assert.equal((await calls(p,'finalize')).length,0);
 });
 
-test('movement follows new portraits and growth artwork, never visits or unchanged evolution artwork',async t=>{
- const p=await setup(t);await start(p);await chooseHome(p);
- assert.equal((await calls(p,'home-image')).length,1);
- assert.equal(await p.locator('#home-sprite').count(),0);
- await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'home-image')).length,1);
- await fault(p,{evolve:2});await p.locator('[data-action="feed"]').click();await idle(p);
- assert.equal((await calls(p,'home-image')).length,1,'a stage number alone does not request poses');
- await p.locator('#draw-evolved').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'home-image')).length,1);await chooseHome(p);assert.equal((await calls(p,'home-image')).length,2);
- const art=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);
- assert.equal(art['isolated-fixture/home-sprite-stage-2'].source_path,art['isolated-fixture/stage-2'].path);
- assert.equal(art['isolated-fixture/home-sprite-stage-2'].stage,2);
- await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
- await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.equal((await calls(p,'home-image')).length,0);await chooseHome(p);
- assert.equal((await calls(p,'home-image')).length,1,'a replacement portrait gets its own poses');
-});
 
 test('movement failure preserves a new companion and portrait without automatic retries',async t=>{
  const p=await setup(t,{homeImage:true});await start(p);await chooseHome(p);
@@ -202,9 +184,7 @@ test('movement failure preserves a new companion and portrait without automatic 
  assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
  assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
  await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'home-image')).length,1);
- await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.equal((await calls(p,'home-image')).length,1);await chooseHome(p);
- assert.equal((await calls(p,'home-image')).length,2);assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
+ assert.equal(await p.locator('#draw,#draw-evolved,#draw-dialog').count(),0);
  await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
  assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
 });
@@ -410,18 +390,6 @@ test('chat failure restores draft, failed save warns, saved exchange survives re
  await p.locator('#retry-chat').evaluate(e=>{e.click();e.click();});await idle(p);assert.equal(await p.locator('#retry-chat').isVisible(),false);
  assert.equal((await calls(p,'llm')).length,2,'Only initial failed AI call and successful AI reply; save retries never call AI');
  await p.reload();await idle(p);assert.equal(await p.locator('#messages .message').count(),2);assert.match(await p.locator('#messages').innerText(),/Hello/);
-});
-test('portrait upload retry does not generate twice and survives reopen',async t=>{
- const p=await setup(t);await start(p);await fault(p,{upload:true});await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.match(await p.locator('#draw').innerText(),/Retry saving/);assert.equal(await p.locator('#clean-portraits').count(),0);await p.locator('#draw').click();await idle(p);
- assert.equal((await calls(p,'image')).length,1);
- const generated=(await calls(p,'image'))[0].options;
- assert.match(generated.prompt,/plain white background/);
- assert.match(generated.prompt,/soft painted game character illustration/);
- assert.doesNotMatch(generated.prompt,/on a warm ivory notebook page|colored pencil/);
- assert.match(await p.locator('#notice').innerText(),/safe in your album/);
- await p.reload();await idle(p);assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
- assert.equal(await p.locator('#pet-image').evaluate(e=>e.complete&&e.naturalWidth>0),true);
 });
 test('360px layout and language switch preserve partner and privacy controls',async t=>{
  const p=await setup(t);await start(p);await p.setViewportSize({width:360,height:740});
@@ -1357,4 +1325,11 @@ test('already acknowledged discoveries remain visible during later pending walks
  assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
  await p.locator('[data-action="walk"]').click();await idle(p);await p.locator('#story-close').click();
  assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
+});
+
+test('growth album has no manual redraw and preserves saved artwork',async t=>{
+ const p=await setup(t);await start(p);const before=await p.evaluate(()=>JSON.stringify(hostTest.state.kv['notebuddy/art-v1']));
+ await fault(p,{evolve:2});await p.locator('[data-action=feed]').click();await idle(p);
+ assert.equal(await p.locator('#draw,#draw-evolved,#draw-dialog,#confirm-draw').count(),0);assert.equal((await calls(p,'image')).length,0);
+ assert.equal(await p.evaluate(()=>JSON.stringify(hostTest.state.kv['notebuddy/art-v1'])),before);
 });

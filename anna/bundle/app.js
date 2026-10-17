@@ -13,7 +13,7 @@ let persona,personalityFeedback='',personalityWorking=false;
 import {createStoryDialog} from './walk-story-dialog.mjs';
 import {createWalkStories,storyEvent} from './walk-stories.mjs';
 let stories,storyDialog;
-import {createArtworkEditor,artworkGrowthPrompt} from './birth-art.mjs';
+import {createArtworkEditor} from './birth-art.mjs';
 import {createBirthFlow} from './birth-flow.mjs';
 let birth,artEditor;
 import {createReactions,reactionEvent} from './reactions.mjs';
@@ -53,19 +53,18 @@ const appearance=createThemes(document,preferences,()=>language);
 const itemCatalog=createItemCatalog(document,()=>language);
 const titleScreen=createTitleScreen(document,{privacy:()=>$('#privacy-dialog').showModal()});
 const birthSteps=createBirthSteps(document);
-let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingImage=null,pendingChat=null;
+let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingChat=null;
 let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetRequest=null;
 const tr=(key,values)=>t(language,key,values);
 const problem=error=>errorText(error,language);
 const battleScene=createBattle(document,()=>storyDialog.close(),()=>storyDialog.battleFinished());
 let dungeons,pixels;
-$('#draw-evolved').addEventListener('click',()=>$('#draw').click());
 
 function notice(message=''){ $('#notice').textContent=message;$('#notice').hidden=!message; }
 function controls(value){
   busy=value;
   document.querySelectorAll('button,input,select').forEach(e=>{if(!e.closest('#title-screen,#theme-dialog')&&e.id!=='open-theme')e.disabled=value;});
-  if(!value&&(!anna||pendingRemoval||pendingAction||pendingResetRequest||view?.reset_pending))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input,#draw').forEach(e=>e.disabled=true);
+  if(!value&&(!anna||pendingRemoval||pendingAction||pendingResetRequest||view?.reset_pending))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input').forEach(e=>e.disabled=true);
   $('#retry-chat').hidden=!pendingChat;
   $('#retry-reaction').hidden=!reactions?.hasUnsaved();
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
@@ -79,7 +78,6 @@ function translate(){
   translateDocument(document,language);$('#language').value=language;
   itemCatalog.render();appearance.render();hints?.render();
   if(birthNotice)birthMessage(birthNotice.key,birthNotice.values);
-  text('#draw',tr(pendingImage?'retryImage':'draw'));
 }
 function drawChat(){
   const container=$('#messages');container.replaceChildren();container.dataset.reactionBusy=String(reactions?.isWorking()||false);
@@ -150,7 +148,6 @@ function render(){
   text('#claimquest',q.claimed?tr('claimed'):tr('reward',{xp:q.reward.xp,rare:q.reward.rare_feed}));$('#claimquest').disabled=busy||!q.ready;
   $('#encounter').hidden=!s.encounter;if(s.encounter)text('#encounter-text',tr('encounter',s.encounter));
   if(s.encounter){picture($('#encounter-own'),image||starter(view),starter(view));picture($('#encounter-enemy'),starter(s.encounter),'icon.svg');$('#encounter-own').alt=s.name;$('#encounter-enemy').alt=s.encounter.species;}
-  $('#evolution-note').hidden=view.stage<2||!!image;
   $('#album').replaceChildren();
   for(const entry of view.album.entries){
     const item=document.createElement('div');item.className='album-item';
@@ -171,7 +168,7 @@ function forgetCachedData(){
   birth?.clear();stories?.clear();storyDialog?.clear();
   reactions?.clear();reactionFeedback();
   battleScene.close();
-  history=[];art={};urls={};pendingAction=null;pendingImage=null;pendingChat=null;
+  history=[];art={};urls={};pendingAction=null;pendingChat=null;
   $('#messages').replaceChildren();$('#album').replaceChildren();$('#collection-album').replaceChildren();$('#quests').replaceChildren();
   for(const id of ['name','pet-type','title','action-result','pet-name','chat-input','mood','level','stage-label','xp-label','satiety','intimacy','stats','inventory','image-caption','quest-date','encounter-text']){const e=$(`#${id}`);if('value' in e)e.value='';else e.textContent='';}
   for(const e of document.querySelectorAll('#game progress'))e.value=0;
@@ -288,29 +285,7 @@ async function uploadPortrait(path,blob){
   if(!result.ok)throw new Error('image upload');
   await anna.files.upload_finalize({path,size:blob.size});
 }
-async function generate(){
-  if(busy)return;$('#draw-dialog').close();controls(true);notice();text('#draw',tr('drawing'));
-  try{
-    if(!pendingImage){
-      const snapshot=await assertActive();
-      const originalFeatures=art[`${snapshot.pet_id}/birth-source`]?.features;
-      const generated=await anna.image.generate({prompt:typeof originalFeatures==='string'&&originalFeatures?artworkGrowthPrompt(snapshot,originalFeatures):`${snapshot.image_prompt}. One single friendly virtual pet, full body centered with generous margins, plain white background, soft painted game character illustration, smooth warm shading, delicate warm outlines, pastel colors. No text, lettering, notebook, desk, scenery, panels, photorealism or 3D rendering.`,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
-      const url=generated.images?.[0]?.url;if(!url)throw new Error('no image');
-      pendingImage={key:imageKey(snapshot),url,path:`portraits/${snapshot.pet_id}/${crypto.randomUUID()}.png`};
-    }
-    await assertActive();
-    const p=pendingImage;
-    if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw new Error('image download');p.blob=await response.blob();}
-    if(!p.uploaded){const upload=await anna.files.upload_init({path:p.path,content_type:p.blob.type||'image/png',size:p.blob.size});const result=await fetch(upload.put_url,{method:'PUT',headers:upload.headers,body:p.blob});if(!result.ok)throw new Error('image upload');await anna.files.upload_finalize({path:p.path,size:p.blob.size});p.uploaded=true;}
-    const active=await assertActive();
-    if(p.key!==imageKey(active)){pendingImage=null;throw new PartnerChangedError();}
-    art=await saveMerged(ART,old=>({...old,[p.key]:{path:p.path,at:Date.now()}}));urls[p.key]=(await anna.files.download_url({path:p.path})).get_url;pendingImage=null;
-    await syncPortraitVisuals(active,p.blob);await readExtras();render();notice(tr('imageSaved'));
-  }catch(error){if(error instanceof ErasedError){view={erased:true};render();notice(tr('removedHeading'));}else notice(pendingImage?tr('imagePending'):tr('imageFailed',{error:problem(error)}));}
-  finally{text('#draw',tr(pendingImage?'retryImage':'draw'));controls(false);}
-}
-// Every committed appearance uses this path: birth and new growth portraits now,
-// and the final equipped portrait when equipment is implemented. Viewing is read-only.
+// Saved birth artwork prepares the free pixel preview. Viewing stays read-only.
 async function syncPortraitVisuals(snapshot,blob){
   await pixels.sync(snapshot,blob);
   render();
@@ -421,7 +396,6 @@ $('#retry-action').addEventListener('click',()=>pendingAction&&act(pendingAction
 $('#chat-form').addEventListener('submit',chat);
 $('#retry-chat').addEventListener('click',retryChat);
 document.querySelectorAll('[data-prompt]').forEach(button=>button.addEventListener('click',()=>{$('#chat-input').value=tr(button.dataset.prompt);$('#chat-input').focus();}));
-$('#draw').addEventListener('click',()=>pendingImage?generate():$('#draw-dialog').showModal());$('#confirm-draw').addEventListener('click',generate);
 let reactionNotice='';
 function reactionFeedback(key=''){reactionNotice=key;const e=$('#reaction-status');e.hidden=!key;e.textContent=key?tr(key):'';}
 reactions=createReactions({enabled:()=>careAiEnabled,disabledText:()=>tr('careAiSaved'),anna:()=>anna,active:assertActive,saved:saved=>{const local=history.filter(item=>item.kind!=='reaction'&&!saved.some(value=>value.id===item.id));history=mergeHistory(saved,[...local,...(pendingChat||[])]);},render:drawChat,feedback:reactionFeedback});
@@ -431,7 +405,7 @@ function birthMessage(key,values={}){birthNotice={key,values};for(const id of ['
 artEditor=createArtworkEditor({document,tr,locked:()=>busy||!!pendingAction||birth?.hasOutput()});
 birth=createBirthFlow({
   anna:()=>anna,view:()=>view,art:()=>art,language:()=>language,editor:artEditor,
-  locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest||pendingImage),
+  locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),
   controls,assertActive,upload:uploadPortrait,isPartnerChanged:error=>error instanceof PartnerChangedError,
   save:async merge=>{art=await saveMerged(ART,merge);return art;},
   portraitSaved:async(snapshot,blob)=>{await setupPersonality(true);await syncPortraitVisuals(snapshot,blob);},
@@ -453,7 +427,7 @@ birth=createBirthFlow({
     panel.querySelector('.birth-buttons').hidden=busy||!view?.status||!!pendingAction;
     $('#game').hidden=visible||!view?.status||!!(view?.reset_pending||pendingResetRequest);
     $('#welcome').hidden=visible||view?.code!=='not_started'||!!pendingResetRequest;
-text('#retry-birth',tr(pending?'artRetrySave':'artRetry'));$('#replace-birth-source').disabled=busy||pending;if(visible)document.querySelectorAll('[data-action],#draw,#draw-evolved').forEach(e=>e.disabled=true);},
+text('#retry-birth',tr(pending?'artRetrySave':'artRetry'));$('#replace-birth-source').disabled=busy||pending;if(visible)document.querySelectorAll('[data-action]').forEach(e=>e.disabled=true);},
 });
 $('#birth-mode').addEventListener('change',()=>{$('#birth-art-choice').hidden=$('#birth-mode').value!=='art';});
 $('#choose-art').addEventListener('click',()=>artEditor.open());

@@ -53,7 +53,7 @@ test('new artwork waits for home choice; one explicit generation and save-only r
  });
  assert.equal(await page.locator('#home-sprite').count(),0);
  assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),0);
- await page.locator('#home-close').click();await page.locator('#draw').click();await page.locator('#confirm-draw').click();await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);
+ await page.locator('#home-close').click();assert.equal(await page.locator('#draw,#draw-dialog').count(),0);
  assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),0);
  await page.locator('#open-home').click();await page.locator('#home-appearance-generate').click();await page.waitForFunction(()=>!document.querySelector('#home-sprite-retry').hidden);
  const first=await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image'));

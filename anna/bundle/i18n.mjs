@@ -297,7 +297,7 @@ export const messages = {
   currentStage: ['Together, today', '지금 함께하는 모습'], memoryStage: ['A shared memory', '함께한 기억'], futureStage: ['Meet at Lv. {level}', 'Lv.{level}에 만나요'],
   extrasError: ['Could not load your chat or album. Refresh to try again.', '대화나 앨범을 불러오지 못했어요. 새로고침으로 다시 확인할 수 있어요.'],
   working: ['Spending a little time together…', '친구와 함께하는 중…'],
-  evolved: ['Evolved to {stage}! Add a new portrait to your album.', '{stage}로 진화했어요! 앨범에 새 모습을 남겨 보세요.'],
+  evolved: ['Evolved to {stage}!', '{stage}로 진화했어요!'],
   loot: ['Food +{food}, special treats +{rare}', '사료 +{food}, 간식 +{rare}'],
   uncertain: ['This action may already be saved. Use “Check the same action again” to confirm.', '결과가 저장되었을 수 있으니 같은 행동 다시 확인하기를 눌러 주세요.'],
   unknownResult: ['Could not confirm the result.', '결과를 확인하지 못했어요.'],
