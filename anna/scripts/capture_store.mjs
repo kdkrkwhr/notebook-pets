@@ -72,8 +72,11 @@ try{
  await open('companion');
  if(!await p.locator('#pet-image').evaluate(img=>img.currentSrc.endsWith('/store-demo/portrait.png')&&img.naturalWidth>=512))throw Error('Generated portrait was replaced by a fallback');
  await shot('02-companion-and-care.png');
- await p.setViewportSize({width:1280,height:1100});await open('garden');await p.locator('#open-home').click();await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');await p.locator('#home-pause').click();await shot('07-home-garden.png');
- await p.locator('#home-shop-toggle').click();await p.locator('[data-area="yard"]').click();await decoded();await shot('08-garden-shop.png');await p.locator('#home-close').click();
+ const pauseHome=async()=>{await p.locator('#home-tools summary').click();await p.locator('#home-pause').click();await p.locator('#home-tools summary').click();};
+ await p.setViewportSize({width:1280,height:1100});await open('companion');await p.locator('#open-home').click();await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');await pauseHome();await shot('07-home-garden.png');await p.locator('#home-close').click();
+ await open('garden');await p.locator('#open-home').click();await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');await pauseHome();
+ await p.locator('#home-shop-toggle').click();await p.locator('[data-area="yard"]').click();await decoded();await shot('08-garden-shop.png');
+ await p.locator('[data-mode="storage"]').click();await decoded();await shot('09-home-collection.png');await p.locator('#home-close').click();
  await p.setViewportSize({width:1280,height:1000});await open('companion');
  await p.locator('#open-items').click();await p.locator('[data-item="frost-crown"]').waitFor();await decoded();await shot('06-item-book.png');await p.locator('#close-items').click();
  await p.setViewportSize({width:1280,height:850});await p.locator('#album').scrollIntoViewIfNeeded();await shot('03-care-and-album.png');
@@ -83,7 +86,7 @@ try{
  await p.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.art==='ready');await shot('05-pixel-dungeon.png');
  if(errors.length)throw Error(errors.join('\n'));
  const calls=await p.evaluate(()=>window.storeCalls);if(calls.some(c=>c!=='status'))throw Error('Unexpected gameplay call');
- await writeFile(new URL('capture.json',store),JSON.stringify({appVersion:JSON.parse(await readFile(new URL('app.json',root),'utf8')).version,source:'shipped bundle + disposable real Python engine views + recorded Anna drawing result',at:new Date().toISOString(),species:fixture.initial.species_key,element:fixture.initial.element_key,captureAiCalls:0,assetPreparationAiCalls:demo.aiCalls,productionStorageCalls:0,screenshots:9,gardenItems:36,catalogItems:48,fixtureCurrency:200,homeAppearance:'free default converted from the recorded portrait; no generated directional poses'},null,2)+'\n');
- console.log('Captured 9 actual UI screenshots; no new Anna or AI calls during capture.');
+ await writeFile(new URL('capture.json',store),JSON.stringify({appVersion:JSON.parse(await readFile(new URL('app.json',root),'utf8')).version,source:'shipped bundle + disposable real Python engine views + recorded Anna drawing result',at:new Date().toISOString(),species:fixture.initial.species_key,element:fixture.initial.element_key,captureAiCalls:0,assetPreparationAiCalls:demo.aiCalls,productionStorageCalls:0,screenshots:10,gardenItems:36,catalogItems:48,fixtureCurrency:200,initialYard:'house only; no separate default trees or decorations',homeAppearance:'free default converted from the recorded portrait; no generated directional poses'},null,2)+'\n');
+ console.log('Captured 10 actual UI screenshots; no new Anna or AI calls during capture.');
  }
 }finally{await browser.close();}

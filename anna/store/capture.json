@@ -1,15 +1,16 @@
 {
-  "appVersion": "1.4.9",
+  "appVersion": "1.4.10",
   "source": "shipped bundle + disposable real Python engine views + recorded Anna drawing result",
-  "at": "2026-10-17T16:58:00.726Z",
+  "at": "2026-10-18T01:57:29.626Z",
   "species": "plant",
   "element": "nature",
   "captureAiCalls": 0,
   "assetPreparationAiCalls": 3,
   "productionStorageCalls": 0,
-  "screenshots": 9,
+  "screenshots": 10,
   "gardenItems": 36,
   "catalogItems": 48,
   "fixtureCurrency": 200,
+  "initialYard": "house only; no separate default trees or decorations",
   "homeAppearance": "free default converted from the recorded portrait; no generated directional poses"
 }
