@@ -65,11 +65,11 @@ class ImageTests(unittest.TestCase):
         self.assertNotEqual(a["pet_id"], b["pet_id"])
         self.assertEqual(self.service().render("123", a)["status"], "stale")
 
-    def test_evolution_metadata_in_all_xp_results(self):
+    def test_leveling_does_not_request_evolution_art(self):
         st = base_state(level=9, xp=99)
         result = engine.add_xp(st, 1)
-        self.assertEqual(result["image"]["stage"], 2)
-        self.assertEqual(result["image"]["key"], "mammal_fire_stage2")
+        self.assertNotIn("image", result)
+        self.assertEqual(st["stage"], 1)
 
     def test_curated_starter_works_without_server(self):
         self.seed(species="plant", element="nature")

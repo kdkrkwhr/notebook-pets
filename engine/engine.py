@@ -17,6 +17,7 @@ import collectibles
 import journeys
 import personality
 import home
+import evolution
 
 G = ContextMapping('rules')
 _pending_save = ContextVar('pending_save', default=None)
@@ -56,24 +57,19 @@ def legacy_stage(level):
 def migrate_state(source, uid):
     """Validate old rules first; preserve identity/XP/receipts and upgrade in memory.
 
-    Reads never persist migration. The next successful mutation saves version 4
+    Reads never persist migration. The next successful mutation saves version 5
     atomically with the action; old engines reject that version instead of reverting it.
     """
     validate_state(source, uid)
     st = copy.deepcopy(source)
-    if st['version'] < 4:
+    if st['version'] < 5:
         if st['version'] == 2:
             st['sleep_bonus_dates'] = []
             st['daily'].pop('sleep_buff', None)
-        old_stage = st['stage']
-        st['stage'] = stage_of(st['level'])[0]
-        if st['stage'] == 4 and old_stage < 4:
-            st['evolution_branch'] = 'light' if st['intimacy'] >= G['evolution_branch_threshold'] else 'dark'
-        for stage in range(old_stage + 1, st['stage'] + 1):
-            st['history'].append({'event': 'evolved', 'ts': time.time(), 'stage': stage,
-                                  'level': st['level'], 'branch': st['evolution_branch'] if stage == 4 else None,
-                                  'reason': 'progression_update'})
-        st['version'] = 4
+        # Keep already achieved stages and pin legacy identity before an element
+        # can change. Upgrading a save must never silently evolve a companion.
+        st['pet_id'] = art.pet_identity(st)
+        st['version'] = 5
     st.setdefault('last_decay_date', None)
     validate_state(st, uid)
     return st
@@ -110,14 +106,16 @@ def validate_state(st, uid):
         journeys.validate(st)
         personality.validate(st)
         home.validate(st)
-        require(type(st["version"]) is int and st["version"] in (2, 3, 4))
+        evolution.validate(st)
+        require(type(st["version"]) is int and st["version"] in (2, 3, 4, 5))
         require(isinstance(st["name"], str))
         if "pet_id" in st:
             art.pet_identity(st)
         require(st["species"] in G["species"] and st["element"] in G["elements"])
         for key in ("level", "stage", "xp", "satiety", "intimacy"):
             require(type(st[key]) is int)
-        require(1 <= st["level"] <= G["max_level"] and st["stage"] == (stage_of(st["level"])[0] if st["version"] == 4 else legacy_stage(st["level"])))
+        require(1 <= st["level"] <= G["max_level"])
+        require(1 <= st['stage'] <= stage_of(st['level'])[0] if st['version']==5 else st['stage'] == (stage_of(st['level'])[0] if st['version']==4 else legacy_stage(st['level'])))
         require(st["xp"] >= 0 and 0 <= st["satiety"] <= 100 and 0 <= st["intimacy"] <= 100)
         for key in ("daily", "inventory", "record", "cooldowns", "stats"):
             require(isinstance(st[key], dict))
@@ -205,9 +203,9 @@ def titles(st):
     """전적·레벨·진화·친밀도에서 파생되는 칭호 목록 (순수 함수)."""
     got = []
     w = st["record"]["win"]
-    if st["level"] >= G["max_level"]: got.append("완전체 마스터")
+    if st["level"] >= G["max_level"] and st['stage']==4: got.append("완전체 마스터")
     if st["stage"] >= 4:
-        got.append("빛의 성체" if st.get("evolution_branch") == "light" else "어둠의 성체")
+        got.append("나만의 완전체" if st.get('evolution',{}).get('records') else "빛의 성체" if st.get("evolution_branch") == "light" else "어둠의 성체")
     if w >= 50: got.append("전설의 조련사")
     elif w >= 10: got.append("백전노장")
     elif w >= 1: got.append("초보 트레이너")
@@ -227,16 +225,6 @@ def add_xp(st, amount):
     while st["level"] < G["max_level"] and st["xp"] >= xp_needed(st["level"]):
         st["xp"] -= xp_needed(st["level"])
         st["level"] += 1
-        ns, _ = stage_of(st["level"])
-        if ns > st["stage"]:
-            st["stage"] = ns
-            branch = None
-            if ns == 4:
-                branch = "light" if st["intimacy"] >= G["evolution_branch_threshold"] else "dark"
-                st["evolution_branch"] = branch
-            evolutions.append({"to_stage": ns, "branch": branch, "level": st["level"]})
-            st["history"].append({"event": "evolved", "ts": time.time(),
-                                  "stage": ns, "level": st["level"], "branch": branch})
     if st["level"] == G["max_level"]:
         st["xp"] = 0
     result = {"gained": amount, "evolutions": evolutions, "leveled_to": st["level"]}
@@ -321,7 +309,7 @@ def cmd_start(uid, name, replace=False):
     sp = random.choice(list(G["species"].keys()))
     el = random.choice(list(G["elements"].keys()))
     st = {
-        "version": 4, "user_id": uid, "name": name, "pet_id": uuid.uuid4().hex,
+        "version": 5, "user_id": uid, "name": name, "pet_id": uuid.uuid4().hex,
         "species": sp, "element": el, "stage": 1, "level": 1, "xp": 0,
         "stats": {}, "training_bonus": {}, "processed_requests": {}, "intimacy": 50, "satiety": 80,
         "record": {"win": 0, "lose": 0, "draw": 0},
@@ -345,13 +333,19 @@ def cmd_status(st):
                stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"), image=art.describe(st),
                walk_choice=copy.deepcopy(st.get("_walk_choice")), record=st["record"], walk_energy={k: v for k, v in walk_energy(st).items() if k != "updated_at"}, quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
                personality=personality.view(st), memories=journeys.context(st), journey=copy.deepcopy(st.get("journey", {}).get("current")),
-               dungeons=dungeons.view(st, today(), type_mult), collectibles=collectibles.view(st),
+               dungeons=dungeons.view(st, today(), type_mult), collectibles=collectibles.view(st), evolution=evolution.view(st),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
 
 def cmd_personality(st, raw):
     result = personality.establish(st, raw)
     save_state(st)
     return out(True, 'Your companion has found their voice.', personality=result)
+
+
+def cmd_evolution(st, command, raw):
+    result=evolution.request(st,command,raw)
+    save_state(st)
+    return result
 
 def cmd_home(st, command, arguments):
     if command == 'home':return out(True, '', home=home.view(st), home_candidates=home.candidates(st))
@@ -692,6 +686,9 @@ def cmd_album(st):
         spec = None
         if reached:
             spec = {**current, 'stage': number, 'branch': current['branch'] if number == 4 else None}
+            # Later element choices never rewrite the old album's identity.
+            for record in reversed(st.get('evolution',{}).get('records',[])):
+                if record['stage'] > number: spec['element']=record['from_element']
             spec['key'] = art.image_key(spec['species'], spec['element'], number, spec['branch'])
         entries.append({'stage': number, 'label': stage['label'], 'min_level': stage['min_lv'],
                         'reached': reached, 'current': number == st['stage'],
@@ -751,7 +748,7 @@ ALIASES = {
     "퀘스트": "quests", "일일퀘스트": "quests", "퀘스트보상": "claimquest",
 }
 BASE_COMMANDS = frozenset({'start','feed','snack','play','sleep','train','walk','battle','flee','attendance'})
-COMMANDS = ({'home','home_buy','home_apply','home_undo','personality','walk_begin','walk_collect','walk_leave'} | BASE_COMMANDS |
+COMMANDS = ({'evolution_prepare','evolution_options','evolve','home','home_buy','home_apply','home_undo','personality','walk_begin','walk_collect','walk_leave'} | BASE_COMMANDS |
             set(dungeons.COMMANDS) | dungeons.CHOICES |
             {'status','quests','claimquest','album','titles','rank','help','owner','clearowner','reset'})
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
@@ -768,6 +765,7 @@ def dispatch_player(actor_id, command, arguments):
         return out(False, "!공책시작 으로 먼저 몬스터를 만들어.", code="not_started")
     fresh_daily(st)
     table = {
+        **{key:(lambda key=key:cmd_evolution(st,key,arguments[0])) for key in ('evolution_prepare','evolution_options','evolve')},
         **{key:(lambda key=key:cmd_home(st,key,arguments)) for key in ('home','home_buy','home_apply','home_undo')},
         "personality": lambda: cmd_personality(st, arguments[0]),
         "status": lambda: cmd_status(st), "feed": lambda: cmd_care(st, "feed"),

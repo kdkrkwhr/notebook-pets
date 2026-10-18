@@ -7,7 +7,7 @@ import path from 'node:path';
 import {chromium} from 'playwright-core';
 
 const root=fileURLToPath(new URL('../../',import.meta.url));
-const modules=['engine','domain','ports','game_api','art','dungeons','collectibles','journeys','personality','home','home_world'];
+const modules=['engine','domain','ports','game_api','art','dungeons','collectibles','journeys','personality','home','home_world','evolution'];
 const sources=Object.fromEntries(await Promise.all(modules.map(async name=>[name,await readFile(path.join(root,'engine',name+'.py'),'utf8')])));
 const rules=await readFile(path.join(root,'data/game_data.json'),'utf8');
 const templates=await readFile(path.join(root,'data/image_prompts.json'),'utf8');

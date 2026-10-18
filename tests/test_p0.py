@@ -61,7 +61,7 @@ class RuntimeTests(unittest.TestCase):
                     child.communicate()
         return results
 
-    def test_xp_accumulates_and_crosses_every_evolution_boundary(self):
+    def test_xp_crosses_level_thresholds_without_automatic_evolution(self):
         st = base_state()
         engine.add_xp(st, 250)
         self.assertEqual((st["level"], st["xp"]), (3, 50))
@@ -70,10 +70,10 @@ class RuntimeTests(unittest.TestCase):
                 with self.subTest(level=level, intimacy=intimacy):
                     st = base_state(level=level, stage=stage - 1, intimacy=intimacy, xp=amount - 1)
                     result = engine.add_xp(st, 1)
-                    self.assertEqual((st["level"], st["stage"], st["xp"]), (level + 1, stage, 0))
-                    self.assertEqual(len(result["evolutions"]), 1)
+                    self.assertEqual((st["level"], st["stage"], st["xp"]), (level + 1, stage - 1, 0))
+                    self.assertEqual(len(result["evolutions"]), 0)
                     if stage == 4:
-                        self.assertEqual(st["evolution_branch"], branch)
+                        self.assertIsNone(st["evolution_branch"])
 
     def test_max_level_caps_and_does_not_bank_xp(self):
         st = base_state(level=99, stage=4, xp=799)
@@ -106,7 +106,7 @@ class RuntimeTests(unittest.TestCase):
         path.write_text(json.dumps(st), encoding="utf-8")
         self.assertTrue(engine.execute("123", "attendance")["ok"])
         saved = json.loads(path.read_text(encoding="utf-8"))
-        self.assertEqual((saved["version"], saved["level"], saved["xp"]), (4, 7, 69))
+        self.assertEqual((saved["version"], saved["level"], saved["xp"]), (5, 7, 69))
         self.assertEqual(saved["inventory"]["normal_feed"], st["inventory"]["normal_feed"] + 3)
         self.assertEqual(saved["inventory"]["rare_feed"], st["inventory"]["rare_feed"])
         self.assertEqual(saved["history"], st["history"])

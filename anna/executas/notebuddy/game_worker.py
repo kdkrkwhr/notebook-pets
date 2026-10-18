@@ -11,7 +11,7 @@ import sys
 import time
 import uuid
 
-ALLOWED = frozenset({'home','home_buy','home_apply','home_undo','personality', 'start', 'status', 'feed', 'snack', 'play', 'sleep', 'train',
+ALLOWED = frozenset({'evolution_prepare','evolution_options','evolve','home','home_buy','home_apply','home_undo','personality', 'start', 'status', 'feed', 'snack', 'play', 'sleep', 'train',
                      'walk_begin', 'walk_collect', 'walk_leave', 'walk', 'battle', 'flee', 'attendance', 'quests', 'claimquest',
                      'album', 'titles', 'help', 'explore_hellgate', 'explore_icekingdom', 'explore_dreamforest',
                      'explore_sunkenpalace', 'explore_clockworkcity', 'dungeon_safe', 'dungeon_risk'})
@@ -43,6 +43,7 @@ def run(payload):
             arguments = [payload.get('choice_id', '')]
         if command == 'personality': arguments = [payload.get('profile', '')]
         if command in ('home_buy','home_apply','home_undo'):arguments=[payload.get('home_payload','')]
+        if command in ('evolution_prepare','evolution_options','evolve'):arguments=[payload.get('evolution_payload','')]
         outcome = transition(previous, command, context, actor_id='1', arguments=arguments, request_id=payload.get('request_id'))
         result, current = outcome.result, outcome.state
         # Only the new local candidate is adjusted before its single APS commit.

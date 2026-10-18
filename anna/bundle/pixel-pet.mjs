@@ -1,9 +1,9 @@
 import {ART,ErasedError,mergeSaved} from './data.mjs';
-import {imageKey,starter} from './model.mjs';
+import {imageKey,starter,portraitEntry} from './model.mjs';
 
 export const PIXEL_SIZE=64;
 export const pixelKey=view=>`${view.pet_id}/pixel-stage-${view.stage}`;
-export const pixelSource=(view,art)=>art[imageKey(view)]?.path||starter(view);
+export const pixelSource=(view,art)=>portraitEntry(view,art)?.path||starter(view);
 export function currentPixel(view,art){
   const entry=art[pixelKey(view)];
   return entry?.format==='pixel-v1'&&entry.source_path===pixelSource(view,art)?entry:null;

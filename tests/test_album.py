@@ -1,4 +1,5 @@
 import unittest
+import json
 import asyncio
 from unittest.mock import patch
 import test_p0
@@ -38,26 +39,32 @@ class AlbumTests(unittest.TestCase):
         self.assertEqual((self.state/'123.json').read_bytes(), before)
 
     def test_evolution_logged_once_with_message_retry(self):
-        self.seed(level=9, xp=90)
-        first = engine.execute('123', 'feed', request_id='grow:1')
-        self.assertEqual(first, engine.execute('123', 'feed', request_id='grow:1'))
+        st=self.seed(level=10)
+        engine.journeys.memory(st)['counts']={'feed':10,'walk':3}
+        engine.save_state(st)
+        identity=engine.art.pet_identity(st)
+        engine.execute('123','evolution_prepare',[json.dumps({'pet_id':identity,'stage':1})])
+        token=engine.load_state('123')['evolution']['pending']['id']
+        args=[json.dumps({'pet_id':identity,'choice_id':token,'route_id':'keep'})]
+        first = engine.execute('123', 'evolve',args, request_id='grow:1')
+        self.assertTrue(first['ok'],first)
+        self.assertEqual(first, engine.execute('123', 'evolve',args, request_id='grow:1'))
         events = [e for e in engine.load_state('123')['history'] if e['event']=='evolved']
         self.assertEqual(len(events), 1)
         entry = engine.execute('123', 'album')['album']['entries'][1]
         self.assertTrue(entry['achieved_at'].endswith('+09:00'))
         self.assertTrue(entry['current'])
 
-    def test_multistage_growth_and_final_branch_belong_to_same_partner(self):
+    def test_delayed_evolution_keeps_only_reached_album_stages(self):
         st = self.seed(intimacy=90)
         identity = engine.art.pet_identity(st)
         engine.add_xp(st, 20000)
         engine.save_state(st)
         album = engine.execute('123', 'album')['album']
-        self.assertEqual([e['stage'] for e in st['history'] if e['event']=='evolved'], [2,3,4])
-        self.assertEqual(album['branch'], 'light')
-        for entry in album['entries']:
-            self.assertEqual(entry['image']['pet_id'], identity)
-        self.assertEqual(album['entries'][3]['image']['branch'], 'light')
+        self.assertEqual([e['stage'] for e in st['history'] if e['event']=='evolved'], [])
+        self.assertIsNone(album['branch'])
+        self.assertEqual(album['entries'][0]['image']['pet_id'],identity)
+        self.assertTrue(all(e['image'] is None for e in album['entries'][1:]))
 
     def test_cache_missing_or_other_partner_never_substituted(self):
         self.seed()

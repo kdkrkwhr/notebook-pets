@@ -26,14 +26,14 @@ class InteractionTests(unittest.TestCase):
                     self.assertEqual(engine.art.pet_identity(st), engine.art.pet_identity(migrated))
                     for key in ('level', 'xp', 'species', 'element', 'name', 'inventory', 'record'):
                         self.assertEqual(st[key], migrated[key])
-                    self.assertEqual(migrated['stage'], engine.stage_of(level)[0])
+                    self.assertEqual(migrated['stage'], st['stage'])
                     self.assertEqual(engine.migrate_state(migrated,'123'), migrated)
                     events = [e for e in migrated['history'] if e['event']=='evolved']
                     self.assertEqual(len(events), migrated['stage']-st['stage'])
                     self.assertTrue(all(e['reason']=='progression_update' for e in events))
                     self.assertTrue(engine.execute('123','attendance', request_id='upgrade')['ok'])
                     saved = json.loads(path.read_text(encoding='utf-8'))
-                    self.assertEqual(saved['version'], 4)
+                    self.assertEqual(saved['version'], 5)
                     self.assertEqual(len(saved['history']), len(migrated['history']))
                     engine.execute('123','attendance', request_id='upgrade')
                     self.assertEqual(json.loads(path.read_text(encoding='utf-8')), saved)

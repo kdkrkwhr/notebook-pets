@@ -164,17 +164,17 @@ class AdapterTests(unittest.IsolatedAsyncioTestCase):
         self.storage.value = old
         original = copy.deepcopy(self.storage.document)
         status = await self.service.invoke({'command':'status'})
-        self.assertEqual(status['stage'], 4)
+        self.assertEqual(status['stage'], 2)
         self.assertEqual(status['pet_id'], old['pet_id'])
         self.assertEqual(status['status']['xp'], 17)
         self.assertEqual(self.storage.document, original)
         result = await self.service.invoke({'command':'feed','request_id':'migrated-feed'})
         self.assertTrue(result['ok'], result)
-        self.assertEqual(self.storage.value['version'], 4)
-        self.assertEqual(self.storage.value['stage'], 4)
+        self.assertEqual(self.storage.value['version'], 5)
+        self.assertEqual(self.storage.value['stage'], 2)
         self.assertEqual(self.storage.value['pet_id'], old['pet_id'])
         self.assertEqual(self.storage.value['xp'], 27)
-        self.assertEqual(self.storage.value['evolution_branch'], 'light')
+        self.assertIsNone(self.storage.value['evolution_branch'])
 
     async def test_conflict_reloads_and_preserves_other_action(self):
         await self.start()
