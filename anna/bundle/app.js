@@ -1,4 +1,5 @@
 import {createHints} from './hints.mjs';
+import {createActivity} from './activity.mjs';
 let hints;
 import {createItemCatalog} from './item-catalog.mjs';
 import {createThemes} from './themes.mjs';
@@ -59,12 +60,18 @@ let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendi
 let removalPreview=null,pendingRemoval=false,resetPreview=null,pendingResetRequest=null;
 const tr=(key,values)=>t(language,key,values);
 const problem=error=>errorText(error,language);
+const chatStatus=document.createElement('p');chatStatus.id='chat-status';chatStatus.hidden=true;chatStatus.setAttribute('role','status');chatStatus.setAttribute('aria-live','polite');$('#chat-form').before(chatStatus);
+const chatActivity=createActivity(chatStatus,()=>language);
+const actionActivity=createActivity($('#action-result'),()=>language);
+const birthActivity=createActivity($('#birth-recovery-status'),()=>language);
+const personalityActivity=createActivity($('#personality-status'),()=>language);
 const battleScene=createBattle(document,()=>storyDialog.close(),()=>storyDialog.battleFinished());
 let dungeons,pixels;
 
 function notice(message=''){ $('#notice').textContent=message;$('#notice').hidden=!message; }
 function controls(value){
   busy=value;
+  if(!value)birthActivity.clear();
   document.querySelectorAll('button,input,select').forEach(e=>{if(!e.closest('#title-screen,#theme-dialog')&&e.id!=='open-theme')e.disabled=value;});
   if(!value&&(!anna||pendingRemoval||pendingAction||pendingResetRequest||view?.reset_pending))document.querySelectorAll('[data-action],#start-form button,#chat-form button,#chat-input').forEach(e=>e.disabled=true);
   $('#retry-chat').hidden=!pendingChat;
@@ -229,6 +236,7 @@ async function act(command,extra={},retry=false){
   controls(true);notice();
   if(!retry){try{pendingAction=newAction(view,command,extra);}catch{notice(tr('refreshAction'));if(outing)storyDialog.result(tr('refreshAction'));controls(false);return;}}
   let started=false,reaction=null,walkStory=null;
+  actionActivity.set('load',tr('working'));
   $('#retry-action').hidden=true;text('#action-result',tr('working'));
   try{
     const before=view;const portrait=urls[imageKey(before)];
@@ -245,7 +253,7 @@ async function act(command,extra={},retry=false){
     if(view.ok&&view.dungeon_visit)dungeons.visit(view.dungeon_visit);
     else if(view.ok&&view.dungeon_run)dungeons.show(view.dungeon_run);
   }catch(error){notice(`${problem(error)} ${tr('uncertain')}`);text('#action-result',tr('unknownResult'));$('#retry-action').hidden=false;if(outing)storyDialog.result(`${problem(error)} ${tr('uncertain')}`);}
-  finally{controls(false);}
+  finally{actionActivity.clear();controls(false);}
   if(walkStory){storyDialog.begin();void stories.start(walkStory,()=>careAiEnabled);}
   reactions.enqueue(reaction);
   if(started){
@@ -258,16 +266,16 @@ async function saveMerged(key,merge){await assertActive();return mergeSaved(anna
 async function chat(event){
   event.preventDefault();if(busy||pendingChat||pendingAction||pendingRemoval||!view?.status)return;
   const input=$('#chat-input'),message=input.value.trim();if(!message)return;
-  controls(true);notice();const additions=[{id:crypto.randomUUID(),role:'user',text:message,at:Date.now()}];
+  controls(true);notice();chatActivity.set('chat');const additions=[{id:crypto.randomUUID(),role:'user',text:message,at:Date.now()}];
   history=mergeHistory(history,additions);drawChat();input.value='';
   try{
     view=await assertActive();render();
     const response=await anna.llm.complete({messages:history.filter(m=>m.kind!=='reaction'||m.state==='done').slice(-12).map(m=>({role:m.role,content:{type:'text',text:m.text}})),systemPrompt:chatPrompt(language,view.status),maxTokens:280,temperature:.7,modelPreferences:{costPriority:1,speedPriority:.8}});
     if(typeof response.content?.text!=='string'||!response.content.text.trim())throw new Error('empty response');
     additions.push({id:crypto.randomUUID(),role:'assistant',text:response.content.text,at:Date.now()});history=mergeHistory(history,additions);drawChat();
-    pendingChat=additions;await persistChat();
+    pendingChat=additions;chatActivity.set('save');await persistChat();
   }catch(error){if(error instanceof ErasedError){notice(tr('removedHeading'));forgetCachedData();}else{notice(tr('chatFailed',{error:problem(error)}));input.value=message;history=history.filter(m=>m.id!==additions[0].id);drawChat();}}
-  finally{controls(false);input.focus();}
+  finally{chatActivity.clear();chatStatus.hidden=true;controls(false);input.focus();}
 }
 async function persistChat(){
   try{
@@ -280,7 +288,7 @@ async function persistChat(){
 }
 async function retryChat(){
   if(busy||pendingAction||pendingRemoval||!pendingChat)return;
-  controls(true);notice();try{await persistChat();}finally{controls(false);}
+  controls(true);notice();chatActivity.set('save');try{await persistChat();}finally{chatActivity.clear();chatStatus.hidden=true;controls(false);}
 }
 async function uploadPortrait(path,blob){
   const upload=await anna.files.upload_init({path,content_type:blob.type||'image/png',size:blob.size});
@@ -404,7 +412,7 @@ function reactionFeedback(key=''){reactionNotice=key;const e=$('#reaction-status
 reactions=createReactions({enabled:()=>careAiEnabled,disabledText:()=>tr('careAiSaved'),anna:()=>anna,active:assertActive,saved:saved=>{const local=history.filter(item=>item.kind!=='reaction'&&!saved.some(value=>value.id===item.id));history=mergeHistory(saved,[...local,...(pendingChat||[])]);},render:drawChat,feedback:reactionFeedback});
 $('#retry-reaction').addEventListener('click',async()=>{if(busy||pendingAction||pendingRemoval||pendingResetRequest)return;controls(true);try{await reactions.retrySave();}finally{controls(false);}});
 let birthNotice=null;
-function birthMessage(key,values={}){birthNotice={key,values};for(const id of ['#birth-status','#birth-recovery-status']){text(id,tr(key,values));$(id).hidden=false;}notice(['artChecking','artUploading','artGenerating','artSaving'].includes(key)?'':tr(key,values));}
+function birthMessage(key,values={}){birthNotice={key,values};for(const id of ['#birth-status','#birth-recovery-status']){text(id,tr(key,values));$(id).hidden=false;}const phase={artChecking:'ai',artUploading:'save',artGenerating:'image',artSaving:'save',artFinishingFriend:'load'}[key];birthActivity.set(busy&&phase?phase:null,tr(key,values));notice(phase?'':tr(key,values));}
 artEditor=createArtworkEditor({document,tr,locked:()=>busy||!!pendingAction||birth?.hasOutput()});
 birth=createBirthFlow({
   anna:()=>anna,view:()=>view,art:()=>art,language:()=>language,editor:artEditor,
@@ -413,7 +421,7 @@ birth=createBirthFlow({
   save:async merge=>{art=await saveMerged(ART,merge);return art;},
   portraitSaved:async(snapshot,blob)=>{await setupPersonality(true);await syncPortraitVisuals(snapshot,blob);},
   reload:async()=>{await readExtras();render();},
-  clearMessage:()=>{birthNotice=null;for(const id of ['#birth-status','#birth-recovery-status']){text(id,'');$(id).hidden=true;}},
+  clearMessage:()=>{birthActivity.clear();birthNotice=null;for(const id of ['#birth-status','#birth-recovery-status']){text(id,'');$(id).hidden=true;}},
   message:birthMessage,
   confirm:assessment=>new Promise(resolve=>{
     const dialog=$('#art-traits-dialog');
@@ -470,6 +478,7 @@ function renderPersonality(){
  const changes=Object.entries(p?.changes||{}).map(([axis,change])=>tr('personalityChange',{actions:change.actions.map(a=>tr('memory_'+a)).join(' · '),trait:tr('axis_'+axis),direction:tr(change.amount>0?'more':'less')}));
  $('#personality-growth').textContent=changes.join(' ')||tr(p?'personalityStable':'personalityUsage');
  $('#personality-status').textContent=personalityWorking?tr('personalityWorking'):personalityFeedback?tr(personalityFeedback):'';
+ personalityActivity.set(personalityWorking?'ai':null,$('#personality-status').textContent);
  $('#meet-personality').hidden=!!p;$('#meet-personality').disabled=busy||personalityWorking||!!pendingAction||!!pendingRemoval||!!pendingResetRequest;
 }
 async function setupPersonality(automatic=false){
@@ -501,7 +510,7 @@ evolution=createEvolution({document,language:()=>language,view:()=>view,art:()=>
  active:assertActive,invoke,saved:next=>{adoptView(next);render();},controls,upload:uploadPortrait,
  locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),reload:async()=>{await readExtras();render();}});
 translate();
-homeSprites=createHomeSprite({anna:()=>anna,active:assertActive,upload:uploadPortrait,failed:value=>{art=value;},saved:async value=>{art=value;await readExtras();render();}});
+homeSprites=createHomeSprite({anna:()=>anna,active:assertActive,phase:name=>homeUI?.appearancePhase(name),upload:uploadPortrait,failed:value=>{art=value;},saved:async value=>{art=value;await readExtras();render();}});
 homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertActive,invoke,
  saved:next=>{adoptView(next);render();},locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),busy:controls,
  sprite:homeSpriteUrl,

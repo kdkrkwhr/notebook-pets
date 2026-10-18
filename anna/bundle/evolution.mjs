@@ -1,6 +1,7 @@
 import {ART,CHAT,erased,ErasedError,mergeSaved} from './data.mjs';
 import {imageKey,portraitEntry,starter,newAction} from './model.mjs';
 import {artworkGrowthPrompt} from './birth-art.mjs';
+import {createActivity} from './activity.mjs';
 
 const words={
  ko:{open:'진화',ready:'진화',title:'함께 자란 만큼, 새로운 모습으로',close:'닫기',level:'레벨',care:'돌봄',train:'훈련',walk:'산책',stories:'이야기 완결',prepare:'세 가지 진화 방향 보기',choose:'이 방향으로 진화',image:'새 모습도 그리기 · 이미지 1회',usage:'방향 제안에 AI 1회, 선택한 새 모습에 이미지 1회를 사용해요. 이전 진화의 기억과 최근 대화, 돌봄·모험 기록을 참고해요. 그림 없이도 진화할 수 있어요. 마이홈 픽셀 모습은 첫 방문 때 따로 선택해요.',blocked:'진행 중인 산책이나 탐험 선택을 먼저 마쳐 주세요.',working:'함께한 기억과 모습의 특징을 살펴보고 있어요…',fallback:'AI 제안을 불러오지 못했어요. 돌봄 기록에 맞춘 기본 세 방향 중에서 고를 수 있어요.',saving:'선택한 방향으로 진화하고 있어요…',drawing:'모습의 특징을 이어받아 새 그림 한 장을 그리고 있어요…',done:'진화했어요! 새 모습도 저장했어요.',free:'진화했어요! 지금 그림을 그대로 간직해요.',failed:'진화는 저장했어요. 새 그림을 완성하지 못해 이전 모습을 유지해요.',uncertain:'저장 결과를 확인하지 못했어요. 다시 확인해도 AI를 재호출하지 않아요.',retry:'저장 다시 확인',save:'그림 저장 다시 시도',saveFailed:'그림을 받았지만 저장을 마치지 못했어요. AI를 다시 쓰지 않고 저장만 재시도할 수 있어요.',complete:'마지막 진화를 마쳤어요',fallbackReason:'함께한 돌봄과 산책 기록에서 고른 방향이에요.',stage:'단계',keep:'속성 유지',change:'속성 변경',noImage:'현재 모습의 특징을 읽지 못해 이번에는 그림 없이 진화해요.'},
@@ -33,6 +34,7 @@ export function createEvolution(h){
  const dialog=d.createElement('dialog');dialog.id='evolution-dialog';dialog.setAttribute('aria-labelledby','evolution-title');
  dialog.innerHTML='<header><h2 id="evolution-title"></h2><button type="button" data-evo-close>×</button></header><div class="evolution-body"><div id="evolution-progress"></div><p id="evolution-status" role="status" aria-live="polite"></p><div id="evolution-routes" role="radiogroup"></div><label id="evolution-image-label"><input id="evolution-image" type="checkbox" checked><span></span></label><details class="evolution-help"><summary></summary><p></p></details></div><footer><button id="evolution-prepare" class="primary"></button><button id="evolution-confirm" class="primary"></button><button id="evolution-retry" class="quiet"></button></footer>';
  d.body.append(dialog);
+ const activity=createActivity($('#evolution-status'),lang);
  let working=false,selected='',message='',pendingCommand=null,output=null,epoch=0;
  const info=()=>h.view()?.status?.evolution;
  const show=k=>{message=k;render();};
@@ -119,6 +121,7 @@ export function createEvolution(h){
   await saveOutput();
  }
  async function saveOutput(){
+  show('saving');
   const p=output;await fresh(p.view);
   if(!p.blob){const r=await fetch(p.url);if(!r.ok)throw Error('Portrait download');p.blob=await r.blob();}
   await fresh(p.view);
@@ -146,6 +149,7 @@ export function createEvolution(h){
   $('#evolution-progress').replaceChildren();
   for(const r of e?.requirements||[]){const span=d.createElement('span');span.className=`badge${r.complete?' complete':''}`;span.textContent=`${r.complete?'✓ ':''}${t(r.key)} ${Math.min(r.current,r.target)} / ${r.target}`;$('#evolution-progress').append(span);}
   $('#evolution-status').textContent=message?t(message):e?.blocked?t('blocked'):!e?.next_stage?t('complete'):'';
+  activity.set(working?message==='drawing'?'image':message==='working'?'ai':message==='saving'?'save':'load':null,working&&output&&message==='saving'?undefined:$('#evolution-status').textContent||undefined);
   const cards=$('#evolution-routes');cards.setAttribute('aria-label',t('title'));cards.replaceChildren();
   for(const id of p?.ids||[]){const route=e.catalog.find(r=>r.id===id);if(!route)continue;
    const prose=p.prose[id]?.language===lang()?p.prose[id]:null,card=d.createElement('button');card.type='button';card.className='evolution-route';card.dataset.route=id;card.setAttribute('role','radio');card.setAttribute('aria-checked',String(selected===id));card.disabled=working||!!pendingCommand;
@@ -161,6 +165,7 @@ export function createEvolution(h){
   const retry=$('#evolution-retry');retry.hidden=!pendingCommand&&!output&&h.art()?.[evolutionRequestKey(v||{})]?.phase!=='uploaded';retry.textContent=t(pendingCommand?'retry':'save');retry.disabled=working;
  }
  button.onclick=()=>{render();dialog.showModal();};dialog.querySelector('[data-evo-close]').onclick=()=>dialog.close();
+ dialog.addEventListener('cancel',event=>{if(working)event.preventDefault();});
  $('#evolution-prepare').onclick=()=>run(prepare);$('#evolution-confirm').onclick=()=>run(choose);$('#evolution-retry').onclick=()=>run(recover);
  function clear(){epoch++;pendingCommand=null;output=null;selected='';message='';dialog.close();render();}
  return {render,clear};

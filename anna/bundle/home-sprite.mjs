@@ -127,6 +127,7 @@ export async function readHomeSprite(blob){
 export function createHomeSprite(h){
  let pending=null,running=null;
  async function generate(expected,homeChoice=false){
+  h.phase?.('reference');
   const snapshot=await h.active(),old=(await h.anna().storage.get({key:ART})).value||{};
   if(erased(old))throw new ErasedError();
   const source=pixelSource(snapshot,old),owner=snapshot.pet_id,stage=snapshot.stage;
@@ -160,6 +161,7 @@ export function createHomeSprite(h){
     if(!claimed)return false;
     await guard();
     phase='generate';
+    h.phase?.(phase);
     const result=await h.anna().image.generate({prompt,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
     phase='response';
     const url=result?.images?.[0]?.url;if(!url)throw Error('No sprite returned');
@@ -167,8 +169,10 @@ export function createHomeSprite(h){
    }
    const p=pending;await guard();
    phase='download';
+   h.phase?.(phase);
    if(!p.blob){const response=await fetch(p.url);if(!response.ok)throw Error('Sprite download failed');p.blob=await response.blob();}
    phase='save';
+   h.phase?.(phase);
    await guard();if(!p.uploaded){await h.upload(p.path,p.blob);p.uploaded=true;}
    // Keep the paid result even when its grid cannot be decoded. No signed URL
    // is persisted and later save/decoder recovery never needs another AI call.
@@ -177,8 +181,10 @@ export function createHomeSprite(h){
     return {...latest,[requestKey(snapshot)]:{...latest[requestKey(snapshot)],path:p.path}};
    });
    phase='validate';
+   h.phase?.(phase);
    if(!p.checked){try{await readHomeSprite(p.blob);p.checked=true;}catch(error){pending=null;throw error;}}
    phase='save';
+   h.phase?.(phase);
    await guard();
    const art=await mergeSaved(h.anna().storage,ART,latest=>{
     if(pixelSource(snapshot,latest||{})!==source)throw Error('Artwork changed');
@@ -202,6 +208,7 @@ export function createHomeSprite(h){
   }
  }
  async function useDefault(){
+  h.phase?.('save');
   const snapshot=await h.active(),old=(await h.anna().storage.get({key:ART})).value||{},source=pixelSource(snapshot,old);
   if(erased(old))throw new ErasedError();
   const guard=async()=>{const active=await h.active(),latest=(await h.anna().storage.get({key:ART})).value||{};if(erased(latest))throw new ErasedError();if(active.pet_id!==snapshot.pet_id||active.stage!==snapshot.stage||pixelSource(active,latest)!==source)throw Error('Companion or artwork changed');};

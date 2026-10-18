@@ -32,6 +32,14 @@ button.explanation-help:active:not(:disabled),button.care-ai-help-button:active:
 @media(max-width:480px){.pixel-companion{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;padding:12px}.pixel-preview{width:56px;height:56px}.pixel-preview img{width:50px;height:50px}.pixel-companion p{font-size:11px;line-height:1.7}.pixel-companion button{padding:8px 10px;font-size:11px}}
 /* Evolution stays beside growth progress; details live in a focused dialog. */
 .evolution-open{margin:.5rem 0;width:100%}
+.activity-running{display:flex;align-items:center;gap:.6rem;line-height:1.65}
+.activity-running::before{content:'';display:inline-block;flex:0 0 auto;width:14px;height:14px;border:2px solid var(--frame,#9aab9a);border-top-color:var(--action,var(--ink,#52664f));border-radius:50%;animation:activity-turn .85s linear infinite}
+.activity-note{display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:.2rem .8rem;margin:.25rem 0 .75rem;color:var(--muted,#758276);font-size:.75rem;line-height:1.65}
+.activity-note[hidden]{display:none}.activity-hint{flex:1;min-width:min(200px,100%)}.activity-clock{font-variant-numeric:tabular-nums;white-space:nowrap}
+.home-footer:has(.activity-running)>.home-actions,.home-footer:has(.activity-running)>.home-speech{display:none}
+#birth-recovery .activity-running{justify-content:center}#birth-recovery .activity-note{max-width:540px;margin-left:auto;margin-right:auto;text-align:left}
+@keyframes activity-turn{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.activity-running::before{animation:none;border-style:dashed}}
 #evolution-dialog{width:min(850px,calc(100vw - 28px));max-width:calc(100vw - 28px);max-height:90dvh;padding:0;overflow:auto}
 #evolution-dialog>header,#evolution-dialog>footer{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.25rem}
 #evolution-dialog>header h2{margin:0;font-size:1.15rem}
