@@ -10,9 +10,48 @@ import unittest
 from test_anna import MemoryAPS, GameClient, evaluate, SAVE_KEY
 from executa_sdk import StorageError
 from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
+from storage_errors import precondition_failed
 
 
 class CreationTests(unittest.IsolatedAsyncioTestCase):
+    async def test_wrapped_http_conflict_reloads_winner_without_applying_losing_action(self):
+        class WrappedConflict(MemoryAPS):
+            async def set(self, key, value, *, scope, if_match):
+                try:
+                    return await super().set(key, value, scope=scope, if_match=if_match)
+                except StorageError as error:
+                    if error.code != STORAGE_ERR_PRECONDITION_FAILED:
+                        raise
+                    raise StorageError(-32603, 'storage.set HTTP 412: '
+                                       '{"detail":{"error":{"code":"precondition_failed",'
+                                       '"message":"if_match mismatch"}}}') from error
+
+        storage = WrappedConflict()
+        service = GameClient(storage)
+        await service.invoke({'command': 'start', 'request_id': 'birth'})
+        original = copy.deepcopy(storage.value)
+        storage.conflict_once = True
+        result = await service.invoke({'command': 'feed', 'request_id': 'losing-meal'})
+        self.assertFalse(result['ok'])
+        self.assertEqual(result['code'], 'request_expired')
+        self.assertEqual(storage.value['pet_id'], original['pet_id'])
+        self.assertEqual(storage.value.get('journey', {}).get('counts', {}).get('feed', 0), 0)
+        self.assertEqual(storage.value['daily']['attendance'], 1)
+        self.assertEqual(storage.writes, 1)
+
+    def test_only_structured_write_preconditions_are_recoverable(self):
+        self.assertTrue(precondition_failed(StorageError(STORAGE_ERR_PRECONDITION_FAILED, 'Conflict')))
+        for message in (
+            'storage.set HTTP 412: invalid JSON',
+            'storage.set HTTP 412: null',
+            'storage.set HTTP 412: {"detail":{"error":{"code":"quota_exceeded"}}}',
+            'storage.set HTTP 403: {"detail":{"error":{"code":"precondition_failed"}}}',
+            'storage.get HTTP 412: {"detail":{"error":{"code":"precondition_failed"}}}',
+            'Connection failed',
+        ):
+            with self.subTest(message=message):
+                self.assertFalse(precondition_failed(StorageError(-32603, message)))
+
     async def test_partner_committed_after_initial_read_is_preserved(self):
         # Two services have independent locks, just like two Anna agents.
         for same_request in (False, True):

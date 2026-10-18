@@ -8,14 +8,14 @@ import sys
 import threading
 
 from executa_sdk import StorageClient, StorageError, bind_invoke
-from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
+from storage_errors import precondition_failed
 from game_worker import ALLOWED
 from privacy import privacy, erased
 from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.9.4'
+VERSION = '0.9.5'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'
@@ -173,7 +173,7 @@ class GameService:
                             await self.storage.set(SAVE_KEY, pack(candidate), scope='tool',
                                                    if_match=saved.get('etag'))
                         except StorageError as exc:
-                            if exc.code == STORAGE_ERR_PRECONDITION_FAILED and attempt < 2:
+                            if precondition_failed(exc) and attempt < 2:
                                 continue
                             raise
                         committed = candidate
