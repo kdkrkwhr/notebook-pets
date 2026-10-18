@@ -149,7 +149,7 @@ export function createEvolution(h){
   $('#evolution-progress').replaceChildren();
   for(const r of e?.requirements||[]){const span=d.createElement('span');span.className=`badge${r.complete?' complete':''}`;span.textContent=`${r.complete?'✓ ':''}${t(r.key)} ${Math.min(r.current,r.target)} / ${r.target}`;$('#evolution-progress').append(span);}
   $('#evolution-status').textContent=message?t(message):e?.blocked?t('blocked'):!e?.next_stage?t('complete'):'';
-  activity.set(working?message==='drawing'?'image':message==='working'?'ai':message==='saving'?'save':'load':null,working&&output&&message==='saving'?undefined:$('#evolution-status').textContent||undefined);
+  activity.set(working&&dialog.open?message==='drawing'?'image':message==='working'?'ai':message==='saving'?'save':'load':null,working&&output&&message==='saving'?undefined:$('#evolution-status').textContent||undefined);
   const cards=$('#evolution-routes');cards.setAttribute('aria-label',t('title'));cards.replaceChildren();
   for(const id of p?.ids||[]){const route=e.catalog.find(r=>r.id===id);if(!route)continue;
    const prose=p.prose[id]?.language===lang()?p.prose[id]:null,card=d.createElement('button');card.type='button';card.className='evolution-route';card.dataset.route=id;card.setAttribute('role','radio');card.setAttribute('aria-checked',String(selected===id));card.disabled=working||!!pendingCommand;

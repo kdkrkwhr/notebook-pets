@@ -59,8 +59,15 @@ test('chat distinguishes waiting from save-only recovery without repeated AI',as
 test('birth image generation stays visible through a long response and stops after saving',async t=>{
  const p=await setup(t);await p.locator('#birth-mode').selectOption('art');await p.locator('#choose-art').click();
  const box=await p.locator('#art-canvas').boundingBox();await p.mouse.move(box.x+50,box.y+50);await p.mouse.down();await p.mouse.move(box.x+180,box.y+180,{steps:8});await p.mouse.up();await p.locator('#art-use').click();
- await p.clock.install();await fault(p,{imageDelay:120000});await p.locator('#pet-name').fill('Patient artist');await p.locator('#start-form button').click();
- await p.waitForFunction(()=>document.querySelector('#birth-recovery-status').dataset.activity==='image');assert(await p.locator('#birth-recovery').isVisible());await p.clock.fastForward(31000);assert.match(await p.locator('#birth-recovery-status-activity').innerText(),/longer than usual/);await screenshot(p,'birth-waiting');
+ await p.waitForFunction(()=>!document.querySelector('#art-dialog').open&&!document.querySelector('#birth-art-choice .art-source-preview').hidden);
+ await p.clock.install();await fault(p,{imageDelay:120000});await p.locator('#pet-name').fill('Patient artist');assert.equal(await p.locator('#pet-name').inputValue(),'Patient artist');await p.locator('#start-form button').click();
+ try{await p.waitForFunction(()=>document.querySelector('#birth-recovery-status').dataset.activity==='image');}
+ catch(error){
+  await screenshot(p,'birth-waiting-failure');
+  const diagnostic=await p.evaluate(()=>({status:document.querySelector('#birth-recovery-status').textContent,busy:document.querySelector('#refresh').disabled,editorOpen:document.querySelector('#art-dialog').open,nameLength:document.querySelector('#pet-name').value.length,calls:hostTest.calls.map(c=>c.method||c.args?.command)}));
+  throw Error(error.message+' '+JSON.stringify(diagnostic));
+ }
+ assert(await p.locator('#birth-recovery').isVisible());await p.clock.fastForward(31000);assert.match(await p.locator('#birth-recovery-status-activity').innerText(),/longer than usual/);await screenshot(p,'birth-waiting');
  await p.clock.fastForward(90000);await idle(p);assert(await p.locator('#birth-recovery').isHidden());assert(await p.locator('#birth-recovery-status-activity').isHidden());assert.equal(await p.evaluate(()=>hostTest.calls.filter(c=>c.method==='image').length),1);
 });
 

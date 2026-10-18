@@ -51,6 +51,6 @@ export function createStoryDialog(h){
   battle(){mode='battle';message='';render(last);},
   battleFinished(){mode='battleDone';render(last);},
   begin(){mode='story';render(last);},
-  clear(){mode='result';message='';last={current:null,working:false,feedback:''};dialog.close();$('#story-resume').hidden=true;}
+  clear(){activity.clear();mode='result';message='';last={current:null,working:false,feedback:''};dialog.close();$('#story-resume').hidden=true;}
  };
 }
