@@ -1,3 +1,15 @@
+# Web 0.6.0 shared home, garden and care integration - 2026-10-18
+
+The user requested all current changes on the web. Merged Anna release **3fec4e9** into `release-web` through Git (**bab2f73**), then shipped web adapter **25eede1** as **0.6.0** to https://kdkrkwhr.github.io/notebook-pets/. Anna test app **1.4.10 / working revision 79 / owner 0.0.0-draft**, tool **0.9.3 / Executa 772**, and review **1.4.10 / ID 1442 / pending_review** remain unchanged. No Anna publish, review update or paid AI calls.
+
+- Empty initial yard, indoor 12 / garden 36 objects, Shop / My collection, storage count, desktop split / mobile stacked home, secondary controls and hover/touch help. First-home explicit image-or-free-default choice replaces automatic birth/portrait image generation. Gemini and ComfyUI retain browser-local reference-image transport through a shared generator hook; Anna keeps its existing default transport.
+- Added the care AI toggle, optional reactions, saved shared walk stories and delayed dungeon discovery cards. OFF preserves game actions/rewards and authored stories; direct chat remains explicit AI. The core owns choices and rewards. IndexedDB/backup now preserve the latest story; invalid story backups are rejected. Existing epoch/CAS and late-response guards remain.
+- Local shared JS **92**, web core/persistence/reset, world/image/recovery/backup, local AI **6** plus browser, current home/care/story integration, and all **7** themes passed. Pages **39090052557** build/deploy and common CI **39090052561** (Windows/Linux regressions, stdio and Pyodide) succeeded. Live `web-current.mjs` and `web-world.mjs` passed against the public URL, including no automatic images, save-only recovery, bounded AI stories, discovery order, backup/import and stale reset protection. No page errors. Twelve live source files match the build after newline normalization; actual version is 0.6.0. Orca's existing web save hash is unchanged after reload.
+- Installed Anna read-only proof: Connected, app.js/home.mjs/home.css/home-scene.mjs match the previously deployed hashes, cloud 0.9.3 loaded/running, working draft dirty_vs_latest_cut=false, description and six screenshots match. PC remains offline/unverified. No installed Anna or listing mutation.
+- Updated web README, local AI guide, release notes and isolated desktop/mobile/dungeon screenshots. Remaining platform differences: web imports finished portraits; Anna's reference analysis/AI birth is not ported. Chat/care messages remain tab-local. Actual paid-provider image quality was not retested. Details: `web/RELEASE_060.md`.
+
+---
+
 # 1.4.10 review candidate, description and screenshots - 2026-10-18
 
 The user explicitly requested the latest review candidate with updated description and screenshots. Review is now **1.4.10 / ID 1442 / pending_review**, frozen **tool 0.9.3 / Executa 772 / master ID 1193**. Working revision **79**, unchanged executable bundle, owner installed draft **0.0.0-draft**. Listing/capture source **d1d1237**, UI source **c96d7a2**, test-fixture correction **507e59c**. No public release or web deployment.

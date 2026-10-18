@@ -6,14 +6,28 @@
 
 | 항목 | 값 |
 | --- | --- |
-| Anna 테스트 앱 | **1.4.11 / working revision 80 / 소유자 초안 0.0.0-draft** |
-| 심사 | **1.4.10 / ID 1442 / pending_review**, 명시 요청 전 변경 금지 |
+| Anna 테스트 앱 | **1.4.11 / working revision 81 / 소유자 초안 0.0.0-draft** |
+| 심사 | **1.4.11 / ID 1443 / pending_review**, 명시 요청 전 변경 금지 |
 | 게임 도구 | **0.9.4 / Executa 773**, 실제 클라우드 loaded/running |
 | 검증 | Python 230 · JS 92 · 저장/프로토콜 71 · 브라우저 및 공개 웹 재검증 |
-| 공개 웹 | **0.7.0 / 6e208cd**, Pages CI **39104707533** 성공 |
+| 공개 웹 | **0.7.0 / ee6a4b5**, Pages CI **39106404258** 성공 |
 | Limits | Paid-provider likeness not tested; physical PC runner not verified |
 
 최신 작업 2건만 유지하며 이전 기록은 내용 변경 없이 이력 맨 위로 옮긴다.
+
+---
+
+# 1.4.11 evolution label, review introduction and owner screenshots - 2026-10-18
+
+At the owner's fresh explicit request, review is now **1.4.11 / ID 1443 / pending_review**, replacing 1.4.10 / 1442. Owner test app **1.4.11 / working revision 81 / installed 0.0.0-draft**; frozen and running cloud game tool **0.9.4 / Executa version 773 / master 1193**. UI source **e0844c2**, listing/docs **b313d7b**, shared web source **ee6a4b5**, web **0.7.0**. No public Anna release or paid AI calls.
+
+- Shortened the evolution entry to **진화 / Evolve** in both prerequisite states. No evolution-rule or tool-binary changes; no version bump for the copy adjustment.
+- The user supplied actual Korean and English evolution screenshots, then selected English for review. Added the English capture at listing position 2; retained care, empty garden, garden shop, drawing and dungeon, replacing the item-book slot within Anna's six-image limit. Both supplied PNGs are preserved unedited in Git. The English shot shows built-in English route descriptions, while the Korean shot shows saved personalized prose. Other listing images retain their isolated-demo provenance.
+- Updated store tagline/description and Korean/English READMEs for level/activity requirements, three choices informed by care/adventures/chat, element and appearance changes, one vision/text suggestion request and an optional single text-to-image portrait. Documented free picture-preserving evolution and save-only recovery; no claim that Anna's image-edit service was fixed.
+- Strict validation and four focused evolution browser tests passed. Windows/Linux Anna CI **39106067679** and shared CI **39106067743** passed. Installed evolution source hash and visible Evolve label match; cloud 0.9.4 loaded/running. All listing text fields match local metadata and all six CDN images decode, including the 1100 x 784 English evolution shot.
+- First UI push was rejected for platform-normalized tool storage declaration drift. Restored the exact already-tested 0.9.4 manifest and pushed successfully, without publishing new tool binaries. Working content hash **5b9cc7c245df26ba29a01239215c44be4f14196b1857985f892b71e089303d50**. Cut bundle **1340 / 171 files / 171330654 bytes**, manifest hash **38edb72fa2d36dc79b2a2555b70ed450f46841260f5e3324ad2fa91e7ef26560**. Fresh platform reads confirmed candidate 1.4.11 and pending_review after submission.
+- Shared code/docs merged through Git into release-web. Pages **39106404258** and shared CI **39106404298** passed. Public-site evolution passed in an isolated browser with mocked providers: two stages, one vision and one text-only portrait/job per stage, no home images, chat restored, valid backup. Both live button labels verified and the existing Orca web save hash stayed unchanged.
+- Limits: actual paid-provider image quality was not retested; physical PC runner remains unverified. Future review updates still require a fresh explicit request. Evidence: releases/RELEASE_1411.md and reviews/REVIEW_1411.md.
 
 ---
 
@@ -29,15 +43,3 @@ Anna source **c3bd9ef** (core/package source **95a0874**), owner test app **1.4.
 - Deployment required explicit `executa publish --profile binary`: app push updated registry metadata but retained old binary URLs. Published both tested archives, restored exact protocol `manifest_cache` storage declaration after platform normalization, and reinstalled the cloud runner. Both CDN archive hashes match the CI artifacts. Installed app.js/evolution.mjs/model.mjs/pixel-pet.mjs/home-sprite.mjs/ui-polish.css hashes match source. Actual UI Connected, no notice, evolution dialog and core prerequisites verified without game mutations. Game inspection ETag and art/chat/story/personality values/ETags are unchanged. Existing Orca web save hash is unchanged after loading 0.7.0.
 - Working bundle **171 files / 171330699 bytes**, content hash **c29124eaed8ed193f818cb9375c23e9603fd2252cbdb0ddbae4c9c84960234c7**. Executa content hash **539a7c1a4c9623e5a56484bc8b47f98822d3f9ef56f234042a4d7ae47f748216**. Windows package **9520632 bytes**, Linux **18901216 bytes**.
 - Limits: actual paid-provider portrait likeness was not retested; prompts preserve anatomy but generative output can vary. PC agent has no loaded/running tool, so physical Windows-host execution remains unverified; the Windows CI binary was tested and uploaded. Web imports finished birth portraits; Anna-style AI birth remains a separate platform feature.
-
----
-
-# Web 0.6.0 shared home, garden and care integration - 2026-10-18
-
-The user requested all current changes on the web. Merged Anna release **3fec4e9** into `release-web` through Git (**bab2f73**), then shipped web adapter **25eede1** as **0.6.0** to https://kdkrkwhr.github.io/notebook-pets/. Anna test app **1.4.10 / working revision 79 / owner 0.0.0-draft**, tool **0.9.3 / Executa 772**, and review **1.4.10 / ID 1442 / pending_review** remain unchanged. No Anna publish, review update or paid AI calls.
-
-- Empty initial yard, indoor 12 / garden 36 objects, Shop / My collection, storage count, desktop split / mobile stacked home, secondary controls and hover/touch help. First-home explicit image-or-free-default choice replaces automatic birth/portrait image generation. Gemini and ComfyUI retain browser-local reference-image transport through a shared generator hook; Anna keeps its existing default transport.
-- Added the care AI toggle, optional reactions, saved shared walk stories and delayed dungeon discovery cards. OFF preserves game actions/rewards and authored stories; direct chat remains explicit AI. The core owns choices and rewards. IndexedDB/backup now preserve the latest story; invalid story backups are rejected. Existing epoch/CAS and late-response guards remain.
-- Local shared JS **92**, web core/persistence/reset, world/image/recovery/backup, local AI **6** plus browser, current home/care/story integration, and all **7** themes passed. Pages **39090052557** build/deploy and common CI **39090052561** (Windows/Linux regressions, stdio and Pyodide) succeeded. Live `web-current.mjs` and `web-world.mjs` passed against the public URL, including no automatic images, save-only recovery, bounded AI stories, discovery order, backup/import and stale reset protection. No page errors. Twelve live source files match the build after newline normalization; actual version is 0.6.0. Orca's existing web save hash is unchanged after reload.
-- Installed Anna read-only proof: Connected, app.js/home.mjs/home.css/home-scene.mjs match the previously deployed hashes, cloud 0.9.3 loaded/running, working draft dirty_vs_latest_cut=false, description and six screenshots match. PC remains offline/unverified. No installed Anna or listing mutation.
-- Updated web README, local AI guide, release notes and isolated desktop/mobile/dungeon screenshots. Remaining platform differences: web imports finished portraits; Anna's reference analysis/AI birth is not ported. Chat/care messages remain tab-local. Actual paid-provider image quality was not retested. Details: `web/RELEASE_060.md`.
