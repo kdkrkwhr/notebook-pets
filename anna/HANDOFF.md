@@ -6,10 +6,10 @@
 
 | 항목 | 값 |
 | --- | --- |
-| Anna 테스트 앱 | **1.4.12 / working revision 86 / 소유자 초안 0.0.0-draft** |
+| Anna 테스트 앱 | **1.4.12 / working revision 87 / 소유자 초안 0.0.0-draft** |
 | 심사 | **1.4.12 / ID 1445 / pending_review**, 명시 요청 전 변경 금지 |
 | 게임 도구 | **0.9.5 / Executa 774**, 실제 클라우드 loaded/running |
-| 검증 | Python 230 · JS 92 · 브라우저 129 · 저장/프로토콜 73 · 격리 APS 시나리오 14 |
+| 검증 | Python 230 · JS 92 · 브라우저 130 · 저장/프로토콜 73 · 격리 APS 시나리오 14 |
 | 공개 웹 | **0.7.0 / ee6a4b5**, Pages CI **39106404258** 성공 |
 | Limits | Owner scope: one device per account; fresh AI quality / physical PC runner not tested |
 
@@ -19,11 +19,13 @@
 
 # Anna home image-link recovery — 2026-10-18
 
-UI-only fix; app version stays **1.4.12**, tool stays **0.9.5**. Deployment pending validation. Review **1.4.12 / ID 1445** and shared listing must remain unchanged; web excluded.
+UI-only source **76449c3**, app **1.4.12 / working revision 87 / installed 0.0.0-draft**, actual cloud tool **0.9.5 / Executa 774 / master 1193 loaded/running**. Review **1.4.12 / ID 1445** and shared listing must remain unchanged; web excluded.
 
 - Reproduced owner home with `data-sprite=missing`, failed fetch and hidden missing-image guidance. The same saved 1024x1024 / 1682284-byte personal sheet downloaded through a fresh signed link and decoded into all 16 frames. No generation or owner data mutation.
 - Renew the current saved home appearance download URL on each home entry, with a companion/stage/path guard. Decoded renderer state controls missing-image guidance, replacing the incorrect assumption that a URL means a visible character. No AI, automatic generation, storage write or fallback appearance replacement.
-- Regression test fails before the fix (`missing` instead of `ready`), then passes: expired link on entry, fresh link recovery, real fetch failure with visible guidance, subsequent reopen recovery and zero AI requests. Local home/renderer browser **11**, JS **92** and strict validation passed. Full browser verification and installed proof pending.
+- Regression test fails before the fix (`missing` instead of `ready`), then passes: expired link on entry, fresh link recovery, real fetch failure with visible guidance, subsequent reopen recovery and zero AI requests. Local home/renderer browser **11**, JS **92** and strict validation passed. Installed source hashes for all three changed modules match. Actual home reports **directional / ready**, with the existing hydra visible at the doorstep; observed **847** sprite draws, **383** positions and **9** frames. Owner game ETag and artwork/chat/story/personality values/ETags are unchanged, as are the complete frozen review row and shared listing. Additional paid AI calls: **0**. Full local browser verification **130/130** passed (352 seconds).
+
+- Working bundle **172 files / 171337956 bytes**, content hash **ed08fca4c863f5666ebc971529e3f842178ab678d9b39885bf1db96ac589f6dc**. Private proof captures: `.local/home-url-canvas.png`, `.local/home-url-installed.png`. Reopen the whole installed app to load the new UI; no portrait regeneration is needed. Review replacement still requires a fresh explicit request. CI **39116562365** passed on **Windows and Linux**: **130 browser / 92 JS / 73 storage-protocol**, strict validation and standalone executable build/smoke. Shared CI **39116562380** also passed all three jobs.
 
 ---
 
