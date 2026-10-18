@@ -8,3 +8,5 @@
 - Shared save schema 5 and Executa 0.9.4. Old schema 2–4 saves migrate without automatic evolution or invented care history. Read-only inspection does not persist migration.
 
 Validation and deployment results are recorded in [HANDOFF.md](../HANDOFF.md). This update targets the owner test app and shared web; review 1.4.10 / 1442 and listing assets remain frozen pending explicit authorization. No paid AI requests are used by the automated validation; actual provider likeness remains variable.
+
+Deployed: Anna **1.4.11 / working revision 80**, actual cloud Executa **0.9.4 / version 773**, UI **c3bd9ef**, packaged core **95a0874**. Web **0.7.0 / 6e208cd** is live. Both OS binary hashes and six installed UI source hashes match; existing game/art/chat/story/personality records are unchanged. Windows/Linux package CI **39104044964** and Pages **39104707533** passed. The physical PC runner remains unverified; the cloud runner is loaded/running.
