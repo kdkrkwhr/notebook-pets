@@ -24,3 +24,10 @@ Source **7037da7**, owner test app **1.4.10 / working revision 78 / installed 0.
 | --- | --- |
 | linux x86_64 | `06fa381d3c44f1301644a7f9bb87ab66c8f1d9fa1cdcc82ebf9b7af1fb7437b0` |
 | windows x86_64 | `ec05aeeb42e3ef0023ad35e02c58863fa616c35e21e7d55c7ac62f1fc24207e5` |
+
+
+## Home interaction refinement (owner test revision 79)
+
+Source c96d7a2. Landscape-first desktop split pane and mobile stacked shop; Shop/My collection tabs and collection empty state; stored-item summary next to Decorate. Secondary view controls, undo and show-finished are tucked into menus. AI usage details are collapsed. Escape closes browsing before closing home, with focus restored. No gameplay, tool version, data migration or paid AI changes.
+
+Validated 92 JS tests, six real-core home browser scenarios, strict schema validation, and installed source/DOM checks. Owner test 1.4.10/revision 79, cloud tool 0.9.3 loaded/running. Review 1.4.9, descriptions and screenshots unchanged. Game inspection and four app KV records identical before/after. CI 39085768334 / 39085768337 in progress when deployed.
