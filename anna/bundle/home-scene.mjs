@@ -44,12 +44,6 @@ function makeTerrain(scene){
       const n=noise(x,y,5);if(n>.5)rect(c,'#cba855',x+Math.floor(n*6),y+3,2,1);if(n<.3)rect(c,'#edcb7b',x+2,y+5,3,1);
     }
     for(let y=224;y<448;y+=32){rect(c,'#a58c5f',308,y,23,9);rect(c,'#c9bd8e',309,y-2,21,8);line(c,'#e4d7a5',310,y-2,17);}
-    // Small wildflower clusters are ground details; tall plants are separate sprites.
-    for(let i=0;i<16;i++){
-      const x=Math.floor(noise(i,4,8)*560)+40,y=Math.floor(noise(i,9,9)*310)+120;
-      if(dirt(x,y)||x>224&&x<416&&y<224)continue;
-      rect(c,'#55772f',x,y,1,3);rect(c,i%3?'#f2dfa1':'#e5ac9a',x-1,y-1,3,2);rect(c,'#efd272',x,y-1,1,1);
-    }
     for(let x=48;x<600;x+=16){fence(c,x,104);if(x<288||x>344)fence(c,x,448);}
     for(let y=120;y<448;y+=16){post(c,48,y);post(c,592,y);line(c,'#866235',50,y-4,2,16);line(c,'#866235',594,y-4,2,16);}
   }else{

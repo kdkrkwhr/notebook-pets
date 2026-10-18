@@ -5,9 +5,6 @@ import copy
 
 YARD_OBJECTS = [
     dict(kind='house', x=320, y=208, w=160, block=[240,134,160,58]),
-    *[dict(kind='tree', x=x, y=y, w=76, block=[x-7,y-13,14,13])
-      for x,y in [(72,128),(568,328)]],
-    *[dict(kind='plant', x=x, y=216, w=24, block=[x-7,206,14,10]) for x in [256,384]],
 ]
 
 def yard_free(x,y,objects=YARD_OBJECTS):
