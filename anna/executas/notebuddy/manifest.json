@@ -1,7 +1,7 @@
 {
   "name": "tool-dev-notebuddy",
   "display_name": "Notebuddy Game",
-  "version": "0.9.3",
+  "version": "0.9.4",
   "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
   "host_capabilities": [
     "aps.kv"
@@ -19,6 +19,12 @@
       "description": "Read or care for your pet. Never choose a user or provide game state. Read status first. For a new action append a unique suffix to request_id_prefix from the latest response. Reuse the entire request_id on retries. Never restamp an expired request automatically.",
       "timeout": 60,
       "parameters": [
+        {
+          "name": "evolution_payload",
+          "type": "string",
+          "required": false,
+          "description": "Explicit user evolution only. JSON <=4096 chars with current pet_id. evolution_prepare adds current stage to reserve three routes once; evolution_options adds choice_id, three allowed options (keep first), language, memory <=600 chars and observed appearance features <=1200 chars; evolve adds choice_id and the exact route_id the user selected. Never evolve automatically or invent elements/stats. Read status.evolution first."
+        },
         {
           "name": "home_payload",
           "type": "string",
@@ -42,6 +48,9 @@
             "claimquest",
             "dungeon_risk",
             "dungeon_safe",
+            "evolution_options",
+            "evolution_prepare",
+            "evolve",
             "explore_clockworkcity",
             "explore_dreamforest",
             "explore_hellgate",

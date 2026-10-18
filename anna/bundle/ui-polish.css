@@ -30,3 +30,23 @@ button.explanation-help:active:not(:disabled),button.care-ai-help-button:active:
 
 .pixel-companion>div:last-child{min-width:0}.pixel-companion button{max-width:100%;white-space:normal}
 @media(max-width:480px){.pixel-companion{display:grid;grid-template-columns:56px minmax(0,1fr);gap:12px;padding:12px}.pixel-preview{width:56px;height:56px}.pixel-preview img{width:50px;height:50px}.pixel-companion p{font-size:11px;line-height:1.7}.pixel-companion button{padding:8px 10px;font-size:11px}}
+/* Evolution stays beside growth progress; details live in a focused dialog. */
+.evolution-open{margin:.5rem 0;width:100%}
+#evolution-dialog{width:min(850px,calc(100vw - 28px));max-width:calc(100vw - 28px);max-height:90dvh;padding:0;overflow:auto}
+#evolution-dialog>header,#evolution-dialog>footer{display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 1.25rem}
+#evolution-dialog>header h2{margin:0;font-size:1.15rem}
+#evolution-dialog>footer{justify-content:flex-end;flex-wrap:wrap}
+.evolution-body{padding:0 1.25rem 1rem}
+#evolution-progress{display:flex;flex-wrap:wrap;gap:.5rem}
+#evolution-progress .complete{border-color:var(--accent,#759267)}
+#evolution-routes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;margin:1rem 0}
+.evolution-route{display:flex;flex-direction:column;text-align:left;gap:.65rem;padding:1rem;white-space:normal;overflow-wrap:anywhere}
+.evolution-route p{margin:0;font-size:.85rem;line-height:1.6}
+.evolution-route small{font-size:.78rem}
+.evolution-route[aria-checked=true]{outline:3px solid var(--accent,#759267);outline-offset:-3px}
+#evolution-image-label{display:flex;gap:.5rem;align-items:center;font-size:.85rem}
+#evolution-image{width:auto;flex:0 0 auto;margin:0}
+#evolution-image-label[hidden]{display:none}
+.evolution-help{margin-top:1rem;font-size:.8rem;color:var(--muted,#8b9a97)}
+.evolution-help p{line-height:1.7}
+@media(max-width:600px){#evolution-routes{grid-template-columns:1fr}.evolution-route{gap:.3rem;padding:.8rem}#evolution-dialog>header,#evolution-dialog>footer,.evolution-body{padding:1rem}}

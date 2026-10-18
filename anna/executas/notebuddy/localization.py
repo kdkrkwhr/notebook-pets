@@ -3,6 +3,7 @@ import copy
 import re
 
 LABELS = {
+    '나만의 완전체':'My own final form',
     '포유류족': 'Mammal', '조류족': 'Bird', '파충류족': 'Reptile', '기계족': 'Machine',
     '요정족': 'Fairy', '괴수족': 'Beast', '용족': 'Dragon', '식물족': 'Plant', '유령족': 'Ghost',
     '불': 'Fire', '물': 'Water', '번개': 'Thunder', '자연': 'Nature', '바람': 'Wind',
@@ -14,6 +15,10 @@ LABELS = {
     '밥 주기': 'Feed', '훈련': 'Train', '산책': 'Walk',
 }
 ERRORS = {
+    'evolution_unready':('Complete every evolution requirement first.','진화 조건을 모두 채워 주세요.'),
+    'evolution_busy':('Finish the current walk or exploration choice first.','진행 중인 산책이나 탐험 선택을 먼저 마쳐 주세요.'),
+    'evolution_changed':('Your evolution choice changed. Refresh and check again.','진화 선택이 바뀌었어요. 새로고침해 확인해 주세요.'),
+    'invalid_evolution':('Choose one of the three offered evolution paths.','표시된 세 가지 진화 방향 중에서 골라 주세요.'),
     'home_conflict':('The room changed. Refresh and request again.','방이 바뀌었어요. 확인 후 다시 요청해 주세요.'),
     'home_owned':('You already own this furniture.','이미 가지고 있는 가구예요.'),
     'home_coins':('Not enough coins. Earn more through adventures.','코인이 부족해요. 모험에서 코인을 모아 주세요.'),
@@ -79,6 +84,8 @@ def _message(value, command, language):
         return '행동을 완료하지 못했어요. 상태를 새로고침하고 다시 확인해 주세요.' if index else 'Could not complete this action. Refresh your status and check again.'
     if command == 'personality':
         return '친구의 성격을 기억했어요.' if index else 'Your companion’s personality is saved.'
+    if command in ('evolution_prepare','evolution_options','evolve'):
+        return value['msg'] if index else ('Your companion evolved along your chosen path!' if command=='evolve' else 'Your three evolution paths are saved.')
     if command == 'start':
         # Never translate names or use a locale-dependent name in saved command arguments.
         name = (value.get('status') or {}).get('name', '')
@@ -123,6 +130,9 @@ def localize(response, command, language='en'):
     if language == 'en':
         def visit(item):
             if isinstance(item, dict):
+                if 'next_stage' in item and 'catalog' in item:
+                    for route in item['catalog']:
+                        for field in ('title','appearance'):route[field]={'en':route[field]['en']}
                 for key, child in item.items():
                     if key in {'species', 'element', 'stage_label', 'label', 'title', 'mood'} and isinstance(child, str):
                         item[key] = LABELS.get(child, child)

@@ -45,6 +45,18 @@ personal = worker({'command':'personality','profile':json.dumps(profile),
 assert personal['view']['status']['personality']['origin'] == profile
 assert personal['state']['xp'] == cared['state']['xp']
 
+# The same manual evolution rules must be present in both OS binaries.
+growth_state=json.loads(json.dumps(personal['state']))
+growth_state['level']=10
+growth_state['journey']['counts'].update(feed=10,walk=3)
+prepared=worker({'command':'evolution_prepare','state':growth_state,
+    'evolution_payload':json.dumps({'pet_id':growth_state['pet_id'],'stage':1}),'request_id':'build-prepare'})
+token=prepared['state']['evolution']['pending']['id']
+evolved=worker({'command':'evolve','state':prepared['state'],
+    'evolution_payload':json.dumps({'pet_id':growth_state['pet_id'],'choice_id':token,'route_id':'keep'}),'request_id':'build-evolve'})
+assert evolved['state']['stage']==2 and evolved['state']['pet_id']==growth_state['pet_id']
+assert evolved['state']['stats']==growth_state['stats']
+
 # Exercise the copied collectibles module in the actual standalone worker.
 from datetime import datetime, timedelta, timezone
 import time

@@ -140,13 +140,13 @@ def execute(actor_id, command, arguments=(), *, request_id=None):
         elif command in dungeons.CHOICES | {'walk_collect', 'walk_leave'}:
             if len(arguments) != 1 or re.fullmatch('[a-f0-9]{32}', arguments[0]) is None:
                 raise core.GameError('invalid_arguments', 'A current choice_id is required.')
-        elif command == 'personality':
+        elif command in ('personality','evolution_prepare','evolution_options','evolve'):
             if len(arguments) != 1 or len(arguments[0]) > 4096:
                 raise core.GameError('invalid_arguments', 'A bounded personality profile is required.')
         elif command != 'start' and arguments:
             raise core.GameError('invalid_arguments', '이 명령에는 추가 인자가 필요하지 않습니다.')
         name = ' '.join(arguments[1:] if command in {'owner', 'reset'} else arguments)
-        if command != 'personality' and (len(name) > 80 or any((ord(ch) < 32 for ch in name))):
+        if command not in ('personality','evolution_prepare','evolution_options','evolve') and (len(name) > 80 or any((ord(ch) < 32 for ch in name))):
             raise core.GameError('invalid_arguments', '이름은 제어문자 없이 80자 이내로 입력해 주세요.')
         with core.store_lock(core.STATE_DIR), core.game_clock():
             if command == 'owner':

@@ -9,10 +9,15 @@ export function unwrap(value) {
   if(!result || typeof result.ok!=='boolean') throw new Error('Invalid game response');
   return result;
 }
-export function starter(view){return `assets/starters-v1/${view.species_key}_${view.element_key}_stage1.png`;}
+export function starter(view){return `assets/starters-v1/${view.species_key}_${view.status?.evolution?.records?.[0]?.from_element||view.element_key}_stage1.png`;}
+export function portraitEntry(view,art){for(let stage=view.stage;stage>=1;stage--){const entry=art?.[imageKey(view,stage)];if(entry?.path)return entry;}return null;}
 export function imageKey(view, stage=view.stage){return `${view.pet_id}/stage-${stage}`;}
-export function normalHistory(value){return Array.isArray(value)?value.filter(x=>['user','assistant'].includes(x?.role)&&typeof x.text==='string').slice(-24).map(x=>({...x,text:x.text.slice(0,3000)})):[];}
-export function mergeHistory(existing, additional){return [...new Map([...normalHistory(existing),...normalHistory(additional)].map(x=>[x.id||`${x.role}:${x.text}`,x])).values()].sort((a,b)=>(a.at||0)-(b.at||0)).slice(-24);}
+export function normalHistory(value){
+ const items=Array.isArray(value)?value.filter(x=>['user','assistant'].includes(x?.role)&&typeof x.text==='string').slice(-64).map(x=>({...x,text:x.text.slice(0,3000)})):[];
+ while(items.length&&new TextEncoder().encode(JSON.stringify(items)).length>40000)items.shift();
+ return items;
+}
+export function mergeHistory(existing, additional){return normalHistory([...new Map([...normalHistory(existing),...normalHistory(additional)].map(x=>[x.id||`${x.role}:${x.text}`,x])).values()].sort((a,b)=>(a.at||0)-(b.at||0)));}
 export function errorText(error,language='en'){
   const code=error?.details?.jsonrpc_code ?? error?.code;
   if([-32024,-32025].includes(Number(code))) return t(language,'saveQuotaError');

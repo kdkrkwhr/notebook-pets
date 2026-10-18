@@ -109,11 +109,12 @@ class QuestTests(unittest.TestCase):
             self.assertEqual(engine.execute('123','claimquest')['code'],'quest_incomplete')
             self.assertEqual(engine.load_state('123')['inventory']['rare_feed'],1)
 
-    def test_reward_can_evolve_and_respects_sleep_bonus_and_level_cap(self):
+    def test_reward_levels_without_evolution_and_respects_bonus_and_cap(self):
         self.completed(level=9,xp=70,sleep_bonus_dates=[engine.today()])
         result=engine.execute('123','claimquest')
         self.assertEqual(result['xp_result']['gained'],36)
-        self.assertEqual(result['xp_result']['image']['stage'],2)
+        self.assertNotIn('image',result['xp_result'])
+        self.assertEqual(engine.load_state('123')['stage'],1)
         self.assertEqual(engine.load_state('123')['xp'],6)
         self.completed(level=100,stage=4)
         result=engine.execute('123','claimquest')

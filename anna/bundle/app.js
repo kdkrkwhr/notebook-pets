@@ -9,6 +9,8 @@ import {createTitleScreen} from './title-screen.mjs';
 import {createBirthSteps} from './birth-steps.mjs';
 import {createPersonality,axes as personalityAxes} from './personality.mjs';
 import {checkArtwork} from './birth-art.mjs';
+import {createEvolution} from './evolution.mjs';
+let evolution;
 let persona,personalityFeedback='',personalityWorking=false;
 import {createStoryDialog} from './walk-story-dialog.mjs';
 import {createWalkStories,storyEvent} from './walk-stories.mjs';
@@ -70,7 +72,7 @@ function controls(value){
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
   if(!value&&anna&&!pendingRemoval&&!pendingAction&&!pendingResetRequest&&!view?.reset_pending&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
-  birth?.render();stories?.render();dungeons?.render();renderPersonality();
+  birth?.render();stories?.render();dungeons?.render();renderPersonality();evolution?.render();
 }
 function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
@@ -84,7 +86,7 @@ function drawChat(){
   const transcript=mergeHistory(history,reactions?.messages()||[]);
   $('#retry-reaction').hidden=!reactions?.hasUnsaved();
   if(!transcript.length){const p=document.createElement('p');p.className='message';p.textContent=tr('chatEmpty');container.append(p);}
-  for(const item of transcript){
+  for(const item of transcript.slice(-24)){
     const p=document.createElement('div');p.className=`message ${item.role}${item.kind==='activity'?' activity':''}`;
     const label=document.createElement('div');label.className='message-label';
     label.textContent=item.role==='user'?tr('you'):view?.status?.name||tr('friend');
@@ -101,7 +103,7 @@ function homeSpriteUrl(){
  if(!view?.status)return null;
  const entry=currentHomeAppearance(view,art);
  if(entry?.format==='home-sprite-v1'&&urls[homeSpriteKey(view)])return urls[homeSpriteKey(view)];
- return {kind:'default',url:entry&&urls[homeSpriteKey(view)]||pixelUrl()||urls[imageKey(view)]||starter(view)};
+ return {kind:'default',url:entry&&urls[homeSpriteKey(view)]||pixelUrl()||urls[imageKey(view)]||previousPortrait(view)};
 }
 let walkSnapshot=null,walkSnapshotAt=0;
 function renderWalkEnergy(){
@@ -136,7 +138,7 @@ function render(){
   text('#stats',tr('stats',{...s.stats,...s.record,draw:s.record.draw||0}));
   text('#inventory',tr('inventory',{food:view.inventory.normal_feed,rare:view.inventory.rare_feed}));
   $('#setup-birth').hidden=view.stage!==1||!!art[`${view.pet_id}/birth-source`]||!!art[imageKey(view,1)];
-  const image=urls[imageKey(view)];picture($('#pet-image'),image||starter(view),starter(view));
+  const image=urls[imageKey(view)];picture($('#pet-image'),image||previousPortrait(view),starter(view));
   $('#pet-image').alt=`${s.name}, ${s.species} ${s.element} ${s.stage_label}`;
   text('#image-caption',tr(image?'portrait':view.stage>1?'oldPortrait':'firstPortrait'));
   const q=s.quest;text('#quest-date',q.date);$('#quests').replaceChildren();
@@ -154,13 +156,14 @@ function render(){
     const frame=document.createElement('div');frame.className='album-image';
     if(entry.reached){const img=document.createElement('img');img.alt=entry.label;picture(img,urls[imageKey(view,entry.stage)]||starter(view),starter(view));frame.append(img);}else frame.textContent='?';
     const title=document.createElement('div');title.textContent=entry.label;
-    const subtitle=document.createElement('small');subtitle.textContent=entry.reached?tr(entry.current?'currentStage':'memoryStage'):tr('futureStage',{level:entry.min_level});
+    const subtitle=document.createElement('small');subtitle.textContent=entry.reached?tr(entry.current?'currentStage':'memoryStage'):(language==='ko'?`Lv.${entry.min_level} + 활동 조건`:`Lv.${entry.min_level} + activities`);
     item.append(frame,title,subtitle);$('#album').append(item);
   }
   $('#collection-album').replaceChildren(...[...$('#album').children].map(item=>item.cloneNode(true)));
-  drawChat();birth?.render();stories?.render();dungeons?.render();renderPersonality();
+  drawChat();birth?.render();stories?.render();dungeons?.render();renderPersonality();evolution?.render();
 }
 function forgetCachedData(){
+  evolution?.clear();
   homeUI?.clear();homeSprites?.clear();
   itemCatalog.clear();
   persona?.clear();
@@ -494,6 +497,9 @@ persona=createPersonality({anna:()=>anna,active:assertActive,
  commit:async(snapshot,profile)=>{const {command,...args}=newAction(snapshot,'personality',{profile});return invoke(command,args);}
 });
 
+evolution=createEvolution({document,language:()=>language,view:()=>view,art:()=>art,anna:()=>anna,
+ active:assertActive,invoke,saved:next=>{adoptView(next);render();},controls,upload:uploadPortrait,
+ locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),reload:async()=>{await readExtras();render();}});
 translate();
 homeSprites=createHomeSprite({anna:()=>anna,active:assertActive,upload:uploadPortrait,failed:value=>{art=value;},saved:async value=>{art=value;await readExtras();render();}});
 homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertActive,invoke,

@@ -32,7 +32,7 @@ def pet_identity(st):
 def image_key(species, element, stage, branch=None):
     if species not in TEMPLATE["species"] or element not in TEMPLATE["elements"] or type(stage) is not int or stage not in range(1, 5):
         raise GameError("invalid_image_request", "이미지 종족·속성·단계를 확인해 주세요.")
-    if (stage == 4 and branch not in TEMPLATE["branches"]) or (stage != 4 and branch is not None):
+    if (stage == 4 and branch is not None and branch not in TEMPLATE["branches"]) or (stage != 4 and branch is not None):
         raise GameError("invalid_image_request", "진화 분기를 확인해 주세요.")
     return f"{species}_{element}_stage{stage}" + (f"_{branch}" if branch else "")
 
@@ -40,7 +40,8 @@ def image_key(species, element, stage, branch=None):
 def describe(st):
     stage = st["stage"]
     # Some historical stage-four saves did not include a branch.
-    branch = (st.get("evolution_branch") or "dark") if stage == 4 else None
+    personal = any(r['stage']==4 for r in st.get('evolution',{}).get('records',[]))
+    branch = (st.get("evolution_branch") or (None if personal else "dark")) if stage == 4 else None
     return {"user_id": validate_user_id(st["user_id"]), "pet_id": pet_identity(st),
             "species": st["species"], "element": st["element"], "stage": stage, "branch": branch,
             "key": image_key(st["species"], st["element"], stage, branch), "revision": TEMPLATE["revision"]}

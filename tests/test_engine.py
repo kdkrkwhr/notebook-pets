@@ -10,7 +10,7 @@ import engine  # noqa: E402
 
 def base_state(**over):
     st = {
-        "version": 4, "user_id": "123", "name": "테스트몬", "species": "mammal",
+        "version": 5, "user_id": "123", "name": "테스트몬", "species": "mammal",
         "element": "fire", "stage": 1, "level": 1, "xp": 0, "stats": {},
         "intimacy": 50, "satiety": 80, "record": {"win": 0, "lose": 0},
         "cooldowns": {}, "daily": {"date": engine.today(), "train": 0, "battle": 0,
@@ -19,6 +19,7 @@ def base_state(**over):
         "history": [], "_wild": None, "sleep_bonus_dates": [], "last_decay_date": None,
     }
     st.update(over)
+    if st['version']==5: st.setdefault('pet_id',engine.art.pet_identity({**st,'history':[h for h in st['history'] if isinstance(h,dict)]}))
     return st
 
 

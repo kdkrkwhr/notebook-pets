@@ -62,5 +62,10 @@
     "reward": {"xp": 30, "rare_feed": 1}
   },
   "evolution_branch_threshold": 70,
+  "evolution_requirements": {
+    "2": {"level": 10, "care": 10, "walk": 3},
+    "3": {"level": 30, "care": 30, "train": 10, "walk": 15},
+    "4": {"level": 50, "care": 60, "train": 25, "walk": 30, "stories": 3}
+  },
   "max_level": 100
 }

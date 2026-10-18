@@ -94,12 +94,12 @@ def disposition(state, request_id):
     return 'expired'
 
 
-def commit_result(state, previous, request_id, command, name, result, choice_id=None, profile=None,home_payload=None):
+def commit_result(state, previous, request_id, command, name, result, choice_id=None, profile=None,home_payload=None,evolution_payload=None):
     """Prepare a candidate; caller must use the ETag of previous for the write."""
     value = copy.deepcopy(state)
     key = event_key(request_id)
     receipts = value.setdefault('processed_requests', {})
-    receipts[key] = {'command': command, 'arguments': [home_payload] if command in ('home_buy','home_apply','home_undo') else [profile] if command == 'personality' else [choice_id] if command in ('dungeon_safe','dungeon_risk','walk_collect','walk_leave') else [name] if command == 'start' and name else [],
+    receipts[key] = {'command': command, 'arguments': [evolution_payload] if command in ('evolution_prepare','evolution_options','evolve') else [home_payload] if command in ('home_buy','home_apply','home_undo') else [profile] if command == 'personality' else [choice_id] if command in ('dungeon_safe','dungeon_risk','walk_collect','walk_leave') else [name] if command == 'start' and name else [],
                      'result': copy.deepcopy(result)}
     current = metadata(previous)
     # APS JSON objects need not preserve insertion order. New receipts have an
@@ -117,6 +117,7 @@ def commit_result(state, previous, request_id, command, name, result, choice_id=
     value[META] = {'version': 1, 'next_sequence': current['next_sequence'] + 1, 'order': order}
     if current.get('epoch'):
         value[META]['epoch'] = current['epoch']
-    if byte_size(pack(value)) > MAX_SAVE_BYTES:
-        raise SaveCapacityError('Game save is too large to update safely.')
+    while byte_size(pack(value)) > MAX_SAVE_BYTES:
+        if len(order) <= 1: raise SaveCapacityError('Game save is too large to update safely.')
+        del receipts[order.pop(0)]
     return value
