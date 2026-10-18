@@ -1,3 +1,14 @@
+# 1.4.10 empty starting yard - 2026-10-18
+
+Source **7037da7**, owner test app **1.4.10 / working revision 78 / installed 0.0.0-draft**, actual cloud tool **0.9.3 / Executa 772 / ID 1193 loaded/running**. The user clarified that all default trees and decorations should be absent. Kept the cottage/fence/paths/lawn and existing owned objects; removed all separate default trees, bushes, bench, pots and flower clusters. Cottage artwork is preserved. The earlier sparse two-tree variant was never deployed.
+
+- Home/geometry tests **11**, JS **92**, real-core home browser **5**, strict passed locally. Core CI **39084579106** and both Windows/Linux jobs in **39084579116** passed, including full browser/protocol checks and packaged executable smoke tests.
+- Explicitly published both tested 0.9.3 binary artifacts, then used scoped cloud tool reinstall and restored the source storage declaration. Installed the working UI. Actual world default object list is exactly **house**; existing purchased objects still render. Current home-scene.mjs SHA-256 **770b5ff307ae4604485cb450d9fb615cfeea2a3153a2ef3087f5a5e031cb5fcd** matches the installed file. Connected, no error notice.
+- Private pre/post game value and ETag are identical. Art/chat/walk-story/personality KV all identical. No game migration, paid AI or production purchase calls.
+- Review **1.4.9 / ID 1439 / pending_review**, tagline/description, all six screenshot URLs and shared listing fields verified unchanged. No app cut, review submission or public web deployment. PC host remains unverified/offline as previously recorded; Windows package is CI-tested and uploaded.
+
+---
+
 # 1.4.9 garden expansion, listing and review - 2026-10-18
 
 User explicitly requested all current changes, descriptions and screenshots in review. **Review 1.4.9 / ID 1439 / pending_review**, frozen **tool 0.9.2 / Executa 768 / tool ID 1193**. Source **16c63fa**, working revision **77**, installed owner draft **0.0.0-draft**. No public release.

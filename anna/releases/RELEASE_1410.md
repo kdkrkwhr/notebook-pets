@@ -1,4 +1,4 @@
-# 1.4.10 - empty starting garden
+# 1.4.10 - home and garden refinement
 
 Source 7037da7, game tool 0.9.3. Deployed to owner test app: **working revision 78 / installed 0.0.0-draft**, tool **0.9.3 / Executa 772** loaded/running.
 
@@ -34,3 +34,17 @@ Validated 92 JS tests, six real-core home browser scenarios, strict schema valid
 
 
 CI follow-up: Anna run 39085768337 failed eight recovery browser scenarios on both platforms due to missing `home.owned` in the isolated mock host, while actual engine responses already supply it. Test-only fix 507e59c adds the required empty list. All eight failure cases pass locally; replacement CI 39086263306 / 39086263232 both succeeded. Windows and Linux each passed 92 JS tests, 118 full browser scenarios, 70 storage/protocol tests, strict validation and standalone executable build/smoke tests. No production asset, working revision, tool package or review changes.
+
+
+## Authorized review replacement
+
+# 1.4.10 review candidate, description and screenshots - 2026-10-18
+
+The user explicitly requested the latest review candidate with updated description and screenshots. Review is now **1.4.10 / ID 1442 / pending_review**, frozen **tool 0.9.3 / Executa 772 / master ID 1193**. Working revision **79**, unchanged executable bundle, owner installed draft **0.0.0-draft**. Listing/capture source **d1d1237**, UI source **c96d7a2**, test-fixture correction **507e59c**. No public release or web deployment.
+
+- Updated tagline and description for the empty initial yard, 48 objects/36 garden items, Shop/My collection tabs, stored-item count, desktop split view/mobile stacked browsing and secondary controls. Kept exact AI-use boundaries and removed obsolete change-history copy.
+- Recaptured ten real UI screenshots from isolated engine views and recorded Mori artwork; published six: care, empty starting yard, redesigned garden shop, drawing editor, dungeon preview, item book. Collection capture retained in Git. All six uploaded CDN images decode at 1280 pixels wide and description/tagline/listing fields exactly match source. No new paid AI, live owner screenshots or production mutations.
+- Runtime bundle was already verified in successful Windows/Linux CI **39086263232**: JS **92**, full browser **118**, storage/protocol **70**, strict and executable build/smoke checks; core CI **39086263306** succeeded. Current capture flow and strict validation passed. Later metadata/capture-only CI **39088482080 / 39088482096** is running at record time; no runtime code changed.
+- Actual installed app is Connected with no notice; app.js, home.mjs, home.css and home-scene.mjs hashes match source. Cloud **0.9.3 loaded/running**; art/chat/story/personality KV and game inspection unchanged. Working draft dirty_vs_latest_cut=false. PC remains offline/unverified; previously tested Windows package is retained.
+- Bundle **1339**, **170 files / 171308544 bytes**, SHA-256 manifest **4a5154cee5b69fabe1c36f3bb1b47d4ed90ff79675c61d40979b9d64f3b0ea5f**. No redundant tool publish or version bump. Next review change still requires fresh user authorization.
+
