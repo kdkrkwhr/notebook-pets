@@ -1,3 +1,15 @@
+# Anna 1.4.11 bounded portrait/home verification and review check - 2026-10-18
+
+The user reported evolution verification complete, authorized one fresh image-to-home check with **image <=2 / text+vision <=2**, and excluded web work. Actual usage: **two image.generate calls and two text/vision calls**, with no paid retries or image-edit/reference-image transport. Runtime remains **Anna 1.4.11 / working revision 81 / tool 0.9.4 / Executa 773**; review remains **1.4.11 / ID 1443 / pending_review**, review_message null. No runtime, listing, review-candidate or web deployment change.
+
+- Used a fresh isolated dev app/tool with the actual release UI modules (six hashes match), actual Anna AI and APS. One recorded sprout PNG exercised the file-input flow. Gemini reference analysis and personality each succeeded; GPT Image 2 returned and stored one 1024px birth portrait and one 1024px directional sheet. Raw responses/images retained privately before parsing.
+- Birth completed without an automatic home image. Free default persisted and displayed after home reopening with no AI. An isolated pre-choice snapshot fork then exercised the explicit generation path: 16 frames, four correct directions, matching current portrait, successful save and visible home character. Full page reload/read-only refresh restored the generated appearance without the choice dialog or extra AI calls. Eleven focused free browser cases also passed.
+- Test infrastructure needed recovery: the CLI storage bridge omitted the app scope, a diagnostic session replaced the open harness session, and R2 refused the non-whitelisted 127.0.0.1 origin. Scoped the isolated adapter to app storage, reused the paid analysis, performed same-action/save-only recovery, confirmed an actual Anna-origin source upload HTTP 200, and resumed from the stored reference at allowed localhost:5180. These were harness/environment issues; no new product code fix was needed. This was not an uninterrupted first-attempt creation.
+- Production game inspection ETag and art/chat/story/personality values/ETags are unchanged. Candidate/listing unchanged, dirty_vs_latest_cut false. Platform status has no new review message. No Discord connector is available, so a new dora reply or external retest result cannot be confirmed.
+- Scope: real generation of one simple drawn reference, not all photo inputs/complex anatomies. Physical Windows runner remains unverified. User evolution verification was recorded without repeating paid evolution tests. Details: docs/PAID_TEST_20261018.md. Only verification documentation is committed; the app and public web remain unchanged.
+
+---
+
 # 1.4.11 evolution label, review introduction and owner screenshots - 2026-10-18
 
 At the owner's fresh explicit request, review is now **1.4.11 / ID 1443 / pending_review**, replacing 1.4.10 / 1442. Owner test app **1.4.11 / working revision 81 / installed 0.0.0-draft**; frozen and running cloud game tool **0.9.4 / Executa version 773 / master 1193**. UI source **e0844c2**, listing/docs **b313d7b**, shared web source **ee6a4b5**, web **0.7.0**. No public Anna release or paid AI calls.
