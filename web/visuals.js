@@ -1,11 +1,13 @@
 import {snapshot,updateVisuals} from './store.js';
-import {ART} from './data.mjs';
+import {ART,STORY} from './data.mjs';
 import {imageKey,starter} from './model.mjs';
-import {currentHomeSprite} from './home-sprite.mjs';
+import {currentHomeAppearance,homeNeedsChoice,HOME_SPRITE_PROMPT} from './home-sprite.mjs';
 import {dataURL} from './gemini.js';
+import {parseStory} from './walk-stories.mjs';
+import {journeyStory,journeyInfluence} from './journey-stories.mjs';
 
 export function createVisuals(db,epoch,petId,ai){
-  const urls=new Map();let art={},closed=false;
+  const urls=new Map(),references=new Set();let art={},closed=false;
   const guard=player=>{if(closed||(player.epoch??0)!==epoch||player.state?.pet_id!==petId)throw Error('Companion changed');};
   const pathOK=path=>typeof path==='string'&&path.startsWith(`portraits/${petId}/`)&&/^[a-zA-Z0-9/._-]+$/.test(path);
   const url=path=>urls.get(path)||'';
@@ -24,13 +26,13 @@ export function createVisuals(db,epoch,petId,ai){
   }
   const api={...ai,
     storage:{
-      async get({key}){if(key!==ART)throw Error('Unsupported key');const {visuals}=await read();return {exists:true,etag:String(visuals.revision),value:visuals.art};},
+      async get({key}){if(![ART,STORY].includes(key))throw Error('Unsupported key');const {visuals}=await read();return {exists:true,etag:String(visuals.revision),value:key===ART?visuals.art:visuals.story??null};},
       async set({key,value,if_match}){
-        if(key!==ART||closed)throw Error('Companion changed');
+        if(![ART,STORY].includes(key)||closed)throw Error('Companion changed');
         await updateVisuals(db,epoch,petId,v=>{
           if(String(v.revision)!==if_match)throw Error('conflict');
-          return {...v,art:value};
-        });art=value;
+          return {...v,[key===ART?'art':'story']:value};
+        });if(key===ART)art=value;
       }
     },
     files:{async download_url({path}){await refresh();if(!pathOK(path)||!url(path))throw Error('Image unavailable');return {get_url:url(path)};}}
@@ -38,7 +40,14 @@ export function createVisuals(db,epoch,petId,ai){
   return {api,upload,refresh,guard,
     portrait:view=>url(art[imageKey(view)]?.path)||starter(view),
     stagePortrait:(view,stage)=>url(art[imageKey(view,stage)]?.path)||starter(view),
-    sprite:view=>url(currentHomeSprite(view,art)?.path),
+    needsAppearance:view=>homeNeedsChoice(view,art),
+    sprite:view=>{const entry=currentHomeAppearance(view,art);return entry?.format==='home-sprite-v1'?url(entry.path):{kind:'default',url:url(entry?.path)||url(art[imageKey(view)]?.path)||starter(view)};},
+    async imageOptions(view,old,source){
+      const reference=source.startsWith('portraits/')?(await api.files.download_url({path:source})).get_url:source;
+      const response=await fetch(reference);if(!response.ok)throw Error('Reference unavailable');
+      const local=URL.createObjectURL(await response.blob());references.add(local);
+      return {prompt:HOME_SPRITE_PROMPT,reference_image_urls:[local]};
+    },
     async savePortrait(view,blob){
       const path=`portraits/${petId}/portrait-${crypto.randomUUID()}.png`;
       const {visuals}=await read();
@@ -49,7 +58,7 @@ export function createVisuals(db,epoch,petId,ai){
         return {...v,files:{...v.files,[path]:blob},art:{...v.art,[imageKey(view)]:{path,hash,at:Date.now()}}};
       });await refresh();return true;
     },
-    clear(){closed=true;ai.clear();for(const u of urls.values())URL.revokeObjectURL(u);urls.clear();}
+    clear(){closed=true;ai.clear();for(const u of [...urls.values(),...references])URL.revokeObjectURL(u);urls.clear();references.clear();}
   };
 }
 
@@ -69,7 +78,7 @@ export async function exportNotebook(db){
   const {player,visuals}=await snapshot(db);if(!player.state)throw Error('먼저 친구를 만나 주세요.');
   // Only reachable files belong in a backup; orphaned partial uploads are omitted.
   const files={};for(const entry of Object.values(visuals.art))if(entry?.path&&visuals.files[entry.path])files[entry.path]=await dataURL(visuals.files[entry.path]);
-  return {format:'notebuddy-web',version:2,state:player.state,visuals:{art:visuals.art,files}};
+  return {format:'notebuddy-web',version:2,state:player.state,visuals:{art:visuals.art,files,story:visuals.story??null}};
 }
 export async function importVisuals(backup){
   if(backup.version===1)return {revision:0,art:{},files:{}};
@@ -83,7 +92,18 @@ export async function importVisuals(backup){
     const valid=bitmap.width*bitmap.height<=16000000;bitmap.close();if(!valid)throw Error('그림이 너무 커요.');decoded[path]=blob;
   }
   for(const [key,entry] of Object.entries(art)){
-    if(!key.startsWith(backup.state.pet_id+'/')||!entry||!Object.hasOwn(decoded,entry.path))throw Error('그림 연결 정보가 올바르지 않아요.');
+    const request=key.startsWith(backup.state.pet_id+'/home-sprite-request-stage-')&&entry?.path===entry.source_path&&(Object.hasOwn(decoded,entry.path)||/^assets\/starters-v1\/[a-z0-9_]+\.png$/.test(entry.path));
+    if(!key.startsWith(backup.state.pet_id+'/')||!entry||!Object.hasOwn(decoded,entry.path)&&!request)throw Error('그림 연결 정보가 올바르지 않아요.');
   }
-  return {revision:0,art,files:decoded};
+  const story=backup.visuals.story??null;
+  if(story)try{
+    if(story.pet_id!==backup.state.pet_id||!Array.isArray(story.seen)||story.seen.length>64||story.seen.some(id=>typeof id!=='string'||id.length>128)||JSON.stringify(story).length>30000)throw Error();
+    const c=story.current;
+    if(c){
+      if(c.pet_id!==story.pet_id||typeof c.id!=='string'||!['generating','ready','done'].includes(c.state)||!['ko','en'].includes(c.language)||c.state==='done'&&![0,1].includes(c.choice))throw Error();
+      parseStory(JSON.stringify(c.story));
+      if(c.journey){journeyStory(c.journey,c.language);journeyInfluence(c.journey,c.language);}
+    }
+  }catch{throw Error('산책 기록 형식을 확인해 주세요.');}
+  return {revision:0,art,files:decoded,story};
 }

@@ -5,11 +5,15 @@ import {createThemes} from './themes.mjs';
 import {createItemCatalog} from './item-catalog.mjs';
 import {translateDocument,t} from './i18n.mjs';
 import {createHome} from './home.mjs';
-import {createHomeSprite,movementFailureKey} from './home-sprite.mjs';
+import {createHomeSprite} from './home-sprite.mjs';
 import {createDungeons} from './dungeon.mjs';
 import {createVisuals,portraitPNG,exportNotebook,importVisuals} from './visuals.js';
 import {createAI,imageReady} from './ai.js';
 import {createAISettings} from './ai-settings.js';
+import {createHints} from './hints.mjs';
+import {createWalkStories,storyEvent} from './walk-stories.mjs';
+import {createStoryDialog} from './walk-story-dialog.mjs';
+import {reactionEvent,reactionPrompt} from './reactions.mjs';
 const $=id=>document.getElementById(id);
 translateDocument(document,'ko');
 let preferences;try{preferences=window.localStorage;}catch{preferences=null;}
@@ -23,15 +27,23 @@ $('open-album').onclick=()=>catalog.open('album');
 for(const b of document.querySelectorAll('[data-prompt]'))b.onclick=()=>{$('message').value=b.dataset.prompt;$('message').focus();};
 const worker=new Worker('./worker.js',{type:'module'});
 const pending=new Map();let serial=0,db,busy=false,current,resetSnapshot=null,sessionPetId=null,chatController=null,modelController=null,sessionEpoch=0;
-let view=null,visuals=null,sprites=null,storeEpoch=null,selectedPortrait=null,previewURL='';
+let view=null,visuals=null,sprites=null,storeEpoch=null,selectedPortrait=null,previewURL='',stories,storyDialog,storyWorking=false;
+let careAI=true;try{careAI=preferences?.getItem('notebuddy/care-ai-v1')!=='off';}catch{}
+$('care-ai-enabled').checked=careAI;$('care-ai-enabled').onchange=()=>{careAI=$('care-ai-enabled').checked;try{preferences?.setItem('notebuddy/care-ai-v1',careAI?'on':'off');}catch{}};
 const home=createHome({document,language:()=> 'ko',anna:()=>visuals.api,active:activeView,invoke:invokeHome,
   saved:next=>{view=next;current=next.status;},locked:()=>busy,busy:lock,
-  sprite:()=>view&&visuals?.sprite(view),spritePending:()=>sprites?.hasPending()??false,retrySprite:()=>sprites?.retry()});
+  sprite:()=>view&&visuals?.sprite(view),needsAppearance:()=>!!view&&visuals?.needsAppearance(view),prepareAppearance:chooseHomeAppearance,
+  spritePending:()=>sprites?.hasPending()??false,retrySprite:()=>sprites?.retry()});
 const dungeons=createDungeons({document,language:()=> 'ko',view:()=>view,locked:()=>busy,
+  discoveryPending:()=>!!current?.walk_choice||!!current?.encounter||current?.journey?.state==='pending'||!!storyDialog?.isOpen()||!!storyDialog?.hasPending(),
   act:(command,args={})=>act(command,args.choice_id?[args.choice_id]:[]),pixelUrl:()=>'',
   spriteUrl:()=>view&&visuals?.sprite(view),portraitUrl:()=>view&&visuals?.portrait(view)});
 const aiSettings=createAISettings(document,preferences),settings=aiSettings.settings;
-const birthHint=document.createElement('p');birthHint.className='muted small';birthHint.textContent='개인 동작을 함께 만들려면 먼저 AI 설정에서 이미지 AI를 준비해 주세요. Gemini는 Google로, ComfyUI는 이 PC로 친구 그림을 보내요.';$('birth').after(birthHint);
+const storyUsage=document.createElement('span');storyUsage.dataset.help='';
+storyUsage.textContent='AI 산책 이야기는 선택한 제공자의 요금·할당량을 사용해요. 기본 이야기와 결말 선택은 AI를 사용하지 않아요.';
+$('story-usage').replaceChildren(storyUsage);
+const hints=createHints(document,()=> 'ko');
+document.querySelector('.care-ai-options').append(document.querySelector('[data-hint-for="care-ai-tooltip"]'));
 async function activeView(){const s=await load(db),r=await calculate(s.state,'status');return {...r.view,request_id_prefix:`nb2:${s.epoch??0}:`};}
 async function invokeHome(command,args={}){
   const s=await load(db);
@@ -46,6 +58,7 @@ function clearSession(preserveAI=false){
   if(!preserveAI)aiSettings.clear();
   sessionEpoch++;chatController?.abort();chatController=null;modelController?.abort();modelController=null;
   sprites?.clear();visuals?.clear();sprites=null;visuals=null;home.clear();dungeons.close();view=null;
+  stories?.clear();storyDialog?.clear();
   selectedPortrait=null;if(previewURL)URL.revokeObjectURL(previewURL);previewURL='';$('portrait-preview').hidden=true;$('portrait-file').value='';$('appearance-dialog').close();
   document.querySelectorAll('#messages .message').forEach(n=>n.remove());$('chat-empty').hidden=false;
   for(const id of ['key','message','reset-phrase'])$(id).value='';
@@ -82,7 +95,7 @@ function calculate(state,command,args=[],requestId=null){
     worker.postMessage({id,payload:{state,command,arguments:args,requestId,now:Date.now()/1000,seed:crypto.getRandomValues(new Uint32Array(1))[0],ids:Array.from({length:64},()=>crypto.randomUUID().replaceAll('-',''))}});
   });
 }
-function lock(value){busy=value;aiSettings.lock(value||!!chatController);document.querySelectorAll('#actions button,#choices button,#dungeon-list button,#birth button,#import,#export,#refresh,#claimquest,#open-reset,#confirm-reset,#open-home,#open-appearance,#save-portrait,#portrait-file').forEach(b=>b.disabled=value);if(!value){$('claimquest').disabled=!current?.quest?.ready;$('confirm-reset').disabled=$('reset-phrase').value!=='초기화';$('save-portrait').disabled=!selectedPortrait;}dungeons.render();}
+function lock(value){busy=value;aiSettings.lock(value||!!chatController);document.querySelectorAll('#actions button,#choices button,#dungeon-list button,#birth button,#import,#export,#refresh,#claimquest,#open-reset,#confirm-reset,#open-home,#open-appearance,#save-portrait,#portrait-file').forEach(b=>b.disabled=value);if(!value){$('claimquest').disabled=!current?.quest?.ready;$('confirm-reset').disabled=$('reset-phrase').value!=='초기화';$('save-portrait').disabled=!selectedPortrait;}dungeons.render();stories?.render();}
 function button(parent,label,command,args=[]){const b=document.createElement('button');b.textContent=label;b.onclick=()=>act(command,args);parent.append(b);}
 function text(id,value){$(id).textContent=value??'';}
 function message(role,content){
@@ -98,7 +111,7 @@ async function refresh(keepKey=false){
     const key=keepKey?$('key').value:'';clearSession(keepKey);$('key').value=key;sessionPetId=petId;storeEpoch=epoch;
     if(petId){
       const visual=createVisuals(db,epoch,petId,createAI(settings));visuals=visual;
-      sprites=createHomeSprite({anna:()=>visual.api,upload:visual.upload,active:async()=>{const player=await load(db);visual.guard(player);return activeView();},saved:async()=>{await refresh();}});
+      sprites=createHomeSprite({anna:()=>visual.api,upload:visual.upload,imageOptions:visual.imageOptions,active:async()=>{const player=await load(db);visual.guard(player);return activeView();},saved:async()=>{await refresh();}});
     }
   }
   view={...result.view,request_id_prefix:`nb2:${epoch}:`};
@@ -129,30 +142,49 @@ async function refresh(keepKey=false){
   $('choices').replaceChildren();
   if(current.walk_choice?.choice_id){const hint=document.createElement('p');hint.textContent='산책길에서 무언가를 발견했어요. 어떻게 할까요?';$('choices').append(hint);for(const [label,cmd] of [['주워 보기','walk_collect'],['지나가기','walk_leave']])button($('choices'),label,cmd,[current.walk_choice.choice_id]);}
   if(current.encounter){const hint=document.createElement('p');hint.textContent='산책 중 다른 친구와 마주쳤어요.';$('choices').append(hint);button($('choices'),'배틀','battle');button($('choices'),'돌아가기','flee');}
-  dungeons.render();
+  if(!storyWorking)await stories?.load(view);dungeons.render();
 }
-async function prepareMovement(){
-  if(!imageReady(settings())){text('notice','그림을 저장했어요. 이미지 AI 설정이 준비되지 않아 개인 동작은 생성하지 않았어요.');return;}
-  text('notice','그림에 맞는 방향별 픽셀 동작을 만들고 있어요…');
-  try{await sprites.sync(view);await visuals.refresh();text('notice',visuals.sprite(view)?'그림과 동작을 저장했어요. 홈과 던전에서 같은 친구를 만나요.':'그림은 저장했어요. 이 그림의 동작은 이미 요청된 상태라 추가로 생성하지 않았어요.');}
-  catch(error){await refresh();text('notice',t('ko',movementFailureKey(error,sprites?.hasPending())));}
+const textReady=()=>{const c=settings();return c.textProvider==='ollama'?!!c.ollamaModel:!!c.key;};
+async function chooseHomeAppearance(mode){
+  if(mode==='default'){await sprites.useDefault();return 'default';}
+  if(!imageReady(settings()))throw Error('먼저 AI 설정에서 이미지 제공자를 준비해 주세요.');
+  try{await sprites.choose(await activeView());return 'generated';}
+  catch(error){if(/changed/.test(error.message))throw error;if(sprites.hasPending())return 'pending';await sprites.useDefault();return 'failed-default';}
 }
 async function act(command,args=[]){
-  if(busy)return;lock(true);
-  try{const saved=await load(db);const candidate=await calculate(saved.state,command,args,crypto.randomUUID());
+  if(busy||storyWorking)return;
+  if(command==='walk_begin'&&(stories.blocksWalk()||current?.walk_choice||current?.encounter)){storyDialog.resume();return;}
+  lock(true);const requestId=crypto.randomUUID(),epoch=sessionEpoch;
+  const outing=['walk_begin','walk_collect','walk_leave','battle','flee'].includes(command);if(outing)storyDialog.loading();
+  try{const saved=await load(db);const candidate=await calculate(saved.state,command,args,requestId);
     if(candidate.changed)await commit(db,saved.revision,candidate.state);
     $('result').textContent=candidate.result.msg??JSON.stringify(candidate.result);
     await refresh(command==='start'&&!saved.state);$('notice').textContent=candidate.changed?'이 브라우저에 저장했습니다.':'행동 결과를 확인해 주세요.';
     if(candidate.result.dungeon_visit)dungeons.visit(candidate.result.dungeon_visit);
     if(candidate.result.dungeon_run)dungeons.show(candidate.result.dungeon_run);
-    if(command==='start'&&!saved.state&&candidate.changed&&candidate.result.ok)await prepareMovement();
+    const event=storyEvent(command,requestId,candidate.view,'ko');
+    if(event){storyDialog.begin();await stories.start(event,()=>careAI&&textReady());}
+    else if(outing)storyDialog.result(candidate.result.msg||'산책 결과를 확인해 주세요.');
+    const reaction=careAI&&textReady()&&candidate.changed&&!event?reactionEvent(command,requestId,candidate.view,'ko'):null;
+    if(reaction)try{const response=await visuals.api.text({json:false,systemPrompt:reactionPrompt(reaction),messages:[{role:'user',content:'React to this completed action.'}],maxTokens:160,temperature:.7});if(epoch===sessionEpoch&&response.content?.text)message('assistant',response.content.text.slice(0,1500));}catch{if(epoch===sessionEpoch)text('notice','행동은 저장했어요. AI 반응을 받지 못했으며 자동으로 다시 요청하지 않아요.');}
     if($('choices').children.length){$('choices').scrollIntoView({block:'nearest'});$('choices').querySelector('button')?.focus();}
-  }catch(error){$('notice').textContent=error.message;}finally{lock(false);}
+  }catch(error){$('notice').textContent=error.message;if(outing)storyDialog.result(error.message);}finally{lock(false);stories.render();dungeons.render();}
 }
 for(const [label,cmd,icon,hint] of [['밥 주기','feed','◡','사료 1개'],['간식','snack','✿','기분 좋은 선물'],['놀기','play','♫','친밀한 시간'],['훈련','train','⚑','조금 더 강하게'],['산책','walk_begin','☀','새로운 만남'],['잠자기','sleep','☾','내일을 준비해요'],['출석','attendance','✓','하루 한 번 선물']]){
- const b=document.createElement('button');b.setAttribute('aria-label',label);b.dataset.action=cmd;
+ const b=document.createElement('button');b.setAttribute('aria-label',label);b.dataset.action=cmd==='walk_begin'?'walk':cmd;
  for(const [tag,value] of [['span',icon],['b',label],['small',hint]]){const node=document.createElement(tag);node.textContent=value;b.append(node);}b.onclick=()=>act(cmd);$('actions').append(b);
 }
+storyDialog=createStoryDialog({document,language:()=> 'ko',view:()=>view,tr:(key,values)=>t('ko',key,values),locked:()=>busy,busy:()=>busy,
+ choose:index=>stories.choose(index),closed:()=>dungeons.render(),retryPending:()=>false,retry:()=>{},
+ act:(command,args={})=>act(command,args.choice_id?[args.choice_id]:[]),openDungeon:id=>document.querySelector(`[data-dungeon="${id}"]`)?.click()});
+stories=createWalkStories({anna:()=>visuals.api,active:activeView,language:()=> 'ko',locked:()=>busy,
+ render:state=>{storyWorking=state.working;storyDialog.render(state);},resolve:async(event,index)=>{
+  const saved=await load(db),before=await activeView();if(before.pet_id!==event.pet_id||before.status.journey?.choice_id!==event.id)throw Error('Story changed');
+  if(before.status.journey.state==='done')return before;
+  const result=await calculate(saved.state,index===0?'walk_collect':'walk_leave',[event.id],crypto.randomUUID());if(!result.result.ok)throw Error(result.result.msg);
+  if(result.changed)await commit(db,saved.revision,result.state);await refresh();return view;
+ }});
+for(const command of ['battle','flee'])document.querySelector(`#encounter [data-action="${command}"]`).onclick=()=>act(command);
 $('claimquest').onclick=()=>act('claimquest');
 $('refresh').onclick=async()=>{if(busy)return;lock(true);try{await refresh();text('notice','친구의 소식을 확인했어요.');}catch(e){text('notice',e.message);}finally{lock(false);}};
 $('birth').onsubmit=e=>{e.preventDefault();act('start',[$('name').value]);};
@@ -183,7 +215,7 @@ $('save-portrait').onclick=async()=>{
   try{
     const next=await activeView();if(next.pet_id!==appearanceView.pet_id||next.stage!==appearanceView.stage)throw Error('친구나 성장 단계가 바뀌었어요. 닫고 다시 확인해 주세요.');
     const changed=await visuals.savePortrait(appearanceView,selectedPortrait);selectedPortrait=null;await refresh();$('appearance-dialog').close();
-    if(changed)await prepareMovement();else text('notice','이미 저장된 그림이에요. 동작을 다시 생성하지 않았어요.');
+    text('notice',changed?'그림을 저장했어요. 마이홈에서 AI 픽셀 캐릭터 또는 무료 기본 이미지를 선택해 주세요.':'이미 저장된 그림이에요. 동작을 다시 생성하지 않았어요.');
   }catch(e){text('appearance-status',e.message);}finally{lock(false);}
 };
 $('appearance-dialog').addEventListener('cancel',e=>{if(busy)e.preventDefault();});

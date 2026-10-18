@@ -48,6 +48,6 @@ ComfyUI에서 먼저 **참고 이미지 기반** 워크플로를 완성하고 **
 
 텍스트를 Ollama, 이미지를 ComfyUI로 선택하면 Gemini 키가 필요 없습니다. Gemini는 선택한 기능에서만 사용하고 로컬 실패 시 자동 대체하지 않습니다. 두 제공자를 섞어 쓸 수도 있습니다.
 
-연결 설정을 마친 뒤 **새 친구를 만나거나 새 그림을 저장할 때** 이미지 생성을 한 번 요청합니다. 이미 설정 없이 저장한 그림은 설정을 바꿔도 자동 생성하지 않습니다. 홈 입장·가구 구매·이동·되돌리기·동작 저장 재시도는 AI를 호출하지 않습니다. 실패한 생성도 자동 재요청하지 않습니다. ComfyUI의 제출은 한 번만 하며 대기는 최대 4분입니다. 브라우저 대기를 취소해도 ComfyUI 큐의 작업은 계속될 수 있으므로 서버에서 확인하세요. 앱이 다른 작업까지 중단하는 서버 전체 interrupt를 보내지는 않습니다.
+새 친구를 만나거나 새 그림을 저장한 뒤 **마이홈 첫 방문에서 AI 픽셀 캐릭터 생성을 선택할 때** 이미지 생성을 한 번 요청합니다. 무료 기본 모습을 선택하면 AI 없이 저장합니다. 친구·그림 저장, 홈 재입장·가구 구매·이동·되돌리기·동작 저장 재시도는 AI를 호출하지 않습니다. 실패한 생성도 자동 재요청하지 않습니다. ComfyUI의 제출은 한 번만 하며 대기는 최대 4분입니다. 브라우저 대기를 취소해도 ComfyUI 큐의 작업은 계속될 수 있으므로 서버에서 확인하세요. 앱이 다른 작업까지 중단하는 서버 전체 interrupt를 보내지는 않습니다.
 
 [Ollama CORS 안내](https://docs.ollama.com/faq) · [Ollama Chat API](https://docs.ollama.com/api/chat) · [ComfyUI 서버 경로](https://docs.comfy.org/development/comfyui-server/comms_routes) · [Chrome 로컬 네트워크 권한](https://developer.chrome.com/blog/local-network-access)

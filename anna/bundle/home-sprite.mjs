@@ -143,7 +143,7 @@ export function createHomeSprite(h){
    if(pending&&(pending.owner!==owner||pending.stage!==stage||pending.source!==source)){pending=null;throw Error('Companion changed; start again');}
    if(!pending){
     if(!recovering&&old[requestKey(snapshot)]?.source_path===source&&(!homeChoice||old[requestKey(snapshot)].trigger==='home-choice-v1'))return false;
-    await guard();const prompt=homeSpritePrompt(snapshot,old);
+    await guard();const imageOptions=h.imageOptions?await h.imageOptions(snapshot,old,source):{prompt:homeSpritePrompt(snapshot,old)};
     // Claim this exact artwork before the paid call. Lost responses, concurrent
     // windows and a retried portrait save must not generate the same poses again.
     let claimed=false;
@@ -159,7 +159,7 @@ export function createHomeSprite(h){
     if(!claimed)return false;
     await guard();
     phase='generate';
-    const result=await h.anna().image.generate({prompt,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
+    const result=await h.anna().image.generate({...imageOptions,n:1,size:'1024x1024',quality:'low',resolution:'1K',output_format:'png'},{timeoutMs:240000});
     phase='response';
     const url=result?.images?.[0]?.url;if(!url)throw Error('No sprite returned');
     pending={owner,stage,source,url,path:`portraits/${owner}/home-sprite-${crypto.randomUUID()}.png`};

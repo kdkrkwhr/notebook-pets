@@ -50,12 +50,12 @@ try{
   await page.goto(base);await page.waitForFunction(()=>document.querySelector('#notice').textContent.includes('공책이 준비'),{},{timeout:120000});
   await page.locator('#title-start').click();await page.locator('#open-settings').click();await page.locator('#key').fill('WORLD-TEST-KEY');await page.locator('#settings-dialog .primary').click();
   await page.locator('#name').fill('픽셀 친구');await page.locator('#birth button').click();await idle();
-  let first=await state();assert(first.player.state);assert.equal(count('image'),1);assert.equal(count('layout'),0);
+  let first=await state();assert(first.player.state);assert.equal(count('image'),0);assert.equal(count('layout'),0);
   const shots=fileURLToPath(new URL('../../.local/web-ui/',import.meta.url));await mkdir(shots,{recursive:true});
-  await page.locator('#open-home').click();await page.waitForFunction(()=>!document.querySelector('#home-sprite-retry').hidden);await page.locator('#home-sprite-retry').click();await idle();
+  await page.locator('#open-home').click();await page.locator('#home-appearance-generate').click();await idle();await page.waitForFunction(()=>!document.querySelector('#home-sprite-retry').hidden);await page.locator('#home-sprite-retry').click();await idle();
   first=await state();const firstSprite=Object.values(first.visuals.art).find(e=>e.format==='home-sprite-v1');assert(firstSprite,'save-only retry persisted the sheet');assert.equal(firstSprite.pet_id,first.player.state.pet_id);assert.equal(count('image'),1);
   await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');
-  assert.equal(await page.locator('#home-sprite').count(),0);assert.equal(await page.locator('.home-item').count(),12);
+  assert.equal(await page.locator('#home-sprite').count(),0);assert.equal(await page.locator('.home-item').count(),48);
   await page.screenshot({path:path.join(shots,'home-web-desktop.png')});
   await page.locator('#home-inside').click();await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.place==='inside');await page.locator('#home-yard').click();
   await page.setViewportSize({width:375,height:812});assert(await page.locator('#home-dialog').evaluate(e=>e.scrollWidth<=e.clientWidth+1));await page.screenshot({path:path.join(shots,'home-web-mobile.png')});
@@ -69,7 +69,7 @@ try{
   await page.locator('#home-purchase-cancel').click();assert.deepEqual(await state(),purchaseBefore);
   await desk.click();await page.locator('#home-purchase-confirm').click();await page.waitForFunction(()=>document.querySelector('#home-status').textContent.includes('독서 책상')&&!document.querySelector('#refresh').disabled);await idle();assert.equal(count('layout'),0);assert.equal(count('image'),1);assert.equal((await state()).player.state.coins,90);
   await page.locator('#home-decorate').click();await idle();assert.equal(count('layout'),1);assert.equal((await state()).player.state.home.reason,'차분하게 쉴 수 있는 방이에요.');
-  await page.locator('#home-undo').click();await idle();assert.equal(count('layout'),1);
+  await page.locator('.home-more').evaluate(e=>e.open=true);await page.locator('#home-undo').click();await idle();assert.equal(count('layout'),1);
   const beforeBad=(await state()).player.state;badDecision=true;await page.locator('#home-decorate').click();await idle();assert.deepEqual((await state()).player.state,beforeBad);badDecision=false;assert.equal(count('layout'),2);
   await page.locator('#home-close').click();await page.locator('.dungeon-card').click();await page.waitForFunction(()=>document.querySelector('#dungeon-map').dataset.sprite==='home');
   await page.screenshot({path:path.join(shots,'dungeon-web-home-sprite.png')});assert.equal(count('image'),1);assert.equal(count('layout'),2);
@@ -79,11 +79,11 @@ try{
   // Reopen/reload must not issue generation calls or persist keys.
   await page.reload();await page.waitForFunction(()=>document.querySelector('#pet-name').textContent==='픽셀 친구',{},{timeout:120000});await idle();await page.locator('#title-start').click();assert.equal(await page.locator('#key').inputValue(),'');
   await page.locator('#open-home').click();await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');await page.locator('#home-close').click();assert.equal(count('image'),1);
-  // Appearance save makes one request; saving identical pixels makes none.
+  // Portrait saving is free; the explicit first-home choice requests one sheet.
   await page.locator('#open-settings').click();await page.locator('#key').fill('WORLD-TEST-KEY');await page.locator('#settings-dialog .primary').click();
   const portrait=await readFile(new URL('../../assets/starters-v1/dragon_nature_stage1.png',import.meta.url));
   const selectPortrait=async()=>{await page.locator('#open-appearance').click();await page.locator('#portrait-file').setInputFiles({name:'friend.png',mimeType:'image/png',buffer:portrait});await page.waitForFunction(()=>!document.querySelector('#save-portrait').disabled);await page.locator('#save-portrait').click();await idle();};
-  await selectPortrait();assert.equal(count('image'),2);const changed=await state(),changedSprite=Object.values(changed.visuals.art).find(e=>e.format==='home-sprite-v1');assert.notEqual(changedSprite.source_path,firstSprite.source_path);assert.equal(changedSprite.source_path,changed.visuals.art[changed.player.state.pet_id+'/stage-1'].path);
+  await selectPortrait();assert.equal(count('image'),1);await page.locator('#open-home').click();await page.locator('#home-appearance-generate').click();await idle();await page.locator('#home-close').click();assert.equal(count('image'),2);const changed=await state(),changedSprite=Object.values(changed.visuals.art).find(e=>e.format==='home-sprite-v1');assert.notEqual(changedSprite.source_path,firstSprite.source_path);assert.equal(changedSprite.source_path,changed.visuals.art[changed.player.state.pet_id+'/stage-1'].path);
   await selectPortrait();assert.equal(count('image'),2);
   // Portable backup includes art and survives restore without any AI invocation.
   const backup=await page.evaluate(async()=>{const m=await import('./store.js'),v=await import('./visuals.js');return v.exportNotebook(await m.openStore());});
@@ -93,7 +93,7 @@ try{
   await page.locator('#backup-dialog [data-close]').click();await page.locator('#open-home').click();await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');await page.locator('#home-close').click();assert.equal(count('image'),2);
   // Advancing the stage alone never creates a new image or reuses stage-one poses.
   await page.evaluate(async()=>{const m=await import('./store.js'),db=await m.openStore(),s=await m.load(db);s.state.level=10;s.state.stage=2;await m.commit(db,s.revision,s.state);});await refresh();
-  await page.locator('#open-home').click();await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='missing');await page.locator('#home-close').click();assert.equal(count('image'),2);
+  await page.locator('#open-home').click();await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.appearance==='default');await page.locator('#home-close').click();assert.equal(count('image'),2);
   // A same-pet import invalidates an in-flight visual writer, even if source/stage match.
   const stale=await page.evaluate(async()=>{
     const m=await import('./store.js'),v=await import('./visuals.js'),db=await m.openStore(),s=await m.load(db),old=v.createVisuals(db,s.epoch,s.state.pet_id,{clear(){}});
@@ -103,9 +103,10 @@ try{
   // A late image response after an external reset must not resurrect the companion.
   await page.locator('#open-settings').click();await page.locator('#key').fill('WORLD-TEST-KEY');await page.locator('#settings-dialog .primary').click();holdImage=true;
   await page.locator('#open-appearance').click();await page.locator('#portrait-file').setInputFiles({name:'late.png',mimeType:'image/png',buffer:portrait});await page.waitForFunction(()=>!document.querySelector('#save-portrait').disabled);await page.locator('#save-portrait').click();
+  await idle();await page.locator('#open-home').click();await page.locator('#home-appearance-generate').click();
   for(let i=0;!held&&i<100;i++)await page.waitForTimeout(50);assert(held);
   await page.evaluate(async()=>{const m=await import('./store.js'),db=await m.openStore(),s=await m.load(db);await m.commit(db,s.revision,null);});
   await held.fulfill({json:{candidates:[{content:{parts:[{inlineData:{mimeType:'image/png',data:imageReply}}]}}]}});await idle();
   const reset=await state();assert.equal(reset.player.state,null);assert.deepEqual(reset.visuals.art,{});assert.deepEqual(reset.visuals.files,{});assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({url:base,home:true,sharedDungeonSprite:true,birthImageOnce:true,saveOnlyRetry:true,appearanceImageOnce:true,identicalImageNoAI:true,stageOnlyNoAI:true,noEntryAI:true,decorateValidated:true,artBackup:true,staleArtBlocked:true,lateResetBlocked:true,errors}));
+  console.log(JSON.stringify({url:base,home:true,sharedDungeonSprite:true,birthNoAI:true,explicitHomeImageOnce:true,saveOnlyRetry:true,portraitSaveNoAI:true,identicalImageNoAI:true,stageOnlyNoAI:true,noEntryAI:true,decorateValidated:true,artBackup:true,staleArtBlocked:true,lateResetBlocked:true,errors}));
 }finally{await browser?.close();await new Promise(r=>server.close(r));}

@@ -6,7 +6,7 @@ const selectors=[
  '[data-i18n="dungeonHealthHelp"]','[data-i18n="resetTime"]','[data-i18n="artDrawHelp"]',
  '[data-i18n="artFileHelp"]','[data-i18n="artUsage"]','[data-i18n="personalityUsage"]',
  '[data-i18n="themeHelp"]','[data-i18n="walkDungeonHint"]','[data-i18n="drawVariation"]',
- '[data-item-text="notice"]','#home-usage','#home-appearance-help'
+ '[data-item-text="notice"]','#home-usage','#home-appearance-help','[data-help]'
 ];
 export function createHints(document,language){
  const hints=[];let active=null,pinned=false,hideTimer;

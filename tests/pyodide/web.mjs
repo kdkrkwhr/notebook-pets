@@ -26,11 +26,11 @@ try{
  await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);
  assert(await page.locator('#dungeon-section').isVisible());
  assert.match(await page.locator('#stats').innerText(),/일반 전투 0승 0패 0무/);
- assert.match(await page.locator('[data-i18n="battleRecordHelp"]').innerText(),/던전 결과는 포함하지 않아요/);
+ assert.match(await page.locator('[data-i18n="battleRecordHelp"]').textContent(),/던전 결과는 포함하지 않아요/);
  const guidanceBefore=await page.evaluate(async()=>{const m=await import('./store.js');return m.snapshot(await m.openStore());});
  await page.locator('#dungeon-section summary').click();
- assert.match(await page.locator('[data-i18n="dungeonRegionsHelp"]').innerText(),/다섯 지역/);
- assert.match(await page.locator('#dungeon-section [data-i18n="dungeonDate"]').innerText(),/자동 교체나 시간 초기화는 없으며/);
+ assert.match(await page.locator('[data-i18n="dungeonRegionsHelp"]').textContent(),/다섯 지역/);
+ assert.match(await page.locator('#dungeon-section [data-i18n="dungeonDate"]').textContent(),/자동 교체나 시간 초기화는 없으며/);
  assert.deepEqual(await page.evaluate(async()=>{const m=await import('./store.js');return m.snapshot(await m.openStore());}),guidanceBefore);
 
  await page.waitForFunction(()=>document.querySelector('#pet-image').naturalWidth>0);assert.equal(await page.locator('#album .album-item').count(),4);await page.waitForFunction(()=>document.querySelector('.brand img').naturalWidth>0);await page.screenshot({path:path.join(shots,'game-desktop.png'),fullPage:true});
