@@ -1,6 +1,6 @@
 import {snapshot,updateVisuals} from './store.js';
-import {ART,STORY} from './data.mjs';
-import {imageKey,starter} from './model.mjs';
+import {ART,STORY,CHAT} from './data.mjs';
+import {imageKey,starter,portraitEntry,normalHistory} from './model.mjs';
 import {currentHomeAppearance,homeNeedsChoice,HOME_SPRITE_PROMPT} from './home-sprite.mjs';
 import {dataURL} from './gemini.js';
 import {parseStory} from './walk-stories.mjs';
@@ -26,22 +26,22 @@ export function createVisuals(db,epoch,petId,ai){
   }
   const api={...ai,
     storage:{
-      async get({key}){if(![ART,STORY].includes(key))throw Error('Unsupported key');const {visuals}=await read();return {exists:true,etag:String(visuals.revision),value:key===ART?visuals.art:visuals.story??null};},
+      async get({key}){if(![ART,STORY,CHAT].includes(key))throw Error('Unsupported key');const {visuals}=await read();return {exists:true,etag:String(visuals.revision),value:visuals[{[ART]:'art',[STORY]:'story',[CHAT]:'chat'}[key]]??null};},
       async set({key,value,if_match}){
-        if(![ART,STORY].includes(key)||closed)throw Error('Companion changed');
+        if(![ART,STORY,CHAT].includes(key)||closed)throw Error('Companion changed');
         await updateVisuals(db,epoch,petId,v=>{
           if(String(v.revision)!==if_match)throw Error('conflict');
-          return {...v,[key===ART?'art':'story']:value};
+          return {...v,[{[ART]:'art',[STORY]:'story',[CHAT]:'chat'}[key]]:value};
         });if(key===ART)art=value;
       }
     },
     files:{async download_url({path}){await refresh();if(!pathOK(path)||!url(path))throw Error('Image unavailable');return {get_url:url(path)};}}
   };
-  return {api,upload,refresh,guard,
-    portrait:view=>url(art[imageKey(view)]?.path)||starter(view),
+  return {api,upload,refresh,guard,art:()=>art,
+    portrait:view=>url(portraitEntry(view,art)?.path)||starter(view),
     stagePortrait:(view,stage)=>url(art[imageKey(view,stage)]?.path)||starter(view),
     needsAppearance:view=>homeNeedsChoice(view,art),
-    sprite:view=>{const entry=currentHomeAppearance(view,art);return entry?.format==='home-sprite-v1'?url(entry.path):{kind:'default',url:url(entry?.path)||url(art[imageKey(view)]?.path)||starter(view)};},
+    sprite:view=>{const entry=currentHomeAppearance(view,art);return entry?.format==='home-sprite-v1'?url(entry.path):{kind:'default',url:url(entry?.path)||url(portraitEntry(view,art)?.path)||starter(view)};},
     async imageOptions(view,old,source){
       const reference=source.startsWith('portraits/')?(await api.files.download_url({path:source})).get_url:source;
       const response=await fetch(reference);if(!response.ok)throw Error('Reference unavailable');
@@ -78,7 +78,7 @@ export async function exportNotebook(db){
   const {player,visuals}=await snapshot(db);if(!player.state)throw Error('먼저 친구를 만나 주세요.');
   // Only reachable files belong in a backup; orphaned partial uploads are omitted.
   const files={};for(const entry of Object.values(visuals.art))if(entry?.path&&visuals.files[entry.path])files[entry.path]=await dataURL(visuals.files[entry.path]);
-  return {format:'notebuddy-web',version:2,state:player.state,visuals:{art:visuals.art,files,story:visuals.story??null}};
+  return {format:'notebuddy-web',version:2,state:player.state,visuals:{art:visuals.art,files,story:visuals.story??null,chat:normalHistory(visuals.chat)}};
 }
 export async function importVisuals(backup){
   if(backup.version===1)return {revision:0,art:{},files:{}};
@@ -92,7 +92,7 @@ export async function importVisuals(backup){
     const valid=bitmap.width*bitmap.height<=16000000;bitmap.close();if(!valid)throw Error('그림이 너무 커요.');decoded[path]=blob;
   }
   for(const [key,entry] of Object.entries(art)){
-    const request=key.startsWith(backup.state.pet_id+'/home-sprite-request-stage-')&&entry?.path===entry.source_path&&(Object.hasOwn(decoded,entry.path)||/^assets\/starters-v1\/[a-z0-9_]+\.png$/.test(entry.path));
+    const request=(key.startsWith(backup.state.pet_id+'/home-sprite-request-stage-')||key.startsWith(backup.state.pet_id+'/evolution-source-stage-')||key.startsWith(backup.state.pet_id+'/stage-')&&key.endsWith('-evolution-request'))&&entry?.path===entry.source_path&&(Object.hasOwn(decoded,entry.path)||/^assets\/starters-v1\/[a-z0-9_]+\.png$/.test(entry.path));
     if(!key.startsWith(backup.state.pet_id+'/')||!entry||!Object.hasOwn(decoded,entry.path)&&!request)throw Error('그림 연결 정보가 올바르지 않아요.');
   }
   const story=backup.visuals.story??null;
@@ -105,5 +105,7 @@ export async function importVisuals(backup){
       if(c.journey){journeyStory(c.journey,c.language);journeyInfluence(c.journey,c.language);}
     }
   }catch{throw Error('산책 기록 형식을 확인해 주세요.');}
-  return {revision:0,art,files:decoded,story};
+  const chat=backup.visuals.chat??[];
+  if(!Array.isArray(chat)||chat.length>64||new TextEncoder().encode(JSON.stringify(chat)).length>40000)throw Error('대화 기록 형식을 확인해 주세요.');
+  return {revision:0,art,files:decoded,story,chat:normalHistory(chat)};
 }

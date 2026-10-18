@@ -2,6 +2,15 @@
 export async function dataURL(blob){
   return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=()=>reject(r.error);r.readAsDataURL(blob);});
 }
+export function contentParts(content){
+ return (Array.isArray(content)?content:[typeof content==='string'?{type:'text',text:content}:content]).map(p=>{
+  if(p?.type==='image'){
+   if(typeof p.data!=='string'||p.data.length>18000000||!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/=]+$/.test(p.data))throw Error('그림 분석 데이터를 확인해 주세요.');
+   return {inlineData:{mimeType:p.data.slice(5,p.data.indexOf(';')),data:p.data.split(',')[1]}};
+  }
+  if(typeof p?.text!=='string')throw Error('대화 내용을 확인해 주세요.');return {text:p.text};
+ });
+}
 export function createGemini(settings){
   const controllers=new Set(),urls=new Set();let closed=false;
   async function request(model,body,timeout,signal){
@@ -24,7 +33,7 @@ export function createGemini(settings){
     llm:{async complete(options,{signal}={}){
       const result=await request(settings().model,{
         systemInstruction:{parts:[{text:options.systemPrompt}]},
-        contents:options.messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:typeof m.content==='string'?m.content:m.content.text}]})),
+        contents:options.messages.map(m=>({role:m.role==='assistant'?'model':'user',parts:contentParts(m.content)})),
         generationConfig:{maxOutputTokens:options.maxTokens??1024,temperature:options.temperature??.35,...(options.json===false?{}:{responseMimeType:'application/json'})}
       },60000,signal);
       return {content:{text:result.candidates?.[0]?.content?.parts?.filter(p=>!p.thought).map(p=>p.text??'').join('')??''}};

@@ -24,6 +24,8 @@ jobs:
       - run: node tests/pyodide/web.mjs
       - run: node tests/pyodide/web-world.mjs
       - run: node tests/pyodide/web-current.mjs
+      - run: node tests/pyodide/web-evolution.mjs
+      - run: node tests/pyodide/web-local-ai.mjs
       - run: node tests/pyodide/web-themes.mjs
       - uses: actions/upload-pages-artifact@v3
         with:

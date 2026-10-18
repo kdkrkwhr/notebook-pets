@@ -3,7 +3,7 @@ let py;
 const ready=(async()=>{
   py=await loadPyodide({indexURL:'./pyodide/'});
   py.FS.mkdir('/core');
-  const modules=['engine','domain','ports','game_api','art','dungeons','collectibles','journeys','personality','home','home_world'];
+  const modules=['evolution','engine','domain','ports','game_api','art','dungeons','collectibles','journeys','personality','home','home_world'];
   async function get(url){const response=await fetch(url+new URL(import.meta.url).search);if(!response.ok)throw Error(`불러오기 실패: ${url}`);return response.text();}
   await Promise.all(modules.map(async name=>py.FS.writeFile(`/core/${name}.py`,await get(`./core/${name}.py`))));
   py.globals.set('rules_json',await get('./data/game_data.json'));

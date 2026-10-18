@@ -1,4 +1,5 @@
 // Browser -> this computer only. Never forward a Gemini key or fall back to cloud.
+import {contentParts} from './gemini.js';
 export function localURL(value){
  let url;try{url=new URL(value);}catch{throw Error('로컬 서버 주소를 확인해 주세요.');}
  if(!['http:','https:'].includes(url.protocol)||!['localhost','127.0.0.1','[::1]'].includes(url.hostname)||url.username||url.password||url.search||url.hash||!['','/'].includes(url.pathname))throw Error('같은 PC의 localhost 또는 127.0.0.1 주소를 입력해 주세요.');
@@ -24,7 +25,11 @@ export async function ollamaText(config,options,signal){
  signal?.throwIfAborted();
  if(details.remote_host||details.remote_model||/:cloud\b|[-:]cloud$/i.test(model))throw Error('로컬 Ollama 모델을 선택해 주세요. 클라우드 모델로 자동 연결하지 않아요.');
  if(Array.isArray(details.capabilities)&&!details.capabilities.includes('completion'))throw Error('텍스트 응답을 지원하는 Ollama 모델을 선택해 주세요.');
- const messages=[{role:'system',content:options.systemPrompt},...options.messages.map(m=>({role:m.role,content:typeof m.content==='string'?m.content:m.content.text}))];
+ const messages=[{role:'system',content:options.systemPrompt},...options.messages.map(m=>{
+  const parts=contentParts(m.content),images=parts.filter(p=>p.inlineData).map(p=>p.inlineData.data);
+  if(images.length&&Array.isArray(details.capabilities)&&!details.capabilities.includes('vision'))throw Error('그림 특징 분석에는 비전을 지원하는 로컬 모델이 필요해요.');
+  return {role:m.role,content:parts.filter(p=>p.text).map(p=>p.text).join('\n'),...(images.length?{images}:{})};
+ })];
  const result=await localJSON(config.ollamaURL,'/api/chat',{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({model,messages,stream:false,think:false,...(options.json?{format:'json'}:{}),options:{temperature:options.temperature??.35,num_predict:options.maxTokens??1024}})});
  if(typeof result.message?.content!=='string'||!result.message.content.trim()||result.message.content.length>32000)throw Error('Ollama의 텍스트 응답이 비어 있거나 너무 커요.');
  return {content:{text:result.message.content}};
@@ -33,24 +38,29 @@ export async function ollamaText(config,options,signal){
 export function validateWorkflow(graph,binding){
  if(!graph||typeof graph!=='object'||Array.isArray(graph)||Object.keys(graph).length>500)throw Error('ComfyUI의 API 형식 워크플로 JSON을 선택해 주세요.');
  const {promptNode,promptField,referenceNode,outputNode}=binding;
- if(!graph[promptNode]?.inputs||typeof graph[promptNode].inputs[promptField]!=='string'||graph[referenceNode]?.class_type!=='LoadImage'||typeof graph[referenceNode]?.inputs?.image!=='string'||!['SaveImage','PreviewImage'].includes(graph[outputNode]?.class_type))throw Error('프롬프트 노드/입력 필드·LoadImage 노드·SaveImage 출력 노드 번호를 확인해 주세요.');
+ if(!graph[promptNode]?.inputs||typeof graph[promptNode].inputs[promptField]!=='string'||referenceNode&&(graph[referenceNode]?.class_type!=='LoadImage'||typeof graph[referenceNode]?.inputs?.image!=='string')||!['SaveImage','PreviewImage'].includes(graph[outputNode]?.class_type))throw Error('프롬프트 노드/입력 필드·LoadImage 노드·SaveImage 출력 노드 번호를 확인해 주세요.');
  const visited=new Set();function visit(id){if(visited.has(id))return;visited.add(id);for(const value of Object.values(graph[id]?.inputs??{}))if(Array.isArray(value)&&value.length===2&&typeof value[1]==='number'&&graph[String(value[0])])visit(String(value[0]));}visit(outputNode);
- if(!visited.has(promptNode)||!visited.has(referenceNode))throw Error('선택한 출력에 프롬프트와 참고 그림이 모두 연결돼 있어야 해요.');
+ if(!visited.has(promptNode)||referenceNode&&!visited.has(referenceNode))throw Error('선택한 출력에 프롬프트와 참고 그림이 모두 연결돼 있어야 해요.');
+ if(!referenceNode&&[...visited].some(id=>graph[id]?.class_type==='LoadImage'))throw Error('텍스트 기반 워크플로의 출력에는 LoadImage를 연결할 수 없어요.');
  return graph;
 }
 const safeFile=value=>typeof value==='string'&&!!value&&!/[\\\x00-\x1f]/.test(value)&&!value.startsWith('/')&&value.split('/').every(p=>p&&p!=='.'&&p!=='..');
 export async function comfyImage(config,options,signal){
  validateWorkflow(config.workflow,config.binding);
  const references=options.reference_image_urls??[];
+ const graph=structuredClone(config.workflow),b=config.binding;
+ if(!references.length&&b.referenceNode)throw Error('진화 그림은 텍스트 기반 워크플로가 필요해요. LoadImage 없이 연결하고 참고 그림 노드 번호를 비워 주세요.');
+ if(references.length){
+ if(!b.referenceNode)throw Error('마이홈 그림에는 참고 그림 LoadImage 노드가 연결된 워크플로가 필요해요.');
  if(references.length!==1||!references[0].startsWith('blob:'))throw Error('현재 친구의 로컬 참고 그림 한 장이 필요해요.');
  const reference=await fetch(references[0],{signal});if(!reference.ok)throw Error('참고 그림을 읽지 못했어요.');const blob=await reference.blob();
  if(!['image/png','image/jpeg','image/webp'].includes(blob.type)||blob.size>20000000)throw Error('참고 그림 형식을 확인해 주세요.');
  const form=new FormData();form.append('image',blob,`notebuddy-${crypto.randomUUID()}.${blob.type==='image/png'?'png':blob.type==='image/jpeg'?'jpg':'webp'}`);form.append('type','input');
  const uploaded=await localJSON(config.comfyURL,'/upload/image',{method:'POST',body:form,signal});
  if(!safeFile(uploaded.name)||uploaded.name.includes('/')||uploaded.subfolder&&!safeFile(uploaded.subfolder))throw Error('ComfyUI의 참고 그림 업로드 결과를 확인해 주세요.');
- const graph=structuredClone(config.workflow),b=config.binding;
- graph[b.promptNode].inputs[b.promptField]=options.prompt;
  graph[b.referenceNode].inputs.image=[uploaded.subfolder,uploaded.name].filter(Boolean).join('/');
+ }
+ graph[b.promptNode].inputs[b.promptField]=options.prompt;
  // One submission only. A lost reply or timeout must never enqueue a second job.
  const job=await localJSON(config.comfyURL,'/prompt',{method:'POST',signal,headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:graph,client_id:crypto.randomUUID()})});
  if(typeof job.prompt_id!=='string'||!job.prompt_id||job.prompt_id.length>128||job.node_errors&&Object.keys(job.node_errors).length)throw Error('ComfyUI가 워크플로를 수락하지 않았어요. 모델과 노드 설정을 확인해 주세요.');

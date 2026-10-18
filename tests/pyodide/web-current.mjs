@@ -91,5 +91,5 @@ try{
   assert(await page.evaluate(async backup=>{try{await (await import('./visuals.js')).importVisuals(backup);return false;}catch{return true;}},bad));
   page.on('dialog',dialog=>dialog.accept());await page.locator('#open-backup').click();await page.locator('#import').setInputFiles({name:'garden-story.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(backup))});await idle();await page.waitForFunction(()=>document.querySelector('#backup-status').textContent.includes('가져왔'));
   assert.deepEqual((await state()).visuals.story,backup.visuals.story);assert.deepEqual((await state()).visuals.art,backup.visuals.art);assert.equal(calls.length,4);assert.equal(imageCalls,0);assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({url:base,version:'0.6.0',freeAppearance:true,emptyYard:true,gardenCatalog:36,collection:true,careToggle:true,walkNoAI:true,walkAIOnce:true,coreChoices:true,discoveryOrder:true,reloadPreserves:true,storyBackup:true,errors}));
+  console.log(JSON.stringify({url:base,version:await page.locator('body').getAttribute('data-web-version'),freeAppearance:true,emptyYard:true,gardenCatalog:36,collection:true,careToggle:true,walkNoAI:true,walkAIOnce:true,coreChoices:true,discoveryOrder:true,reloadPreserves:true,storyBackup:true,errors}));
 }finally{await browser?.close();await new Promise(r=>server.close(r));}

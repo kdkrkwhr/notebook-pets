@@ -22,7 +22,7 @@ template = template.replace('__ANNA_WALK__', dialog('walk-story'))
 teaser = re.search(r'<section class="paper item-book-teaser"[\s\S]*?</section>', shared_html).group()
 template = template.replace('__ANNA_TEASER__', teaser)
 shutil.copyfile(anna / 'style.css', OUT / 'anna-style.css')
-for name in ('theme.css', 'themes.css', 'themes.mjs', 'home.css', 'ui-polish.css', 'hints.mjs', 'garden-art.mjs', 'walk-stories.mjs', 'walk-story-dialog.mjs', 'journey-stories.mjs', 'reactions.mjs', 'icon.svg', 'title-screen.mjs', 'item-catalog.mjs', 'items.mjs', 'i18n.mjs',
+for name in ('evolution.mjs', 'birth-art.mjs', 'theme.css', 'themes.css', 'themes.mjs', 'home.css', 'ui-polish.css', 'hints.mjs', 'garden-art.mjs', 'walk-stories.mjs', 'walk-story-dialog.mjs', 'journey-stories.mjs', 'reactions.mjs', 'icon.svg', 'title-screen.mjs', 'item-catalog.mjs', 'items.mjs', 'i18n.mjs',
              'model.mjs', 'data.mjs', 'pixel-pet.mjs', 'home.mjs', 'home-scene.mjs', 'home-walk.mjs', 'home-sprite.mjs',
              'dungeon.mjs', 'dungeon-scene.mjs', 'dungeon-avatar.mjs', 'dungeon-map.mjs', 'dungeon-enemies.mjs', 'dungeon-journey.mjs'):
     shutil.copyfile(anna / name, OUT / name)
@@ -34,7 +34,7 @@ for folder in ('starters-v1', 'items-v1', 'dungeons-v2', 'home-v2'):
 shutil.copyfile(ROOT / 'anna' / 'THIRD_PARTY_NOTICES.txt', OUT / 'THIRD_PARTY_NOTICES.txt')
 for folder in ('core', 'data', 'pyodide'):
     (OUT / folder).mkdir(exist_ok=True)
-for name in ('engine', 'domain', 'ports', 'game_api', 'art', 'dungeons', 'collectibles', 'journeys', 'personality', 'home', 'home_world'):
+for name in ('evolution', 'engine', 'domain', 'ports', 'game_api', 'art', 'dungeons', 'collectibles', 'journeys', 'personality', 'home', 'home_world'):
     shutil.copyfile(ROOT / 'engine' / f'{name}.py', OUT / 'core' / f'{name}.py')
 for name in ('game_data.json', 'image_prompts.json'):
     shutil.copyfile(ROOT / 'data' / name, OUT / 'data' / name)
