@@ -1,0 +1,15 @@
+{
+  "version": "1.4.12",
+  "captured_date": "2026-10-18",
+  "image": "11-image-progress-en.png",
+  "sha256": "5acacec7c8988f83f98b86e727f28a1de60affd04feddebb7cfefc99c285eedf",
+  "width": 1120,
+  "height": 900,
+  "ui_source": "60569b1",
+  "command": "ANNA_BROWSER_CHANNEL=chromium node --test --test-name-pattern=\"birth image generation\" tests/browser/activity.browser.mjs",
+  "scenario": "Actual English birth-progress UI with a controlled delayed image result and fake clock at approximately 31 seconds",
+  "provider_calls": 0,
+  "owner_data_writes": 0,
+  "edited": false,
+  "latency_benchmark": false
+}

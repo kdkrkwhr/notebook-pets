@@ -2,7 +2,7 @@
 
 [사용 안내로 돌아가기](README.md) · [English](DEVELOPMENT.en.md)
 
-현재 설치된 테스트 앱은 **1.4.11 / working revision 81 / 도구 0.9.4**입니다. 사용자 요청으로 **1.4.11 / ID 1443**을 맞춤 진화 소개·영문 진화 스크린샷을 포함한 6장과 함께 심사에 제출했습니다. 상태는 `pending_review`이며 공개 출시는 하지 않았습니다. [최신 인계](HANDOFF.md) · [배포 기록](releases/RELEASE_1411.md).
+현재 설치된 테스트 앱은 **1.4.12 / working revision 86 / 도구 0.9.5**입니다. 사용자 요청으로 **1.4.12 / ID 1445**를 진행 안내·저장 충돌 수정과 최신 설명·6장 스크린샷을 포함해 심사에 제출했습니다. 상태는 `pending_review`이며 공개 출시는 하지 않았습니다. [최신 인계](HANDOFF.md) · [배포 기록](releases/RELEASE_1412.md).
 
 ## 실행
 

@@ -53,7 +53,7 @@ async function calls(p,method){return p.evaluate(m=>window.hostTest.calls.filter
 
 test('first home visit offers a paid choice; free default persists without manual redraw',async t=>{
  const p=await setup(t);await start(p);assert.equal((await calls(p,'home-image')).length,0);
- await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),true);
+ await p.locator('#open-home').click();await p.locator('#home-appearance-choice').waitFor({state:'visible'});assert.equal(await p.locator('#home-appearance-choice').isVisible(),true);
  await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.appearance==='default');
  await p.locator('#home-appearance-default').click();await idle(p);
  assert.equal(await p.locator('#home-appearance-choice').isVisible(),false);assert.equal((await calls(p,'home-image')).length,0);
