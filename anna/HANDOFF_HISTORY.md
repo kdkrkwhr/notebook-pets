@@ -1,3 +1,17 @@
+# Anna home image-link recovery — 2026-10-18
+
+UI-only source **76449c3**, app **1.4.13 / working revision 88 / installed 0.0.0-draft**, actual cloud tool **0.9.5 / Executa 774 / master 1193 loaded/running**. Review **1.4.12 / ID 1445** and shared listing must remain unchanged; web excluded.
+
+- Reproduced owner home with `data-sprite=missing`, failed fetch and hidden missing-image guidance. The same saved 1024x1024 / 1682284-byte personal sheet downloaded through a fresh signed link and decoded into all 16 frames. No generation or owner data mutation.
+- Renew the current saved home appearance download URL on each home entry, with a companion/stage/path guard. Decoded renderer state controls missing-image guidance, replacing the incorrect assumption that a URL means a visible character. No AI, automatic generation, storage write or fallback appearance replacement.
+- Regression test fails before the fix (`missing` instead of `ready`), then passes: expired link on entry, fresh link recovery, real fetch failure with visible guidance, subsequent reopen recovery and zero AI requests. Local home/renderer browser **11**, JS **92** and strict validation passed. Installed source hashes for all three changed modules match. Actual home reports **directional / ready**, with the existing hydra visible at the doorstep; observed **847** sprite draws, **383** positions and **9** frames. Owner game ETag and artwork/chat/story/personality values/ETags are unchanged, as are the complete frozen review row and shared listing. Additional paid AI calls: **0**. Full local browser verification **130/130** passed (352 seconds).
+
+- Working bundle **172 files / 171337956 bytes**, content hash **ed08fca4c863f5666ebc971529e3f842178ab678d9b39885bf1db96ac589f6dc**. Private proof captures: `.local/home-url-canvas.png`, `.local/home-url-installed.png`. Reopen the whole installed app to load the new UI; no portrait regeneration is needed. Review replacement still requires a fresh explicit request. CI **39116562365** passed on **Windows and Linux**: **130 browser / 92 JS / 73 storage-protocol**, strict validation and standalone executable build/smoke. Shared CI **39116562380** also passed all three jobs.
+
+---
+
+---
+
 # Anna 1.4.12 review refresh — 2026-10-18
 
 At the owner's fresh explicit request, review candidate is now **1.4.12 / ID 1445 / pending_review**, replacing 1.4.11 / 1443. Owner test app **working revision 86 / installed 0.0.0-draft**; frozen and actual cloud tool **0.9.5 / Executa 774 / master 1193 loaded/running**. Runtime UI **c968ae8 / fc92f2c / 60569b1** is unchanged by review packaging. Web remains unchanged. No public-release command, tool-binary replacement or paid AI request.
