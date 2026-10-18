@@ -64,11 +64,13 @@ npm run test:plugin
 
 ```powershell
 uv run --locked --project executas/notebuddy --with pyinstaller==6.16.0 python scripts/build_executa.py
-npx anna-app apps push --no-install-local --profile binary
-npx anna-app apps cut <새-버전>
+npx anna-app executa publish --cwd executas/notebuddy --profile binary
+npx anna-app apps push --no-install-local --skip-executa-publish --profile binary
 ```
 
-플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 현재 도구 버전은 0.9.2입니다. UI 테마 업데이트인 1.4.4에서는 기존에 검증한 Windows/Linux 0.9.1 패키지를 유지합니다. 이후 도구 내용이 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드해야 합니다.
+플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 현재 도구 버전은 0.9.4입니다. 도구가 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드합니다. `apps push`만으로는 새 바이너리가 반영되지 않을 수 있으므로 위의 도구 발행을 먼저 실행하고 CDN 해시와 실제 실행기 버전을 확인합니다. 이 명령에는 공개 전환 옵션 `--publish`를 넣지 않습니다.
+
+설치 시 storage declaration drift가 발생하면 원격 도구의 `manifest_cache`를 소스의 검증된 `manifest.json`과 비교합니다. 플랫폼이 파일 저장 선언을 누락한 경우 원래 선언(`kv`, `files`, `scopes.tool`)을 복원한 뒤 설치합니다. 앱 심사 버전의 cut/제출은 사용자가 새로 요청할 때만 진행합니다.
 
 `cut`은 검토할 비공개 버전을 만듭니다. `submit-review`는 심사 제출, `release`는 공개이므로 자동 실행하지 않습니다. 심사 전 실제 Anna Agent/Cloud 설치 실행, 소개 이미지·지원 정보, 장기간 저장 크기 및 여러 실행기의 동시 사용을 확인해야 합니다. 실제 설치 초안을 Anna 대시보드에서 실행하여 생성·밥 주기·대화·그림 저장과 재접속 복원까지 확인했습니다. 세부 결과는 HANDOFF.md를 참고하세요.
 

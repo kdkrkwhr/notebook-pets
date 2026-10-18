@@ -1,3 +1,28 @@
+# 1.4.10 review candidate, description and screenshots - 2026-10-18
+
+The user explicitly requested the latest review candidate with updated description and screenshots. Review is now **1.4.10 / ID 1442 / pending_review**, frozen **tool 0.9.3 / Executa 772 / master ID 1193**. Working revision **79**, unchanged executable bundle, owner installed draft **0.0.0-draft**. Listing/capture source **d1d1237**, UI source **c96d7a2**, test-fixture correction **507e59c**. No public release or web deployment.
+
+- Updated tagline and description for the empty initial yard, 48 objects/36 garden items, Shop/My collection tabs, stored-item count, desktop split view/mobile stacked browsing and secondary controls. Kept exact AI-use boundaries and removed obsolete change-history copy.
+- Recaptured ten real UI screenshots from isolated engine views and recorded Mori artwork; published six: care, empty starting yard, redesigned garden shop, drawing editor, dungeon preview, item book. Collection capture retained in Git. All six uploaded CDN images decode at 1280 pixels wide and description/tagline/listing fields exactly match source. No new paid AI, live owner screenshots or production mutations.
+- Runtime bundle was already verified in successful Windows/Linux CI **39086263232**: JS **92**, full browser **118**, storage/protocol **70**, strict and executable build/smoke checks; core CI **39086263306** succeeded. Current capture flow and strict validation passed. Later metadata/capture-only CI **39088482080 / 39088482096** is running at record time; no runtime code changed.
+- Actual installed app is Connected with no notice; app.js, home.mjs, home.css and home-scene.mjs hashes match source. Cloud **0.9.3 loaded/running**; art/chat/story/personality KV and game inspection unchanged. Working draft dirty_vs_latest_cut=false. PC remains offline/unverified; previously tested Windows package is retained.
+- Bundle **1339**, **170 files / 171308544 bytes**, SHA-256 manifest **4a5154cee5b69fabe1c36f3bb1b47d4ed90ff79675c61d40979b9d64f3b0ea5f**. No redundant tool publish or version bump. Next review change still requires fresh user authorization.
+
+---
+
+# 1.4.10 home interaction refinement - 2026-10-18
+
+Source **c96d7a2**, owner test **1.4.10 / working revision 79 / installed 0.0.0-draft**. Tool remains **0.9.3 / Executa 772**, actual cloud loaded/running. Review **1.4.9 / ID 1439 / pending_review** and all shared listing fields unchanged. No cut, review submission, public web deployment or paid AI calls.
+
+- Landscape-first browsing: desktop shop occupies its own column; mobile shop sits below the visible world. Shop / My collection tabs, area/style filters, collection empty state and stored-item count make the purchase-to-decoration flow clear. Existing explicit Decorate is still the sole layout AI trigger.
+- Zoom/pause under View options; undo/show-finished under More. Idle guidance paragraph removed, AI usage explanation collapsed. Opening the shop closes view settings; Escape closes the shop first and restores focus. Kept appearance choice and save recovery visible when needed.
+- JS **92**, real-core home browser **6**, strict and diff checks passed. Real-core scenarios verify purchases/undo/lost-reply recovery, zero browsing AI calls, collection filtering, desktop/mobile non-overlap, keyboard dismissal and sandbox purchase flow. Final keyboard addition passed the focused browser check.
+- Installed home.mjs and home.css SHA-256 match source; runtime index.html is host-transformed, so confirmed its view-settings structure in the actual DOM. Two collection tabs, secondary controls closed, non-overlapping world/shop and Connected/no notice verified. Art/chat/story/personality KV and game inspection unchanged. Live screenshot inspected privately; no owner data used in store captures.
+- Follow-up CI failure: Anna **39085768337** failed eight recovery cases on both platforms because the shared mock home lacked the required `owned` list. Real engine responses include it. Fixed the test fixture only in **507e59c**; all eight previously failing cases pass locally. Replacement CI Tests **39086263306** and Anna **39086263232** both succeeded. Windows and Linux each passed JS **92**, full browser **118**, storage/protocol **70**, strict validation and packaged executable smoke tests. Production bundle stays at c96d7a2/revision 79; no app/tool deployment or paid AI is needed for this test-only correction.
+- Core CI **39085768334** passed. Packages were not changed or republished. PC remains offline/unverified. Earlier Windows/Linux 0.9.3 packages remain installed/uploaded as recorded below.
+
+---
+
 # 1.4.10 empty starting yard - 2026-10-18
 
 Source **7037da7**, owner test app **1.4.10 / working revision 78 / installed 0.0.0-draft**, actual cloud tool **0.9.3 / Executa 772 / ID 1193 loaded/running**. The user clarified that all default trees and decorations should be absent. Kept the cottage/fence/paths/lawn and existing owned objects; removed all separate default trees, bushes, bench, pots and flower clusters. Cottage artwork is preserved. The earlier sparse two-tree variant was never deployed.
@@ -233,6 +258,8 @@ User explicitly requested review reflection. Cut tested **c93143c / working revi
 - 게임·아트·대화·산책 이야기·성격 초안 **5종 값과 ETag 모두 배포 전후 동일**. 기존 심사·공유 소개·스크린샷 6개도 동일하다. 재심사나 공개 출시는 하지 않았다. [배포 기록](releases/RELEASE_143.md).
 - 남은 제한: 실제 Anna 참조 이미지 생성은 계정 사용량 부족으로 미검증이다. 생성 실패는 자동으로 AI를 재호출하지 않으며 다음 새 그림에서 준비한다. 저장 전 결과는 페이지를 닫으면 유실될 수 있다. 외형·방향의 의미상 정확도, APS 최초 생성 경합과 아바타 착용 미구현은 [안내](docs/HOME_PIXEL_ART.md)를 따른다.
 
+웹 0.4.0(2026-10-16): 집과 마당·홈/던전 동작 공유를 웹의 저장소와 BYOK에 연결해 Pages에 배포했다. 공개 URL의 실제 브라우저 검증과 16개 파일 일치를 확인했다. [검증·배포 기록](../web/RELEASE_040.md). Anna 앱 1.4.3 / 도구 0.9.1 / revision 57은 변경 없이 유지하며 Anna 재배포는 없다.
+
 # 1.4.2 · 집과 마당, 개인 방향별 스프라이트 · 2026-10-16
 
 앱 **1.4.2 / ID 1412 / working revision 56**, 도구 **0.9.1 / Executa version 760**. 앱·도구·미술 소스 **`4cc8f1d65ef0f39e3efa87c784829d8c79b93128`**, 이후 `a27773d`는 Pyodide 테스트의 파일 목록만 보완했다. 소유자 테스트 앱 설치 `0.0.0-draft`, `dirty_vs_latest_cut=false`. 심사 **1.0.0 / ID 1383 / pending_review** 유지.
@@ -244,6 +271,15 @@ User explicitly requested review reflection. Cut tested **c93143c / working revi
 - 실제 설치 UI Connected, 개인 스프라이트 ready, 집/마당 전환과 재열기를 확인했다. 홈 코드·미술 파일 9개가 HTTP 200이고 로컬 해시와 같다. 클라우드 실행 도구 **0.9.1 / loaded=true / running=true** 확인. PC 실행기는 오프라인이어서 새 Windows 패키지의 그 PC 실행 상태는 확인하지 못했다.
 - 공유 소개·스크린샷 6개·심사 후보를 그대로 유지했다. 재심사·공개 출시는 하지 않았다. [배포 기록](releases/RELEASE_142.md) · [자산/생성 안내](docs/HOME_PIXEL_ART.md).
 - 남은 제한: Anna 이미지 서비스의 실제 참조 생성은 계정 사용량 부족으로 미검증이며, 모의 제공자로 참조 전달·저장 복구·다른 친구/원본 배제 계약을 검사했다. AI의 의미상 외형·방향 일치는 사용자 확인이 필요하다. 저장 전 결과는 페이지를 닫으면 잃을 수 있다. 실내 배치 후보와 APS 최초 생성 경합은 기존 제약을 따른다. 웹 UI 이식과 새 홈의 던전 적용은 이번 범위가 아니다.
+
+웹 0.3.0(2026-10-15): 초기화·모델 드롭다운 추가와 `release-web` 중심의 브랜치 정리를 진행했다. Anna 앱/도구·개인 데이터는 변경하지 않았으며 Anna 재배포는 없다. [웹 기록](../web/RELEASE_030.md).
+
+웹 디자인 공유(2026-10-15): 웹 0.2.0은 Anna의 폰트·테마 CSS·공개 기본 그림·시작 화면·아이템 도감을 빌드 시 공유한다. Anna 파일/앱/도구와 개인 데이터는 변경하지 않았다. 웹 배포·검증은 [웹 0.2.0 기록](../web/RELEASE_020.md)을 따른다.
+
+웹 트랙 추가(2026-10-15): `main`/`release-web`에 [GitHub Pages 웹 프리뷰](../web/README.md)를 구현했다. Anna 소스·게임 도구는 변경하지 않아 재배포하지 않았으며, 마지막 확인된 Anna 앱 1.2.1 / 도구 0.8.1 / working revision 53은 아래 기록을 따른다. Pages 배포 결과는 [웹 릴리즈 기록](../web/RELEASE.md)에 별도 기록한다.
+
+
+---
 
 # 1.4.1 · 홈 초상화 로딩 취소·재열기 수정 · 2026-10-16
 
