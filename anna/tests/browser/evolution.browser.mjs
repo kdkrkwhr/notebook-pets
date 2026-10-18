@@ -64,3 +64,10 @@ test('lost evolution reply and failed portrait save recover without double evolu
  await page.evaluate(()=>{hostTest.faults.save=false;hostTest.faults.evolutionSave=false;});
  await page.locator('#evolution-retry').click();await idle(page);assert.equal((await calls(page)).filter(c=>c.method==='image').length,1);assert(await page.locator('#evolution-retry').isHidden());
 });
+test('a portrait replaced after suggestions cannot reuse stale visual observations',async t=>{
+ const {page,state}=await setup(t);await page.locator('#evolution-prepare').click();await idle(page);
+ await page.evaluate(()=>{const id=hostTest.state.save.pet_id;hostTest.state.kv['notebuddy/art-v1'][`${id}/stage-1`]={path:`portraits/${id}/replacement.png`};});
+ await page.locator('.evolution-route').first().click();await page.locator('#evolution-confirm').click();await idle(page);
+ assert.equal(state().stage,2);assert.equal((await calls(page)).filter(c=>c.method==='image').length,0);
+ assert(await page.evaluate(id=>hostTest.state.kv['notebuddy/art-v1'][`${id}/stage-1`].path.endsWith('replacement.png'),state().pet_id));
+});
