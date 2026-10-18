@@ -10,7 +10,7 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-Owner test update **1.4.12** uses game tool **0.9.5**, with manual, personalized evolution. The app is not publicly released; see the [current review and deployment status](HANDOFF.md).
+Owner test update **1.4.13** uses game tool **0.9.5**, with manual, personalized evolution. The app is not publicly released; see the [current review and deployment status](HANDOFF.md).
 
 Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
