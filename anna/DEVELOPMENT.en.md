@@ -2,7 +2,7 @@
 
 [Back to the user guide](README.en.md) · [한국어](DEVELOPMENT.md)
 
-Current owner test app: **1.4.13 / working revision 88 / game tool 0.9.5**. Review candidate **1.4.13 / ID 1446 / pending_review** includes the verified home image-link recovery fix. Existing description and six screenshots are retained. No public release or web deployment. [Latest handoff](HANDOFF.md) · [Release record](releases/RELEASE_1413.md).
+Current owner test app: **1.4.13 / working revision 89 / game tool 0.9.5**. Review candidate **1.4.13 / ID 1446 / pending_review** includes the verified home image-link recovery fix. Existing description and six screenshots are retained. No public release or web deployment. [Latest handoff](HANDOFF.md) · [Release record](releases/RELEASE_1413.md).
 
 ## Development
 
