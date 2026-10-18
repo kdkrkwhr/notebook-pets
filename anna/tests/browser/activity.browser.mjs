@@ -28,7 +28,7 @@ test('slow home images show ongoing work and elapsed time, then clear after one 
  const p=await setup(t);await start(p);await p.clock.install();await fault(p,{imageDelay:120000});await p.locator('#open-home').click();await p.locator('#home-appearance-generate').click();
  await p.waitForFunction(()=>document.querySelector('#home-status').dataset.activity==='image');assert(await p.locator('#home-status-activity').isVisible());assert(await p.locator('#home-empty').isHidden());
  await p.keyboard.press('Escape');assert(await p.locator('#home-dialog').evaluate(d=>d.open));await p.clock.fastForward(31000);
- assert.match(await p.locator('#home-status-activity').innerText(),/longer than usual/);assert.match(await p.locator('#home-status-activity .activity-clock').innerText(),/0:3\d/);
+ assert.match(await p.locator('#home-status-activity').innerText(),/Still waiting for the result/);assert.match(await p.locator('#home-status-activity .activity-clock').innerText(),/0:3\d/);
  assert.equal(await p.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),1);
  await screenshot(p,'home-waiting-desktop');await p.setViewportSize({width:375,height:812});await screenshot(p,'home-waiting-mobile');assert(await p.locator('#home-dialog').evaluate(d=>d.scrollWidth<=d.clientWidth+1));
  assert(await p.locator('.home-footer').evaluate(d=>d.scrollHeight<=d.clientHeight+1),'Progress details must be visible without scrolling past disabled controls');
@@ -51,7 +51,7 @@ test('received home image switches from generating to saving until upload comple
 
 test('chat distinguishes waiting from save-only recovery without repeated AI',async t=>{
  const p=await setup(t);await start(p);await p.clock.install();await fault(p,{llmDelay:100000});await p.locator('#chat-input').fill('Are you there?');await p.locator('#chat-form button').click();
- await p.waitForFunction(()=>document.querySelector('#chat-status').dataset.activity==='chat');await p.clock.fastForward(31000);assert.match(await p.locator('#chat-status-activity').innerText(),/longer than usual/);await screenshot(p,'chat-waiting');
+ await p.waitForFunction(()=>document.querySelector('#chat-status').dataset.activity==='chat');await p.clock.fastForward(31000);assert.match(await p.locator('#chat-status-activity').innerText(),/Still waiting for the result/);await screenshot(p,'chat-waiting');
  await fault(p,{save:true});await p.clock.fastForward(70000);await idle(p);assert(await p.locator('#chat-status').isHidden());assert(await p.locator('#chat-status-activity').isHidden());assert(await p.locator('#retry-chat').isVisible());
  const calls=await p.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length);await fault(p,{save:false});await p.locator('#retry-chat').click();await idle(p);assert.equal(await p.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length),calls);assert(await p.locator('#retry-chat').isHidden());
 });
@@ -67,7 +67,7 @@ test('birth image generation stays visible through a long response and stops aft
   const diagnostic=await p.evaluate(()=>({status:document.querySelector('#birth-recovery-status').textContent,busy:document.querySelector('#refresh').disabled,editorOpen:document.querySelector('#art-dialog').open,nameLength:document.querySelector('#pet-name').value.length,calls:hostTest.calls.map(c=>c.method||c.args?.command)}));
   throw Error(error.message+' '+JSON.stringify(diagnostic));
  }
- assert(await p.locator('#birth-recovery').isVisible());await p.clock.fastForward(31000);assert.match(await p.locator('#birth-recovery-status-activity').innerText(),/longer than usual/);await screenshot(p,'birth-waiting');
+ assert(await p.locator('#birth-recovery').isVisible());await p.clock.fastForward(31000);assert.match(await p.locator('#birth-recovery-status-activity').innerText(),/Still waiting for the result/);await screenshot(p,'birth-waiting');
  await p.clock.fastForward(90000);await idle(p);assert(await p.locator('#birth-recovery').isHidden());assert(await p.locator('#birth-recovery-status-activity').isHidden());assert.equal(await p.evaluate(()=>hostTest.calls.filter(c=>c.method==='image').length),1);
 });
 
