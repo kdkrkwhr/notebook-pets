@@ -1,3 +1,16 @@
+# 1.4.10 home interaction refinement - 2026-10-18
+
+Source **c96d7a2**, owner test **1.4.10 / working revision 79 / installed 0.0.0-draft**. Tool remains **0.9.3 / Executa 772**, actual cloud loaded/running. Review **1.4.9 / ID 1439 / pending_review** and all shared listing fields unchanged. No cut, review submission, public web deployment or paid AI calls.
+
+- Landscape-first browsing: desktop shop occupies its own column; mobile shop sits below the visible world. Shop / My collection tabs, area/style filters, collection empty state and stored-item count make the purchase-to-decoration flow clear. Existing explicit Decorate is still the sole layout AI trigger.
+- Zoom/pause under View options; undo/show-finished under More. Idle guidance paragraph removed, AI usage explanation collapsed. Opening the shop closes view settings; Escape closes the shop first and restores focus. Kept appearance choice and save recovery visible when needed.
+- JS **92**, real-core home browser **6**, strict and diff checks passed. Real-core scenarios verify purchases/undo/lost-reply recovery, zero browsing AI calls, collection filtering, desktop/mobile non-overlap, keyboard dismissal and sandbox purchase flow. Final keyboard addition passed the focused browser check.
+- Installed home.mjs and home.css SHA-256 match source; runtime index.html is host-transformed, so confirmed its view-settings structure in the actual DOM. Two collection tabs, secondary controls closed, non-overlapping world/shop and Connected/no notice verified. Art/chat/story/personality KV and game inspection unchanged. Live screenshot inspected privately; no owner data used in store captures.
+- Follow-up CI failure: Anna **39085768337** failed eight recovery cases on both platforms because the shared mock home lacked the required `owned` list. Real engine responses include it. Fixed the test fixture only in **507e59c**; all eight previously failing cases pass locally. Replacement CI Tests **39086263306** and Anna **39086263232** both succeeded. Windows and Linux each passed JS **92**, full browser **118**, storage/protocol **70**, strict validation and packaged executable smoke tests. Production bundle stays at c96d7a2/revision 79; no app/tool deployment or paid AI is needed for this test-only correction.
+- Core CI **39085768334** passed. Packages were not changed or republished. PC remains offline/unverified. Earlier Windows/Linux 0.9.3 packages remain installed/uploaded as recorded below.
+
+---
+
 # 1.4.10 empty starting yard - 2026-10-18
 
 Source **7037da7**, owner test app **1.4.10 / working revision 78 / installed 0.0.0-draft**, actual cloud tool **0.9.3 / Executa 772 / ID 1193 loaded/running**. The user clarified that all default trees and decorations should be absent. Kept the cottage/fence/paths/lawn and existing owned objects; removed all separate default trees, bushes, bench, pots and flower clusters. Cottage artwork is preserved. The earlier sparse two-tree variant was never deployed.

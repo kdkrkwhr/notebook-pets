@@ -9,11 +9,23 @@
 | Anna 테스트 앱 | **1.4.10 / working revision 79 / 소유자 초안 0.0.0-draft** |
 | 심사 | **1.4.10 / ID 1442 / pending_review**, 명시 요청 전 변경 금지 |
 | 게임 도구 | **0.9.3 / Executa 772**, 변경 없음 |
-| 검증 | JS 92 · 홈 브라우저 6 · installed UI · strict |
-| 공개 웹 | 기존 배포 유지, 이번 배포 제외 |
+| 검증 | JS 92 · 웹 전체 검사 · 공개 주소 재검증 · installed Anna 유지 확인 |
+| 공개 웹 | **0.6.0 / 25eede1**, Pages CI **39090052557** 성공 |
 | Limits | Garden placement is immediate; PC offline, Windows host execution not verified |
 
 최신 작업 2건만 유지하며 이전 기록은 내용 변경 없이 이력 맨 위로 옮긴다.
+
+---
+
+# Web 0.6.0 shared home, garden and care integration - 2026-10-18
+
+The user requested all current changes on the web. Merged Anna release **3fec4e9** into `release-web` through Git (**bab2f73**), then shipped web adapter **25eede1** as **0.6.0** to https://kdkrkwhr.github.io/notebook-pets/. Anna test app **1.4.10 / working revision 79 / owner 0.0.0-draft**, tool **0.9.3 / Executa 772**, and review **1.4.10 / ID 1442 / pending_review** remain unchanged. No Anna publish, review update or paid AI calls.
+
+- Empty initial yard, indoor 12 / garden 36 objects, Shop / My collection, storage count, desktop split / mobile stacked home, secondary controls and hover/touch help. First-home explicit image-or-free-default choice replaces automatic birth/portrait image generation. Gemini and ComfyUI retain browser-local reference-image transport through a shared generator hook; Anna keeps its existing default transport.
+- Added the care AI toggle, optional reactions, saved shared walk stories and delayed dungeon discovery cards. OFF preserves game actions/rewards and authored stories; direct chat remains explicit AI. The core owns choices and rewards. IndexedDB/backup now preserve the latest story; invalid story backups are rejected. Existing epoch/CAS and late-response guards remain.
+- Local shared JS **92**, web core/persistence/reset, world/image/recovery/backup, local AI **6** plus browser, current home/care/story integration, and all **7** themes passed. Pages **39090052557** build/deploy and common CI **39090052561** (Windows/Linux regressions, stdio and Pyodide) succeeded. Live `web-current.mjs` and `web-world.mjs` passed against the public URL, including no automatic images, save-only recovery, bounded AI stories, discovery order, backup/import and stale reset protection. No page errors. Twelve live source files match the build after newline normalization; actual version is 0.6.0. Orca's existing web save hash is unchanged after reload.
+- Installed Anna read-only proof: Connected, app.js/home.mjs/home.css/home-scene.mjs match the previously deployed hashes, cloud 0.9.3 loaded/running, working draft dirty_vs_latest_cut=false, description and six screenshots match. PC remains offline/unverified. No installed Anna or listing mutation.
+- Updated web README, local AI guide, release notes and isolated desktop/mobile/dungeon screenshots. Remaining platform differences: web imports finished portraits; Anna's reference analysis/AI birth is not ported. Chat/care messages remain tab-local. Actual paid-provider image quality was not retested. Details: `web/RELEASE_060.md`.
 
 ---
 
@@ -26,16 +38,3 @@ The user explicitly requested the latest review candidate with updated descripti
 - Runtime bundle was already verified in successful Windows/Linux CI **39086263232**: JS **92**, full browser **118**, storage/protocol **70**, strict and executable build/smoke checks; core CI **39086263306** succeeded. Current capture flow and strict validation passed. Later metadata/capture-only CI **39088482080 / 39088482096** is running at record time; no runtime code changed.
 - Actual installed app is Connected with no notice; app.js, home.mjs, home.css and home-scene.mjs hashes match source. Cloud **0.9.3 loaded/running**; art/chat/story/personality KV and game inspection unchanged. Working draft dirty_vs_latest_cut=false. PC remains offline/unverified; previously tested Windows package is retained.
 - Bundle **1339**, **170 files / 171308544 bytes**, SHA-256 manifest **4a5154cee5b69fabe1c36f3bb1b47d4ed90ff79675c61d40979b9d64f3b0ea5f**. No redundant tool publish or version bump. Next review change still requires fresh user authorization.
-
----
-
-# 1.4.10 home interaction refinement - 2026-10-18
-
-Source **c96d7a2**, owner test **1.4.10 / working revision 79 / installed 0.0.0-draft**. Tool remains **0.9.3 / Executa 772**, actual cloud loaded/running. Review **1.4.9 / ID 1439 / pending_review** and all shared listing fields unchanged. No cut, review submission, public web deployment or paid AI calls.
-
-- Landscape-first browsing: desktop shop occupies its own column; mobile shop sits below the visible world. Shop / My collection tabs, area/style filters, collection empty state and stored-item count make the purchase-to-decoration flow clear. Existing explicit Decorate is still the sole layout AI trigger.
-- Zoom/pause under View options; undo/show-finished under More. Idle guidance paragraph removed, AI usage explanation collapsed. Opening the shop closes view settings; Escape closes the shop first and restores focus. Kept appearance choice and save recovery visible when needed.
-- JS **92**, real-core home browser **6**, strict and diff checks passed. Real-core scenarios verify purchases/undo/lost-reply recovery, zero browsing AI calls, collection filtering, desktop/mobile non-overlap, keyboard dismissal and sandbox purchase flow. Final keyboard addition passed the focused browser check.
-- Installed home.mjs and home.css SHA-256 match source; runtime index.html is host-transformed, so confirmed its view-settings structure in the actual DOM. Two collection tabs, secondary controls closed, non-overlapping world/shop and Connected/no notice verified. Art/chat/story/personality KV and game inspection unchanged. Live screenshot inspected privately; no owner data used in store captures.
-- Follow-up CI failure: Anna **39085768337** failed eight recovery cases on both platforms because the shared mock home lacked the required `owned` list. Real engine responses include it. Fixed the test fixture only in **507e59c**; all eight previously failing cases pass locally. Replacement CI Tests **39086263306** and Anna **39086263232** both succeeded. Windows and Linux each passed JS **92**, full browser **118**, storage/protocol **70**, strict validation and packaged executable smoke tests. Production bundle stays at c96d7a2/revision 79; no app/tool deployment or paid AI is needed for this test-only correction.
-- Core CI **39085768334** passed. Packages were not changed or republished. PC remains offline/unverified. Earlier Windows/Linux 0.9.3 packages remain installed/uploaded as recorded below.

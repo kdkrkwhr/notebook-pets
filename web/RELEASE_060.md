@@ -12,4 +12,8 @@ Anna release 3fec4e9까지 Git으로 병합하고 웹 어댑터를 최신 공유
 
 웹은 완성된 그림 업로드를 지원하며 Anna의 그림 분석·AI 탄생은 이식하지 않았다. 채팅과 돌봄 반응은 현재 탭에만 표시한다. 실제 제공자의 유료 이미지 생성 품질은 이번 검증 범위에 포함하지 않았다.
 
-공개 배포 결과는 Pages 작업 완료 후 기록한다.
+공개 배포 완료: **0.6.0 / 25eede1**, [GitHub Pages](https://kdkrkwhr.github.io/notebook-pets/). [Pages CI 39090052557](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39090052557)와 [공통 CI 39090052561](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39090052561)가 성공했다. Windows/Linux Python 회귀·stdio 검사와 Pyodide 공통 코어, 웹 전체 시나리오·로컬 제공자·7개 테마 검사를 통과했다.
+
+공개 주소에서도 `web-current.mjs`와 `web-world.mjs`를 다시 실행해 통과했다. 앱·홈·정원·산책·공통 코어 주요 파일 12개의 내용이 빌드와 일치하며, 실제 페이지 버전은 0.6.0이다. Orca 브라우저의 기존 공책 저장 해시는 새로고침 전후 동일하다. PC/모바일 정원·던전 스크린샷과 웹 사용 설명도 갱신했다.
+
+Anna는 읽기 검증만 수행했다. 테스트 앱 **1.4.10 / working revision 79 / installed 0.0.0-draft**, 심사 **1.4.10 / ID 1442 / pending_review**, 게임 도구 **0.9.3 / Executa 772**를 유지한다. 설치된 UI 주요 파일 일치·Connected·클라우드 도구 loaded/running, 심사 설명과 스크린샷 6개 일치를 확인했다. Anna 앱 재배포나 심사 갱신은 하지 않았다.
