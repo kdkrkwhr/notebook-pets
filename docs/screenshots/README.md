@@ -1,10 +1,14 @@
-# Current 1.4.10 listing captures
+# Current 1.4.11 evolution captures
+
+The developer supplied the actual Korean and English evolution screenshots and requested their publication in the README and review listing. [English](../../anna/store/10-evolution-en.png) is used in the six-image store listing; [Korean](../../anna/store/10-evolution-ko.png) is used in the Korean guide. These are unedited owner-provided test screenshots, not isolated fixtures. The English image displays built-in route descriptions; the Korean image shows saved personalized prose. No additional AI requests were made to prepare these files. See [store provenance](../../anna/store/README.md).
+
+# Retained 1.4.10 listing captures
 
 The six listing images were recaptured from the latest UI, including the empty starting yard, redesigned home shop/collection, 36-item garden catalog and optional care AI. See [capture sources and isolation details](../../anna/store/README.md). Existing linked store image paths now show the current UI. The following entries describe historical captures.
 
 # README screenshot sources
 
-The feature guides use browser captures of the actual Notebuddy UI, not generated interface mockups. No live user's companion, conversation or account details appear in these documentation images.
+The feature guides use captures of the actual Notebuddy UI. Apart from the explicitly supplied evolution screenshots above, the following historical captures use isolated demo data.
 
 ## Expanded item book · 1.1.2
 

@@ -1,8 +1,14 @@
-# Store screenshots - 1.4.10
+# Store screenshots - 1.4.11
+
+The owner supplied two unedited screenshots of actual evolution testing and explicitly requested their use in documentation and review. `10-evolution-en.png` is the review image; `10-evolution-ko.png` illustrates the Korean README. These show fulfilled prerequisites, three selectable paths, element preservation/change and the optional single portrait request. The English capture shows the built-in English route descriptions; it is not a translated AI response. Names, wording and appearance directions vary by companion. No extra AI call or game mutation was made to prepare these assets.
+
+Listing order (Anna allows six): companion/care, **English evolution**, empty home garden, garden shop, drawing editor, dungeon preview. The evolution image replaces the item-book slot; the item-book capture remains in the repository and documentation.
+
+## Retained 1.4.10 captures
 
 Captured from the current shipped UI using disposable real-Python-engine views and the existing Anna-generated Mori reference/portrait. No live user data, new paid AI, or production storage calls. No conversation is fabricated.
 
-Listing order (Anna allows six):
+Previous listing order:
 1. 02-companion-and-care.png: companion, chat, care and the optional care-AI checkbox.
 2. 07-home-garden.png: empty starting yard with cottage, lawn, paths and fence; no separate default trees or decorations.
 3. 08-garden-shop.png: new split-pane shop beside a decorated demo garden, Shop/My collection tabs, All 48 / Inside 12 / Garden 36 filters and garden styles.

@@ -8,7 +8,7 @@
 
 Notebuddy is a companion game about growing alongside one AI friend. Start with a drawing, a photo or a surprise companion. Share your day, build a routine, discover stories and pixel dungeons on walks, and keep a little album of your friend's growth.
 
-The current Anna owner test app is **1.4.10**, with a notebook theme, a 2.5D companion and **five dungeons**, including illustrated previews and bosses for both new regions. Version **1.4.10 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 18, 2026.
+The current Anna owner test app is **1.4.11**. Choose between **three evolution paths inspired by care and conversation**, decorate a home and garden, and explore five pixel dungeons. The app is not publicly released yet; see the [current review and deployment status](anna/HANDOFF.md).
 
 [![Anna app tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml/badge.svg?branch=release)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml)
 
@@ -59,13 +59,29 @@ Version **1.4.3** adds a spacious pixel home. Watch your friend wander through t
 
 ## Keep their growth in an album
 
-Your companion reaches new growth stages at **levels 10, 30 and 50**. The album shows stages and saved artwork. Manual portrait redraw and album cleanup controls have been removed.
+**Leveling up does not automatically evolve your companion.** Meet the level and activity requirements, then choose **Evolve** below the XP bar whenever you are ready to advance one stage at a time.
+
+**Choose how your companion grows.** AI draws on care, training, walks, recent conversations and memories of earlier evolutions to suggest three paths. Keep the current element or choose a different direction, such as swift wind accents or a bright, healthy fairy aura. Each path describes its appearance and elemental change before you choose.
+
+<p align="center">
+  <img src="anna/store/10-evolution-en.png" width="960" alt="The real English evolution dialog with fulfilled requirements and three choices: keep water, become wind, or become nature">
+</p>
+
+| Next stage | Lifetime requirements |
+| --- | --- |
+| Growing | Lv.10 · 10 care actions · 3 walks |
+| Mature | Lv.30 · 30 care actions · 10 training · 15 walks |
+| Final form | Lv.50 · 60 care actions · 25 training · 30 walks · 3 completed story arcs |
+
+Care includes feeding, treats, play and sleep. Finish any pending walk or dungeon choice first. **Explore three paths** uses one AI request; selecting **Draw the new appearance** adds one image request for the chosen path only. The current portrait's observed features guide a new text-to-image portrait. Drawing is optional; an image failure preserves the evolution and previous portrait.
+
+The album keeps each growth stage and its saved artwork.
 
 <p align="center">
   <img src="anna/store/03-care-and-album.png" width="900" alt="Daily quests, the growth album and pixel preparation for the same companion">
 </p>
 
-A **pixel version** is prepared from the completed portrait, so your own friend's appearance can join dungeon adventures. Pixel conversion itself makes no additional AI request.
+The first home visit with a new portrait offers an **AI pixel character or a free default image**. Home and dungeons reuse the saved appearance without generating again on movement or reopening.
 
 ## Choose what happens on your walk
 
@@ -125,7 +141,7 @@ Future equipment will take each companion's body shape into account. A friend wi
 
 | Edition | Availability |
 | --- | --- |
-| **Anna app** | The screens and features above are in owner test version **1.4.10**. Public store release awaits **1.4.10 review**. [App user guide](anna/README.en.md) |
+| **Anna app** | The screens and features above are in owner test version **1.4.11**. Public store release awaits **1.4.11 review**. [App user guide](anna/README.en.md) |
 | **Open-source engine, Discord and AI agents** | Run or connect the project yourself. The Anna interface, continuing stories and item book have their own feature scope. [Setup and integration guide](docs/DEVELOPMENT.en.md) |
 
 The Anna app supports **English and Korean**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.
@@ -142,6 +158,6 @@ The **Sunken Palace and Forgotten Clockwork City are now playable**. Future regi
 
 [Anna user guide](anna/README.en.md) · [Engine and Discord development](docs/DEVELOPMENT.en.md) · [Anna development](anna/DEVELOPMENT.en.md) · [Latest deployment](anna/releases/RELEASE_112.md) · [Privacy](anna/PRIVACY.md)
 
-Screenshots show the real application UI running with separate test data. Creation, album and Hellgate captures are from 1.0.0; the two new dungeon cards are from 1.1.1; the item book and details are from 1.1.2. Mori's portrait is an actual Anna-generated result. [Screenshot sources](docs/screenshots/README.md)
+The evolution screenshot was supplied by the developer from actual 1.4.11 testing. Other gallery images use isolated demo data. Mori's portrait is an actual Anna-generated result. [Screenshot sources](docs/screenshots/README.md)
 
 <p align="center"><img src="docs/screenshots/inventory-120-ko.png" width="280" alt="1.2.0 Korean inventory with isolated test ownership"></p>
