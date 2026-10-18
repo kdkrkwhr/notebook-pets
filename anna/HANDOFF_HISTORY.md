@@ -1,3 +1,16 @@
+# 1.4.9 test-only: remove manual portrait redraw - 2026-10-18
+
+Source **60a5257**, Anna **1.4.9 / working revision 74 / installed 0.0.0-draft**. Removed album redraw, growth redraw, confirmation dialog and manual image generation/retry. Initial drawing/photo birth, saved artwork, home appearance choice remain. Evolved messages no longer suggest redraw.
+
+- Installed app: no redraw controls or manual generator, existing portrait visible, Connected. Installed app.js SHA-256 **ca84e281181b8ea8816a9d65a1ea47d4b57d67f1044c5ad95a2d62f9ef94acb7** matches source.
+- ART/chat/walk-story/personality KV unchanged across install. Tool 0.9.1 / Executa 760 remains loaded/running; install failures zero. Listing unchanged. No paid AI calls or public web deployment.
+- Owner coins: private backup and ETag conditional write changed only coins from 0 to 100; full value readback matched and live tool returned 100. Later home/request records and balance changed through ongoing play (53 at last check); preserved rather than resetting live progress.
+- Validation: JS 92, strict passed; full browser 116 passed (449 seconds). GitHub Tests 39049179731 passed; Anna packaging 39049179684 in progress.
+- Review remains **1.4.8 / ID 1437 / pending_review**. No review replacement for this later request.
+
+
+---
+
 # 1.4.8 review replacement explicitly requested - 2026-10-18
 
 User explicitly requested review reflection. Cut tested **c93143c / working revision 73** as **1.4.8 / ID 1437** and submitted. Verified **pending_review**. Includes album cleanup/pixel-preview removal and delayed dungeon reveal after walk result acknowledgement. Tool remains **0.9.1 / Executa 760 / ID 1193**. JS 92 and browser 117 passed; GitHub Tests 39048070936 and Windows/Linux packaging 39048070819 passed. No public release. Subsequent manual-redraw removal belongs only to the 1.4.9 test draft.

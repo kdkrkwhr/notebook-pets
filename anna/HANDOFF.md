@@ -6,14 +6,25 @@
 
 | 항목 | 값 |
 | --- | --- |
-| Anna 테스트 앱 | **1.4.9 / working revision 77 / 소유자 초안 0.0.0-draft** |
+| Anna 테스트 앱 | **1.4.10 / working revision 78 / 소유자 초안 0.0.0-draft** |
 | 심사 | **1.4.9 / ID 1439 / pending_review**, 명시 요청 전 변경 금지 |
-| 게임 도구 | **0.9.2 / Executa 768**, 변경 없음 |
+| 게임 도구 | **0.9.3 / Executa 772**, 변경 없음 |
 | 검증 | JS 92 · 전체 브라우저 117 · 14개 언어/폭 조합 · 5개 창 · strict |
 | 공개 웹 | 기존 배포 유지, 이번 배포 제외 |
 | Limits | Garden placement is immediate; PC offline, Windows host execution not verified |
 
 최신 작업 2건만 유지하며 이전 기록은 내용 변경 없이 이력 맨 위로 옮긴다.
+
+---
+
+# 1.4.10 empty starting yard - 2026-10-18
+
+Source **7037da7**, owner test app **1.4.10 / working revision 78 / installed 0.0.0-draft**, actual cloud tool **0.9.3 / Executa 772 / ID 1193 loaded/running**. The user clarified that all default trees and decorations should be absent. Kept the cottage/fence/paths/lawn and existing owned objects; removed all separate default trees, bushes, bench, pots and flower clusters. Cottage artwork is preserved. The earlier sparse two-tree variant was never deployed.
+
+- Home/geometry tests **11**, JS **92**, real-core home browser **5**, strict passed locally. Core CI **39084579106** and both Windows/Linux jobs in **39084579116** passed, including full browser/protocol checks and packaged executable smoke tests.
+- Explicitly published both tested 0.9.3 binary artifacts, then used scoped cloud tool reinstall and restored the source storage declaration. Installed the working UI. Actual world default object list is exactly **house**; existing purchased objects still render. Current home-scene.mjs SHA-256 **770b5ff307ae4604485cb450d9fb615cfeea2a3153a2ef3087f5a5e031cb5fcd** matches the installed file. Connected, no error notice.
+- Private pre/post game value and ETag are identical. Art/chat/walk-story/personality KV all identical. No game migration, paid AI or production purchase calls.
+- Review **1.4.9 / ID 1439 / pending_review**, tagline/description, all six screenshot URLs and shared listing fields verified unchanged. No app cut, review submission or public web deployment. PC host remains unverified/offline as previously recorded; Windows package is CI-tested and uploaded.
 
 ---
 
@@ -29,15 +40,3 @@ User explicitly requested all current changes, descriptions and screenshots in r
 - Deployment detail: CLI 0.1.57 `apps push` registers tool metadata without uploading binaries. Explicit `executa publish --profile binary` uploaded both tested packages and froze 768. A stale successful app install job reused the old runner; the scoped `/agents/{cloud}/plugins/reinstall` endpoint with the owner's user_executa_id replaced only NoteBuddy. Agent manifest caching omitted storage; restored the exact source protocol manifest_cache before installing the app. Review now freezes 768. PC returns no agent_version/loaded/running facts (offline); Windows package is uploaded and CI smoke-tested, PC execution is unverified. Original cloud default restored.
 - Bundle **1336**, 170 files, SHA-256 manifest **58b068d0a228dfc9da2ef7826fcd105205f4e36737dc035418c35b48abc1c66e**.
 - Linux package SHA-256 **52cb79ae96ba5e45f6d899994531e92b55f6ee23b8c55c07a9b3844b712ea019**; Windows **ebb1dd3b86926196f28f28615fb2b640b01e602c66091399642bf5a294384af2**.
-
----
-
-# 1.4.9 test-only: remove manual portrait redraw - 2026-10-18
-
-Source **60a5257**, Anna **1.4.9 / working revision 74 / installed 0.0.0-draft**. Removed album redraw, growth redraw, confirmation dialog and manual image generation/retry. Initial drawing/photo birth, saved artwork, home appearance choice remain. Evolved messages no longer suggest redraw.
-
-- Installed app: no redraw controls or manual generator, existing portrait visible, Connected. Installed app.js SHA-256 **ca84e281181b8ea8816a9d65a1ea47d4b57d67f1044c5ad95a2d62f9ef94acb7** matches source.
-- ART/chat/walk-story/personality KV unchanged across install. Tool 0.9.1 / Executa 760 remains loaded/running; install failures zero. Listing unchanged. No paid AI calls or public web deployment.
-- Owner coins: private backup and ETag conditional write changed only coins from 0 to 100; full value readback matched and live tool returned 100. Later home/request records and balance changed through ongoing play (53 at last check); preserved rather than resetting live progress.
-- Validation: JS 92, strict passed; full browser 116 passed (449 seconds). GitHub Tests 39049179731 passed; Anna packaging 39049179684 in progress.
-- Review remains **1.4.8 / ID 1437 / pending_review**. No review replacement for this later request.
