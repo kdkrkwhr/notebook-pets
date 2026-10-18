@@ -12,3 +12,8 @@ Runtime UI source **c968ae8 / fc92f2c / 60569b1**. Final 1.4.12 packaging CI **3
 Frozen bundle **1342 / 172 files / 171337260 bytes**, manifest SHA-256 `e62647de59df2db62988e5fb62a15424bd4fcf41d67f7a69b120fe9968131305`. Working content hash `553c56f7ed11bc367a0659618790427fed8ac36282c6dec254f957476db1ef4e`. All eight installed UI module/style hashes match source; owner UI Connected with no notice; actual tool 0.9.5 loaded/running. Store fields match the prepared metadata and all six CDN screenshots decode. Game inspection ETag and artwork/chat/story/personality values/ETags are unchanged. No additional paid AI call or tool binary replacement.
 
 See [review record](../reviews/REVIEW_1412.md), [UX verification](../docs/UX_FEEDBACK_20261018.md), [stability verification](../docs/STABILITY_20261018.md) and [screenshot provenance](../store/README.md). Fresh image-provider quality and physical Windows execution were not retested. Approval/public release remains pending; future review replacements require a fresh explicit request.
+
+
+## Owner test draft follow-up: home image links (2026-10-18)
+
+The frozen review candidate above stays unchanged. A UI-only owner draft fix renews the saved home appearance download URL on entry, so an expired link from a long-running app does not leave the yard empty. Missing-image guidance now follows the decoded renderer state. The existing personal 16-frame sheet remains intact; no AI request, appearance regeneration, game-tool change or web deployment. Local home/renderer browser 11, JS 92 and strict validation passed; deployment verification pending.

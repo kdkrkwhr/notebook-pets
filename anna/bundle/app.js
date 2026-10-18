@@ -112,6 +112,17 @@ function homeSpriteUrl(){
  if(entry?.format==='home-sprite-v1'&&urls[homeSpriteKey(view)])return urls[homeSpriteKey(view)];
  return {kind:'default',url:entry&&urls[homeSpriteKey(view)]||pixelUrl()||urls[imageKey(view)]||previousPortrait(view)};
 }
+async function loadHomeSprite(){
+ const snapshot=view,entry=snapshot?.status&&currentHomeAppearance(snapshot,art);
+ if(entry){
+  // Signed download links can expire while the app remains open. Renew only
+  // the saved home image on entry; this never generates or writes artwork.
+  const result=await anna.files.download_url({path:entry.path});
+  if(view?.pet_id!==snapshot.pet_id||view?.stage!==snapshot.stage||currentHomeAppearance(view,art)?.path!==entry.path)throw Error('Companion or artwork changed');
+  urls[homeSpriteKey(snapshot)]=result.get_url;
+ }
+ return homeSpriteUrl();
+}
 let walkSnapshot=null,walkSnapshotAt=0;
 function renderWalkEnergy(){
   const energy=view?.status?.walk_energy;
@@ -513,7 +524,7 @@ translate();
 homeSprites=createHomeSprite({anna:()=>anna,active:assertActive,phase:name=>homeUI?.appearancePhase(name),upload:uploadPortrait,failed:value=>{art=value;},saved:async value=>{art=value;await readExtras();render();}});
 homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertActive,invoke,
  saved:next=>{adoptView(next);render();},locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest),busy:controls,
- sprite:homeSpriteUrl,
+ sprite:homeSpriteUrl,loadSprite:loadHomeSprite,
   needsAppearance:()=>!!view?.status&&homeNeedsChoice(view,art),prepareAppearance:chooseHomeAppearance,
  spritePending:()=>homeSprites.hasPending(),retrySprite:()=>homeSprites.retry()});
 hints=createHints(document,()=>language);

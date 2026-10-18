@@ -80,6 +80,35 @@ test('home browsing preserves the world, collection filters and secondary contro
  assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm'||c.method==='image').length),0);
 });
 
+test('home renews expired image links on entry and reports an actual image load failure',async t=>{
+ const {page}=await setup(t);
+ await page.locator('#home-appearance-default').click();
+ await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready'&&!document.querySelector('#home-close').disabled);
+ await page.locator('#home-close').click();
+ await page.evaluate(()=>{
+  const entry=Object.values(hostTest.state.kv['notebuddy/art-v1']).find(e=>e.format==='home-default-v1');
+  hostTest.faults.portraits={[entry.path]:'/expired-home-image'};
+ });
+ await page.route('**/expired-home-image',route=>route.fulfill({status:403,body:''}));
+ await page.locator('#refresh').click();await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);
+ // The app retains the old signed link, while the next signing request returns a fresh one.
+ await page.evaluate(()=>{hostTest.faults.portraits={};});
+ await page.locator('#open-home').click();
+ await page.waitForFunction(()=>!document.querySelector('#home-close').disabled);
+ assert.equal(await page.locator('#home-canvas').getAttribute('data-sprite'),'ready');
+ assert.equal(await page.locator('#home-empty').isVisible(),false);
+ await page.locator('#home-close').click();
+ await page.evaluate(()=>{const e=Object.values(hostTest.state.kv['notebuddy/art-v1']).find(e=>e.format==='home-default-v1');hostTest.faults.portraits={[e.path]:'/expired-home-image'};});
+ await page.locator('#open-home').click();await page.waitForFunction(()=>!document.querySelector('#home-close').disabled);
+ assert.equal(await page.locator('#home-canvas').getAttribute('data-sprite'),'missing');
+ assert.equal(await page.locator('#home-empty').isVisible(),true);
+ assert.equal(await page.locator('#home-appearance-choice').isVisible(),false);
+ assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>['llm','image','home-image'].includes(c.method)).length),0);
+ await page.locator('#home-close').click();await page.evaluate(()=>{hostTest.faults.portraits={};});
+ await page.locator('#open-home').click();await page.waitForFunction(()=>!document.querySelector('#home-close').disabled);
+ assert.equal(await page.locator('#home-canvas').getAttribute('data-sprite'),'ready');
+});
+
 test('malformed AI output preserves room and ownership; no automatic retries',async t=>{
  const {page,state}=await setup(t);page.on('dialog',d=>d.accept());await page.locator('.home-item').filter({hasText:'Reading desk'}).getByRole('button').click();await page.locator('#home-purchase-confirm').click();await page.waitForFunction(()=>document.querySelector('#home-status').textContent.startsWith('Reading desk is in storage.')&&!document.querySelector('#home-close').disabled);
  const before=structuredClone(state());await page.evaluate(()=>hostTest.faults.homeMalformed=true);await page.locator('#home-decorate').click();await page.waitForFunction(()=>!document.querySelector('#home-close').disabled);assert.deepEqual(state(),before);assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length),1);

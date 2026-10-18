@@ -17,6 +17,16 @@
 
 ---
 
+# Anna home image-link recovery — 2026-10-18
+
+UI-only fix; app version stays **1.4.12**, tool stays **0.9.5**. Deployment pending validation. Review **1.4.12 / ID 1445** and shared listing must remain unchanged; web excluded.
+
+- Reproduced owner home with `data-sprite=missing`, failed fetch and hidden missing-image guidance. The same saved 1024x1024 / 1682284-byte personal sheet downloaded through a fresh signed link and decoded into all 16 frames. No generation or owner data mutation.
+- Renew the current saved home appearance download URL on each home entry, with a companion/stage/path guard. Decoded renderer state controls missing-image guidance, replacing the incorrect assumption that a URL means a visible character. No AI, automatic generation, storage write or fallback appearance replacement.
+- Regression test fails before the fix (`missing` instead of `ready`), then passes: expired link on entry, fresh link recovery, real fetch failure with visible guidance, subsequent reopen recovery and zero AI requests. Local home/renderer browser **11**, JS **92** and strict validation passed. Full browser verification and installed proof pending.
+
+---
+
 # Anna 1.4.12 review refresh — 2026-10-18
 
 At the owner's fresh explicit request, review candidate is now **1.4.12 / ID 1445 / pending_review**, replacing 1.4.11 / 1443. Owner test app **working revision 86 / installed 0.0.0-draft**; frozen and actual cloud tool **0.9.5 / Executa 774 / master 1193 loaded/running**. Runtime UI **c968ae8 / fc92f2c / 60569b1** is unchanged by review packaging. Web remains unchanged. No public-release command, tool-binary replacement or paid AI request.
@@ -27,15 +37,3 @@ At the owner's fresh explicit request, review candidate is now **1.4.12 / ID 144
 - Bundle **1342 / 172 files / 171337260 bytes**, manifest SHA-256 **e62647de59df2db62988e5fb62a15424bd4fcf41d67f7a69b120fe9968131305**. Working hash **553c56f7ed11bc367a0659618790427fed8ac36282c6dec254f957476db1ef4e**. Owner UI Connected with no notice. Owner game ETag and artwork/chat/story/personality values/ETags remained unchanged. Review approval/public release and fresh physical-PC/provider-quality verification are not claimed. Future review replacements need another explicit instruction. Details: **releases/RELEASE_1412.md**, **reviews/REVIEW_1412.md**.
 
 ---
-
-# Anna 1.4.11 visible waiting and recovery feedback — 2026-10-18
-
-UI source **c968ae8 / fc92f2c / 60569b1**, owner test app **1.4.11 / working revision 85 / installed 0.0.0-draft**. Actual cloud tool remains **0.9.5 / Executa 774 / master 1193 loaded/running**; no Python rule, tool-binary or app-version change. Review **1.4.11 / ID 1443 / pending_review**, its complete frozen row and shared listing are unchanged. Public web was excluded by the owner and remains unchanged. No paid AI calls.
-
-- Added shared, presentation-only activity feedback to birth portraits, home pixel images, evolution, direct chat, care, stories, personality and decoration: a visible activity mark, real elapsed clock and delayed-response guidance after 30 seconds. Image generation, received-image download, validation and saving use distinct phases. No invented percentage, provider ETA, polling or automatic retries. Idle screens gain no permanent explanatory panel.
-- Fixed mobile home progress being pushed out of view by disabled choice/action controls; irrelevant controls hide during work. Loading no longer displays a missing-image warning. Evolution Escape cannot hide an active operation. Completion/failure clears activity while retaining results and existing recovery controls. Chat failure restores the typed text; save retries reuse the received response. English/Korean and reduced-motion behavior verified; elapsed ticks are not repeatedly announced to screen readers.
-- Local focused browser checks **17** passed, plus **4** existing home/birth recovery checks, JS **92** and strict validation. Windows/Linux CI **39113368771** passed on both OSes: **129 browser**, **92 JS**, **73 storage/protocol**, strict validation and executable build/smoke checks. Shared CI **39113368782** passed all three jobs. Existing tool binaries were retained because this task only changes UI.
-- Initial Windows CI timed out before birth generation: the test advanced without waiting for asynchronous artwork selection to finish. Reproduced on local Chromium; added the missing editor/preview completion precondition and verified all 17 focused cases on Chromium. Also stopped story activity on clear and hidden evolution progress on reset. See the final CI result above; no paid reproduction was needed.
-- Final copy-only follow-up **60569b1** uses neutral “still waiting” guidance rather than claiming 30 seconds is slower than the provider's normal speed. Re-ran all **17** focused cases on Chromium successfully after that wording change; the full CI above covers the preceding flow implementation **fc92f2c**.
-- Restored the exact existing 0.9.5 protocol storage manifest after the platform again normalized its declaration and rejected the first UI push. Pushed/installed only the working UI draft. Bundle **172 files / 171337260 bytes**, working hash **91b26ae001a6739fef2bf77353a09df52753b2c3bafce12beb9bfd53608da7e8**. All eight installed changed-module/style hashes match; actual UI Connected, no notice, activity controls mounted and idle. Owner home reopened with its existing directional sheet, no missing-image warning or stale spinner.
-- Owner game ETag and artwork/chat/story/personality values/ETags stayed unchanged. The owner confirmed one device per separate account as the supported usage assumption; previously tracked same-account simultaneous first creation remains outside that scope. Fresh provider quality and physical PC execution were not retested. Full UX findings and before/after behavior: **docs/UX_FEEDBACK_20261018.md**; screenshots retained privately under `.local/activity-ux/`.
