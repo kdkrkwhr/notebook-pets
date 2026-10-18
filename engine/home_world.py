@@ -6,10 +6,7 @@ import copy
 YARD_OBJECTS = [
     dict(kind='house', x=320, y=208, w=160, block=[240,134,160,58]),
     *[dict(kind='tree', x=x, y=y, w=76, block=[x-7,y-13,14,13])
-      for x,y in [(72,128),(136,216),(528,160),(568,328),(88,392),(448,424)]],
-    dict(kind='bench', x=208, y=304, w=56, block=[180,288,56,16]),
-    *[dict(kind='bush', x=x, y=y, w=40, block=[x-15,y-9,30,9])
-      for x,y in [(200,200),(440,200),(80,304),(464,320),(200,432),(360,432)]],
+      for x,y in [(72,128),(568,328)]],
     *[dict(kind='plant', x=x, y=216, w=24, block=[x-7,206,14,10]) for x in [256,384]],
 ]
 
