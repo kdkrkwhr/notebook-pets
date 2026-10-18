@@ -8,7 +8,13 @@ export function homeDecision(response,candidates){
 export function createHome(h){
  const $=s=>h.document.querySelector(s),dialog=$('#home-dialog'),scene=createHomeScene($('#home-canvas'));let view=null,working=false,pending=null,shownPet=null;
  const ko=()=>h.language()==='ko',say=(a,b)=>ko()?a:b;
- let shopArea='all',shopCategory='all';
+ let shopArea='all',shopCategory='all',shopMode='shop';
+ const tabs=h.document.createElement('div');tabs.className='home-shop-tabs';tabs.setAttribute('role','group');
+ for(const mode of ['shop','storage']){const b=h.document.createElement('button');b.type='button';b.dataset.mode=mode;b.className='quiet';b.onclick=()=>{shopMode=mode;void render();};tabs.append(b);}
+ $('#home-shop').before(tabs);
+ const summary=h.document.createElement('p');summary.id='home-storage-summary';summary.className='home-storage-summary';$('#home-decorate').before(summary);
+ const more=h.document.createElement('details');more.className='home-more';more.innerHTML='<summary></summary><div class="home-more-menu"></div>';$('#home-skip').after(more);more.lastElementChild.append($('#home-undo'),$('#home-skip'));
+ const usage=h.document.createElement('details');usage.className='home-usage-details';usage.innerHTML='<summary></summary>';$('#home-usage').before(usage);usage.append($('#home-usage'));
  const filters=h.document.createElement('div');filters.className='home-shop-filters';filters.id='home-shop-filters';
  const areas=h.document.createElement('div');areas.className='home-shop-areas';areas.setAttribute('role','group');
  const category=h.document.createElement('select');category.id='home-shop-category';
@@ -29,14 +35,21 @@ export function createHome(h){
  async function render(){
   appearanceControls();
   if(!view?.home)return;$('#home-coins').textContent=`${view.home.coins} ${say('코인','coins')}`;$('#home-name').textContent=say(`${view.status.name}의 집과 마당`,`${view.status.name}'s home & garden`);$('#home-reason').textContent=view.home.reason;
+  const stored=view.home.owned.filter(id=>!(id in view.home.layout)).length;
+  summary.textContent=stored?say(`보관 중 ${stored}개 · 친구에게 배치를 맡겨 보세요`,`${stored} in storage · Let your friend arrange them`):say('친구가 머무는 작은 공간','A little place for your friend');
+  more.firstElementChild.textContent=say('더 보기','More');usage.firstElementChild.textContent=say('AI 사용 안내','About AI usage');$('#home-tools summary').textContent=say('보기 설정','View options');
+  tabs.setAttribute('aria-label',say('가구 둘러보기','Browse furniture'));
+  for(const b of tabs.children){b.textContent=b.dataset.mode==='shop'?say('상점','Shop'):say(`내 보관함 ${view.home.owned.length}`,`My collection ${view.home.owned.length}`);b.setAttribute('aria-pressed',String(b.dataset.mode===shopMode));}
+  $('#home-shop-panel').setAttribute('aria-label',say('상점과 보관함','Shop and collection'));
   await scene.ready;
   areas.setAttribute('aria-label',say('사용 공간','Placement area'));
   for(const b of areas.children){const area=b.dataset.area,n=view.home.catalog.filter(i=>area==='all'||(i.area||'inside')===area).length;b.textContent=({all:say('전체','All'),inside:say('집 안','Inside'),yard:say('마당','Garden')})[area]+` ${n}`;b.setAttribute('aria-pressed',String(shopArea===area));}
   category.replaceChildren();category.setAttribute('aria-label',say('마당 취향','Garden style'));category.hidden=shopArea==='inside';
   for(const [key,a,b] of categories){const o=h.document.createElement('option');o.value=key;o.textContent=say(a,b);category.append(o);}category.value=shopCategory;
   $('#home-shop').replaceChildren();
-  for(const item of view.home.catalog){if(shopArea!=='all'&&(item.area||'inside')!==shopArea||shopCategory!=='all'&&item.category!==shopCategory)continue;const card=h.document.createElement('article');card.className='home-item';card.dataset.item=item.id;const img=h.document.createElement('img');img.src=scene.thumb(item.id,item);img.alt='';const name=h.document.createElement('strong');name.textContent=ko()?item.name:item.en;const note=h.document.createElement('small'),owned=view.home.owned.includes(item.id);note.textContent=owned?(item.id in view.home.layout?say('배치됨','Placed'):say('보관함','In storage')):`${item.price} ${say('코인','coins')}`;
+  for(const item of view.home.catalog){if(shopMode==='storage'&&!view.home.owned.includes(item.id)||shopArea!=='all'&&(item.area||'inside')!==shopArea||shopCategory!=='all'&&item.category!==shopCategory)continue;const card=h.document.createElement('article');card.className='home-item';card.dataset.item=item.id;const img=h.document.createElement('img');img.src=scene.thumb(item.id,item);img.alt='';const name=h.document.createElement('strong');name.textContent=ko()?item.name:item.en;const note=h.document.createElement('small'),owned=view.home.owned.includes(item.id);note.textContent=owned?(item.id in view.home.layout?say('배치됨','Placed'):say('보관함','In storage')):`${item.price} ${say('코인','coins')}`;
    const buy=h.document.createElement('button');buy.className='quiet';buy.textContent=owned?say('보유','Owned'):say('구매','Buy');buy.disabled=owned||working||!!pending||view.home.coins<item.price;buy.onclick=()=>purchase(item);card.append(img,name,note,buy);$('#home-shop').append(card);}
+  if(!$('#home-shop').children.length){const empty=h.document.createElement('p');empty.className='home-shop-empty';empty.textContent=say('이 분류에 보관 중인 물건이 없어요. 상점에서 취향에 맞는 물건을 골라 보세요.','Nothing in this collection yet. Find something you like in the shop.');$('#home-shop').append(empty);}
   controls();
  }
  async function send(command,payload){const active=await h.active();if(active.pet_id!==shownPet)throw Error('Companion changed');if(!pending)pending=newAction(active,command,{home_payload:JSON.stringify(payload)});const {command:action,...args}=pending;const next=await h.invoke(action,args);pending=null;h.saved(next);view=next;if(!next.ok)throw Error(next.msg);return next;}
@@ -70,13 +83,14 @@ export function createHome(h){
    catch{status(h.spritePending()?'동작 저장을 마치지 못했어요. 저장 다시 시도는 AI를 호출하지 않아요.':'현재 친구의 동작을 저장하지 못했어요.',h.spritePending()?'Saving unfinished. Retry saving makes no AI call.':'Could not save movement for the current companion.');}
   });
  };
- $('#home-shop-toggle').onclick=()=>{$('#home-shop-panel').hidden=!$('#home-shop-panel').hidden;$('#home-shop-toggle').setAttribute('aria-expanded',String(!$('#home-shop-panel').hidden));};
- $('#home-shop-close').onclick=()=>{$('#home-shop-panel').hidden=true;$('#home-shop-toggle').setAttribute('aria-expanded','false');};
+ $('#home-shop-toggle').onclick=()=>{$('#home-tools').open=false;$('#home-shop-panel').hidden=!$('#home-shop-panel').hidden;$('#home-shop-toggle').setAttribute('aria-expanded',String(!$('#home-shop-panel').hidden));if(!$('#home-shop-panel').hidden)tabs.querySelector(`[data-mode="${shopMode}"]`).focus();};
+ $('#home-shop-close').onclick=()=>{$('#home-shop-panel').hidden=true;$('#home-shop-toggle').setAttribute('aria-expanded','false');$('#home-shop-toggle').focus();};
+ dialog.addEventListener('cancel',e=>{if(!$('#home-shop-panel').hidden){e.preventDefault();if(!working)$('#home-shop-close').click();}});
  for(const place of ['yard','inside'])$('#home-'+place).onclick=()=>scene.jump(place);
  $('#home-pause').onclick=()=>{$('#home-pause').setAttribute('aria-pressed',String(scene.pause()));};
  $('#home-zoom-in').onclick=()=>{$('#home-zoom').textContent=scene.zoom(1)+'×';};
  $('#home-zoom-out').onclick=()=>{$('#home-zoom').textContent=scene.zoom(-1)+'×';};
  $('#home-close').onclick=()=>dialog.close();dialog.addEventListener('close',()=>{purchaseDialog.close('cancel');scene.stop();});dialog.addEventListener('cancel',e=>{if(working)e.preventDefault();});
- $('#open-home').onclick=async()=>{if(h.locked())return;shownPet=view?.pet_id;if(!shownPet)return;dialog.showModal();try{await render();const ready=await scene.set(view.home,h.sprite());$('#home-empty').hidden=ready;$('#home-zoom').textContent=scene.zoom(0)+'×';$('#home-pause').setAttribute('aria-pressed',String(scene.paused()));status('집과 마당을 자유롭게 오가는 친구를 지켜보세요. 가구는 상점에서 고를 수 있어요.','Watch your friend wander between home and garden. Choose furniture in the shop.');}catch{status('홈 그림을 불러오지 못했어요. 닫았다가 다시 열어 주세요.','Home artwork unavailable. Close and reopen.');}};
+ $('#open-home').onclick=async()=>{if(h.locked())return;shownPet=view?.pet_id;if(!shownPet)return;dialog.showModal();try{await render();const ready=await scene.set(view.home,h.sprite());$('#home-empty').hidden=ready;$('#home-zoom').textContent=scene.zoom(0)+'×';$('#home-pause').setAttribute('aria-pressed',String(scene.paused()));status('','');}catch{status('홈 그림을 불러오지 못했어요. 닫았다가 다시 열어 주세요.','Home artwork unavailable. Close and reopen.');}};
  return {update(next){$('#home-shop-heading').textContent=say('가구 상점','Furniture');$('#home-usage').textContent=say('마이홈 첫 접속에서 AI 픽셀 캐릭터 또는 무료 기본 이미지를 선택해요. 선택 이후 홈 열기·구매·이동·저장 재시도에는 AI를 쓰지 않아요. ‘꾸며 줘’는 배치 AI를 한 번 사용해요.','Choose an AI pixel character or a free default image on your first home visit. Later visits, purchases, movement and save retries use no AI. Decorate uses one layout AI request.');$('#home-canvas').setAttribute('aria-label',say('친구의 집과 마당, 방향별 픽셀 동작','Companion home, garden and directional pixel movement'));if(view?.pet_id&&view.pet_id!==next?.pet_id){pending=null;scene.stop();if(dialog.open)dialog.close();}view=next;$('#home-empty').textContent=say('친구 그림을 불러오지 못했어요. 잠시 후 마이홈을 다시 열어 주세요.','Your companion image could not be loaded. Please close and reopen My home.');$('#open-home').hidden=!next?.status||!next?.home;$('#open-home').textContent=say('⌂ 나의 홈','⌂ My home');for(const [id,a,b] of [['home-shop-toggle','가구 상점','Furniture'],['home-shop-close','상점 닫기','Close shop'],['home-yard','마당','Garden'],['home-inside','집 안','Inside'],['home-pause','잠시 멈춤 / 계속','Pause / resume'],['home-decorate','꾸며 줘','Decorate'],['home-undo','이전 배치','Undo layout'],['home-skip','바로 보기','Show finished'],['home-close','닫기','Close'],['home-retry','같은 요청 확인','Check same request']])$('#'+id).textContent=say(a,b);},clear(){purchaseDialog.close('cancel');pending=null;view=null;scene.stop();if(dialog.open)dialog.close();$('#open-home').hidden=true;}};
 }

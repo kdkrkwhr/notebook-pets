@@ -30,9 +30,9 @@ test('real core home: buying and motion never invoke AI; one requested decorate,
  const buy=async name=>{await page.locator('.home-item').filter({hasText:name}).getByRole('button').click();await page.locator('#home-purchase-confirm').click();await page.waitForFunction(name=>document.querySelector('#home-status').textContent.startsWith(name+' is in storage.')&&!document.querySelector('#home-close').disabled,name);};
  await buy('Reading desk');await buy('Little bookcase');await buy('Leafy plant');assert.equal(await llm(),0);assert.equal(state().coins,78);
  await page.locator('#home-decorate').click();await page.waitForFunction(()=>document.querySelector('#home-reason').textContent.includes('reading corner'));assert.equal(await llm(),1);assert(Object.keys(state().home.layout).length>1);
- const after=structuredClone(state());await page.waitForTimeout(1000);await page.locator('#home-skip').click();assert.equal(await llm(),1);assert.deepEqual(state(),after);
+ const after=structuredClone(state());await page.waitForTimeout(1000);await page.locator('.home-more').evaluate(e=>e.open=true);await page.locator('#home-skip').click();assert.equal(await llm(),1);assert.deepEqual(state(),after);
  const shots=new URL('../../../.local/home-implementation/',import.meta.url);await mkdir(shots,{recursive:true});await page.screenshot({path:fileURLToPath(new URL('desktop.png',shots))});
- await page.locator('#home-undo').click();await page.waitForFunction(()=>document.querySelector('#home-reason').textContent==='');assert.equal(await llm(),1);assert.deepEqual(state().home.layout,{nest:[7,0]});assert.equal(state().coins,78);
+ await page.locator('.home-more').evaluate(e=>e.open=true);await page.locator('#home-undo').click();await page.waitForFunction(()=>document.querySelector('#home-reason').textContent==='');assert.equal(await llm(),1);assert.deepEqual(state().home.layout,{nest:[7,0]});assert.equal(state().coins,78);
  await page.evaluate(()=>hostTest.faults.homeLost=true);await page.locator('#home-decorate').click();await page.waitForFunction(()=>!document.querySelector('#home-retry').hidden);assert.equal(await llm(),2);const committed=structuredClone(state());await page.locator('#home-retry').click();await page.waitForFunction(()=>document.querySelector('#home-retry').hidden);assert.equal(await llm(),2);assert.deepEqual(state(),committed);
  await page.setViewportSize({width:375,height:812});assert(await page.locator('#home-dialog').evaluate(e=>e.scrollWidth<=e.clientWidth+1));await page.screenshot({path:fileURLToPath(new URL('mobile.png',shots))});
  await page.locator('#home-close').click();await page.locator('#open-home').click();assert.equal(await llm(),2);
@@ -54,12 +54,30 @@ test('garden catalog filters, buys without AI, places outdoors with one request 
  assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length),1);
  const world=worker({command:'status',state:state()}).view.home.world;
  assert.equal(world.inside.objects.length,1);assert.equal(world.yard.objects.filter(o=>o.kind.startsWith('yard-')).length,3);
- await page.locator('#home-shop-close').click();await page.locator('#home-yard').click();await page.locator('#home-pause').click();
+ await page.locator('#home-shop-close').click();await page.locator('#home-yard').click();await page.locator('#home-tools').evaluate(e=>e.open=true);await page.locator('#home-pause').click();
  const shots=new URL('../../../.local/home-garden/',import.meta.url);await mkdir(shots,{recursive:true});await page.screenshot({path:fileURLToPath(new URL('yard.png',shots))});
  await page.locator('#home-shop-toggle').click();await page.setViewportSize({width:360,height:812});
  assert(await page.locator('#home-shop-panel').evaluate(e=>e.scrollWidth<=e.clientWidth+1));await page.screenshot({path:fileURLToPath(new URL('mobile-shop.png',shots))});
- await page.locator('#home-shop-close').click();await page.locator('#home-undo').click();await page.waitForFunction(()=>Object.keys(hostTest.state.save.home.layout).length===1&&!document.querySelector('#home-close').disabled);
+ await page.locator('#home-shop-close').click();await page.locator('.home-more').evaluate(e=>e.open=true);await page.locator('#home-undo').click();await page.waitForFunction(()=>Object.keys(hostTest.state.save.home.layout).length===1&&!document.querySelector('#home-close').disabled);
  assert.equal(state().coins,coins);assert.equal(state().home.owned.length,4);assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length),1);
+});
+
+test('home browsing preserves the world, collection filters and secondary controls use no AI',async t=>{
+ const {page}=await setup(t);
+ const world=await page.locator('.home-world').boundingBox(),panel=await page.locator('#home-shop-panel').boundingBox();
+ assert(world.x+world.width<=panel.x+1,'desktop shop must not cover the world');
+ assert.equal(await page.locator('#home-undo').isVisible(),false);
+ assert.equal(await page.locator('#home-pause').isVisible(),false);
+ await page.locator('[data-mode="storage"]').click();assert.equal(await page.locator('.home-item').count(),1);
+ await page.locator('[data-area="yard"]').click();assert.equal(await page.locator('.home-item').count(),0);assert(await page.locator('.home-shop-empty').isVisible());
+ await page.locator('[data-mode="shop"]').click();assert.equal(await page.locator('.home-item').count(),36);
+ await page.setViewportSize({width:360,height:812});
+ const smallWorld=await page.locator('.home-world').boundingBox(),smallPanel=await page.locator('#home-shop-panel').boundingBox();
+ assert(smallWorld.height>=140);assert(smallWorld.y+smallWorld.height<=smallPanel.y+1);
+ await page.keyboard.press('Escape');assert.equal(await page.locator('#home-shop-panel').isVisible(),false);assert(await page.locator('#home-dialog').isVisible());
+ await page.locator('#home-tools summary').click();assert(await page.locator('#home-pause').isVisible());
+ await page.locator('#home-shop-toggle').click();assert.equal(await page.locator('#home-pause').isVisible(),false);
+ assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm'||c.method==='image').length),0);
 });
 
 test('malformed AI output preserves room and ownership; no automatic retries',async t=>{
@@ -87,7 +105,7 @@ test('new artwork waits for home choice; one explicit generation and save-only r
  const saved=await page.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);const entry=Object.values(saved).find(e=>e.format==='home-sprite-v1');assert(entry);assert(entry.path.startsWith(`portraits/${state().pet_id}/`));assert.equal(entry.pet_id,state().pet_id);
  await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');
  assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),1);assert.deepEqual(state(),before);
- await page.locator('#home-shop-close').click();await page.locator('#home-inside').click();await page.locator('#home-pause').click();await page.locator('#home-close').click();await page.locator('#open-home').click();
+ await page.locator('#home-shop-close').click();await page.locator('#home-inside').click();await page.locator('#home-tools').evaluate(e=>e.open=true);await page.locator('#home-pause').click();await page.locator('#home-close').click();await page.locator('#open-home').click();
  assert.equal(await page.locator('#home-sprite').count(),0);assert.equal(await page.locator('#home-sprite-retry').isVisible(),false);
  assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>c.method==='home-image').length),1);
 });
