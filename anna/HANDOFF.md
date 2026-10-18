@@ -6,14 +6,26 @@
 
 | 항목 | 값 |
 | --- | --- |
-| Anna 테스트 앱 | **1.4.11 / working revision 81 / 소유자 초안 0.0.0-draft** |
+| Anna 테스트 앱 | **1.4.11 / working revision 82 / 소유자 초안 0.0.0-draft** |
 | 심사 | **1.4.11 / ID 1443 / pending_review**, 명시 요청 전 변경 금지 |
-| 게임 도구 | **0.9.4 / Executa 773**, 실제 클라우드 loaded/running |
-| 검증 | Python 230 · JS 92 · 저장/프로토콜 71 · 브라우저 및 공개 웹 재검증 |
+| 게임 도구 | **0.9.5 / Executa 774**, 실제 클라우드 loaded/running |
+| 검증 | Python 230 · JS 92 · 브라우저 122 · 저장/프로토콜 73 · 격리 APS 시나리오 14 |
 | 공개 웹 | **0.7.0 / ee6a4b5**, Pages CI **39106404258** 성공 |
-| Limits | One drawn reference verified; complex anatomy / physical PC runner not covered |
+| Limits | Simultaneous first creation remains unsafe; fresh AI quality / physical PC runner not tested |
 
 최신 작업 2건만 유지하며 이전 기록은 내용 변경 없이 이력 맨 위로 옮긴다.
+
+---
+
+# Anna 1.4.11 stability verification and tool 0.9.5 — 2026-10-18
+
+Owner requested stability scenarios 1–3, excluding web and any unrequested review replacement. Code **e46f542 / f2f79ee**; owner test app **1.4.11 / working revision 82 / installed 0.0.0-draft**. Actual cloud tool **0.9.5 / Executa 774 / master 1193 loaded/running**. Review remains **1.4.11 / ID 1443 / pending_review**, frozen tool **0.9.4 / 773**; the full frozen row and listing are unchanged. No public release or web change.
+
+- Fourteen controlled live-APS scenarios passed in a fresh isolated app, using two independent tool processes: click bursts, pre-send disconnect, lost commit acknowledgement, close/reopen, simultaneous care/attendance/purchase, real ETag merge conflict, interrupted portrait/home saves and simultaneous different evolution choices. No duplicate charge/reward or extra stage advance. Previously paid images replayed locally four times; **zero provider calls and zero unexpected AI attempts**.
+- Found a real wrapped APS conflict (`-32603` with `storage.set HTTP 412` / structured `precondition_failed`) that was misreported as a generic save failure. Shared recognizer now handles this exact envelope in game/privacy/reset while unrelated failures retain their errors. Losing actions reload the winner and return stale-request guidance without new sequence IDs. Added regression tests and required tool 0.9.5 in the app manifest.
+- Windows/Linux CI **39110144833** passed: JS **92**, browser **122**, storage/protocol **73**, strict validation, both standalone builds and executable smoke checks. Shared CI **39110144817** passed all jobs. Initial CI caught the stale app minimum-tool declaration before deployment; corrected and used only the successful artifacts.
+- Explicitly published both OS packages, restored exact protocol manifest storage after normalization, pushed and installed the working draft, and reinstalled the cloud runner. Reopened owner UI is Connected with no notice; six installed UI hashes match. Registry hashes match CI artifacts. Direct CDN byte re-download was blocked by HTTP 403; actual running 0.9.5 and read-only RPC were verified. Working hash **f42216aff79421d50dca702cdc330e8fdeb6c7e287ab7fd695a43c02ec85814d**.
+- Owner game ETag and art/chat/story/personality values/ETags stayed unchanged. Test servers stopped; disposable fixtures and private evidence retained under `.local/stability-audit/`. Known first-ever simultaneous creation race remains reproducible offline because supported APS lacks atomic create-if-absent; this task did not claim to fix it. Physical PC execution and fresh AI quality were not tested. Development host logged a ResizeObserver warning during reopening without observed data/action failure. Full record: **docs/STABILITY_20261018.md**.
 
 ---
 
@@ -26,17 +38,3 @@ The user reported evolution verification complete, authorized one fresh image-to
 - Test infrastructure needed recovery: the CLI storage bridge omitted the app scope, a diagnostic session replaced the open harness session, and R2 refused the non-whitelisted 127.0.0.1 origin. Scoped the isolated adapter to app storage, reused the paid analysis, performed same-action/save-only recovery, confirmed an actual Anna-origin source upload HTTP 200, and resumed from the stored reference at allowed localhost:5180. These were harness/environment issues; no new product code fix was needed. This was not an uninterrupted first-attempt creation.
 - Production game inspection ETag and art/chat/story/personality values/ETags are unchanged. Candidate/listing unchanged, dirty_vs_latest_cut false. Platform status has no new review message. No Discord connector is available, so a new dora reply or external retest result cannot be confirmed.
 - Scope: real generation of one simple drawn reference, not all photo inputs/complex anatomies. Physical Windows runner remains unverified. User evolution verification was recorded without repeating paid evolution tests. Details: docs/PAID_TEST_20261018.md. Only verification documentation is committed; the app and public web remain unchanged.
-
----
-
-# 1.4.11 evolution label, review introduction and owner screenshots - 2026-10-18
-
-At the owner's fresh explicit request, review is now **1.4.11 / ID 1443 / pending_review**, replacing 1.4.10 / 1442. Owner test app **1.4.11 / working revision 81 / installed 0.0.0-draft**; frozen and running cloud game tool **0.9.4 / Executa version 773 / master 1193**. UI source **e0844c2**, listing/docs **b313d7b**, shared web source **ee6a4b5**, web **0.7.0**. No public Anna release or paid AI calls.
-
-- Shortened the evolution entry to **진화 / Evolve** in both prerequisite states. No evolution-rule or tool-binary changes; no version bump for the copy adjustment.
-- The user supplied actual Korean and English evolution screenshots, then selected English for review. Added the English capture at listing position 2; retained care, empty garden, garden shop, drawing and dungeon, replacing the item-book slot within Anna's six-image limit. Both supplied PNGs are preserved unedited in Git. The English shot shows built-in English route descriptions, while the Korean shot shows saved personalized prose. Other listing images retain their isolated-demo provenance.
-- Updated store tagline/description and Korean/English READMEs for level/activity requirements, three choices informed by care/adventures/chat, element and appearance changes, one vision/text suggestion request and an optional single text-to-image portrait. Documented free picture-preserving evolution and save-only recovery; no claim that Anna's image-edit service was fixed.
-- Strict validation and four focused evolution browser tests passed. Windows/Linux Anna CI **39106067679** and shared CI **39106067743** passed. Installed evolution source hash and visible Evolve label match; cloud 0.9.4 loaded/running. All listing text fields match local metadata and all six CDN images decode, including the 1100 x 784 English evolution shot.
-- First UI push was rejected for platform-normalized tool storage declaration drift. Restored the exact already-tested 0.9.4 manifest and pushed successfully, without publishing new tool binaries. Working content hash **5b9cc7c245df26ba29a01239215c44be4f14196b1857985f892b71e089303d50**. Cut bundle **1340 / 171 files / 171330654 bytes**, manifest hash **38edb72fa2d36dc79b2a2555b70ed450f46841260f5e3324ad2fa91e7ef26560**. Fresh platform reads confirmed candidate 1.4.11 and pending_review after submission.
-- Shared code/docs merged through Git into release-web. Pages **39106404258** and shared CI **39106404298** passed. Public-site evolution passed in an isolated browser with mocked providers: two stages, one vision and one text-only portrait/job per stage, no home images, chat restored, valid backup. Both live button labels verified and the existing Orca web save hash stayed unchanged.
-- Limits: actual paid-provider image quality was not retested; physical PC runner remains unverified. Future review updates still require a fresh explicit request. Evidence: releases/RELEASE_1411.md and reviews/REVIEW_1411.md.

@@ -68,7 +68,7 @@ npx anna-app executa publish --cwd executas/notebuddy --profile binary
 npx anna-app apps push --no-install-local --skip-executa-publish --profile binary
 ```
 
-플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 현재 도구 버전은 0.9.4입니다. 도구가 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드합니다. `apps push`만으로는 새 바이너리가 반영되지 않을 수 있으므로 위의 도구 발행을 먼저 실행하고 CDN 해시와 실제 실행기 버전을 확인합니다. 이 명령에는 공개 전환 옵션 `--publish`를 넣지 않습니다.
+플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 현재 도구 버전은 0.9.5입니다. 도구가 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드합니다. `apps push`만으로는 새 바이너리가 반영되지 않을 수 있으므로 위의 도구 발행을 먼저 실행하고 CDN 해시와 실제 실행기 버전을 확인합니다. 이 명령에는 공개 전환 옵션 `--publish`를 넣지 않습니다.
 
 설치 시 storage declaration drift가 발생하면 원격 도구의 `manifest_cache`를 소스의 검증된 `manifest.json`과 비교합니다. 플랫폼이 파일 저장 선언을 누락한 경우 원래 선언(`kv`, `files`, `scopes.tool`)을 복원한 뒤 설치합니다. 앱 심사 버전의 cut/제출은 사용자가 새로 요청할 때만 진행합니다.
 
