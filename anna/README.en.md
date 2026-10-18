@@ -10,9 +10,19 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-Owner test update **1.4.10** uses game tool **0.9.3**. The store candidate remains **1.4.10 pending review**, not publicly released.
+Owner test update **1.4.11** uses game tool **0.9.4**, with manual, personalized evolution. The app is not publicly released; see the [current review and deployment status](HANDOFF.md).
 
 Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
+
+## Choose your evolution
+
+From 1.4.11, leveling alone never evolves your companion. Meet lifetime activity requirements, then select **Evolve below the XP bar → Explore three paths**. Growing requires Lv.10, 10 care actions and 3 walks; Mature requires Lv.30, 30 care actions, 10 training and 15 walks; Final form requires Lv.50, 60 care actions, 25 training, 30 walks and 3 completed story arcs. Care includes feeding, treats, play and sleep. Finish pending walk or dungeon choices before evolving.
+
+AI considers care, adventures, recent direct conversations and memories of previous evolutions. Compare **three paths**, including one that keeps the current element and two alternatives, select a card and choose **Evolve along this path**.
+
+![Three evolution paths in the actual English interface](store/10-evolution-en.png)
+
+Suggestions and appearance observations use one AI request; the chosen new portrait uses one image request. Evolution uses observed features in a text-to-image prompt, without image editing. Uncheck **Draw the new appearance** to keep the existing portrait. Failed suggestions fall back to activity-based choices; an image failure preserves evolution and previous artwork. Save recovery does not repeat AI requests. Choose the new portrait's home pixel appearance separately on the first visit.
 
 ## Your first meeting
 
@@ -38,7 +48,7 @@ Choose **◐ Theme** in the header to change your notebook's mood. Seven themes 
 | **Care for your friend** | Feed, treat, play, train and rest. Watch fullness and bond, collect a daily gift, and claim daily quest rewards. |
 | **Have a conversation** | Replies use personality, recent conversation and shared experience. Care also receives a short reaction. |
 | **Get to know their personality** | Inspect curiosity, warmth, energy and caution as actual care and adventure experiences accumulate and inform replies and stories. |
-| **Keep a growth album** | Reach new stages at levels 10, 30 and 50 and view your saved companion artwork. |
+| **Keep a growth album** | Meet level and activity requirements, choose an evolution path and view saved artwork. |
 | **Take a walk** | Find XP, meet creatures or choose a story outcome. Six three-chapter arcs carry earlier choices and experiences forward. |
 | **Explore a dungeon** | Discover Hellgate, Ice Kingdom, Dream Forest, Sunken Palace or Forgotten Clockwork City during walks, then enjoy automatic movement, room choices and battles. |
 | **Browse little treasures** | Open **Browse items** for twenty-four illustrations with lore, rarity, planned rewards and fit requirements. |
@@ -67,7 +77,7 @@ Switching between English and Korean changes the interface and new replies while
 
 [Full feature gallery](../README.en.md) · [Development and setup](DEVELOPMENT.en.md) · [Technical documents](docs/README.md) · [Deployment history](releases/README.md) · [Review history](reviews/README.md) · [Handoff](HANDOFF.md)
 
-Screenshots show the real UI with separate test data. Mori is an actual Anna-generated result; the item book is from 1.1.2. [Screenshot sources](../docs/screenshots/README.md)
+The evolution screenshot is an owner-provided capture of actual 1.4.11 testing. Other images use isolated demo data; Mori is an actual Anna-generated result. [Screenshot sources](../docs/screenshots/README.md)
 
 <p align="center"><img src="../docs/screenshots/inventory-120-ko.png" width="280" alt="1.2.0 Korean inventory with isolated test ownership"></p>
 
