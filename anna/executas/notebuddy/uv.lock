@@ -9,7 +9,7 @@ source = { git = "https://github.com/whtcjdtc2007/anna-executa-examples.git?subd
 
 [[package]]
 name = "notebuddy-executa"
-version = "0.9.1"
+version = "0.9.3"
 source = { editable = "." }
 dependencies = [
     { name = "executa-sdk" },

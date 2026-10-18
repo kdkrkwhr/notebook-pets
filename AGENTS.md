@@ -1,5 +1,7 @@
 # Project workflow
 
+- User preference (2026-10-17): review candidates require a new explicit user instruction before every update. Normal work ends with Git commit/push and Anna test-app deployment; never cut or submit a review candidate on the basis of an earlier review authorization. For this first-home appearance task the user requested Anna only, so do not publish a new public web build.
+
 - User preference (2026-10-16): when updating the Anna UI, carry the tested shared UI change through Git to `release-web` and deploy the public GitHub Pages site in the same task. Verify both installed Anna and the live web page.
 
 - User preference (2026-10-16): raise Anna versions slowly in carefully verified release bundles, not on every internal step. Plan the AI home-decoration feature to ship and mature within 1.4.x (first candidate target 1.4.0). Planning/concept-art tasks alone must not bump versions or deploy the app.

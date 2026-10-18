@@ -8,7 +8,7 @@
 
 Notebuddy is a companion game about growing alongside one AI friend. Start with a drawing, a photo or a surprise companion. Share your day, build a routine, discover stories and pixel dungeons on walks, and keep a little album of your friend's growth.
 
-The current Anna owner test app is **1.4.7**, with a notebook theme, a 2.5D companion and **five dungeons**, including illustrated previews and bosses for both new regions. Version **1.4.7 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 16, 2026.
+The current Anna owner test app is **1.4.10**, with a notebook theme, a 2.5D companion and **five dungeons**, including illustrated previews and bosses for both new regions. Version **1.4.10 is awaiting store review**; the app is not publicly released yet. This guide reflects the features available on October 18, 2026.
 
 [![Anna app tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml/badge.svg?branch=release)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml)
 
@@ -55,11 +55,11 @@ Tell them about your day in the conversation area. Replies draw on their saved p
 
 Version **1.4.3** adds a spacious pixel home. Watch your friend wander through the garden and enter their room, follow the camera, zoom in or pause. Buy furniture in the shop and ask your friend to choose its placement.
 
-**New companions and newly saved growth portraits also get matching directional poses.** Home and dungeons share these poses, with no separate remake button. Each new artwork uses one movement image request; walking and reopening reuse the saved result. [Home guide](anna/README.en.md)
+**Choose an AI pixel character or a free default image on your first home visit.** Generation uses one image request; the free default converts the current portrait locally. Home and dungeons reuse the saved appearance. Browse 12 indoor and 36 garden objects by area and style, then ask your companion to decorate. [Home guide](anna/README.en.md)
 
 ## Keep their growth in an album
 
-Your little companion reaches new growth stages at **levels 10, 30 and 50**. When you are ready, request a new portrait and keep it beside earlier stages in the growth album. New growth portraits are generated when you choose to create them.
+Your companion reaches new growth stages at **levels 10, 30 and 50**. The album shows stages and saved artwork. Manual portrait redraw and album cleanup controls have been removed.
 
 <p align="center">
   <img src="anna/store/03-care-and-album.png" width="900" alt="Daily quests, the growth album and pixel preparation for the same companion">
@@ -125,16 +125,16 @@ Future equipment will take each companion's body shape into account. A friend wi
 
 | Edition | Availability |
 | --- | --- |
-| **Anna app** | The screens and features above are in owner test version **1.4.7**. Public store release awaits **1.4.7 review**. [App user guide](anna/README.en.md) |
+| **Anna app** | The screens and features above are in owner test version **1.4.10**. Public store release awaits **1.4.10 review**. [App user guide](anna/README.en.md) |
 | **Open-source engine, Discord and AI agents** | Run or connect the project yourself. The Anna interface, continuing stories and item book have their own feature scope. [Setup and integration guide](docs/DEVELOPMENT.en.md) |
 
 The Anna app supports **English and Korean**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.
 
-Chat, care reactions, personality and walk-story generation, reference analysis and new portraits use **the signed-in user's Anna AI allowance**. Random companions also use AI to initialize personality and directional movement. Selecting or previewing a file, browsing the item book and converting a portrait to pixels do not call AI.
+Chat, optional care reactions and walk narration, initial personality, reference analysis, portrait generation, the optional home pixel character and requested decoration use **your Anna AI allowance**. Turn off care AI above chat to keep actions, stats and rewards without AI care replies or walk narration; direct chat still uses AI. Random portraits are bundled, while initial personality uses AI. Purchases, browsing, movement and free pixel conversion do not call AI.
 
 ## What comes next?
 
-Regional collection and inventory are available. Coin shops and equipment are next; identity-preserving fitted portraits require image-edit API support and quality validation.
+Regional collection, inventory and the home/garden coin shop are available. Equipment is planned; identity-preserving fitted portraits require image-edit API support and quality validation.
 
 The **Sunken Palace and Forgotten Clockwork City are now playable**. Future regions include a sky castle, library and desert. Equipment and those future regions are not available yet. [Item plans](anna/docs/ITEMS.md)
 

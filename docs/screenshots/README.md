@@ -1,3 +1,7 @@
+# Current 1.4.10 listing captures
+
+The six listing images were recaptured from the latest UI, including the empty starting yard, redesigned home shop/collection, 36-item garden catalog and optional care AI. See [capture sources and isolation details](../../anna/store/README.md). Existing linked store image paths now show the current UI. The following entries describe historical captures.
+
 # README screenshot sources
 
 The feature guides use browser captures of the actual Notebuddy UI, not generated interface mockups. No live user's companion, conversation or account details appear in these documentation images.

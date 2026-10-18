@@ -51,7 +51,7 @@ async function finishWalk(p){
 }
 async function calls(p,method){return p.evaluate(m=>window.hostTest.calls.filter(x=>x.args?.command===m||m==='walk'&&x.args?.command==='walk_begin'||x.method===m),method);}
 
-test('first home visit offers a paid choice; free default persists and a new portrait asks again',async t=>{
+test('first home visit offers a paid choice; free default persists without manual redraw',async t=>{
  const p=await setup(t);await start(p);assert.equal((await calls(p,'home-image')).length,0);
  await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),true);
  await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.appearance==='default');
@@ -60,8 +60,7 @@ test('first home visit offers a paid choice; free default persists and a new por
  const entry=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']['isolated-fixture/home-sprite-stage-1']);assert.equal(entry.format,'home-default-v1');
  await p.locator('#home-inside').click();await p.locator('#home-yard').click();await p.locator('#home-close').click();
  await p.reload();await idle(p);await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),false);await p.waitForFunction(()=>document.querySelector('#home-canvas').dataset.appearance==='default');assert.equal((await calls(p,'home-image')).length,0);
- await p.locator('#home-close').click();await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'home-image')).length,0);
- await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),true);
+ assert.equal(await p.locator('#draw,#draw-evolved,#draw-dialog').count(),0);
 });
 
 test('one explicit home generation is reused; failure sets a visible free default without another request',async t=>{
@@ -164,7 +163,7 @@ test('birth prepares only a free pixel preview; home waits for an explicit appea
  await p.waitForFunction(()=>window.hostTest.state.kv['notebuddy/art-v1']?.['isolated-fixture/pixel-stage-1']);
  assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'llm')).length,0);
  assert.equal((await calls(p,'home-image')).length,0);
- assert.equal(await p.locator('#pixel-pet').isVisible(),true);
+ assert.equal(await p.locator('#pixel-pet').count(),0);
  const result=await p.evaluate(async()=>{
   const {pixelatePortrait}=await import('./pixel-pet.mjs');
   const response=await fetch(document.querySelector('#pet-image').src),blob=await pixelatePortrait(await response.blob()),bitmap=await createImageBitmap(blob);
@@ -173,96 +172,52 @@ test('birth prepares only a free pixel preview; home waits for an explicit appea
   return {width:bitmap.width,height:bitmap.height,type:blob.type,corner:data[3],opaque:Array.from(data).filter((v,i)=>i%4===3&&v===255).length};
  });
  assert.deepEqual([result.width,result.height,result.type,result.corner],[64,64,'image/png',0]);assert.ok(result.opaque>100);
- await p.reload();await idle(p);assert.equal(await p.locator('#pixel-pet').isVisible(),true);assert.equal((await calls(p,'finalize')).length,0);
+ await p.reload();await idle(p);assert.equal(await p.locator('#pixel-pet').count(),0);assert.equal((await calls(p,'finalize')).length,0);
 });
 
-test('movement follows new portraits and growth artwork, never visits or unchanged evolution artwork',async t=>{
- const p=await setup(t);await start(p);await chooseHome(p);
- assert.equal((await calls(p,'home-image')).length,1);
- assert.equal(await p.locator('#home-sprite').count(),0);
- await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'home-image')).length,1);
- await fault(p,{evolve:2});await p.locator('[data-action="feed"]').click();await idle(p);
- assert.equal((await calls(p,'home-image')).length,1,'a stage number alone does not request poses');
- await p.locator('#draw-evolved').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.equal((await calls(p,'image')).length,1);assert.equal((await calls(p,'home-image')).length,1);await chooseHome(p);assert.equal((await calls(p,'home-image')).length,2);
- const art=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);
- assert.equal(art['isolated-fixture/home-sprite-stage-2'].source_path,art['isolated-fixture/stage-2'].path);
- assert.equal(art['isolated-fixture/home-sprite-stage-2'].stage,2);
- await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
- await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.equal((await calls(p,'home-image')).length,0);await chooseHome(p);
- assert.equal((await calls(p,'home-image')).length,1,'a replacement portrait gets its own poses');
-});
 
 test('movement failure preserves a new companion and portrait without automatic retries',async t=>{
  const p=await setup(t,{homeImage:true});await start(p);await chooseHome(p);
  assert.equal(await p.locator('#name').innerText(),'Recovery buddy');assert.equal((await calls(p,'home-image')).length,1);
- assert.match(await p.locator('#home-movement-status').innerText(),/companion is saved/);
- assert.match(await p.locator('#home-movement-status').innerText(),/movement:generate/);
- assert.match(await p.locator('#pixel-status').innerText(),/Static pixel preview/);
- assert.doesNotMatch(await p.locator('#pixel-status').innerText(),/Ready for dungeon/);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
  await p.locator('#refresh').click();await idle(p);assert.equal((await calls(p,'home-image')).length,1);
- await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.equal((await calls(p,'home-image')).length,1);await chooseHome(p);
- assert.equal((await calls(p,'home-image')).length,2);assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
+ assert.equal(await p.locator('#draw,#draw-evolved,#draw-dialog').count(),0);
  await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
- assert.match(await p.locator('#home-movement-status').innerText(),/movement:generate/);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
 });
 
 test('unreadable movement sheet is distinguished from service failure and survives reload',async t=>{
  const p=await setup(t,{homeSpriteSheet:'data:image/png;base64,YmFk'});await start(p);await chooseHome(p);
- assert.match(await p.locator('#home-movement-status').innerText(),/movement:validate/);
- assert.equal(await p.locator('#pixel-pet').isVisible(),true);
+ assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
+ assert.equal(await p.locator('#pixel-pet').count(),0);
  assert.equal((await calls(p,'home-image')).length,1);
  const data=await p.evaluate(()=>hostTest.state.kv['notebuddy/art-v1']);
  assert.equal(data['isolated-fixture/home-sprite-request-stage-1'].failure,'validate');
  assert.equal(data['isolated-fixture/home-sprite-stage-1'].format,'home-default-v1');
  assert.match(data['isolated-fixture/home-sprite-request-stage-1'].path,/home-sprite-/,'the unreadable paid result is retained privately');
- await p.reload();await idle(p);assert.match(await p.locator('#home-movement-status').innerText(),/movement:validate/);assert.equal((await calls(p,'home-image')).length,0);
- await p.locator('#language').selectOption('ko');await idle(p);assert.match(await p.locator('#pixel-status').innerText(),/정적인 픽셀 미리보기/);assert.match(await p.locator('#home-movement-status').innerText(),/4 × 4 동작 시트/);
+ await p.reload();await idle(p);assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);assert.equal((await calls(p,'home-image')).length,0);
+ await p.locator('#language').selectOption('ko');await idle(p);assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);assert.equal(await p.locator('#home-movement-status,#pixel-status').count(),0);
 });
 
-test('pixel save failure preserves the companion and retries without paid generation',async t=>{
+test('pixel save failure keeps home free fallback available without exposing album maintenance',async t=>{
  const p=await setup(t,{pixelUpload:true});await start(p);
- assert.equal(await p.locator('#name').innerText(),'Recovery buddy');assert.match(await p.locator('#pixel-status').innerText(),/unfinished/);
- await p.locator('#prepare-pixel').click();await idle(p);
- assert.equal(await p.locator('#pixel-pet').isVisible(),true);
- const uploads=(await calls(p,'finalize')).filter(x=>x.path.includes('/pixel-'));
- assert.equal(uploads.length,2);assert.equal(uploads[0].path,uploads[1].path);
- assert.equal((await calls(p,'image')).length,0);
+ assert.equal(await p.locator('#name').innerText(),'Recovery buddy');assert.equal(await p.locator('#prepare-pixel').count(),0);
+ await p.locator('#open-home').click();await p.locator('#home-appearance-default').click();await idle(p);
+ assert.equal(await p.locator('#home-canvas').getAttribute('data-appearance'),'default');assert.equal((await calls(p,'image')).length,0);assert.equal((await calls(p,'home-image')).length,0);
 });
 
-test('discovery guidance stays visible without exposing undiscovered dungeon cards',async t=>{
- const p=await setup(t,{walkDiscovery:false});await start(p);
- const before=await p.evaluate(()=>({state:JSON.stringify(window.hostTest.state),calls:window.hostTest.calls.length}));
- assert.match(await p.locator('[data-i18n="battleRecordHelp"]').innerText(),/Dungeon results do not count/);
- await p.locator('#dungeon-section summary').click();
- assert.match(await p.locator('[data-i18n="dungeonRegionsHelp"]').innerText(),/Five regions/);
- assert.match(await p.locator('#dungeon-section [data-i18n="dungeonDate"]').innerText(),/without an automatic replacement/);
- assert.deepEqual(await p.evaluate(()=>({state:JSON.stringify(window.hostTest.state),calls:window.hostTest.calls.length})),before);
- await p.locator('#language').selectOption('ko');
- assert.match(await p.locator('[data-i18n="battleRecordHelp"]').innerText(),/일반 전투만/);
- assert.match(await p.locator('[data-i18n="dungeonRegionsHelp"]').innerText(),/다섯 지역/);
- await p.setViewportSize({width:360,height:800});
- assert.equal(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
- await p.locator('#language').selectOption('en');
- await p.setViewportSize({width:1120,height:800});
- assert.equal(await p.locator('#dungeon-section').isVisible(),true);
- assert.equal(await p.locator('[data-dungeon]').count(),0);
- assert.equal(await p.locator('#pixel-pet').isVisible(),true);
- await p.locator('[data-action="feed"]').click();await idle(p);
- assert.equal(await p.locator('#dungeon-section').isVisible(),true);
- await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
- assert.equal(await p.locator('[data-dungeon]').count(),0);
- await p.reload();await idle(p);
- assert.equal(await p.locator('#dungeon-section').isVisible(),true);
- await p.locator('#story-resume').click();await p.locator('[data-action="flee"]').click();await idle(p);await finishWalk(p);
- await fault(p,{walkDiscovery:true});await p.locator('[data-action="walk"]').click();await idle(p);await finishWalk(p);
- assert.equal(await p.locator('#dungeon-section').isVisible(),true);
- assert.equal(await p.locator('[data-dungeon]').count(),1);
- assert.equal(await p.locator('[data-dungeon="icekingdom"]').count(),0);
- assert.match(await p.locator('#action-result').innerText(),/Discovered: Hellgate/);
- await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon]').count(),1);
+test('new discovery appears in the outing before becoming a home card',async t=>{
+ const p=await setup(t,{walkOutcome:'xp',walkDiscovery:false});await start(p);
+ assert.equal(await p.locator('[data-dungeon]').count(),0);await fault(p,{walkDiscovery:true});
+ await p.locator('[data-action="walk"]').click();await idle(p);
+ assert.equal(await p.locator('[data-dungeon]').count(),0);assert.equal(await p.locator('#walk-discovery').isVisible(),false);
+ await p.locator('#story-choices button').last().click();await idle(p);
+ assert.equal(await p.locator('#walk-discovery').isVisible(),true);assert.equal(await p.locator('[data-dungeon]').count(),0);
+ await p.locator('#story-done').click();assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
+ await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
 });
 
 test('dungeon completion saves results without adding a history panel',async t=>{
@@ -436,18 +391,6 @@ test('chat failure restores draft, failed save warns, saved exchange survives re
  assert.equal((await calls(p,'llm')).length,2,'Only initial failed AI call and successful AI reply; save retries never call AI');
  await p.reload();await idle(p);assert.equal(await p.locator('#messages .message').count(),2);assert.match(await p.locator('#messages').innerText(),/Hello/);
 });
-test('portrait upload retry does not generate twice and survives reopen',async t=>{
- const p=await setup(t);await start(p);await fault(p,{upload:true});await p.locator('#draw').click();await p.locator('#confirm-draw').click();await idle(p);
- assert.match(await p.locator('#draw').innerText(),/Retry saving/);assert.equal(await p.locator('#clean-portraits').isDisabled(),true);await p.locator('#draw').click();await idle(p);
- assert.equal((await calls(p,'image')).length,1);
- const generated=(await calls(p,'image'))[0].options;
- assert.match(generated.prompt,/plain white background/);
- assert.match(generated.prompt,/soft painted game character illustration/);
- assert.doesNotMatch(generated.prompt,/on a warm ivory notebook page|colored pencil/);
- assert.match(await p.locator('#notice').innerText(),/safe in your album/);
- await p.reload();await idle(p);assert.match(await p.locator('#image-caption').innerText(),/AI portrait/);
- assert.equal(await p.locator('#pet-image').evaluate(e=>e.complete&&e.naturalWidth>0),true);
-});
 test('360px layout and language switch preserve partner and privacy controls',async t=>{
  const p=await setup(t);await start(p);await p.setViewportSize({width:360,height:740});
  await p.locator('#language').selectOption('ko');await idle(p);assert.equal(await p.locator('#name').innerText(),'Recovery buddy');
@@ -474,18 +417,11 @@ test('pending chat is discarded when the game is removed before retry',async t=>
  assert.equal(await p.locator('#messages').innerText(),'');assert.equal((await calls(p,'llm')).length,1);
  assert.equal(await p.evaluate(()=>window.hostTest.state.kv['notebuddy/chat-v1']),undefined);
 });
-test('portrait cleanup confirms intent, retries failures and preserves current and earlier stages',async t=>{
- const p=await setup(t);await start(p);
- await p.evaluate(()=>{
-  const s=window.hostTest.state;s.kv['notebuddy/art-v1']={'isolated-fixture/stage-1':{path:'portraits/pet/baby.png'},'isolated-fixture/stage-2':{path:'portraits/pet/current.png'}};
-  s.files={'portraits/pet/baby.png':'a','portraits/pet/current.png':'b','portraits/pet/old.png':'c'};
- });
- await p.locator('#clean-portraits').click();await p.locator('#confirm-clean-portraits').click();assert.match(await p.locator('#portraits-error').innerText(),/check the box/);assert.equal((await calls(p,'delete')).length,0);
- await p.locator('#portraits-dialog button').first().click();assert.equal((await calls(p,'delete')).length,0);
- await fault(p,{delete:true});await p.locator('#clean-portraits').click();await p.locator('#portraits-quiescent').check();await p.locator('#confirm-clean-portraits').click();await idle(p);assert.match(await p.locator('#notice').innerText(),/could not finish/);
- await fault(p,{delete:false});await p.locator('#clean-portraits').click();await p.locator('#portraits-quiescent').check();await p.locator('#confirm-clean-portraits').click();await idle(p);
- assert.match(await p.locator('#notice').innerText(),/Removed 1/);assert.equal(await p.locator('#name').innerText(),'Recovery buddy');
- assert.deepEqual((await calls(p,'delete')).map(c=>c.path),['portraits/pet/old.png']);assert.equal((await calls(p,'image')).length,0);
+test('album hides maintenance and pixel panels while preserving all existing artwork',async t=>{
+ const p=await setup(t);await start(p);const before=await p.evaluate(()=>JSON.stringify(hostTest.state.kv['notebuddy/art-v1']));
+ assert.equal(await p.locator('#clean-portraits,#portraits-dialog,.pixel-companion,#prepare-pixel,#home-movement-status').count(),0);
+ await p.locator('#refresh').click();await idle(p);await p.reload();await idle(p);
+ assert.equal(await p.evaluate(()=>JSON.stringify(hostTest.state.kv['notebuddy/art-v1'])),before);assert.equal((await calls(p,'delete')).length,0);assert.equal((await calls(p,'image')).length,0);
 });
 
 async function resetDialog(p){await p.locator('#reset-game').click();await idle(p);}
@@ -653,7 +589,7 @@ test('artwork first meeting validates source then saves a referenced baby; reope
  assert.equal((await calls(p,'home-image')).length,0,'portrait birth never requests home movement');
  const reference='data:image/png;base64,cGVyc29uYWwtcG9ydHJhaXQtcmVmZXJlbmNl';
  await p.evaluate(({path,reference})=>{hostTest.faults.portraits={[path]:reference};},{path:saved['isolated-fixture/stage-1'].path,reference});
- await chooseHome(p);assert.equal((await calls(p,'home-image')).length,1);assert.equal((await calls(p,'home-image'))[0].options.reference_image_urls[0],reference);
+ await chooseHome(p);assert.equal((await calls(p,'home-image')).length,1);assert.equal((await calls(p,'home-image'))[0].options.reference_image_urls,undefined);assert.match((await calls(p,'home-image'))[0].options.prompt,/round face and gold ears/);
  await fault(p,{portraits:{}});
  await p.reload();await idle(p);assert.equal((await calls(p,'image')).length,0);
  assert.match(await p.locator('#image-caption').innerText(),/portrait/i);
@@ -856,7 +792,7 @@ test('replacement during birth generation never applies the old artwork to the n
 test('lost birth index acknowledgement retains a save-only retry even after refresh',async t=>{
  const p=await setup(t,{lostBirthSave:true});await artwork(p);await artStart(p);
  assert.match(await p.locator('#birth-recovery-status').innerText(),/saving is unfinished/);
- assert.equal(await p.locator('#clean-portraits').isDisabled(),true);
+ assert.equal(await p.locator('#clean-portraits').count(),0);
  await p.locator('#refresh').click();await idle(p);assert.equal(await p.locator('#retry-birth').isVisible(),true);
  await p.locator('#retry-birth').click();await idle(p);
  assert.equal((await calls(p,'image')).length,1);assert.equal(await p.locator('#birth-recovery').isVisible(),false);
@@ -1302,7 +1238,98 @@ test('welcome steps follow the start form and the art choice keeps its preview b
  await p.locator('#pet-name').fill('Mori');assert.equal(await p.locator('#birth-steps [aria-current=step]').getAttribute('data-step'),'meet');
  await p.locator('#birth-mode').selectOption('art');assert.equal(await p.locator('#birth-steps [aria-current=step]').getAttribute('data-step'),'mode');
  const layout=await p.evaluate(()=>{const preview=document.querySelector('#birth-art-choice .art-source-preview');preview.src='assets/starters-v1/plant_nature_stage1.png';preview.hidden=false;
-  const b=document.querySelector('#choose-art').getBoundingClientRect(),i=preview.getBoundingClientRect(),n=document.querySelector('#birth-art-choice p').getBoundingClientRect();
-  return {overlap:!(b.right<=i.left||i.right<=b.left||b.bottom<=i.top||i.bottom<=b.top),centered:Math.abs((b.top+b.bottom)/2-(i.top+i.bottom)/2)<2,noteBelow:n.top>=Math.max(b.bottom,i.bottom)};});
- assert.deepEqual(layout,{overlap:false,centered:true,noteBelow:true});
+  const b=document.querySelector('#choose-art').getBoundingClientRect(),i=preview.getBoundingClientRect(),n=document.querySelector('#birth-art-choice p');
+  return {overlap:!(b.right<=i.left||i.right<=b.left||b.bottom<=i.top||i.bottom<=b.top),centered:Math.abs((b.top+b.bottom)/2-(i.top+i.bottom)/2)<2,noteHidden:n.hidden};});
+ assert.deepEqual(layout,{overlap:false,centered:true,noteHidden:true});
+});
+
+
+test('care AI option saves OFF, applies care without AI and keeps direct chat available',async t=>{
+ const p=await setup(t);await start(p);
+ await p.locator('#care-ai-enabled').uncheck();
+ await p.locator('[data-action="feed"]').click();await idle(p);
+ assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
+ assert.equal((await calls(p,'llm')).length,0);
+ assert.equal(await p.locator('[data-reaction-state]').count(),0);
+ await p.reload();await idle(p);assert.equal(await p.locator('#care-ai-enabled').isChecked(),false);
+ await p.locator('[data-action="snack"]').click();await idle(p);assert.equal((await calls(p,'llm')).length,0);
+ await p.locator('#chat-input').fill('Hello');await p.locator('#chat-form button').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,1);
+ await p.locator('#care-ai-enabled').check();await p.locator('[data-action="play"]').click();await idle(p);
+ assert.equal((await calls(p,'llm')).length,2);
+});
+
+test('care AI OFF uses a playable quiet-walk fallback without an AI call',async t=>{
+ const p=await setup(t);await start(p);await p.locator('#care-ai-enabled').uncheck();await quietStoryWalk(p);
+ assert.equal((await calls(p,'llm')).length,0);assert.equal(await p.locator('#story-choices button').count(),2);
+ await p.locator('#story-choices button').first().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ assert.equal((await calls(p,'llm')).length,0);await p.locator('#story-done').click();
+ await p.reload();await idle(p);assert.equal(await p.locator('#care-ai-enabled').isChecked(),false);
+});
+
+test('turning care AI OFF skips queued reactions while allowing the sent response to finish',async t=>{
+ const p=await setup(t,{llmDelay:2500});await start(p);
+ await p.locator('[data-action="feed"]').click();await p.waitForFunction(()=>window.hostTest.calls.some(x=>x.method==='llm'));
+ await p.locator('[data-action="snack"]').click();await p.locator('#care-ai-enabled').uncheck();await idle(p);
+ assert.equal((await calls(p,'feed')).length,1);assert.equal((await calls(p,'snack')).length,1);
+ assert.equal((await calls(p,'llm')).length,1);assert.equal(await p.locator('[data-reaction-state="pending"]').count(),0);
+});
+
+test('care AI help stays compact and opens on hover, keyboard or touch without toggling care',async t=>{
+ const p=await setup(t);await start(p);const help=p.locator('#care-ai-help'),tip=p.locator('#care-ai-tooltip');
+ assert.equal(await tip.isVisible(),false);await help.hover();assert.equal(await tip.isVisible(),true);
+ await p.keyboard.press('Escape');assert.equal(await tip.isVisible(),false);
+ await help.click();assert.equal(await tip.isVisible(),true);assert.equal(await p.locator('#care-ai-enabled').isChecked(),true);
+ await p.locator('#chat-input').click();assert.equal(await tip.isVisible(),false);
+ await help.focus();await p.keyboard.press('Tab');await p.keyboard.press('Shift+Tab');assert.equal(await tip.isVisible(),true);
+ await p.keyboard.press('Escape');assert.equal(await tip.isVisible(),false);
+ await p.setViewportSize({width:360,height:800});await help.click();assert.equal(await tip.isVisible(),true);
+ const box=await tip.boundingBox();assert.ok(box.x>=0&&box.x+box.width<=360);
+});
+
+test('secondary explanations use bounded tooltips while action costs and errors stay visible',async t=>{
+ const p=await setup(t);await start(p);const text=p.locator('[data-i18n="imageUsage"]');
+ assert.equal(await text.isVisible(),false);const id=await text.getAttribute('id'),button=p.locator('[data-hint-for="'+id+'"]');
+ await button.hover();assert.equal(await text.isVisible(),true);await p.keyboard.press('Escape');assert.equal(await text.isVisible(),false);
+ await p.setViewportSize({width:360,height:800});await button.click();const box=await text.boundingBox();assert.ok(box.x>=0&&box.x+box.width<=360);await p.locator('#name').click();assert.equal(await text.isVisible(),false);
+ assert.equal(await p.locator('[data-i18n="feedHint"]').isVisible(),true);
+ await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-help').isVisible(),false);
+ await p.locator('[data-hint-for="home-appearance-help"]').click();assert.equal(await p.locator('#home-appearance-help').isVisible(),true);
+ assert.match(await p.locator('#home-appearance-generate').innerText(),/1 AI image/);
+});
+
+test('legacy home image service failure offers an explicit corrected choice and never retries on reopen',async t=>{
+ const p=await setup(t);await start(p);
+ await p.evaluate(()=>{const a=hostTest.state.kv['notebuddy/art-v1'],pet='isolated-fixture',pixel=a[pet+'/pixel-stage-1'];a[pet+'/home-sprite-stage-1']={...pixel,format:'home-default-v1',pet_id:pet,stage:1};a[pet+'/home-sprite-request-stage-1']={source_path:pixel.source_path,trigger:'home-choice-v1',failure:'generate'};localStorage.setItem('test-host',JSON.stringify(hostTest.state));});
+ await p.reload();await idle(p);assert.equal((await calls(p,'home-image')).length,0);
+ await chooseHome(p);const generated=await calls(p,'home-image');assert.equal(generated.length,1);assert.equal(generated[0].options.reference_image_urls,undefined);
+ await p.reload();await idle(p);await p.locator('#open-home').click();assert.equal(await p.locator('#home-appearance-choice').isVisible(),false);assert.equal((await calls(p,'home-image')).length,0);
+});
+
+
+test('a quiet journey never reveals a dungeon behind an unfinished or reopened story',async t=>{
+ const p=await setup(t,{journey:true,walkOutcome:'quiet',llm:true});await start(p);
+ await p.locator('[data-action="walk"]').click();await idle(p);assert.equal(await p.locator('[data-dungeon]').count(),0);
+ await p.waitForFunction(()=>document.querySelector('#story-choices button'));
+ await p.locator('#story-close').click();await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon]').count(),0);
+ await p.locator('#story-resume').click();await p.locator('#story-choices button').last().click();await p.waitForFunction(()=>!document.querySelector('#story-ending').hidden);
+ assert.equal(await p.locator('#walk-discovery').isVisible(),true);assert.equal(await p.locator('[data-dungeon]').count(),0);
+ await p.waitForTimeout(1200);assert.equal(await p.locator('[data-dungeon]').count(),0,'timer never publishes an unacknowledged discovery');
+ await p.locator('#walk-dungeon').click();assert.equal(await p.locator('#dungeon-dialog').isVisible(),true);assert.equal((await calls(p,'explore_hellgate')).length,0);
+ await p.locator('#dungeon-close').click();assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
+});
+
+test('already acknowledged discoveries remain visible during later pending walks and reloads',async t=>{
+ const p=await setup(t,{walkOutcome:'xp'});await start(p);await p.locator('[data-action="walk"]').click();await idle(p);
+ await p.locator('#story-choices button').last().click();await idle(p);await p.locator('#story-done').click();
+ assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
+ await p.locator('[data-action="walk"]').click();await idle(p);await p.locator('#story-close').click();
+ assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);await p.reload();await idle(p);assert.equal(await p.locator('[data-dungeon="hellgate"]').count(),1);
+});
+
+test('growth album has no manual redraw and preserves saved artwork',async t=>{
+ const p=await setup(t);await start(p);const before=await p.evaluate(()=>JSON.stringify(hostTest.state.kv['notebuddy/art-v1']));
+ await fault(p,{evolve:2});await p.locator('[data-action=feed]').click();await idle(p);
+ assert.equal(await p.locator('#draw,#draw-evolved,#draw-dialog,#confirm-draw').count(),0);assert.equal((await calls(p,'image')).length,0);
+ assert.equal(await p.evaluate(()=>JSON.stringify(hostTest.state.kv['notebuddy/art-v1'])),before);
 });

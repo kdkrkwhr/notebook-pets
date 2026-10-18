@@ -4,7 +4,7 @@ export function createStoryDialog(h){
  const d=h.document,$=id=>d.querySelector(id),dialog=$('#walk-story');
  let mode='result',message='',last={current:null,working:false,feedback:''};
  const pending=()=>last.working||!!last.current&&last.current.state!=='done';
- const close=()=>{dialog.close();h.closeBattle?.();render(last);($('#story-resume').hidden?$('[data-action="walk"]'):$('#story-resume')).focus();};
+ const close=()=>{dialog.close();h.closeBattle?.();render(last);h.closed?.();($('#story-resume').hidden?$('[data-action="walk"]'):$('#story-resume')).focus();};
  function open(){if(!dialog.open&&!d.querySelector('dialog[open]')){dialog.showModal();$('#story-heading').focus();}}
  function render(state){
   last=state;
@@ -41,6 +41,7 @@ export function createStoryDialog(h){
  const resume=()=>{h.closeBattle?.();mode=pending()?'story':'result';message='';render(last);open();render(last);};
  $('#story-resume').onclick=resume;
  return {render,resume,close,
+  isOpen:()=>dialog.open,
   hasPending:()=>pending()||!!h.view()?.status?.encounter||!!h.view()?.status?.walk_choice,
   loading(){h.closeBattle?.();mode='loading';message=h.tr('working');render(last);open();},
   result(value){mode='result';message=value;render(last);},

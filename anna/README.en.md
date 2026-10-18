@@ -10,7 +10,7 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-Owner test update **1.4.7** uses game tool **0.9.1**. The store candidate remains **1.4.7 pending review**, not publicly released.
+Owner test update **1.4.10** uses game tool **0.9.3**. The store candidate remains **1.4.10 pending review**, not publicly released.
 
 Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
@@ -38,7 +38,7 @@ Choose **◐ Theme** in the header to change your notebook's mood. Seven themes 
 | **Care for your friend** | Feed, treat, play, train and rest. Watch fullness and bond, collect a daily gift, and claim daily quest rewards. |
 | **Have a conversation** | Replies use personality, recent conversation and shared experience. Care also receives a short reaction. |
 | **Get to know their personality** | Inspect curiosity, warmth, energy and caution as actual care and adventure experiences accumulate and inform replies and stories. |
-| **Keep a growth album** | Reach new stages at levels 10, 30 and 50, then choose when to draw and save a new portrait. |
+| **Keep a growth album** | Reach new stages at levels 10, 30 and 50 and view your saved companion artwork. |
 | **Take a walk** | Find XP, meet creatures or choose a story outcome. Six three-chapter arcs carry earlier choices and experiences forward. |
 | **Explore a dungeon** | Discover Hellgate, Ice Kingdom, Dream Forest, Sunken Palace or Forgotten Clockwork City during walks, then enjoy automatic movement, room choices and battles. |
 | **Browse little treasures** | Open **Browse items** for twenty-four illustrations with lore, rarity, planned rewards and fit requirements. |
@@ -59,7 +59,7 @@ In 1.2.0, each final guardian clear grants one unowned regional item: three stan
 
 Growth, recent conversation and artwork are stored separately for each user. Resume a pending story with **Continue walk**. Reopening the app does not require creating your companion again.
 
-Chat, care reactions, personality, walk stories, drawing/photo analysis and new portraits use **the signed-in Anna account's AI allowance**. Random companions also use AI for initial personality and directional movement creation. Browsing the book and converting a portrait to pixels make no additional AI calls. Existing companions without a personality can use **Meet your personality**.
+Chat, optional care replies and walk narration, initial personality, reference analysis, portrait generation, optional home pixel generation and requested decoration use **your Anna AI allowance**. Care AI can be disabled above chat without losing actions, stats or rewards; direct chat still uses AI. Random portraits are bundled but their initial personality uses AI. Purchases, visits, movement and free pixel conversion do not call AI.
 
 Switching between English and Korean changes the interface and new replies while keeping names and previous conversations intact. To create a different companion, use **Start over** and confirm what will be deleted. Deleted companions and records cannot be recovered. [Privacy and data guide](PRIVACY.md)
 
@@ -73,12 +73,12 @@ Screenshots show the real UI with separate test data. Mori is an actual Anna-gen
 
 ## My home
 
-Open **My home**, buy furniture with game coins, then choose **Decorate**. Your companion chooses among validated layouts using its saved personality and carries the furniture into place. One room includes a free resting nest and eleven purchasable objects; each request places at most three stored objects. Undo restores the previous layout while keeping your purchases.
+Open **My home**, buy objects with game coins, then choose **Decorate**. Browse **12 indoor and 36 garden objects**, with area and garden-style filters. Flowers, trees, outdoor lounges, water features, storybook accents and natural gardens offer six different tastes. Your companion chooses a validated layout; each request places at most three stored objects. Indoor furniture has a carrying animation; garden objects appear in their finished positions. Undo restores both areas while keeping your purchases.
 
 Decorate makes one bounded layout-selection request. Purchases, room visits, movement, idle life, undo and save-only retries use no AI. Room geometry, furniture and the companion are rendered separately.
 
 In **1.4.3**, the home becomes a large pixel garden and separate indoor room. Your friend automatically follows paths through the door, changes poses with direction, and passes behind objects. Follow the camera, zoom in or pause to watch. Furniture opens in a separate panel.
 
-New companions and newly saved portraits, including growth portraits, automatically prepare matching directional poses with one image AI request. Home and dungeons share that saved sheet. There is no separate create/remake button; a growth-stage number alone does not request new poses.
+On the first home visit for an appearance, choose one AI image request for directional pixel poses or a free default pixel image converted from the existing portrait. Saving a companion does not automatically request movement images. Home and dungeons share the saved result. Manual portrait redraw has been removed.
 
-A failed pose request leaves the companion and portrait intact and never retries AI automatically. If only saving failed, keep the page open and use **Retry saving movement** in My home; this uses no AI. Existing companions without poses get them with their next new portrait, while dungeons use their current portrait as a fallback. Equipment is not implemented yet; its final equipped portrait will use the same appearance-save flow.
+A failed pose request leaves the companion and portrait intact and sets a free default without automatic AI retries. If only saving failed, use **Retry saving movement** in My home; this uses no AI. Reopening and moving reuse the saved appearance.

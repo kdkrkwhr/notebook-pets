@@ -14,6 +14,7 @@ async function setup(t,mode='normal'){
  await page.route('**/*',async route=>{
   const url=new URL(route.request().url());if(url.origin!=='https://notebuddy.test')return route.abort();
   if(url.pathname.includes('/_sdk/'))return route.fulfill({contentType:'text/javascript',body:mock});
+  if(url.pathname==='/fixture-upload')return route.fulfill({body:''});
   if(url.pathname==='/anna-tool-ids.js')return route.fulfill({contentType:'text/javascript',body:'window.__ANNA_TOOL_IDS__={notebuddy:"isolated-ui-test"}'});
   const file=url.pathname==='/'?'index.html':url.pathname.slice(1);if(file.includes('..'))return route.abort();
   try{await route.fulfill({body:await readFile(new URL(file,bundle)),contentType:/\.m?js$/.test(file)?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.png')?'image/png':file.endsWith('.svg')?'image/svg+xml':'text/html'});}catch{await route.fulfill({status:404,body:''});}
@@ -30,7 +31,7 @@ async function setup(t,mode='normal'){
 }
 async function idle(page){await page.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled&&document.querySelector('#messages').dataset.reactionBusy!=='true');if(await page.locator('#title-screen').isVisible())await page.locator('#title-start').click();}
 async function choose(page,id){await page.locator(`.theme-option[data-palette="${id}"]`).click();assert.equal(await page.locator('html').getAttribute('data-theme'),id);}
-async function capture(page,name){if(process.env.ANNA_THEME_CAPTURE){await mkdir(process.env.ANNA_THEME_CAPTURE,{recursive:true});await page.screenshot({path:`${process.env.ANNA_THEME_CAPTURE}/${name}.png`});}}
+async function capture(page,name){if(process.env.ANNA_THEME_CAPTURE){await mkdir(process.env.ANNA_THEME_CAPTURE,{recursive:true});await page.screenshot({path:`${process.env.ANNA_THEME_CAPTURE}/${name}.png`,fullPage:true});}}
 
 test('all themes preview immediately, persist after reload and do not call the game or AI',async t=>{
  const page=await setup(t);
@@ -50,7 +51,7 @@ test('all themes preview immediately, persist after reload and do not call the g
  await page.locator('#language').selectOption('ko');await page.locator('#open-theme').click();
  assert.equal(await page.locator('#theme-heading').innerText(),'내 공책의 분위기');
  assert.match(await page.locator('.theme-selected').last().innerText(),/선택 중/);
- await page.locator('input:checked').press('ArrowLeft');assert.equal(await page.locator('html').getAttribute('data-theme'),'sunkenpalace');
+ await page.locator('#theme-dialog input:checked').press('ArrowLeft');assert.equal(await page.locator('html').getAttribute('data-theme'),'sunkenpalace');
  await page.keyboard.press('Escape');assert.equal(await page.locator('#theme-dialog').isVisible(),false);
 });
 

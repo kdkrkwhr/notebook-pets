@@ -9,6 +9,20 @@ export function createDungeons(h){
   const document=h.document,$=id=>document.querySelector(id),dialog=$('#dungeon-dialog');
   let selected=null,run=null,raf=null,elapsed=0,lastTime=0,speed=1,finished=false,artReady=false,ambient=0,previewTicket=0,paused=false;
   const scene=createDungeonScene($('#dungeon-map'),$('#dungeon-explorer'));
+  const REVEAL_KEY='notebuddy/dungeon-reveals-v1';let revealStorage;try{revealStorage=document.defaultView.sessionStorage;}catch{}
+  let revealedPet=null;const revealed=new Set();
+  function saveRevealed(){try{if(revealedPet)revealStorage?.setItem(REVEAL_KEY,JSON.stringify({pet:revealedPet,keys:[...revealed].slice(-5)}));}catch{}}
+  const discoveryKey=entry=>`${entry.id}:${entry.expires_at}`;
+  function visibleEntries(){
+    const view=h.view(),state=view?.status?.dungeons;
+    if(view?.pet_id!==revealedPet){revealed.clear();revealedPet=view?.pet_id;try{const saved=JSON.parse(revealStorage?.getItem(REVEAL_KEY)||'null');if(saved?.pet===revealedPet&&Array.isArray(saved.keys))for(const key of saved.keys.slice(-5))if(typeof key==='string'&&key.length<100)revealed.add(key);}catch{}}
+    const entries=state?.entries?.filter(entry=>entry.discovered&&DUNGEON_IDS.includes(entry.id)&&remaining(entry)>0)||[];
+    // Previously seen dungeons remain visible. New discoveries wait for the
+    // outing result to be acknowledged; saved pending choices also gate reloads.
+    if(!h.discoveryPending?.()){for(const entry of entries)revealed.add(discoveryKey(entry));saveRevealed();}
+    return entries.filter(entry=>revealed.has(discoveryKey(entry)));
+  }
+  function sectionVisibility(){$('#dungeon-section').hidden=!h.view()?.status?.dungeons;}
   const reduced=()=>document.defaultView.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let clockState=null,serverTime=0,receivedAt=0;
   const tr=(key,values)=>t(h.language(),key,values);
@@ -27,7 +41,7 @@ export function createDungeons(h){
       if(!entry||remaining(entry)<=0){card.remove();continue;}
       card.querySelector('.dungeon-countdown').textContent=countdown(entry);
     }
-    $('#dungeon-section').hidden=false;
+    sectionVisibility();
     if(dialog.open){
       $('#dungeon-countdown').hidden=!!run;
       if(!run){
@@ -126,8 +140,8 @@ export function createDungeons(h){
   }
   function render(){
     const view=h.view(),state=view?.status?.dungeons;
-    const entries=state?.entries?.filter(entry=>entry.discovered&&DUNGEON_IDS.includes(entry.id)&&remaining(entry)>0)||[];
-    $('#dungeon-section').hidden=!state;
+    const entries=visibleEntries();
+    sectionVisibility();
     $('#dungeon-list').replaceChildren();
     if(!state)return;
     $('#dungeon-coins').textContent=tr('dungeonCoins',{coins:state.coins});
@@ -163,5 +177,5 @@ export function createDungeons(h){
   document.defaultView.setInterval(updateTimers,1000);
   document.addEventListener('visibilitychange',updateTimers);
   document.defaultView.addEventListener('resize',()=>{if(dialog.open)scene.draw({elapsed:run?elapsed:ambient,run,finished,reduced:reduced()});});
-  return {render,show,visit,close(){closeScene();dialog.close();selected=null;run=null;}};
+  return {render,show,visit,clearPresentation(){revealed.clear();revealedPet=null;try{revealStorage?.removeItem(REVEAL_KEY);}catch{}},close(){closeScene();dialog.close();selected=null;run=null;}};
 }

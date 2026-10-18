@@ -28,5 +28,11 @@ class HomeWorldTests(unittest.TestCase):
             if not candidates:break
             self.state['home']['layout']=candidates[0]['layout']
             value=home.view(self.state)
-            self.assertEqual({o['kind'] for o in value['world']['inside']['objects']},set(value['layout']))
+            inside={k for k in value['layout'] if home.CATALOG[k].get('area')!='yard'}
+            outside=set(value['layout'])-inside
+            self.assertEqual({o['kind'] for o in value['world']['inside']['objects']},inside)
+            self.assertEqual({o['kind'] for o in value['world']['yard']['objects'] if o['kind'].startswith('yard-')},outside)
+            for leg in value['world']['yard']['tour']:
+                for a,b in zip(leg['route'],leg['route'][1:]):
+                    for i in range(9):self.assertTrue(yard_free(a[0]+(b[0]-a[0])*i/8,a[1]+(b[1]-a[1])*i/8,value['world']['yard']['objects']))
             self.assertEqual(value['world']['inside']['tour'][0]['route'][0],value['world']['inside']['start'])

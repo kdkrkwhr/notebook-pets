@@ -76,6 +76,16 @@ decorated = worker({'command':'home_apply','state':bought['state'],'home_payload
 assert 'desk' in decorated['view']['home']['layout']
 replayed_home = worker({'command':'home_apply','state':decorated['state'],'home_payload':json.dumps(selection),'request_id':'build-home-apply'})
 assert replayed_home['state'] == decorated['state']
+garden_catalog=plan['result']['home']['catalog']
+assert len(garden_catalog)==48 and sum(i.get('area')=='yard' for i in garden_catalog)==36
+garden_buy=dict(pet_id=home_state['pet_id'],revision=0,item_id='yard-lily-pond')
+garden_owned=worker({'command':'home_buy','state':home_state,'home_payload':json.dumps(garden_buy),'request_id':'build-garden-buy'})
+assert garden_owned['state']['coins']==14
+garden_plan=worker({'command':'home','state':garden_owned['state']})
+garden_pick=dict(pet_id=home_state['pet_id'],revision=1,candidate_id=garden_plan['result']['home_candidates'][0]['id'],reason='A lily pond in the garden.')
+garden_placed=worker({'command':'home_apply','state':garden_owned['state'],'home_payload':json.dumps(garden_pick),'request_id':'build-garden-place'})
+assert any(o['kind']=='yard-lily-pond' for o in garden_placed['view']['home']['world']['yard']['objects'])
+assert not any(o['kind']=='yard-lily-pond' for o in garden_placed['view']['home']['world']['inside']['objects'])
 
 protocol = subprocess.run([str(binary)], input='\n'.join(json.dumps({'jsonrpc':'2.0','id':i,'method':method}) for i,method in [(1,'initialize'),(2,'describe')])+'\n',
                           capture_output=True, text=True, encoding='utf-8', timeout=30, check=True)
