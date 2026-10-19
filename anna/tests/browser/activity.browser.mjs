@@ -17,7 +17,7 @@ async function setup(t){
   try{return route.fulfill({body:await readFile(new URL(name,bundle)),contentType:/\.(js|mjs)$/.test(name)?'text/javascript':name.endsWith('.css')?'text/css':name.endsWith('.png')?'image/png':name.endsWith('.svg')?'image/svg+xml':'text/html'});}catch{return route.fulfill({status:404,body:''});}
  });
  await page.addInitScript(()=>localStorage.setItem('notebuddy/language-v1','en'));
- await page.goto('https://notebuddy.test');await idle(page);await page.locator('#title-start').click();return page;
+ await page.goto('https://notebuddy.test',{waitUntil:'domcontentloaded'});await idle(page);await page.locator('#title-start').click();return page;
 }
 const idle=p=>p.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled);
 const fault=(p,f)=>p.evaluate(f=>Object.assign(hostTest.faults,f),f);
