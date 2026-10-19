@@ -2,7 +2,9 @@
 
 [Back to the user guide](README.en.md) · [한국어](DEVELOPMENT.md)
 
-Current owner test app: **1.4.13 / working revision 89 / game tool 0.9.5**. Review candidate **1.4.13 / ID 1446 / pending_review** includes the verified home image-link recovery fix. Existing description and six screenshots are retained. No public release or web deployment. [Latest handoff](HANDOFF.md) · [Release record](releases/RELEASE_1413.md).
+Owner test app **1.4.14 / working revision 90 / game tool 0.9.6** is verified. Review candidate **1.4.14 / ID 1478 / pending** includes Japanese, Simplified Chinese and Traditional Chinese. Public Anna **1.4.13** remains live; web unchanged. [Latest handoff](HANDOFF.md) · [Release record](releases/RELEASE_1414.md).
+
+For a published app, a new unapproved cut enters per-version release review through `apps release <version>`. This submission returned `release_review_state: pending`, `is_latest: false`, `published_at: null`; the existing public version stayed current. The initial-listing `submit-review` route rejects published apps. Do not unpublish the app to bypass it. Releasing an already-approved version can go live immediately, so inspect its state and distinguish review authorization from immediate publication. [Operator explanation](https://forum.anna.partners/t/is-review-now-required-for-every-new-app-version-i-couldn-t-find-this-change-in-the-changelog/224).
 
 ## Development
 

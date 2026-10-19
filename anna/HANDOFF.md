@@ -7,14 +7,14 @@
 | 항목 | 값 |
 | --- | --- |
 | Anna 공개 앱 | **1.4.13**, [스토어에서 다운로드](https://anna.partners/store/@kdkrkwhr/notebuddy) |
-| Anna 테스트 앱 | **1.4.13 / working revision 89 / 소유자 초안 0.0.0-draft** |
-| 심사 | **1.4.13 승인·스토어 공개** (2026-10-19). 제출 ID **1446**; 후속 심사본 교체는 새 명시 요청 필요 |
-| 게임 도구 | **0.9.5 / Executa 774**, 실제 클라우드 loaded/running |
-| 검증 | Python 230 · JS 92 · 브라우저 130 · 저장/프로토콜 73 · 격리 APS 시나리오 14 |
+| Anna 테스트 앱 | **1.4.14 / working revision 90 / 소유자 초안 0.0.0-draft** |
+| 심사 | **1.4.14 / ID 1478 / pending**; 공개 1.4.13 유지 |
+| 게임 도구 | **0.9.6 / Executa 786**, 실제 클라우드 loaded/running |
+| 검증 | Python 230 · JS 96 · 브라우저 131 · 저장/프로토콜 76 · 실제 설치 5개 언어 |
 | 공개 웹 | **0.7.0 / ee6a4b5**, Pages CI **39106404258** 성공 |
 | Limits | Owner scope: one device per account; fresh AI quality / physical PC runner not tested |
 
-2026-10-19 사용자가 제공한 Dora의 심사 승인 안내와 공개 스토어 URL을 확인했다. 비로그인 HTTP 조회에서 **200**, 앱 **Notebuddy / @kdkrkwhr/notebuddy**, 공개 버전 **1.4.13**을 확인했다. 전투 캐릭터의 완성도와 초상화 스타일 일관성은 후속 개선 의견이며 출시 차단 사유가 아니다. 이번 변경은 README·배포 기록 안내만 갱신하며, 앱 업로드·심사본 교체·추가 공개 작업은 하지 않았다. 위 소유자 테스트 앱·게임 도구의 실행 검증은 2026-10-18 기록을 유지한다.
+공개 1.4.13을 유지하면서 1.4.14를 버전별 업데이트 심사에 접수했다. 앱 전체 상태는 `published`, 새 버전의 `release_review_state`는 `pending`, `is_latest`는 `false`다. 최초 등록용 `submit-review`와 다른 절차이며, 현재 설치·실행 검증은 2026-10-19 기준이다. 전투 캐릭터의 완성도와 초상화 스타일 일관성은 별도 후속 개선 의견이다.
 
 최신 작업 2건만 유지하며 이전 기록은 내용 변경 없이 이력 맨 위로 옮긴다.
 
@@ -22,12 +22,13 @@
 
 # Anna 1.4.14 multilingual update — 2026-10-19
 
-Owner explicitly requested Japanese, Simplified Chinese and Traditional Chinese, deployment and review replacement. Prepared app **1.4.14 / tool 0.9.6**; installation and review submission pending. Actual installed draft is still **1.4.13 / revision 89 / tool 0.9.5**. Public **1.4.13** is now approved/live (fresh platform status **published**, candidate null). Web remains excluded.
+Owner-authorized app **1.4.14 / working revision 90 / installed 0.0.0-draft**, actual cloud tool **0.9.6 / Executa 786 / master 1193 loaded/running**. Review **1.4.14 / ID 1478 / pending**; public **1.4.13** retained. Per-version release review is pending while the app lifecycle remains published; no immediate public promotion or web deployment.
 
-- Static resource pipeline covers the UI, furniture/items and fallback story copy. Locale preferences and AI output instructions support **en / ko / ja / zh-Hans / zh-Hant**. Core evolution prose and optional personality locale fields preserve old bilingual saves; adapter presentation translation never changes receipts, names or rewards.
-- Owner authorized and used exactly **six text calls / zero images** for public translation drafts, no personal data and no paid retry. Raw results retained before local JSON framing repair. Traditional Chinese derived offline; reviewed overrides and provenance in **locales/README.md**. Existing saved AI text is preserved; native-speaker editorial review remains unperformed.
-- JS **96**, storage/protocol **76**, focused CJK browser **1** and strict validation passed. New tests cover all UI message keys/placeholders, aliases, AI prompt languages, free story chapters, new-locale evolution persistence and cross-language replay without rewards. Full local browser **131/131** passed. Initial CI **39245899354** passed Linux; Windows failed two initial `page.goto` load-event waits before the tested actions ran. Test-only follow-up bounds browser file concurrency at two and waits for DOMContentLoaded followed by the existing explicit UI-ready condition. Dual-OS packaging revalidation pending.
-- Includes previous album image containment; privacy text now states the actual **64-message / 40-KB retained, latest 24 displayed** behavior. No retention-rule change. Details: **releases/RELEASE_1414.md**. Preserve the current public release throughout owner deployment; create/submit the new review only after verification.
+- Added **Japanese / Simplified Chinese / Traditional Chinese** across static UI, furniture/items, fallback stories and selected-language AI output prompts. Old names, chats, portraits and prose remain original; optional new personality text and evolution prose support all five locale codes. No automatic translation/AI on language changes. Includes album containment and truthful 64-message/40-KB retention copy.
+- Final source **f3f655b**, CI **39247474069** passed both OSes: **131 browser / 96 JS / 76 storage-protocol**, strict validation and executable build/smoke. Shared CI **39247474128** passed. Earlier Windows cold page-load timeouts were addressed in the test harness; focused **11** checks also passed. Both tested platform archives were published together.
+- Used exactly **six authorized text calls / zero images**, public copy only, no paid retries. Raw results saved before local JSON framing repair. Traditional Chinese converted offline; glossary corrected, including the calm mood meaning of Content. **1,064** static entries. Native-speaker editorial review and physical PC execution remain unperformed.
+- Installed source hashes match; actual five-language UI/tool reads passed. Game ETag and art/chat/story/personality values/ETags are unchanged. Shared listing and all six screenshots retained; public release is separate from this review submission.
+- Bundle **1374 / 174 files / 171598743 bytes**, manifest SHA-256 **f5c1811787c3a0bab742f7ae20d2f499a8e50fc7dc287c1d0dbb13ef5e12109f**; working hash **f6bf2d50a2f5787d4e079fd576bd1e23fe2eecd71acde485c43c8cace493570a**, **dirty_vs_latest_cut false**, exact/minimum tool **0.9.6**. Details: **releases/RELEASE_1414.md**, **reviews/REVIEW_1414.md**, **locales/README.md**.
 
 ---
 

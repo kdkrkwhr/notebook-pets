@@ -2,7 +2,9 @@
 
 [사용 안내로 돌아가기](README.md) · [English](DEVELOPMENT.en.md)
 
-현재 소유자 테스트 앱은 **1.4.13 / working revision 89 / 게임 도구 0.9.5**입니다. 마이홈 이미지 주소 갱신과 로딩 실패 안내 수정을 포함한 **1.4.13 / ID 1446**을 사용자 요청으로 심사에 제출했습니다. 상태는 `pending_review`이며 기존 설명과 스크린샷 6장은 유지했습니다. 공개 출시와 웹 배포는 하지 않았습니다. [최신 인계](HANDOFF.md) · [배포 기록](releases/RELEASE_1413.md).
+소유자 테스트 앱 **1.4.14 / working revision 90 / 게임 도구 0.9.6**을 검증했습니다. 일본어·중국어 간체·번체를 포함한 **1.4.14 / ID 1478**의 버전 업데이트 심사 상태는 `pending`입니다. 공개 Anna **1.4.13**과 웹은 유지했습니다. [최신 인계](HANDOFF.md) · [배포 기록](releases/RELEASE_1414.md).
+
+공개 앱의 새 미승인 버전은 `apps cut` 후 `apps release <version>`으로 버전별 심사에 접수합니다. 이번 응답은 `release_review_state: pending`, `is_latest: false`, `published_at: null`이었으며 기존 공개 버전을 유지했습니다. 최초 등록용 `apps submit-review`는 `published` 앱을 거절하므로 앱 공개를 내리는 방식으로 우회하지 마세요. 이미 승인된 버전에 `release`를 다시 호출하면 즉시 공개될 수 있으므로, 심사 요청과 공개 요청을 구분해야 합니다. [Anna 운영자 안내](https://forum.anna.partners/t/is-review-now-required-for-every-new-app-version-i-couldn-t-find-this-change-in-the-changelog/224).
 
 ## 실행
 

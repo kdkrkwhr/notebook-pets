@@ -10,6 +10,8 @@ Notebuddy is a companion game about growing alongside one AI friend. Start with 
 
 **[Get Notebuddy on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy)** · **1.4.13** has passed review and is now publicly available!
 
+**Update 1.4.14 is in review.** The owner test app supports English, Korean, Japanese, Simplified Chinese and Traditional Chinese. Language changes use no AI and keep previous conversations and generated prose in their original language. Public store version: 1.4.13.
+
 Anna is a platform for installing and using AI apps. Sign in with your Anna account, then open Notebuddy from its store page to get started. Chat, image generation and other AI features use your own Anna account's AI allowance.
 
 Choose between **three evolution paths inspired by care and conversation**, decorate a home and garden, and explore five pixel dungeons. [App user guide](anna/README.en.md) · [Current deployment status](anna/HANDOFF.md)
