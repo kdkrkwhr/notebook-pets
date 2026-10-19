@@ -46,7 +46,7 @@ $('#care-ai-enabled').addEventListener('change',()=>{careAiEnabled=$('#care-ai-e
 const careHelp=$('#care-ai-help'),careTooltip=$('#care-ai-tooltip');
 let careHelpPinned=false;
 function showCareHelp(show){careTooltip.hidden=!show;careHelp.setAttribute('aria-expanded',String(show));}
-careHelp.addEventListener('pointerenter',()=>showCareHelp(true));
+careHelp.addEventListener('pointerenter',event=>{if(event.pointerType!=='touch')showCareHelp(true);});
 careHelp.parentElement.addEventListener('pointerleave',()=>{if(!careHelpPinned&&!careHelp.matches(':focus-visible'))showCareHelp(false);});
 careHelp.addEventListener('focus',()=>{if(careHelp.matches(':focus-visible'))showCareHelp(true);});
 careHelp.addEventListener('blur',()=>{careHelpPinned=false;showCareHelp(false);});

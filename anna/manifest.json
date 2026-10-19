@@ -29,6 +29,7 @@
     "ai"
   ],
   "ui": {
+    "form_factors": ["desktop", "mobile"],
     "bundle": {
       "format": "static-spa",
       "entry": "index.html",
@@ -41,7 +42,7 @@
         "default": true,
         "entry": "index.html",
         "min_size": {
-          "w": 360,
+          "w": 320,
           "h": 540
         },
         "default_size": {

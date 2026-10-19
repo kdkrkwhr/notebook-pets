@@ -1,0 +1,90 @@
+/* The Anna shell owns viewport metadata. Desktop and mobile share this bundle. */
+:root{
+ --safe-top:max(env(safe-area-inset-top,0px),var(--anna-safe-area-top,0px));
+ --safe-right:max(env(safe-area-inset-right,0px),var(--anna-safe-area-right,0px));
+ --safe-bottom:max(env(safe-area-inset-bottom,0px),var(--anna-safe-area-bottom,0px));
+ --safe-left:max(env(safe-area-inset-left,0px),var(--anna-safe-area-left,0px));
+}
+body{padding:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left)}
+#title-screen{padding:max(24px,var(--safe-top)) max(24px,var(--safe-right)) max(24px,var(--safe-bottom)) max(24px,var(--safe-left))}
+dialog{inset:var(--safe-top) var(--safe-right) var(--safe-bottom) var(--safe-left);max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px)}
+dialog:not(#title-screen):not(#home-dialog){max-width:calc(100vw - var(--safe-left) - var(--safe-right) - 24px);max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px)}
+#home-dialog{width:calc(100vw - var(--safe-left) - var(--safe-right) - 16px);height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 16px);max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 16px)}
+input,textarea,select,button,summary{touch-action:manipulation}
+@media(max-width:760px),(pointer:coarse){
+ button,select,summary,input:not([type=checkbox]):not([type=radio]){min-height:44px}
+ button,summary{min-width:44px}
+ #story-close,#dungeon-close,dialog .close{min-width:44px;min-height:44px}
+ button.explanation-help,button.care-ai-help-button,.hint-title-group>button.explanation-help,#refresh,.header-controls>#refresh{width:44px;min-width:44px;height:44px;min-height:44px}
+ .header-controls>button,.header-controls>select,#open-home,.home-world-controls button,.home-actions button,.home-item button,.home-shop-heading button,.home-shop-areas button,.home-shop-tabs button,#home-shop-category,.home-more summary,#home-tools summary{min-height:44px}
+ input:not([type=checkbox]):not([type=radio]),textarea,select{font-size:16px}
+ .care-ai-options label,.erase-checkbox,#evolution-image-label,.theme-option{min-height:44px}
+ .care-ai-options label{flex:1;min-width:0}
+ .care-ai-options{padding-inline:14px;gap:4px}
+ .pet-heading h2{min-width:0}.pet-heading .level{white-space:nowrap;flex-shrink:0;font-size:22px}
+ .care-ai-tooltip{max-width:calc(100% - 16px);right:8px}
+ .hint-header.hint-header{flex-wrap:wrap}
+ .hint-title-group{flex:1 1 auto}
+ .hint-header-actions{max-width:100%}
+ .home-heading{flex-wrap:wrap}
+ .home-heading>div{flex-basis:calc(100% - 125px)}
+ .home-footer{flex-shrink:0}
+ .home-content{min-height:120px}
+ .home-world-controls{gap:4px}
+ .home-world-controls button,#home-tools summary{padding-inline:8px}
+ #chat-input{scroll-margin-block:24px}
+ .chat-bottom{padding:14px}
+ .suggestions button{white-space:normal;text-align:left}
+ .dialog-actions,.birth-buttons{flex-wrap:wrap}
+ dialog p,dialog h2,dialog h3,.badge,.hint-header-actions>.muted{overflow-wrap:anywhere}
+ #evolution-dialog>header,.item-book-header{position:sticky;top:0;z-index:5;background:var(--paper)}
+ #evolution-dialog>footer,.theme-footer{position:sticky;bottom:0;z-index:5;background:var(--paper)}
+ #evolution-dialog{scroll-padding-block:80px}
+}
+@media(max-height:480px) and (max-width:760px){
+ .home-content{min-height:0}
+ .home-content:has(.home-shop-panel:not([hidden])){grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+ .home-footer{max-height:35%}
+}
+@media(max-width:600px){
+ #home-dialog{width:calc(100vw - var(--safe-left) - var(--safe-right));height:calc(100dvh - var(--safe-top) - var(--safe-bottom));max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom))}
+}
+@media(max-width:480px){
+ .masthead{padding-inline:12px}
+ .masthead>.header-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) 44px;gap:6px}
+ .header-controls>button,.header-controls>select{width:100%;max-width:none;white-space:normal;padding-inline:5px}
+ .header-controls>select{font-size:16px}
+ .welcome{padding:18px}
+ .welcome .inline{flex-direction:column}
+ .welcome .inline input{flex-basis:auto}
+ .welcome h2{overflow-wrap:anywhere}
+ .pet-card,.care-card,.album-card,.quest-card,.dungeon-section{padding:16px}
+ .portrait{height:230px}.portrait img{max-height:215px}
+ .vitals{gap:12px}
+ .album{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 10px}
+ .album-image{height:110px}
+ .section-heading>.muted{white-space:normal}
+ #theme-dialog,#art-dialog,#privacy-dialog,#erase-dialog,#reset-dialog{padding:18px}
+ #theme-dialog,#art-dialog,#privacy-dialog,#erase-dialog,#reset-dialog,#item-catalog,#item-detail,#walk-story,#evolution-dialog,#home-purchase-dialog{width:calc(100vw - var(--safe-left) - var(--safe-right) - 24px);max-width:calc(100vw - var(--safe-left) - var(--safe-right) - 24px);max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px)}
+ #home-dialog{width:calc(100vw - var(--safe-left) - var(--safe-right));height:calc(100dvh - var(--safe-top) - var(--safe-bottom));max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom))}
+ .home-heading{padding:8px 10px}
+ .home-heading h2{font-size:14px}
+ .home-heading .badge{white-space:normal}
+ .home-storage-summary{min-width:0}
+ .home-actions>.home-storage-summary{flex-basis:100%;order:1}
+ .home-actions>.home-more{order:0}
+ .home-footer{padding:8px 10px}
+ .home-content:has(.home-shop-panel:not([hidden])){grid-template-rows:minmax(100px,1fr) minmax(0,1fr)}
+ .home-shop-panel{padding:10px}
+ .home-shop-heading{top:-10px}
+ .item-book-header,.item-book-body,.item-detail-body{padding-inline:14px}
+ .item-card-art{height:105px}.item-card img{max-width:100%;width:92px;height:92px}
+ .item-detail-art img{max-width:100%;height:auto;aspect-ratio:1}
+ .story-body,.story-top,.story-footer{padding:16px}
+ .story-body h2{font-size:20px}
+ #walk-story #battle-dialog{padding-inline:16px}
+ #walk-story .encounter,#walk-discovery,#walk-retry{margin-inline:16px}
+ .evolution-route{padding:12px}
+ .art-tools{flex-wrap:wrap}
+ .hint-header-actions>.quiet{min-height:44px}
+}
