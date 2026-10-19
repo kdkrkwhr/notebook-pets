@@ -22,7 +22,7 @@ template = template.replace('__ANNA_WALK__', dialog('walk-story'))
 teaser = re.search(r'<section class="paper item-book-teaser"[\s\S]*?</section>', shared_html).group()
 template = template.replace('__ANNA_TEASER__', teaser)
 shutil.copyfile(anna / 'style.css', OUT / 'anna-style.css')
-for name in ('evolution.mjs', 'birth-art.mjs', 'theme.css', 'themes.css', 'themes.mjs', 'home.css', 'ui-polish.css', 'hints.mjs', 'garden-art.mjs', 'walk-stories.mjs', 'walk-story-dialog.mjs', 'journey-stories.mjs', 'reactions.mjs', 'icon.svg', 'title-screen.mjs', 'item-catalog.mjs', 'items.mjs', 'i18n.mjs',
+for name in ('activity.mjs', 'evolution.mjs', 'birth-art.mjs', 'theme.css', 'themes.css', 'themes.mjs', 'home.css', 'ui-polish.css', 'hints.mjs', 'garden-art.mjs', 'walk-stories.mjs', 'walk-story-dialog.mjs', 'journey-stories.mjs', 'reactions.mjs', 'icon.svg', 'title-screen.mjs', 'item-catalog.mjs', 'items.mjs', 'i18n.mjs',
              'model.mjs', 'data.mjs', 'pixel-pet.mjs', 'home.mjs', 'home-scene.mjs', 'home-walk.mjs', 'home-sprite.mjs',
              'dungeon.mjs', 'dungeon-scene.mjs', 'dungeon-avatar.mjs', 'dungeon-map.mjs', 'dungeon-enemies.mjs', 'dungeon-journey.mjs'):
     shutil.copyfile(anna / name, OUT / name)

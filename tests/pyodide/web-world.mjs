@@ -31,7 +31,7 @@ try{
     const c=document.createElement('canvas');c.width=c.height=256;const ctx=c.getContext('2d');ctx.fillStyle='#45815b';
     for(let row=0;row<4;row++)for(let col=0;col<4;col++){ctx.fillRect(col*64+16,row*64+12,28,38);ctx.fillRect(col*64+48,row*64+32,8,8);}
     return c.toDataURL().split(',')[1];
-  }),held=null,holdImage=false,badDecision=false;
+  }),held=null,holdImage=true,badDecision=false;
   await page.route('https://generativelanguage.googleapis.com/**',async route=>{
     const body=route.request().postDataJSON();assert.equal(route.request().headers()['x-goog-api-key'],'WORLD-TEST-KEY');assert(!route.request().url().includes('WORLD-TEST-KEY'));
     const kind=body.generationConfig.responseModalities?'image':'layout';calls.push({kind,body});
@@ -52,7 +52,20 @@ try{
   await page.locator('#name').fill('픽셀 친구');await page.locator('#birth button').click();await idle();
   let first=await state();assert(first.player.state);assert.equal(count('image'),0);assert.equal(count('layout'),0);
   const shots=fileURLToPath(new URL('../../.local/web-ui/',import.meta.url));await mkdir(shots,{recursive:true});
-  await page.locator('#open-home').click();await page.locator('#home-appearance-generate').click();await idle();await page.waitForFunction(()=>!document.querySelector('#home-sprite-retry').hidden);await page.locator('#home-sprite-retry').click();await idle();
+  await page.clock.install();
+  await page.locator('#open-home').click();await page.locator('#home-appearance-generate').click();
+  await page.waitForFunction(()=>document.querySelector('#home-status').dataset.activity==='image');
+  assert(await page.locator('#home-status-activity').isVisible());assert(await page.locator('#home-empty').isHidden());
+  await page.keyboard.press('Escape');assert(await page.locator('#home-dialog').evaluate(d=>d.open));
+  await page.clock.fastForward(31000);assert.match(await page.locator('#home-status-activity').innerText(),/아직 응답을 기다리고/);
+  assert.match(await page.locator('#home-status-activity .activity-clock').innerText(),/0:3\d/);assert.equal(count('image'),1);
+  await page.setViewportSize({width:360,height:812});assert(await page.locator('#home-dialog').evaluate(d=>d.scrollWidth<=d.clientWidth+1));
+  assert(await page.locator('.home-footer').evaluate(d=>d.scrollHeight<=d.clientHeight+1));
+  await page.screenshot({path:path.join(shots,'home-progress-mobile.png')});
+  assert(held);holdImage=false;await held.fulfill({json:{candidates:[{content:{parts:[{inlineData:{mimeType:'image/png',data:imageReply}}]}}]}});held=null;
+  await idle();assert(await page.locator('#home-status-activity').isHidden());
+  await page.waitForFunction(()=>!document.querySelector('#home-sprite-retry').hidden);await page.locator('#home-sprite-retry').click();await idle();
+  assert(await page.locator('#home-status-activity').isHidden());await page.setViewportSize({width:1280,height:900});
   first=await state();const firstSprite=Object.values(first.visuals.art).find(e=>e.format==='home-sprite-v1');assert(firstSprite,'save-only retry persisted the sheet');assert.equal(firstSprite.pet_id,first.player.state.pet_id);assert.equal(count('image'),1);
   await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready');
   assert.equal(await page.locator('#home-sprite').count(),0);assert.equal(await page.locator('.home-item').count(),48);
