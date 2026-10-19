@@ -4291,9 +4291,9 @@ export const catalog={
     "zh-Hant": "#e5dfc7Standard"
   },
   "Content": {
-    "ja": "コンテンツ",
-    "zh-Hans": "内容",
-    "zh-Hant": "內容"
+    "ja": "穏やか",
+    "zh-Hans": "平静",
+    "zh-Hant": "平靜"
   },
   "Thunder": {
     "ja": "雷",

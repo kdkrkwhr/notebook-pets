@@ -17,6 +17,7 @@ class LocalizationTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(result['language'],language)
             self.assertNotEqual(result['status']['stage_label'],'Hatchling')
             self.assertNotRegex(result['status']['stage_label'],r'[가-힣]')
+            self.assertEqual(result['status']['mood'],{'ja':'穏やか','zh-Hans':'平静','zh-Hant':'平靜'}[language])
             replay=await self.service.invoke({'command':'feed','request_id':'same-meal','language':language})
             self.assertTrue(replay['replayed']);self.assertEqual(replay['xp_result'],meal['xp_result'])
             self.assertEqual(self.storage.document,before)

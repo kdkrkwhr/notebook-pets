@@ -1,4 +1,5 @@
 {
+  "Content": {"ja":"穏やか","zh-Hans":"平静","zh-Hant":"平靜"},
   "Could not complete this action. Refresh your status and check again.": {"ja":"操作を完了できませんでした。状態を更新して確認してください。","zh-Hans":"未能完成此操作。请刷新状态后再确认。","zh-Hant":"未能完成此操作。請重新整理狀態後再確認。"},
   "Your companion’s personality is saved.": {"ja":"友達の性格を保存しました。","zh-Hans":"已保存伙伴的性格。","zh-Hant":"已儲存夥伴的性格。"},
   "Choose a route at the checkpoint. This stage entry is already paid.": {"ja":"チェックポイントで進む道を選んでください。このステージの入場分は支払い済みです。","zh-Hans":"请在检查点选择路线。本关的入场费用已扣除。","zh-Hant":"請在檢查點選擇路線。本關的入場費用已扣除。"},
