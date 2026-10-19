@@ -8,7 +8,11 @@
 
 Notebuddy is a companion game about growing alongside one AI friend. Start with a drawing, a photo or a surprise companion. Share your day, build a routine, discover stories and pixel dungeons on walks, and keep a little album of your friend's growth.
 
-The current Anna owner test app is **1.4.12**. Choose between **three evolution paths inspired by care and conversation**, decorate a home and garden, and explore five pixel dungeons. The app is not publicly released yet; see the [current review and deployment status](anna/HANDOFF.md).
+**[Get Notebuddy on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy)** · **1.4.13** has passed review and is now publicly available!
+
+Anna is a platform for installing and using AI apps. Sign in with your Anna account, then open Notebuddy from its store page to get started. Chat, image generation and other AI features use your own Anna account's AI allowance.
+
+Choose between **three evolution paths inspired by care and conversation**, decorate a home and garden, and explore five pixel dungeons. [App user guide](anna/README.en.md) · [Current deployment status](anna/HANDOFF.md)
 
 [![Anna app tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml/badge.svg?branch=release)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml)
 
@@ -141,7 +145,7 @@ Future equipment will take each companion's body shape into account. A friend wi
 
 | Edition | Availability |
 | --- | --- |
-| **Anna app** | The screens and features above are in owner test version **1.4.12**. Public store release awaits **1.4.12 review**. [App user guide](anna/README.en.md) |
+| **Anna app** | The approved **1.4.13 public release** is available now. [Get it on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy) · [App user guide](anna/README.en.md) |
 | **Open-source engine, Discord and AI agents** | Run or connect the project yourself. The Anna interface, continuing stories and item book have their own feature scope. [Setup and integration guide](docs/DEVELOPMENT.en.md) |
 
 The Anna app supports **English and Korean**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.

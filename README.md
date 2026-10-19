@@ -8,7 +8,11 @@
 
 노트버디는 한 마리의 AI 친구와 일상을 쌓아 가는 육성 게임입니다. 직접 그린 그림이나 사진으로 친구를 만들고, 밥을 주고 이야기를 나누며 성장시킬 수 있어요. 산책길에서는 이어지는 이야기와 픽셀 던전을 만나고, 돌아와서는 성장 앨범과 아이템 도감을 펼쳐 보세요.
 
-현재 Anna 테스트 앱은 **1.4.13**입니다. 돌봄과 대화를 바탕으로 제안된 **세 가지 진화 방향을 직접 선택**할 수 있어요. 집과 마당 꾸미기, 다섯 픽셀 던전도 함께 즐길 수 있습니다. 아직 공개 출시 전이며, [최신 심사·배포 상태](anna/HANDOFF.md)를 확인해 주세요.
+**[Anna 스토어에서 노트버디 다운로드](https://anna.partners/store/@kdkrkwhr/notebuddy)** · 심사를 통과한 **1.4.13**이 공개됐어요!
+
+Anna는 여러 AI 앱을 설치해 사용하는 플랫폼이에요. Anna 계정으로 로그인한 뒤 위 스토어에서 노트버디를 열어 시작하세요. 대화·이미지 생성 등에는 본인 Anna 계정의 AI 사용량이 적용됩니다.
+
+돌봄과 대화를 바탕으로 제안된 **세 가지 진화 방향을 직접 선택**할 수 있어요. 집과 마당 꾸미기, 다섯 픽셀 던전도 함께 즐겨 보세요. [앱 사용 안내](anna/README.md) · [최신 배포 상태](anna/HANDOFF.md)
 
 [![Anna app tests](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml/badge.svg?branch=release)](https://github.com/kdkrkwhr/notebook-pets/actions/workflows/anna.yml)
 
@@ -141,7 +145,7 @@
 
 | 방식 | 현재 상태 |
 | --- | --- |
-| **Anna 앱** | 위 화면과 기능을 제공하는 소유자 테스트 버전 **1.4.13**. 스토어 공개는 **1.4.13 심사 대기** 중이에요. [앱 사용 안내](anna/README.md) |
+| **Anna 앱** | 심사를 통과한 **1.4.13 공개 버전**을 사용할 수 있어요. [Anna 스토어에서 다운로드](https://anna.partners/store/@kdkrkwhr/notebuddy) · [앱 사용 안내](anna/README.md) |
 | **오픈소스 엔진·Discord·AI 에이전트** | 직접 실행하거나 연결할 수 있어요. Anna 전용 화면·산책 이야기·도감과는 제공 범위가 달라요. [설치와 연결 안내](docs/DEVELOPMENT.md) |
 
 Anna 화면은 **한국어와 영어**를 지원합니다. 상단에서 언어를 선택하면 새 답변도 그 언어로 받을 수 있어요. 친구와 최근 대화·성장 기록은 사용자별로 저장됩니다.

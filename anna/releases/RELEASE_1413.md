@@ -1,5 +1,11 @@
 # 1.4.13 — Reliable home companion loading
 
+## Public availability — 2026-10-19
+
+Anna approved **1.4.13**, and the [public Notebuddy store page](https://anna.partners/store/@kdkrkwhr/notebuddy) is available. An unauthenticated HTTP request returned **200** with app reference **@kdkrkwhr/notebuddy** and `latest_version: 1.4.13`. Dora's review feedback asks for more polished battle companion visuals that better match the portrait; this did not block approval. README installation links and release status now reflect the public listing. This documentation update performs no app upload, candidate replacement, publish action or new AI request. Existing limitations and the owner-only revision 89 distinction remain as recorded below.
+
+## Submission and validation — 2026-10-18
+
 Submitted on 2026-10-18 at the owner's explicit request. Review candidate **1.4.13 / ID 1446 / pending_review** replaces 1.4.12 / 1445. Owner test app: **working revision 88 / installed 0.0.0-draft**. Game tool stays **0.9.5 / Executa 774 / master 1193**, verified loaded/running. Public web remains unchanged.
 
 - Fix an empty home after a long-running session: renew the saved companion image download URL on every home entry. Preserve the existing personal directional sheet or free default; no image regeneration or AI request.
