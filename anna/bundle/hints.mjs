@@ -1,3 +1,4 @@
+import {localeText,localeObject} from './locale.mjs';
 ﻿// Only secondary explanations are collapsible. Status, action costs, choices and
 // destructive confirmations remain visible beside their controls.
 const selectors=[
@@ -46,6 +47,6 @@ export function createHints(document,language){
  document.addEventListener('pointerdown',e=>{if(active&&!active.button.contains(e.target)&&!active.text.contains(e.target))hide();});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});document.addEventListener('close',hide,true);
  document.defaultView.addEventListener('resize',hide);document.addEventListener('scroll',place,true);
- function render(){for(const {button,heading:title}of hints){const heading=title?.textContent?.trim();button.setAttribute('aria-label',language()==='ko'?`${heading||'사용'} 안내`:`About ${heading||'this feature'}`);}if(active)place();}
+ function render(){for(const {button,heading:title}of hints){const heading=title?.textContent?.trim();button.setAttribute('aria-label',localeText(language(),language()==='ko'?`${heading||'사용'} 안내`:`About ${heading||'this feature'}`));}if(active)place();}
  render();return{render,hide};
 }

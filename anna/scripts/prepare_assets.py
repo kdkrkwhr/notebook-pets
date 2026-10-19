@@ -9,6 +9,10 @@ ROOT = APP.parent
 ART = APP / 'bundle' / 'assets'
 CORE = APP / 'executas' / 'notebuddy' / 'game_core'
 ART.mkdir(parents=True, exist_ok=True)
+catalog=json.loads((APP/'locales'/'catalog.json').read_text(encoding='utf-8'))
+catalog.update(json.loads((APP/'locales'/'overrides.json').read_text(encoding='utf-8')))
+(APP/'bundle'/'locale-data.mjs').write_text('// Generated from locales/catalog.json; no runtime translation service.\nexport const catalog='+json.dumps(catalog,ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
+(APP/'executas'/'notebuddy'/'localization_data.py').write_text('# Generated from locales/catalog.json; presentation only.\nCATALOG='+repr(catalog)+'\n',encoding='utf-8')
 shutil.copytree(ROOT / 'assets' / 'home-v1', ART / 'home-v1', dirs_exist_ok=True)
 shutil.copytree(ROOT / 'assets' / 'home-v2', ART / 'home-v2', dirs_exist_ok=True)
 # A versioned path prevents browsers from reusing the old sample artwork.

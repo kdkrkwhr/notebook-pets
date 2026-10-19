@@ -1,3 +1,4 @@
+import {localeText,localeObject} from './locale.mjs';
 import {items,regions,slots,selectItems,fitRules} from './items.mjs';
 
 export function createItemCatalog(document,language){
@@ -20,8 +21,8 @@ export function createItemCatalog(document,language){
   ruleHeading:['Every companion has its own shape','친구마다 몸의 형태가 달라요'],
   rule:['Collecting and wearing are separate. Gloves need visible hands; a handless companion can collect them but cannot wear them. An area that is hidden or unclear needs confirmation. Items never add missing limbs. Individual body analysis and equipment are not available yet.','수집과 착용은 별개예요. 장갑은 손이 보이는 친구가 착용할 수 있고, 손이 없는 친구도 수집은 할 수 있어요. 가려지거나 불분명한 부위는 확인이 필요해요. 아이템을 위해 없던 팔다리를 만들지 않아요. 현재는 개별 외형 분석과 착용을 제공하지 않아요.'],
  };
- const text=key=>words[key][language()==='ko'?1:0];
- const local=pair=>pair[language()==='ko'?1:0];
+ const text=key=>localeText(language(),words[key][language()==='ko'?1:0]);
+ const local=pair=>localeText(language(),pair[language()==='ko'?1:0]);
  function options(id,values,all){
   const element=$(id),value=element.value||'all';element.replaceChildren();
   for(const key of ['all',...values]){const option=document.createElement('option');option.value=key;option.textContent=text(key==='all'?all:key);element.append(option);}element.value=value;
@@ -38,7 +39,7 @@ export function createItemCatalog(document,language){
   const filter=$('#item-owned').value;
   const matches=selectItems({region:$('#item-region').value,slot:$('#item-slot').value,query:$('#item-search').value,language:language()}).filter(i=>filter==='all'||(owned[i.id]===1)===(filter==='owned'));
   const total=items.filter(i=>owned[i.id]===1).length;
-  $('#item-count').textContent=language()==='ko'?`${matches.length} / ${items.length}종 · 보유 ${total}종`:`${matches.length} of ${items.length} items · ${total} owned`;
+  $('#item-count').textContent=localeText(language(),language()==='ko'?`${matches.length} / ${items.length}종 · 보유 ${total}종`:`${matches.length} of ${items.length} items · ${total} owned`);
   $('#item-empty').hidden=!!matches.length;
   const cards=matches.map(item=>{
    const button=document.createElement('button');button.type='button';button.className='item-card';button.dataset.item=item.id;button.dataset.rarity=item.rarity;

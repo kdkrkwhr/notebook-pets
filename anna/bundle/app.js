@@ -5,6 +5,7 @@ import {createItemCatalog} from './item-catalog.mjs';
 import {createThemes} from './themes.mjs';
 import {createHome} from './home.mjs';
 import {createHomeSprite,currentHomeSprite,currentHomeAppearance,homeNeedsChoice,homeSpriteKey} from './home-sprite.mjs';
+import {localeText} from './locale.mjs';
 let homeUI,homeSprites;
 import {createTitleScreen} from './title-screen.mjs';
 import {createBirthSteps} from './birth-steps.mjs';
@@ -174,7 +175,7 @@ function render(){
     const frame=document.createElement('div');frame.className='album-image';
     if(entry.reached){const img=document.createElement('img');img.alt=entry.label;picture(img,urls[imageKey(view,entry.stage)]||starter(view),starter(view));frame.append(img);}else frame.textContent='?';
     const title=document.createElement('div');title.textContent=entry.label;
-    const subtitle=document.createElement('small');subtitle.textContent=entry.reached?tr(entry.current?'currentStage':'memoryStage'):(language==='ko'?`Lv.${entry.min_level} + 활동 조건`:`Lv.${entry.min_level} + activities`);
+    const subtitle=document.createElement('small');subtitle.textContent=entry.reached?tr(entry.current?'currentStage':'memoryStage'):localeText(language,language==='ko'?`Lv.${entry.min_level} + 활동 조건`:`Lv.${entry.min_level} + activities`);
     item.append(frame,title,subtitle);$('#album').append(item);
   }
   $('#collection-album').replaceChildren(...[...$('#album').children].map(item=>item.cloneNode(true)));
@@ -479,8 +480,8 @@ dungeons=createDungeons({document,view:()=>view,language:()=>language,discoveryP
 function renderPersonality(){
  const p=view?.status?.personality,box=$('#personality-details');if(!box)return;
  $('#personality-heading').textContent=tr(personalityWorking?'personalityWorking':'personalityHeading');
- $('#personality-summary').textContent=p?.origin.summary[language]||tr('personalityIntro');
- $('#personality-voice').textContent=p?`${p.origin.voice[language]} · ${p.origin.habit[language]}`:'';
+ $('#personality-summary').textContent=(p?.origin.summary[language]||p?.origin.summary.en)||tr('personalityIntro');
+ $('#personality-voice').textContent=p?`${p.origin.voice[language]||p.origin.voice.en} · ${p.origin.habit[language]||p.origin.habit.en}`:'';
  $('#personality-traits').replaceChildren();
  if(p)for(const axis of personalityAxes){
   const value=p.values[axis],span=document.createElement('span');span.className='badge';
@@ -497,7 +498,7 @@ async function setupPersonality(automatic=false){
  const wasBusy=busy;controls(true);try{await persona.run(automatic);render();}finally{controls(wasBusy);renderPersonality();}
 }
 $('#meet-personality').onclick=()=>setupPersonality();
-persona=createPersonality({anna:()=>anna,active:assertActive,
+persona=createPersonality({anna:()=>anna,active:assertActive,language:()=>language,
  render:state=>{personalityWorking=state.working;personalityFeedback=state.feedback;renderPersonality();},
  saved:next=>{adoptView(next);render();},
  features:async snapshot=>{

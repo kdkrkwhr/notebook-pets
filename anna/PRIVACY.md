@@ -7,7 +7,7 @@ Last updated: 16 October 2026. This notice describes the Notebuddy 1.4.4 source 
 | Data | Purpose and location |
 | --- | --- |
 | Companion name, species, element, progress, inventory, daily activity, growth album milestones and recent action results | Saved in your authenticated Anna account’s Notebuddy Game tool storage, to continue your game and prevent repeat rewards. |
-| Recent conversation | Up to 24 chat entries, including care reactions and pending/failure markers, are retained by the app in Anna app storage to show your conversation and provide recent context. This limit does not describe Anna or AI-provider logs. |
+| Recent conversation | Up to 64 chat entries within 40 KB (latest 24 displayed), including care reactions and pending/failure markers, are retained by the app in Anna app storage to show your conversation and provide recent context. This limit does not describe Anna or AI-provider logs. |
 | Portrait index and generated portrait files | Saved in Anna app storage and file storage for the growth album. Drawing a replacement changes the displayed portrait; older files are not automatically erased. |
 | Pixel companion images and source-portrait paths | A 64×64 PNG is prepared locally from a completed portrait or bundled starter and saved in the same private portrait index/file storage for dungeon exploration. No AI request is made for conversion. |
 | Dungeon discoveries, daily clears, coins and latest expedition result | Stored with private game progress. Results and charges are committed together before animation; replaying or skipping cannot grant another reward. The latest result remains available across a daily reset until replaced. |
@@ -21,7 +21,7 @@ The app does not request your real name, email, contacts or a separate API key. 
 
 After a successful feed, treat, play, rest, training, walk, battle, walk-away, attendance or quest reward action, the UI queues one short AI reaction. The request includes the pet name, species, element, level, fullness, bond and the actual action outcome (including awarded XP or loot when present). It does not send uploaded artwork or conversation history for this reaction. The reaction uses Anna LLM allowance independently of gameplay, and cannot change rewards or statistics.
 
-A marker is written to the existing chat record before each AI request. An interrupted or failed request is not automatically retried on refresh/reopen, and may still have used allowance. A received but unsaved reply remains in memory for an explicit save-only retry. Markers and replies count toward the existing 24-entry retention limit and are covered by the same reset/removal process. Cross-runtime atomic first-row creation and provider exactly-once billing are not guaranteed.
+A marker is written to the existing chat record before each AI request. An interrupted or failed request is not automatically retried on refresh/reopen, and may still have used allowance. A received but unsaved reply remains in memory for an explicit save-only retry. Markers and replies count toward the existing 64-entry / 40-KB retention limit and are covered by the same reset/removal process. Cross-runtime atomic first-row creation and provider exactly-once billing are not guaranteed.
 
 ## Walk stories
 

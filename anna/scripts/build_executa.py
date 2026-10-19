@@ -13,6 +13,11 @@ if not platform_key or platform.machine().lower() not in ('amd64','x86_64'):
     raise SystemExit('This build script currently supports Windows/Linux x86_64.')
 sys.path.insert(0, str(PLUGIN))
 from notebuddy_plugin import MANIFEST
+from localization import localize
+for language in ('ja','zh-Hans','zh-Hant'):
+    sample=localize({'ok':True,'status':{'name':'Growing','stage_label':'새싹기'}},'start',language)
+    assert sample['status']['name']=='Growing'
+    assert sample['status']['stage_label'] not in ('새싹기','Hatchling')
 (PLUGIN / 'manifest.json').write_text(json.dumps(MANIFEST, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 name = 'notebuddy-game'
 argv = [sys.executable, '-m', 'PyInstaller', '--noconfirm', '--clean', '--onefile',

@@ -1,6 +1,7 @@
 """Anna presentation only: never translate or mutate the authoritative save."""
 import copy
 import re
+from locale_text import locale_text
 
 LABELS = {
     '나만의 완전체':'My own final form',
@@ -112,7 +113,7 @@ def _message(value, command, language):
                 'encounter': ('You met a monster on your walk!', '산책 중 몬스터를 만났어요!')}.get(value.get('walk_outcome'), SUCCESS['walk'])[index]
     if command == 'train':
         stat = {'hp': ('HP', 'HP'), 'atk': ('ATK', '공격'), 'def': ('DEF', '방어')}.get(value.get('trained_stat'), ('Stat', '능력치'))[index]
-        return f'{stat} +{value.get("stat_gain", 0)} · ' + ('훈련 완료' if index else 'Training complete')
+        return f'{stat} +{value.get("stat_gain", 0)} · ' + ('훈련 완료' if index else locale_text(language,'Training complete'))
     if command == 'battle':
         return {'win': ('You won the battle!', '배틀에서 이겼어요!'), 'lose': ('You lost this battle. There is always another walk.', '이번 배틀에서는 졌어요. 다음 산책을 기대해 봐요.'), 'draw': ('The battle ended in a draw.', '무승부로 끝났어요.')}.get(value.get('outcome'), ('Battle complete.', '배틀 완료.'))[index]
     return SUCCESS.get(command, ('Action complete.', '행동 완료.'))[index]
@@ -122,12 +123,12 @@ def localize(response, command, language='en'):
     value = copy.deepcopy(response)
     value['language'] = language
     value['msg'] = _message(value, command, language)
-    if language=='en':
+    if language!='ko':
         for furniture in value.get('home',{}).get('catalog',[]):furniture['name']=furniture['en']
         for candidate in value.get('home_candidates',[]):candidate['name']=candidate['en']
     if command == 'help':
         value['commands'] = [c for c in value.get('commands', []) if c not in {'rank', 'reset', 'owner', 'clearowner'}]
-    if language == 'en':
+    if language != 'ko':
         def visit(item):
             if isinstance(item, dict):
                 if 'next_stage' in item and 'catalog' in item:
@@ -148,4 +149,16 @@ def localize(response, command, language='en'):
                 for child in item:
                     visit(child)
         visit(value)
+    if language not in ('en','ko'):
+        def translate(item):
+            if isinstance(item,dict):
+                for key,child in item.items():
+                    if key in {'msg','species','element','stage_label','label','title','mood','name'} and isinstance(child,str):
+                        # Names are data. Only catalog furniture/candidate names have an English field.
+                        if key!='name' or 'en' in item:item[key]=locale_text(language,child)
+                    elif key=='titles' and isinstance(child,list):item[key]=[locale_text(language,x) for x in child]
+                    else:translate(child)
+            elif isinstance(item,list):
+                for child in item:translate(child)
+        translate(value)
     return value

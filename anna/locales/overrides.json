@@ -1,0 +1,58 @@
+{
+  "Could not complete this action. Refresh your status and check again.": {"ja":"操作を完了できませんでした。状態を更新して確認してください。","zh-Hans":"未能完成此操作。请刷新状态后再确认。","zh-Hant":"未能完成此操作。請重新整理狀態後再確認。"},
+  "Your companion’s personality is saved.": {"ja":"友達の性格を保存しました。","zh-Hans":"已保存伙伴的性格。","zh-Hant":"已儲存夥伴的性格。"},
+  "Choose a route at the checkpoint. This stage entry is already paid.": {"ja":"チェックポイントで進む道を選んでください。このステージの入場分は支払い済みです。","zh-Hans":"请在检查点选择路线。本关的入场费用已扣除。","zh-Hant":"請在檢查點選擇路線。本關的入場費用已扣除。"},
+  "Your shared experience shapes the next chapter.": {"ja":"一緒に過ごした経験が次の物語につながります。","zh-Hans":"共同的经历将影响下一段故事。","zh-Hant":"共同的經歷將影響下一段故事。"},
+  "You explored your discovery and gained experience.": {"ja":"見つけたものを調べて経験を積みました。","zh-Hans":"探索了新发现，并获得了经验。","zh-Hant":"探索了新發現，並獲得了經驗。"},
+  "You left the discovery untouched and headed home.": {"ja":"見つけたものをそのままにして、ゆっくり帰りました。","zh-Hans":"保留了发现的原貌，安心回家了。","zh-Hant":"保留了發現的原貌，安心回家了。"},
+  "Could not finish the portrait. {error}": {
+    "ja": "ポートレートを完成できませんでした。{error}",
+    "zh-Hans": "未能完成肖像。{error}",
+    "zh-Hant": "未能完成肖像。{error}"
+  },
+  " and earlier safe choice": {
+    "ja": "と以前の慎重な選択",
+    "zh-Hans": "及之前的谨慎选择",
+    "zh-Hant": "及先前的謹慎選擇"
+  },
+  "feeding": {
+    "ja": "ごはん",
+    "zh-Hans": "喂食",
+    "zh-Hant": "餵食"
+  },
+  "training": {
+    "ja": "トレーニング",
+    "zh-Hans": "训练",
+    "zh-Hant": "訓練"
+  },
+  "walks": {
+    "ja": "お散歩",
+    "zh-Hans": "散步",
+    "zh-Hant": "散步"
+  },
+  "play": {
+    "ja": "遊び",
+    "zh-Hans": "玩耍",
+    "zh-Hant": "玩耍"
+  },
+  "rest": {
+    "ja": "休憩",
+    "zh-Hans": "休息",
+    "zh-Hant": "休息"
+  },
+  "snacks": {
+    "ja": "おやつ",
+    "zh-Hans": "零食",
+    "zh-Hant": "點心"
+  },
+  "Getting to know this little friend…": {
+    "ja": "この小さな友達のことを知る準備をしています…",
+    "zh-Hans": "正在了解这位小伙伴…",
+    "zh-Hant": "正在認識這位小夥伴…"
+  },
+  "Anna stores your companion’s name and progress, recent chat (up to 64 messages within 40 KB; the latest 24 are shown), portraits, resized reference drawings/photos and visual descriptions, and your latest walk story and choice. Original file names and image metadata are not saved by the app. Your language and theme preferences stay in this browser. Replaced images may remain; use “Clean unused portraits” to remove unreferenced files.": {
+    "ja": "Annaには友達の名前と成長記録、最近の会話（40KB以内で最大64件を保存し、最新24件を表示）、ポートレート、縮小した参考画像と外見の説明、最新のお散歩の物語と選択が保存されます。元のファイル名や画像メタデータは保存しません。言語とテーマの設定はこのブラウザーに保存されます。差し替えた画像が残ることがあります。「未使用の画像を整理」で参照されていない画像を削除できます。",
+    "zh-Hans": "Anna 会保存伙伴的名字与成长记录、最近的对话（40KB 内最多保存 64 条，显示最新 24 条）、肖像、缩小后的参考图片与外观描述，以及最近的散步故事和选择。应用不会保存原始文件名或图片元数据。语言与主题偏好保存在此浏览器中。替换过的图片可能仍会保留，可通过“清理未使用的肖像”删除未被引用的文件。",
+    "zh-Hant": "Anna 會儲存夥伴的名字與成長紀錄、最近的對話（40KB 內最多儲存 64 則，顯示最新 24 則）、肖像、縮小後的參考圖片與外觀描述，以及最近的散步故事和選擇。應用程式不會儲存原始檔名或圖片中繼資料。語言與主題偏好儲存在此瀏覽器中。替換過的圖片可能仍會保留，可透過「清理未使用的肖像」刪除未被引用的檔案。"
+  }
+}

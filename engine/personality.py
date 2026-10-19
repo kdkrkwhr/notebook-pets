@@ -19,7 +19,7 @@ def check_profile(p):
     require(isinstance(p['traits'],dict) and set(p['traits'])==set(AXES))
     require(all(type(v) is int and v in (-1,0,1) for v in p['traits'].values()))
     for key in ('summary','voice','habit'):
-        require(isinstance(p[key],dict) and set(p[key])=={'en','ko'} and all(text(v,220) for v in p[key].values()))
+        require(isinstance(p[key],dict) and {'en','ko'}<=set(p[key])<= {'en','ko','ja','zh-Hans','zh-Hant'} and all(text(v,220) for v in p[key].values()))
     require(len(json.dumps(p,ensure_ascii=False))<=4096)
 
 def validate(st):

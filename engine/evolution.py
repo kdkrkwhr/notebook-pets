@@ -32,7 +32,7 @@ def text(value, limit, allow_empty=False):
 
 def valid_prose(value):
     return (isinstance(value, dict) and set(value) == {'title','reason','appearance','language'}
-            and value['language'] in ('ko','en') and text(value['title'],60)
+            and value['language'] in ('ko','en','ja','zh-Hans','zh-Hant') and text(value['title'],60)
             and text(value['reason'],160) and text(value['appearance'],240))
 
 
@@ -133,7 +133,7 @@ def request(st,command,raw):
         options=payload['options']; ids=[o.get('route_id') if isinstance(o,dict) else None for o in options] if isinstance(options,list) else []
         allowed={r['id'] for r in catalog(st)}
         if (len(ids)!=3 or any(not isinstance(i,str) for i in ids) or len(set(ids))!=3 or ids[0]!='keep' or not set(ids)<=allowed
-            or not text(payload['memory'],600,True) or not text(payload['features'],1200) or payload['language'] not in ('ko','en')):
+            or not text(payload['memory'],600,True) or not text(payload['features'],1200) or payload['language'] not in ('ko','en','ja','zh-Hans','zh-Hant')):
             raise GameError('invalid_evolution','세 가지 진화 방향을 확인해 주세요.')
         prose={}
         for o in options:

@@ -15,7 +15,7 @@ from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.9.5'
+VERSION = '0.9.6'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'
@@ -38,7 +38,7 @@ MANIFEST = {
             {'name': 'name', 'type': 'string', 'required': False, 'description': 'Pet name, only for start. Up to 24 characters.'},
             {'name':'birth_species','type':'string','required':False,'enum':list(BIRTH_SPECIES),'description':'Drawing-based first creation only: species inferred from the user artwork. Omit for a random start. Cannot change an existing pet.'},
             {'name':'birth_element','type':'string','required':False,'enum':list(BIRTH_ELEMENTS),'description':'Drawing-based first creation only: visible element cues, or random when absent. Requires birth_species.'},
-            {'name': 'language', 'type': 'string', 'required': False, 'enum': ['en', 'ko'],
+            {'name': 'language', 'type': 'string', 'required': False, 'enum': ['en', 'ko', 'ja', 'zh-Hans', 'zh-Hant'],
              'description': 'Response language. Defaults to English. Presentation only; reuse request_id when switching language on a retry.'},
             {'name': 'request_id', 'type': 'string', 'required': False,
              'description': 'Required for new actions: latest request_id_prefix plus a unique suffix, e.g. nb2:12:my-action. Reuse the exact ID for retries. Old unsequenced IDs can only replay retained results.'},
@@ -83,8 +83,8 @@ class GameService:
         if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language', 'birth_species', 'birth_element', 'choice_id', 'profile','home_payload','evolution_payload'}:
             raise ValueError('Invalid game arguments.')
         language = args.get('language', 'en')
-        if language not in ('en', 'ko'):
-            raise ValueError('Language must be en or ko.')
+        if language not in ('en', 'ko', 'ja', 'zh-Hans', 'zh-Hant'):
+            raise ValueError('Unsupported response language.')
         command = args.get('command')
         if not isinstance(command, str) or command not in ALLOWED:
             raise ValueError('Unsupported game command.')

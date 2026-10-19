@@ -20,6 +20,17 @@
 
 ---
 
+# Anna 1.4.14 multilingual update — 2026-10-19
+
+Owner explicitly requested Japanese, Simplified Chinese and Traditional Chinese, deployment and review replacement. Prepared app **1.4.14 / tool 0.9.6**; installation and review submission pending. Actual installed draft is still **1.4.13 / revision 89 / tool 0.9.5**. Public **1.4.13** is now approved/live (fresh platform status **published**, candidate null). Web remains excluded.
+
+- Static resource pipeline covers the UI, furniture/items and fallback story copy. Locale preferences and AI output instructions support **en / ko / ja / zh-Hans / zh-Hant**. Core evolution prose and optional personality locale fields preserve old bilingual saves; adapter presentation translation never changes receipts, names or rewards.
+- Owner authorized and used exactly **six text calls / zero images** for public translation drafts, no personal data and no paid retry. Raw results retained before local JSON framing repair. Traditional Chinese derived offline; reviewed overrides and provenance in **locales/README.md**. Existing saved AI text is preserved; native-speaker editorial review remains unperformed.
+- JS **96**, storage/protocol **76**, focused CJK browser **1** and strict validation passed. New tests cover all UI message keys/placeholders, aliases, AI prompt languages, free story chapters, new-locale evolution persistence and cross-language replay without rewards. Full browser and dual-OS packages pending.
+- Includes previous album image containment; privacy text now states the actual **64-message / 40-KB retained, latest 24 displayed** behavior. No retention-rule change. Details: **releases/RELEASE_1414.md**. Preserve the current public release throughout owner deployment; create/submit the new review only after verification.
+
+---
+
 # Anna growth-album image containment — 2026-10-18
 
 CSS-only source **1f2e312**, owner draft **1.4.13 / working revision 89 / installed 0.0.0-draft**, actual cloud tool **0.9.5 / Executa 774 / master 1193 loaded/running**. Review **1.4.13 / ID 1446** and shared listing must remain unchanged; public web excluded.
@@ -27,16 +38,5 @@ CSS-only source **1f2e312**, owner draft **1.4.13 / working revision 89 / instal
 - Measured the owner's four saved album portraits: each 90px image exceeded the bordered 92px frame's inner height by approximately **0.83px at both top and bottom** at the current display scale. Original portrait files and album records are unchanged.
 - Add 4px inner padding, contain images within the frame's content box and clip overflow at the rounded frame boundary. Keep `object-fit: contain`, so images scale without cropping. Use shrinkable album grid columns/items. Applies to both the main growth album and collection album.
 - Verified **21 layouts / 168 images** across seven themes and widths **360 / 620 / 1120**, with no boundary or horizontal overflow. Existing theme browser **3/3** and strict validation passed. No new permanent test or paid AI call. Private screenshots and measurements: `.local/album-layout/`. Installed `ui-polish.css` hash matches source; all four owner portraits are loaded and fully inside their 4px padded frames. UI is Connected with no notice. Game ETag and artwork/chat/story/personality values/ETags, frozen review row **1446** and shared listing remain unchanged. No tool or app version bump. Working bundle **172 files / 171338211 bytes**, content hash **c8dabd5ba1fdc2fcfd4b162965c633302b6e3083a0aa9cf5d0822b8105ec9cdc**. No additional AI calls.
-
----
-
-# Anna 1.4.13 review refresh — 2026-10-18
-
-Fresh owner instruction authorizes this replacement. Candidate **1.4.13 / immutable ID 1446 / pending_review** replaces **1.4.12 / 1445**. Owner test app **1.4.13 / working revision 88 / installed 0.0.0-draft**. Tool remains **0.9.5 / frozen Executa 774 / master 1193 loaded/running**. No public release or web deployment.
-
-- Includes the tested **76449c3** home image-link fix: renew the saved appearance URL on entry and use actual decoded renderer state for missing-image guidance. No runtime-code changes during review packaging **246781d**; app/package version metadata changes only. Changelog explains the long-session failure, recovery, retained images and zero AI regeneration.
-- Runtime CI **39116562365** passed Windows and Linux (**130 browser / 92 JS / 73 storage-protocol**, strict validation, standalone build/smoke); shared CI **39116562380** passed. Release packaging passed strict validation and JS **92** again. Existing personal directional sheet displays in the actual installed home; all three changed runtime source hashes match. Additional paid AI calls: **0**.
-- Cut froze bundle **1343 / 172 files / 171337956 bytes**, manifest SHA-256 **1419a6f232f68be462dc7aa0b782f9c7ab2c0cbae375c751f9f3d6988b4a1ddf**. Working content hash **6858a171240677535ee2e6a0c21ada8fe46a667af6c8390034f46522ecc36098**. Fresh platform read confirms candidate **1446**, revision **88**, **dirty_vs_latest_cut false**, correct minimum/exact tool 0.9.5 dependency, Connected UI and no notice.
-- Existing shared listing is unchanged and all six screenshots decode. Owner game ETag and art/chat/story/personality values/ETags remain unchanged. Approval, publication, fresh provider-quality testing and physical-PC execution are not claimed. Future review replacement requires another explicit request. See **releases/RELEASE_1413.md** and **reviews/REVIEW_1413.md**.
 
 ---
