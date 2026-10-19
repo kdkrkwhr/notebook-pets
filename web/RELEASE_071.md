@@ -8,3 +8,5 @@ Anna `cba0513`까지의 변경을 Git merge로 통합하고 웹에 맞는 부분
 - Gemini/Ollama/ComfyUI와 웹의 참고 이미지 전송 방식, 무료 기본 모습, 저장만 재시도하는 복구를 유지합니다. 공통 게임 규칙·저장 형식·보상은 변경하지 않습니다. Anna 서버 전용 APS 오류 처리는 웹 저장 계층으로 옮기지 않습니다.
 
 검증은 별도 브라우저 공책과 모의 AI로 진행합니다. 실제 유료 AI의 생성 품질은 이번 작업에서 다시 검증하지 않습니다. 배포 결과는 [HANDOFF](../anna/HANDOFF.md)에 기록합니다.
+
+배포 완료: **0.7.1 / 6b0b24a**, [GitHub Pages 검사·배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39184697747)와 [공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39184697850)가 성공했습니다. 로컬 웹 6개 시나리오 묶음·제공자 단위 6건을 통과했고, 공개 주소에서 진행 안내·AI 없는 저장 재시도·홈 이미지 재읽기·백업·산책·양쪽 앨범을 다시 확인했습니다. 주요 JS/CSS 14개도 검증 빌드와 일치합니다. Anna의 앱 정보·초안·전체 버전 목록은 배포 전후 동일하며 심사본 **1.4.13 / ID 1446**과 소개 자료를 그대로 유지합니다.
