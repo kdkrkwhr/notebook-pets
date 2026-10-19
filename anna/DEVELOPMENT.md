@@ -49,6 +49,14 @@ CLI 0.1.57 앱 테스트 도구는 도구 저장소 소유자를 `dev-<app-slug>
 
 ## 검사
 
+### Anna 모바일 컨테이너
+
+`manifest.json`의 `ui.form_factors`는 `["desktop", "mobile"]`이며, 같은 `index.html`을 공유합니다. `min_size.w`는 320입니다. Anna가 viewport 메타를 주입하므로 번들에 별도 viewport 메타를 추가하지 않습니다. Anna 밖에서 렌더링하는 테스트 호스트·향후 플랫폼 어댑터는 해당 컨테이너에 맞는 viewport를 제공해야 합니다.
+
+`bundle/mobile.css`는 `env(safe-area-inset-*)`와 `--anna-safe-area-*`를 함께 처리합니다. 모바일 버튼·설명·메뉴는 최소 44×44이며, 설명은 터치로 열고 닫을 수 있습니다. 진화 확인/닫기와 도감 헤더는 스크롤 중에도 접근할 수 있고, 짧은 가로 화면에서는 마이홈 상점을 옆으로 배치합니다. 레이아웃 변경은 게임 규칙이나 AI 호출을 추가하지 않습니다.
+
+집중 검사는 `node --test tests/browser/mobile.browser.mjs`로 실행합니다. 터치 활성 Chromium, 320px 화면, 5개 언어, 안전 영역, 가로 회전, 키보드를 가정한 축소 높이를 사용하며 외부 네트워크와 유료 AI는 차단합니다. 이 검사는 실물 iOS/Android 앱·OS 키보드·하드웨어 뒤로가기 검증을 대체하지 않습니다. [Anna 공식 모바일 기준](https://anna.partners/developers/apps/app-mobile.md)을 함께 확인하세요.
+
 ```powershell
 npm run validate
 npm test

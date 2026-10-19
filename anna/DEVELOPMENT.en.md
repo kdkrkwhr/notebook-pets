@@ -43,6 +43,14 @@ New actions append a unique suffix to `request_id_prefix` from the latest status
 
 Before the first write, the adapter rechecks whether another agent already created a partner while the engine was computing. This preserves that partner and its progress when observed. The final read/write gap remains: APS has no supported atomic create-if-absent operation. The owner accepted this limitation for review submission; platform support remains a follow-up. See [FIRST_CREATION.md](docs/FIRST_CREATION.md) for the API evidence, offline reproducer, and closure criteria.
 
+## Anna mobile container
+
+`manifest.json` declares `ui.form_factors: ["desktop", "mobile"]`, shares `index.html` and permits a 320px minimum view width. The Anna shell injects viewport metadata; do not add a second viewport meta to the bundle. Test hosts and future standalone adapters must provide their own appropriate container viewport.
+
+`bundle/mobile.css` handles both `env(safe-area-inset-*)` and `--anna-safe-area-*`. Mobile controls and explanation triggers use at least 44×44 CSS pixels. Help opens/closes on tap, evolution actions and collection headers remain reachable while scrolling, and short landscape home views place the shop beside the world. No game-rule or paid-AI changes are introduced.
+
+Run `node --test tests/browser/mobile.browser.mjs` for touch-enabled Chromium coverage: 320px layouts in all five locales, synthetic safe areas, rotation and reduced-height keyboard space. Requests are isolated and no paid provider is used. This is not physical iOS/Android, OS keyboard or hardware-back verification. See [Anna mobile requirements](https://anna.partners/developers/apps/app-mobile.md).
+
 ## Structure
 
 | File | Responsibility |
