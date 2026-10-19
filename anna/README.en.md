@@ -4,13 +4,17 @@
 
 Meet a friend from your own drawing, offer them a meal, tell them about your day and take a walk together. Notebuddy is a game about **growing alongside one companion through everyday care and little adventures**.
 
+**[Get Notebuddy on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy)**
+
+Anna is a platform for installing and using AI apps. An Anna account is required; chat, image generation and other AI features use your own account's AI allowance.
+
 <p align="center">
   <img src="store/02-companion-and-care.png" width="900" alt="Mori, created from a drawing, beside conversation and feed, play, train and walk controls">
 </p>
 
 ## What is available today?
 
-Owner test update **1.4.13** uses game tool **0.9.5**, with manual, personalized evolution. The app is not publicly released; see the [current review and deployment status](HANDOFF.md).
+**1.4.13 has passed review and is now publicly available on the Anna App Store.** It uses game tool **0.9.5** and includes personalized evolution choices, home and garden decoration, five pixel dungeons and regional item collection. Equipment is planned for a later update. See the [current deployment status](HANDOFF.md).
 
 Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
@@ -38,7 +42,7 @@ Choose **◐ Theme** in the header to change your notebook's mood. Seven themes 
 
 ![Seven theme choices](../docs/screenshots/themes-144-ko.png)
 
-1. Open **Notebuddy** in the installed Anna test app. English is the default; choose **한국어** in the header for Korean.
+1. Visit the [Notebuddy store page](https://anna.partners/store/@kdkrkwhr/notebuddy), sign in with your Anna account and open **Notebuddy**. English is the default; choose **한국어** in the header for Korean.
 2. Name your companion and choose **Surprise me** or **From a drawing or photo**.
 3. For a reference-based friend, draw or select an image, then choose Meet. AI analyzes its features and creates a portrait.
 4. Offer your new friend some food and say hello. Open the personality panel to learn about their voice and habits.

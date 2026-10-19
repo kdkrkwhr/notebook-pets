@@ -6,12 +6,15 @@
 
 | 항목 | 값 |
 | --- | --- |
+| Anna 공개 앱 | **1.4.13**, [스토어에서 다운로드](https://anna.partners/store/@kdkrkwhr/notebuddy) |
 | Anna 테스트 앱 | **1.4.13 / working revision 89 / 소유자 초안 0.0.0-draft** |
-| 심사 | **1.4.13 / ID 1446 / pending_review**, 명시 요청 전 변경 금지 |
+| 심사 | **1.4.13 승인·스토어 공개** (2026-10-19). 제출 ID **1446**; 후속 심사본 교체는 새 명시 요청 필요 |
 | 게임 도구 | **0.9.5 / Executa 774**, 실제 클라우드 loaded/running |
 | 검증 | Python 230 · JS 92 · 브라우저 130 · 저장/프로토콜 73 · 격리 APS 시나리오 14 |
 | 공개 웹 | **0.7.1 / 6b0b24a**, Pages CI **39184697747** 성공 · 공개 주소 검증 완료 |
 | Limits | Owner scope: one device per account; fresh AI quality / physical PC runner not tested |
+
+2026-10-19 사용자가 제공한 Dora의 심사 승인 안내와 공개 스토어 URL을 확인했다. 비로그인 HTTP 조회에서 **200**, 앱 **Notebuddy / @kdkrkwhr/notebuddy**, 공개 버전 **1.4.13**을 확인했다. 전투 캐릭터의 완성도와 초상화 스타일 일관성은 후속 개선 의견이며 출시 차단 사유가 아니다. 이번 변경은 README·배포 기록 안내만 갱신하며, 앱 업로드·심사본 교체·추가 공개 작업은 하지 않았다. 위 소유자 테스트 앱·게임 도구의 실행 검증은 2026-10-18 기록을 유지한다.
 
 최신 작업 2건만 유지하며 이전 기록은 내용 변경 없이 이력 맨 위로 옮긴다.
 
