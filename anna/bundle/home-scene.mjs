@@ -108,7 +108,7 @@ function fence(c,x,y){line(c,'#64482e',x,y-4,16,3);line(c,'#ab8247',x,y-5,16,2);
  new ResizeObserver(resize).observe(canvas);
  function tick(now){if(!active)return;const dt=last?Math.min(.05,(now-last)/1000):0;last=now;if(!document.hidden&&movement){if(pet)movement.advance(dt);render(s.paused?0:dt);}frame=requestAnimationFrame(tick);}
  reduced.addEventListener('change',e=>{if(e.matches&&s)s.paused=true;});
- return {ready,
+ return {ready,hasPet:()=>!!pet,
   async set(value,source){
    const url=typeof source==='string'?source:source?.url,kind=typeof source==='object'?source.kind:undefined;
    source=url?`${kind||'directional'}:${url}`:'';

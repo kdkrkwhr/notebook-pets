@@ -10,9 +10,17 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 ## What is available today?
 
-Owner test update **1.4.11** uses game tool **0.9.4**, with manual, personalized evolution. The app is not publicly released; see the [current review and deployment status](HANDOFF.md).
+Owner test update **1.4.13** uses game tool **0.9.5**, with manual, personalized evolution. The app is not publicly released; see the [current review and deployment status](HANDOFF.md).
 
 Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
+
+## Clear progress while you wait
+
+Image creation, home pixel generation, evolution and chat show the current step and elapsed time. After 30 seconds, continued-wait guidance explains that another request is unnecessary. Received images switch to saving; failed saves keep their save-only recovery. Waiting feedback clears on completion or failure, and mobile home controls make room for it. The clock is elapsed time, not a predicted finish time.
+
+![Image-generation waiting feedback in the English UI](store/11-image-progress-en.png)
+
+This screenshot uses an isolated controlled delay in the actual UI; no paid AI request or owner save was used.
 
 ## Choose your evolution
 

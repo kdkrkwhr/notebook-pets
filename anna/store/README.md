@@ -1,4 +1,12 @@
-# Store screenshots - 1.4.11
+# Store screenshots - 1.4.12
+
+`11-image-progress-en.png` captures the actual current English UI while a controlled image response is held. It shows the birth stage, activity mark, elapsed clock and neutral continued-wait guidance. The capture uses the isolated browser-test SDK and fake clock, not a fresh Anna provider request or owner data. It demonstrates UI behavior, not measured provider latency or a successful new generation. No image editing was applied.
+
+Reproduce from `anna/`: `node --test --test-name-pattern="birth image generation" tests/browser/activity.browser.mjs` (Chromium or the installed Edge channel), then copy `.local/activity-ux/birth-waiting.png` from the repository root. The 1.4.12 capture was produced after updating package metadata; runtime UI source is unchanged from the tested 60569b1 implementation.
+
+Current listing order: companion/care, **owner-supplied English evolution**, empty home garden, garden shop, **English image-generation progress**, dungeon preview. The progress capture replaces the drawing-editor slot within the six-image limit. The drawing editor remains in the README and repository. The other five captures remain accurate for their idle screens; their provenance follows below.
+
+# Retained 1.4.11 evolution captures
 
 The owner supplied two unedited screenshots of actual evolution testing and explicitly requested their use in documentation and review. `10-evolution-en.png` is the review image; `10-evolution-ko.png` illustrates the Korean README. These show fulfilled prerequisites, three selectable paths, element preservation/change and the optional single portrait request. The English capture shows the built-in English route descriptions; it is not a translated AI response. Names, wording and appearance directions vary by companion. No extra AI call or game mutation was made to prepare these assets.
 

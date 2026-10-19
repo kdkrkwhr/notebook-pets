@@ -2,7 +2,7 @@
 import re
 import uuid
 from executa_sdk import StorageError
-from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
+from storage_errors import precondition_failed
 from receipts import unpack, pack, metadata, META, MAX_SEQUENCE
 from privacy import erased
 
@@ -61,7 +61,7 @@ async def reset(storage, key, args, evaluate):
             candidate={MARKER:1,'reset_id':args['reset_id'],'welcome':welcome,'from_erasure':restarting}
             try:await storage.set(key,candidate,scope='tool',if_match=row['etag'])
             except StorageError as error:
-                if error.code==STORAGE_ERR_PRECONDITION_FAILED:return {'ok':False,'code':'reset_changed'}
+                if precondition_failed(error):return {'ok':False,'code':'reset_changed'}
                 raise
             return {'ok':True,'reset_pending':True,'reset_id':args['reset_id']}
         new=await evaluate({'command':'start','name':args['name'].strip(),'state':None})
@@ -75,6 +75,6 @@ async def reset(storage, key, args, evaluate):
         candidate={MARKER:1,'reset_id':args['reset_id'],'game':game,'from_erasure':restarting}
     try:await storage.set(key,candidate,scope='tool',if_match=row['etag'])
     except StorageError as error:
-        if error.code==STORAGE_ERR_PRECONDITION_FAILED:return {'ok':False,'code':'reset_changed'}
+        if precondition_failed(error):return {'ok':False,'code':'reset_changed'}
         raise
     return {'ok':True,'reset_pending':action=='begin','reset_complete':action=='finish','reset_id':args['reset_id']}

@@ -71,3 +71,11 @@ test('a portrait replaced after suggestions cannot reuse stale visual observatio
  assert.equal(state().stage,2);assert.equal((await calls(page)).filter(c=>c.method==='image').length,0);
  assert(await page.evaluate(id=>hostTest.state.kv['notebuddy/art-v1'][`${id}/stage-1`].path.endsWith('replacement.png'),state().pet_id));
 });
+
+test('evolution image wait stays visible and Escape cannot hide an active request',async t=>{
+ const {page}=await setup(t);await page.locator('#evolution-prepare').click();await idle(page);
+ await page.clock.install();await page.evaluate(()=>{hostTest.faults.imageDelay=100000;});await page.locator('.evolution-route').first().click();await page.locator('#evolution-confirm').click();
+ await page.waitForFunction(()=>document.querySelector('#evolution-status').dataset.activity==='image');await page.keyboard.press('Escape');assert(await page.locator('#evolution-dialog').evaluate(d=>d.open));
+ await page.clock.fastForward(31000);assert.match(await page.locator('#evolution-status-activity').innerText(),/Still waiting for the result/);assert.equal((await calls(page)).filter(c=>c.method==='image').length,1);
+ await page.clock.fastForward(70000);await idle(page);assert(await page.locator('#evolution-status-activity').isHidden());assert.match(await page.locator('#evolution-status').innerText(),/new portrait is saved/);
+});

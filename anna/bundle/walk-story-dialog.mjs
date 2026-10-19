@@ -1,14 +1,16 @@
 import {journeyInfluence} from './journey-stories.mjs';
+import {createActivity} from './activity.mjs';
 // Rendering saved state never opens a dialog. Only an explicit outing/resume does.
 export function createStoryDialog(h){
  const d=h.document,$=id=>d.querySelector(id),dialog=$('#walk-story');
  let mode='result',message='',last={current:null,working:false,feedback:''};
+ const activity=createActivity($('#story-status'),h.language||(()=> 'en'));
  const pending=()=>last.working||!!last.current&&last.current.state!=='done';
  const close=()=>{dialog.close();h.closeBattle?.();render(last);h.closed?.();($('#story-resume').hidden?$('[data-action="walk"]'):$('#story-resume')).focus();};
  function open(){if(!dialog.open&&!d.querySelector('dialog[open]')){dialog.showModal();$('#story-heading').focus();}}
  function render(state){
   last=state;
-  if(!h.view()?.status){dialog.close();$('#story-resume').hidden=true;return;}
+  if(!h.view()?.status){activity.clear();dialog.close();$('#story-resume').hidden=true;return;}
   const current=state.working&&state.current?.state==='done'?null:state.current,done=current?.state==='done';
   const story=mode==='story',battle=mode.startsWith('battle'),encounter=!!h.view()?.status?.encounter,choice=h.view()?.status?.walk_choice;
   const choosing=!!choice&&mode!=='loading';
@@ -17,6 +19,7 @@ export function createStoryDialog(h){
   const influence=story?journeyInfluence(current?.journey,h.language?.()||current?.language||'en'):'';
   $('#story-influence').textContent=influence;$('#story-influence').hidden=!influence;
   $('#story-status').textContent=story?(state.feedback?h.tr(state.feedback):state.working?h.tr('storyWorking'):current?.fallback?h.tr('storyFallback'):''):'';
+  activity.set(story&&state.working?'ai':mode==='loading'&&h.busy()?'load':null,$('#story-status').textContent||undefined);
   $('#story-choices').replaceChildren();
   if(story&&current&&!done&&!state.working)current.story.choices.forEach((choice,index)=>{
    const button=d.createElement('button');button.type='button';button.className='story-choice';button.textContent=choice.label;button.disabled=h.locked();button.onclick=()=>h.choose(index);$('#story-choices').append(button);
@@ -48,6 +51,6 @@ export function createStoryDialog(h){
   battle(){mode='battle';message='';render(last);},
   battleFinished(){mode='battleDone';render(last);},
   begin(){mode='story';render(last);},
-  clear(){mode='result';message='';last={current:null,working:false,feedback:''};dialog.close();$('#story-resume').hidden=true;}
+  clear(){activity.clear();mode='result';message='';last={current:null,working:false,feedback:''};dialog.close();$('#story-resume').hidden=true;}
  };
 }

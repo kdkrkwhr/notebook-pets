@@ -1,6 +1,6 @@
 """Irreversible game removal, separate from normal play and reward receipts."""
 from executa_sdk import StorageError
-from executa_sdk.storage import STORAGE_ERR_PRECONDITION_FAILED
+from storage_errors import precondition_failed
 
 TOMBSTONE = {'_notebuddy_erased': 1}
 CONFIRMATION = 'DELETE NOTEBUDDY'
@@ -40,7 +40,7 @@ async def privacy(storage, key, args):
     try:
         await storage.set(key, dict(TOMBSTONE), scope='tool', if_match=saved['etag'])
     except StorageError as exc:
-        if exc.code == STORAGE_ERR_PRECONDITION_FAILED:
+        if precondition_failed(exc):
             return {'ok': False, 'code': 'removal_changed', 'erased': False}
         raise
     return {'ok': True, 'erased': True}

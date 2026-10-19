@@ -1,4 +1,8 @@
-# Current 1.4.11 evolution captures
+# Current 1.4.12 waiting feedback
+
+[English image-generation progress](../../anna/store/11-image-progress-en.png) shows the actual current UI with a controlled delayed response and fake clock in an isolated browser fixture. No new paid AI call, provider-latency measurement or owner-data write was involved. It occupies listing position 5; the owner-supplied English evolution screenshot stays in position 2. See [store provenance](../../anna/store/README.md).
+
+# Retained 1.4.11 evolution captures
 
 The developer supplied the actual Korean and English evolution screenshots and requested their publication in the README and review listing. [English](../../anna/store/10-evolution-en.png) is used in the six-image store listing; [Korean](../../anna/store/10-evolution-ko.png) is used in the Korean guide. These are unedited owner-provided test screenshots, not isolated fixtures. The English image displays built-in route descriptions; the Korean image shows saved personalized prose. No additional AI requests were made to prepare these files. See [store provenance](../../anna/store/README.md).
 

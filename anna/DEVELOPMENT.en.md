@@ -2,7 +2,7 @@
 
 [Back to the user guide](README.en.md) · [한국어](DEVELOPMENT.md)
 
-The current owner test app is **1.4.11 / working revision 81**, with game tool **0.9.4**. The review candidate is **1.4.11 / ID 1443 / pending_review**, including the personalized-evolution description and owner-provided English screenshot. It is not publicly released. See the [latest deployment record](releases/RELEASE_1411.md).
+Current owner test app: **1.4.13 / working revision 89 / game tool 0.9.5**. Review candidate **1.4.13 / ID 1446 / pending_review** includes the verified home image-link recovery fix. Existing description and six screenshots are retained. No public release or web deployment. [Latest handoff](HANDOFF.md) · [Release record](releases/RELEASE_1413.md).
 
 ## Development
 
