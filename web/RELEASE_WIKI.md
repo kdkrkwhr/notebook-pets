@@ -10,4 +10,10 @@ GitHub Pages에 `/wiki/`를 추가한다. 한국어 기능 해설 8편, Graphify
 
 검증: `web-wiki.mjs`로 51개 페이지와 112개 로컬 연결, 한글·영문 검색, 자동 문서에서 해설로 이동, 소스 커밋 고정, Markdown·ZIP, JavaScript 비활성화 읽기, 320/390/768/1440px 및 외부 요청 미발생을 확인했다. 실제 데스크톱·모바일 화면도 검토했다. 기존 구조 지도 검사와 웹 실행·저장·CAS·백업·초기화 검사가 통과했다.
 
-배포 결과는 공개 주소 검증 후 아래에 기록한다.
+빌드 경계 검사 `wiki-build-check.py`도 통과했다. 임시 문서 입력으로 근거 해시 변경 시 HTML·Markdown·메타데이터의 재검토 표시, 근거 미등록 거절, 끊어진 내부 링크 거절을 확인하고 실제 입력을 보존했다.
+
+배포 완료: **86ff5916cdeb0067583a709fd04ef778a2a6ea9c**, [프로젝트 위키](https://kdkrkwhr.github.io/notebook-pets/wiki/). 해설의 근거 확인 커밋은 **cdf2cfe40eb4a7780c76eda8db65e5870022dfcd**이며 참조 파일 39개가 배포 시점과 일치했다.
+
+[Pages 검사·배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39567721852)와 [Windows/Linux/Pyodide 공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39567722375)가 모두 성공했다. 공개 URL에서도 전체 51개 페이지·112개 연결, 검색·다운로드·모바일·JavaScript 없는 읽기 검사가 통과했다. 배포 직후 한 자동 문서의 HTTP 요청이 한 번 실패했지만 직접 재조회에서 200을 확인했고 전체 공개 검사를 다시 통과했다.
+
+실제 공개 웹 게임의 엔진 준비 후 하단 위키 링크가 새 탭을 여는지 확인했다. 실제 구조 지도도 검색·노드 선택·전체 보기와 배포 커밋 검증을 통과했다. 이 확인은 별도 브라우저 컨텍스트에서 수행했고 사용자 저장 데이터나 유료 AI를 사용하지 않았다. 배포 기록만 추가한 후속 커밋은 `[skip ci]`로 위 배포물을 유지한다.
