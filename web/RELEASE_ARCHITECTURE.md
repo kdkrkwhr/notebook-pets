@@ -14,4 +14,8 @@ GitHub Pages에 `/architecture/`를 추가한다. 웹 데모 하단과 한국어
 
 로컬 Edge에서 웹 실행·저장·CAS·백업·초기화 및 로컬 AI 모의 호출 회귀 검사가 통과했다. 구조 페이지의 검색·실제 노드 선택·소스 링크·모바일 너비를 확인했다. 실제 사용자 저장이나 유료 AI는 사용하지 않았다.
 
-배포 결과는 검증 후 아래에 기록한다.
+배포 완료: **e839b77**, [프로젝트 구조 지도](https://kdkrkwhr.github.io/notebook-pets/architecture/). [Pages 검사·배포](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39542659124)와 [Windows/Linux/Pyodide 공통 CI](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39542659223)가 모두 성공했다.
+
+공개 주소에서도 70개 파일·818개 항목·2,419개 추출 관계와 `e839b771807389df0a60b303940070abe8d8a611` 기준 커밋을 확인했다. 실제 Graphify 검색·노드 선택·그룹 목록·전체 보기·모바일 너비 검사가 통과했고, 웹 데모가 실행된 뒤 하단 링크로 새 탭의 구조 페이지를 여는 것도 확인했다. 공개 페이지의 JavaScript 오류는 없었다.
+
+추가 요청한 프로젝트 MIT 라이선스는 웹 `0de02eb`, 기본 Anna 트랙 `1872209`에 반영했다. GitHub API가 기본 브랜치의 루트 `LICENSE`를 `MIT`로 식별하는 것을 확인했다. 기존 SDK·폰트·Graphify의 별도 라이선스는 유지한다. 이 문서 기록 커밋은 `[skip ci]`이며, 위 배포 커밋의 분석 결과를 그대로 유지한다.
