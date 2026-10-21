@@ -1,4 +1,5 @@
 /* Platform layout only: Anna's style.css and theme.css are shared at build time. */
+.architecture-link{display:inline-block;margin-left:12px;color:var(--muted);font-size:12px;text-underline-offset:4px}
 html[data-theme]:not([data-theme="notebook"]) .web-choices{background:var(--surface)}
 html[data-theme]:not([data-theme="notebook"]) .album-item img{mix-blend-mode:normal;background:#fffaf0;border-radius:6px}
 @media(max-width:480px){.masthead .header-controls{flex:0 0 125px}}

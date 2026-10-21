@@ -2,7 +2,7 @@
 
 [한국어](README.md) · **English**
 
-[Documentation index](docs/README.md) · [Installed app and deployment status](anna/HANDOFF.md)
+[Documentation index](docs/README.md) · [Installed app and deployment status](anna/HANDOFF.md) · [Project architecture](https://kdkrkwhr.github.io/notebook-pets/architecture/)
 
 **Draw a little friend. Care for them, talk to them, and go on adventures together.**
 

@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="노트버디의 웹·Anna·공통 Python 엔진을 살펴보는 프로젝트 구조 지도. Graphify로 공개 코드를 분석했습니다.">
+  <title>프로젝트 구조 · 노트버디</title>
+  <link rel="icon" href="../icon.svg">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <header class="top"><a class="brand" href="../"><img src="../icon.svg" alt="">notebuddy <span>/ 프로젝트 구조</span></a><nav aria-label="페이지 이동"><a href="#explore">코드 탐색</a><a href="../">웹 데모 ↗</a></nav></header>
+  <main>
+    <section class="hero">
+      <div><p class="eyebrow">INSIDE NOTEBUDDY · CODE ATLAS</p><h1>작은 친구 뒤에는<br>어떤 코드가 있을까요?</h1><p class="lead">화면에서 시작한 작은 행동이 규칙을 거쳐 기록으로 남기까지.<br class="desktop"> 노트버디를 움직이는 코드와 연결 관계를 펼쳐 보세요.</p><div class="hero-links"><a class="button primary" href="#explore">구조 지도 탐색 ↓</a><a class="button" href="https://github.com/kdkrkwhr/notebook-pets">GitHub 저장소 ↗</a></div></div>
+      <aside class="snapshot" aria-label="분석 정보"><p class="eyebrow">PUBLIC SOURCE SNAPSHOT</p><dl><div><dt>분석 대상 파일</dt><dd id="file-count">—</dd></div><div><dt>코드 항목</dt><dd id="node-count">—</dd></div><div><dt>추출 관계</dt><dd id="edge-count">—</dd></div></dl><p id="snapshot-status" role="status">분석 정보를 불러오는 중…</p><p class="small">기준 커밋 <a id="revision" href="https://github.com/kdkrkwhr/notebook-pets/tree/release-web">release-web</a><br><span id="source-date"></span></p></aside>
+    </section>
+
+    <section class="section" aria-labelledby="flow-heading">
+      <p class="eyebrow">01 / FOLLOW ONE ACTION</p><div class="section-heading"><h2 id="flow-heading">한 번의 돌봄은 어떻게 저장될까요?</h2><div class="switch" role="group" aria-label="실행 환경"><button type="button" data-platform="web" aria-pressed="true">웹 데모</button><button type="button" data-platform="anna" aria-pressed="false">Anna 앱</button></div></div>
+      <p class="description">아래 흐름은 소스를 읽고 정리한 안내예요. 실제 추출된 함수·호출 관계는 다음 그래프에서 확인할 수 있어요.</p>
+      <ol id="flow" class="flow" aria-label="실행 흐름"></ol>
+      <p class="principle"><strong>게임의 결정은 Python 규칙이 맡아요.</strong> AI는 대화·그림·이야기와 배치 제안을 담당하고, 보상·재화·진화 조건·타이머는 코어가 검증해요.</p>
+    </section>
+
+    <section class="section" id="explore" aria-labelledby="explore-heading">
+      <p class="eyebrow">02 / EXPLORE THE REAL GRAPH</p><div class="section-heading"><h2 id="explore-heading">코드의 연결을 따라가 보세요.</h2><a class="button" href="./graph.html" target="_blank" rel="noopener">그래프 크게 열기 ↗</a></div>
+      <p class="description">검색창에 <code>transition</code>, <code>home</code>, <code>evolution</code>을 입력해 보세요. 점을 누르면 연결 정보를, 휠·드래그로 확대와 이동을 확인할 수 있어요. 길을 잃으면 ‘전체 지도 보기’를 눌러 보세요.</p>
+      <div class="graph-shell"><div class="graph-caption"><span><i></i> Graphify · 실제 코드 분석</span><a href="./graph.json" download>분석 JSON ↓</a></div><iframe src="./graph.html" title="Graphify 노트버디 코드 관계 지도" loading="lazy" sandbox="allow-scripts" referrerpolicy="no-referrer"></iframe></div>
+      <p class="small graph-help">그래프 UI는 영어로 제공돼요. 작은 화면에서는 ‘그래프 크게 열기’를 이용해 주세요. 화면은 같은 두 항목 사이의 관계를 합쳐 표시할 수 있어 추출 관계 수와 표시 개수가 다를 수 있어요.</p>
+    </section>
+
+    <section class="section" aria-labelledby="files-heading">
+      <p class="eyebrow">03 / FIND A STARTING POINT</p><h2 id="files-heading">이 기능은 어디에 있을까요?</h2>
+      <div class="starts"><button type="button" data-search="game_api">규칙과 상태 전환 <span>game_api.py →</span></button><button type="button" data-search="evolution">진화와 성장 <span>evolution →</span></button><button type="button" data-search="home">집과 마당 <span>home →</span></button><button type="button" data-search="store">웹 저장과 복원 <span>store.js →</span></button></div>
+      <label class="search-label" for="file-search">분석 대상 파일 검색</label><div class="search-row"><input id="file-search" type="search" placeholder="예: dungeon, home, engine/" autocomplete="off"><button id="clear-search" type="button">전체 보기</button></div>
+      <div class="file-heading"><p id="file-status" role="status" aria-live="polite"></p><span>분석한 커밋의 GitHub 소스로 연결됩니다.</span></div><ul id="files" class="files"></ul>
+    </section>
+
+    <section class="notes" aria-labelledby="notes-heading"><div><p class="eyebrow">READ THIS MAP</p><h2 id="notes-heading">지도가 보여주는 범위</h2></div><div><p><strong>공개 애플리케이션 코드만 분석했어요.</strong> <code>engine/</code>, <code>web/</code>, <code>anna/bundle/</code>, <code>anna/executas/notebuddy/</code>의 Git에 기록된 Python·JavaScript 코드가 대상이에요. 테스트·과거 문서·빌드 산출물·사용자 저장 데이터는 대상에 포함하지 않아요.</p><p>Graphify의 로컬 AST 분석으로 만들었으며 문서 의미 분석이나 AI API는 사용하지 않았어요. <strong>EXTRACTED</strong>는 소스에서 직접 추출한 연결, <strong>INFERRED</strong>는 분석기가 추론한 연결이에요. 동적 호출, Web Worker·Python 사이의 메시지, 플랫폼 API 연결 등은 빠질 수 있어요. 연결이 없다고 실제 의존성이 없는 것은 아니에요.</p><p>Pages 배포 때마다 해당 커밋을 다시 분석해요. 여기의 Anna 코드는 <code>release-web</code>에 포함된 스냅샷으로, 현재 설치된 Anna 앱 또는 심사 버전과 같다는 뜻은 아니에요.</p><p><a href="https://github.com/Graphify-Labs/graphify" target="_blank" rel="noopener">Graphify 공식 저장소 ↗</a> <span id="tool-version"></span> · <a href="./GRAPH_REPORT.md" download>원본 분석 보고서 ↓</a></p></div></section>
+  </main>
+  <footer><a class="brand" href="../">notebuddy</a><p>Graphify: <a href="./GRAPHIFY_LICENSE.txt">Apache-2.0</a> / <a href="./GRAPHIFY_LICENSE_MIT.txt">MIT</a> · 그래프에 전체 보기 버튼을 추가했어요.</p><a href="../">웹 데모로 돌아가기 ↗</a></footer>
+  <noscript><p class="no-script">파일 검색과 실행 흐름 안내는 JavaScript를 사용해요. <a href="./graph.html">Graphify 지도 열기</a> · <a href="./GRAPH_REPORT.md">텍스트 보고서 보기</a></p></noscript>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

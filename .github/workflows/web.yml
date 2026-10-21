@@ -18,9 +18,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install graphifyy==0.9.93
       - run: npm ci --prefix tests/pyodide --ignore-scripts
       - run: npx --prefix tests/pyodide playwright-core install --with-deps chromium
+      - run: python tools/build_architecture.py
       - run: python web/build.py
+      - run: node tests/pyodide/web-architecture.mjs
       - run: node tests/pyodide/web.mjs
       - run: node tests/pyodide/web-world.mjs
       - run: node tests/pyodide/web-current.mjs
