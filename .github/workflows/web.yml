@@ -26,6 +26,7 @@ jobs:
       - run: npx --prefix tests/pyodide playwright-core install --with-deps chromium
       - run: python tools/build_architecture.py
       - run: python web/build.py
+      - run: python tests/pyodide/wiki-build-check.py
       - run: node tests/pyodide/web-architecture.mjs
       - run: node tests/pyodide/web-wiki.mjs
       - run: node tests/pyodide/web.mjs

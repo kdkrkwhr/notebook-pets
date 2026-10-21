@@ -24,7 +24,7 @@ try{
  const meta=await metaResponse.json();assert.equal(meta.guideCount,8);assert(meta.graphifyArticleCount>30);
  if(process.env.EXPECTED_COMMIT)assert.equal(meta.revision,process.env.EXPECTED_COMMIT);
  assert.match(meta.reviewedRevision,/^[a-f0-9]{40}$/);
- assert(meta.pages.every(p=>p.changedSources.length===0),'Source review must be current for this release');
+ if(process.env.EXPECT_CURRENT_GUIDES==='1')assert(meta.pages.every(p=>p.changedSources.length===0),'Source review must be current for this release');
  const index=await (await page.request.get(new URL('search-index.json',wiki).href)).json();
  assert.equal(index.length,meta.guideCount+meta.graphifyArticleCount+1);
  // Crawl every rendered article and each unique local document/download link.

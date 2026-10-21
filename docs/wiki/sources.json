@@ -1,7 +1,7 @@
 {
-  "revision": "e2edc677cf5fde6cb7cd2f3962dd30bee6811ae1",
+  "revision": "cdf2cfe40eb4a7780c76eda8db65e5870022dfcd",
   "files": {
-    "README.md": "3e682c6ef010d62a4c20a03e619949bd36f320eeeed51611713acc98babc6827",
+    "README.md": "76a66b22d00bb7d5ea5c83efc72a309265cc30430caa440216eb04c044e3862c",
     "anna/bundle/app.js": "1291f8f84b8bcbafe2af67b9403ae5d1150b6dae1eaa21da7618bec4e9d89d44",
     "anna/bundle/birth-art.mjs": "0b2dd77f796d7aaf170895e999180826802ca5299c37c876fd672ae2a1d27c83",
     "anna/bundle/birth-flow.mjs": "fe0d1de7e5e4e55ecbb30ed18806b49bff19ba760e55168ac3a703e0e955e0a5",
@@ -36,7 +36,7 @@
     "engine/journeys.py": "6f976f38e1e5df2f5eb3891e58ae1bba08d0d064286fa5df502b672a6c29b36e",
     "engine/personality.py": "ccb4798b06faf832bbbf97228ac63fa6cc0bf9989e57ae9b87e45951645ad18e",
     "engine/ports.py": "c322a2f2b91c2244976ae7b20031a1fa008258e5d04c0286cb1e7da11e98b0e5",
-    "web/README.md": "0f51e9e73c1ee595b968a9b0092cb18493030f5e4bb6badaccf169fd623e474d",
+    "web/README.md": "7fddd09a3c30b92168799be49948be1beae96aada1b32f3d304bed3ccc720149",
     "web/ai.js": "396941595f58c08c3228347c48841b08a8b62556e0244d5cc6bf9f3a3e4074fa",
     "web/store.js": "dc3d76ac595195786ba512e22a58229225b00c48b4edbf039649d5bb0ffb1126",
     "web/worker.js": "f621faf728f51fc829e1985d9aed911f56ea3cced19c6ef684e366b69e8192c2"
