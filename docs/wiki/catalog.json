@@ -1,0 +1,10 @@
+[
+  {"file":"index.md","title":"노트버디 프로젝트 위키","summary":"기능에서 코드로 이어지는 위키의 시작점"},
+  {"file":"core.md","title":"공통 엔진과 실행 흐름","summary":"화면의 행동이 규칙을 거쳐 저장되기까지"},
+  {"file":"birth.md","title":"캐릭터 탄생과 진화","summary":"그림·사진 분석, 새로운 모습과 세 가지 성장 방향"},
+  {"file":"personality.md","title":"돌봄과 성격","summary":"이름과 외형, 함께 지낸 경험이 반응에 반영되는 방법"},
+  {"file":"adventure.md","title":"산책과 던전","summary":"다섯 지역의 발견, 탐험과 수집 기록"},
+  {"file":"home.md","title":"마이홈과 픽셀 캐릭터","summary":"친구가 꾸미는 집과 마당, 첫 방문의 모습 선택"},
+  {"file":"platforms.md","title":"플랫폼과 데이터","summary":"Anna와 웹의 실행·저장·AI 경계와 재시도"},
+  {"file":"maintenance.md","title":"위키를 읽고 갱신하는 방법","summary":"근거를 확인하고 코드 변경과 함께 문서를 관리하기"}
+]

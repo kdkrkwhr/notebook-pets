@@ -3,6 +3,8 @@ from pathlib import Path
 import shutil
 import re
 import hashlib
+import subprocess
+import sys
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'web' / 'dist'
@@ -13,6 +15,7 @@ if not (architecture / 'metadata.json').is_file():
 shutil.copytree(ROOT / 'web' / 'architecture', OUT / 'architecture', dirs_exist_ok=True)
 for name in ('graph.html', 'graph.json', 'GRAPH_REPORT.md', 'metadata.json'):
     shutil.copyfile(architecture / name, OUT / 'architecture' / name)
+subprocess.run([sys.executable, str(ROOT / 'tools' / 'build_wiki.py')], check=True)
 for name in ('app.js', 'store.js', 'worker.js', 'style.css', 'models.js', 'visuals.js', 'gemini.js', 'local-ai.js', 'ai.js', 'ai-settings.js', 'LOCAL_AI.md'):
     shutil.copyfile(ROOT / 'web' / name, OUT / name)
 anna = ROOT / 'anna' / 'bundle'

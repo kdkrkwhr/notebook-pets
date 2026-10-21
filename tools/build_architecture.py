@@ -37,7 +37,7 @@ def main() -> None:
     date = git("show", "-s", "--format=%cI", revision).decode().strip()
     files = [p for p in git("ls-tree", "-rz", "--name-only", revision).decode().split("\0")
              if p.startswith(PREFIXES) and Path(p).suffix in SUFFIXES
-             and p != "web/build.py" and not p.startswith("web/architecture/")]
+             and p != "web/build.py" and not p.startswith(("web/architecture/", "web/wiki/"))]
     OUT.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="notebuddy-graph-") as scratch:
         source = Path(scratch) / "notebook-pets"
@@ -77,6 +77,14 @@ def main() -> None:
         labels[cid] = f"{counts.most_common(1)[0][0]} · {cid}" if counts else f"Community {cid}"
     labels_path = OUT / ".graphify_labels.json"
     labels_path.write_text(json.dumps(labels, ensure_ascii=False), encoding="utf-8")
+    # Group slugs may change after clustering. Do not retain obsolete articles.
+    wiki = OUT / "wiki"
+    if wiki.exists():
+        if wiki.is_symlink() or wiki.resolve() != ROOT.resolve() / ".local" / "architecture" / "graphify-out" / "wiki":
+            raise SystemExit("Unexpected generated wiki directory")
+        shutil.rmtree(wiki)
+    subprocess.run([cli, "export", "wiki", "--graph", str(OUT / "graph.json"),
+                    "--labels", str(labels_path)], cwd=ROOT, check=True)
     subprocess.run([cli, "export", "html", "--graph", str(OUT / "graph.json"),
                     "--labels", str(labels_path), "--node-limit", "5000"], cwd=ROOT, check=True)
     html_path = OUT / "graph.html"
@@ -99,7 +107,8 @@ fitNoteBuddy();
                 "edgeCount": len(graph.get("links", graph.get("edges", []))),
                 "scope": list(PREFIXES), "mode": "code-only; no LLM"}
     (OUT / "metadata.json").write_text(json.dumps(metadata, ensure_ascii=False, indent=2), encoding="utf-8")
-    for name in ("graph.json", "graph.html", "GRAPH_REPORT.md", "metadata.json"):
+    for name in ["graph.json", "graph.html", "GRAPH_REPORT.md", "metadata.json",
+                 *(str(path.relative_to(OUT)) for path in wiki.glob("*.md"))]:
         public_text = (OUT / name).read_text(encoding="utf-8")
         if re.search(r"(?<![A-Za-z])[A-Za-z]:[\\/]|/Users/|/home/runner/|notebuddy-graph-", public_text):
             raise SystemExit(f"Non-portable machine path in {name}; refusing publication.")

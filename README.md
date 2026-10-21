@@ -2,7 +2,7 @@
 
 **한국어** · [English](README.en.md)
 
-[문서 목차](docs/README.md) · [현재 설치·배포 상태](anna/HANDOFF.md) · [프로젝트 구조 지도](https://kdkrkwhr.github.io/notebook-pets/architecture/)
+[문서 목차](docs/README.md) · [현재 설치·배포 상태](anna/HANDOFF.md) · [프로젝트 구조 지도](https://kdkrkwhr.github.io/notebook-pets/architecture/) · [프로젝트 위키](https://kdkrkwhr.github.io/notebook-pets/wiki/)
 
 **내가 그린 작은 친구와 대화하고, 돌보고, 함께 모험하세요.**
 

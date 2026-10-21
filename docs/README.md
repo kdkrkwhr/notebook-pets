@@ -6,6 +6,7 @@ Anna 앱과 원본 Python 엔진은 같은 게임 규칙을 사용하지만 실�
 
 | 하고 싶은 일 | 시작 문서 |
 | --- | --- |
+| 기능을 읽고 코드·연결 관계 따라가기 | [프로젝트 위키](wiki/index.md) · [웹 위키](https://kdkrkwhr.github.io/notebook-pets/wiki/) |
 | 공통 코어·멀티 플랫폼 구조와 출시 방향 | [아키텍처](ARCHITECTURE.md) |
 | Anna에서 친구 만나기 | [Anna 사용 안내](../anna/README.md) |
 | Anna UI·도구 개발 및 테스트 배포 | [Anna 개발·배포](../anna/DEVELOPMENT.md) |

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="__TITLE__ — 노트버디의 기능과 코드, 설계를 연결하는 프로젝트 위키">
+  <title>__TITLE__ · 노트버디 위키</title>
+  <link rel="icon" href="__ROOT__icon.svg">
+  <link rel="stylesheet" href="__PREFIX__style.css?v=__CSS_VERSION__">
+</head>
+<body data-wiki-root="__PREFIX__">
+  <a class="skip" href="#article">본문으로 건너뛰기</a>
+  <header class="top"><a class="brand" href="__PREFIX__"><img src="__ROOT__icon.svg" alt="">notebuddy <span>/ wiki</span></a><nav aria-label="사이트 이동"><a href="__ROOT__architecture/">구조 지도 ↗</a><a href="__ROOT__">웹 데모 ↗</a></nav></header>
+  <div class="layout">
+    <aside class="sidebar">
+      <p class="eyebrow">PROJECT NOTEBOOK</p><h2>함께 읽는 개발 공책</h2>
+      <p class="side-intro">기능에서 코드로,<br>코드에서 연결로.</p>
+      <details class="page-menu" open><summary>위키 목차</summary><nav aria-label="위키 목차">__NAV__</nav></details>
+      <div class="side-meta"><span>한국어 해설 <b>__GUIDE_COUNT__</b></span><span>자동 문서 <b>__COUNT__</b></span><a href="__PREFIX__notebuddy-wiki.zip" download>문서 묶음 다운로드 ↓</a></div>
+    </aside>
+    <main>
+      <section class="search" aria-label="위키 검색">
+        <label for="wiki-search">위키에서 찾아보기</label>
+        <div class="search-row"><input id="wiki-search" type="search" placeholder="예: 진화, 저장, home, transition" autocomplete="off" aria-controls="search-results"><button id="clear-search" type="button">지우기</button></div>
+        <p id="search-status" class="muted" role="status" aria-live="polite">기능 해설과 코드 관계 문서의 제목·본문을 검색할 수 있어요.</p>
+        <ol id="search-results" hidden></ol>
+        <noscript><p>검색은 JavaScript를 사용해요. 목차와 모든 본문은 그대로 읽을 수 있어요.</p></noscript>
+      </section>
+      <div class="document-head"><span class="badge">__BADGE__</span><a href="__RAW__" download>Markdown ↓</a></div>
+      <article id="article" lang="__LANGUAGE__">__BODY__</article>
+      <section class="provenance" aria-label="문서 근거"><p>__PROVENANCE__ · 그래프 분석 <a href="https://github.com/kdkrkwhr/notebook-pets/tree/__REVISION__">__SHORT__</a> · __DATE__ UTC 생성</p>__STATUS__<p><a href="__PREFIX__maintenance.html">이 위키를 갱신하는 방법</a> · <a href="__PREFIX__metadata.json">문서 메타데이터</a></p></section>
+    </main>
+    <aside class="outline"><p class="eyebrow">이 페이지에서</p><nav aria-label="본문 목차">__TOC__</nav><a class="outline-back" href="#article">맨 위로 ↑</a></aside>
+  </div>
+  <footer><p>NoteBuddy · 공개 코드로 읽는 작은 친구의 세계</p><p><a href="__ROOT__architecture/GRAPHIFY_LICENSE.txt">Graphify Apache-2.0</a> / <a href="__ROOT__architecture/GRAPHIFY_LICENSE_MIT.txt">MIT</a> · 위키 열람과 검색은 AI를 호출하지 않아요.</p></footer>
+  <script type="module" src="__PREFIX__search.js?v=__JS_VERSION__"></script>
+</body>
+</html>

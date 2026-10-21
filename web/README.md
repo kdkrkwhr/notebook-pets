@@ -8,7 +8,11 @@
 
 웹 데모 하단의 **프로젝트 구조**에서 웹·Anna의 실행 흐름 안내, Graphify 관계 그래프, 파일 검색과 해당 커밋의 GitHub 소스를 볼 수 있어요. Pages 배포 때 `release-web`의 공개 앱 코드만 로컬 AST로 다시 분석하며 AI API는 사용하지 않아요. 분석 커밋·소스 날짜·분석 날짜를 페이지에 표시해요. 실제 설치된 Anna 버전을 나타내는 페이지는 아니에요.
 
-로컬 빌드에서는 Python 3.10 이상에 `pip install graphifyy==0.9.93` 후 `python tools/build_architecture.py`를 먼저 실행해 주세요. 그다음 기존 `python web/build.py`를 실행하면 `web/dist/architecture/`가 함께 생성돼요. 분석은 Git HEAD의 Python·JavaScript만 대상으로 하며, 작업 중인 미커밋 코드·개인 저장·비밀 설정은 읽지 않아요. 원본 그래프의 시각화 라이브러리는 고정 버전의 공개 CDN에서 불러와요.
+로컬 빌드에서는 Python 3.10 이상에 `pip install graphifyy==0.9.93 markdown-it-py==4.0.0` 후 `python tools/build_architecture.py`를 먼저 실행해 주세요. 그다음 기존 `python web/build.py`를 실행하면 `web/dist/architecture/`와 `web/dist/wiki/`가 함께 생성돼요. 분석은 Git HEAD의 Python·JavaScript만 대상으로 하며, 작업 중인 미커밋 코드·개인 저장·비밀 설정은 읽지 않아요. 원본 그래프의 시각화 라이브러리는 고정 버전의 공개 CDN에서 불러와요.
+
+## 기능을 읽는 프로젝트 위키
+
+[프로젝트 위키](https://kdkrkwhr.github.io/notebook-pets/wiki/)에서 한국어 기능 해설 8편과 Graphify 자동 문서를 함께 읽고 검색할 수 있어요. 해설은 `docs/wiki/`에서 관리하며 근거 소스와 확인한 커밋을 표시해요. 근거 파일이 바뀌면 재검토 표시가 나와요. 자동 문서는 배포할 때 코드 그래프에서 갱신하고, 해설은 실제 소스를 다시 읽고 수정해요. Markdown 개별 파일과 ZIP 묶음도 제공해요. 위키 열람·검색·빌드에는 AI 호출이 없어요.
 
 ## 기다리는 동안에도 진행 상황을 확인해요
 
@@ -75,10 +79,11 @@ Ollama로 특징을 읽으려면 비전·JSON 출력을 지원하는 모델이 �
 
 ```powershell
 npm ci --prefix tests/pyodide --ignore-scripts
-pip install graphifyy==0.9.93
+pip install graphifyy==0.9.93 markdown-it-py==4.0.0
 python tools/build_architecture.py
 python web/build.py
 node tests/pyodide/web-architecture.mjs
+node tests/pyodide/web-wiki.mjs
 node tests/pyodide/web.mjs
 node tests/pyodide/web-world.mjs
 node tests/pyodide/web-current.mjs
