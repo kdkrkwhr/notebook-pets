@@ -15,7 +15,7 @@ from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.9.6'
+VERSION = '0.9.7'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'
@@ -23,8 +23,9 @@ READ = frozenset({'home','status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
     'name': 'tool-dev-notebuddy', 'display_name': 'Notebuddy Game', 'version': VERSION,
     'description': 'Care for the authenticated user’s lifelong pet. Python rules are authoritative.',
-    'host_capabilities': ['aps.kv'],
-    'storage': {'kv': True, 'files': True, 'scopes': {'tool': 'rw'}},
+    # Executa describe/cache preserves legacy capability strings. The app uses
+    # schema-3 storage; both must normalize to the same complete declaration.
+    'host_capabilities': ['aps.kv', 'aps.files', 'aps.scope.tool.read', 'aps.scope.tool.write'],
     'tools': [{
         'name': 'game', 'description': 'Read or care for your pet. Never choose a user or provide game state. Read status first. For a new action append a unique suffix to request_id_prefix from the latest response. Reuse the entire request_id on retries. Never restamp an expired request automatically.',
         'timeout': 60,

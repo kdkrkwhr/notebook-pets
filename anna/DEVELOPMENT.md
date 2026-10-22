@@ -80,8 +80,8 @@ npx anna-app apps push --no-install-local --skip-executa-publish --profile binar
 
 플랫폼별 아카이브는 `executas/notebuddy/dist/`에 생성됩니다. 두 OS 아카이브가 있어야 현재 배포 프로필을 올릴 수 있습니다. 파일을 Anna CDN에 직접 업로드하므로 GitHub 공개 릴리스를 만들 필요가 없습니다. 현재 도구 버전은 0.9.5입니다. 도구가 변경되면 Executa의 `executa.json`, `pyproject.toml`, `uv.lock`, `manifest.json`과 `notebuddy_plugin.py`의 `VERSION`을 함께 올리고 다시 빌드합니다. `apps push`만으로는 새 바이너리가 반영되지 않을 수 있으므로 위의 도구 발행을 먼저 실행하고 CDN 해시와 실제 실행기 버전을 확인합니다. 이 명령에는 공개 전환 옵션 `--publish`를 넣지 않습니다.
 
-설치 시 storage declaration drift가 발생하면 원격 도구의 `manifest_cache`를 소스의 검증된 `manifest.json`과 비교합니다. 플랫폼이 파일 저장 선언을 누락한 경우 원래 선언(`kv`, `files`, `scopes.tool`)을 복원한 뒤 설치합니다. 앱 심사 버전의 cut/제출은 사용자가 새로 요청할 때만 진행합니다.
+설치·심사 시 storage declaration drift가 발생하면 원격 도구의 `manifest_cache`와 실제 실행 파일의 `describe`를 함께 확인합니다. 도구 0.9.7부터는 `host_capabilities`에 `aps.kv`, `aps.files`, `aps.scope.tool.read`, `aps.scope.tool.write`를 선언하고 별도의 `storage` 필드를 넣지 않습니다. 이 네 권한은 앱의 schema-3 `storage` (`kv: true`, `files: true`, `scopes.tool: rw`)와 동일합니다. 서버 캐시만 임시 복원하면 실행기 갱신 때 누락이 재발할 수 있으므로 두 OS 패키지를 함께 배포하고 재설치·실행 후 서버 검증을 반복합니다. 앱 심사 버전의 cut/제출은 사용자가 새로 요청할 때만 진행합니다.
 
 `cut`은 검토할 비공개 버전을 만듭니다. `submit-review`는 심사 제출, `release`는 공개이므로 자동 실행하지 않습니다. 심사 전 실제 Anna Agent/Cloud 설치 실행, 소개 이미지·지원 정보, 장기간 저장 크기 및 여러 실행기의 동시 사용을 확인해야 합니다. 실제 설치 초안을 Anna 대시보드에서 실행하여 생성·밥 주기·대화·그림 저장과 재접속 복원까지 확인했습니다. 세부 결과는 HANDOFF.md를 참고하세요.
 
-GitHub Actions의 Anna 워크플로는 Windows/Linux에서 검증·테스트·독립 실행 파일 빌드와 패키지 동작 검사를 수행합니다. 게임 도구는 실제 호스트의 저장 토큰 발급을 위해 `host_capabilities: ["aps.kv"]`를 명시합니다.
+GitHub Actions의 Anna 워크플로는 Windows/Linux에서 검증·테스트·독립 실행 파일 빌드와 패키지 동작 검사를 수행합니다. 게임 도구의 저장 토큰과 앱 권한 일치를 위해 위 네 `host_capabilities`가 실제 패키지의 `describe`에도 유지되는지 검사합니다.

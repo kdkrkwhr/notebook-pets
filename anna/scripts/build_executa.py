@@ -109,6 +109,7 @@ protocol = subprocess.run([str(binary)], input='\n'.join(json.dumps({'jsonrpc':'
 frames = [json.loads(line) for line in protocol.stdout.splitlines()]
 assert frames[0]['result']['protocolVersion'] == '2.0'
 assert frames[1]['result']['version'] == MANIFEST['version']
+assert frames[1]['result'] == MANIFEST, 'Packaged describe must preserve the complete storage capability declaration'
 archive = PLUGIN / 'dist' / f'{name}-{MANIFEST["version"]}-{platform_key}.tar.gz'
 with tarfile.open(archive, 'w:gz') as output:
     output.add(binary, arcname=binary.name)
