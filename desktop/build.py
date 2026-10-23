@@ -59,7 +59,8 @@ def main():
                     dest.parent.mkdir(parents=True,exist_ok=True)
                     shutil.copyfile(source,dest)
     (notices/'DEPENDENCIES.json').write_text(json.dumps(versions,indent=2),encoding='utf-8')
-    shutil.copyfile(ROOT/'desktop/licenses/PYTHON.txt',notices/'PYTHON.txt')
+    for source in (ROOT/'desktop/licenses').glob('*.txt'):
+        shutil.copyfile(source,notices/source.name)
     args_build+=['--add-data',str(notices)+':licenses/dependencies']
     if sys.platform=='win32':args_build+=['--icon',str(ROOT/'desktop/icon.ico')]
     else:

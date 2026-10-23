@@ -3,9 +3,12 @@ on:
   workflow_dispatch:
   push:
     branches: [release-desktop]
-    paths: ['desktop/**', 'engine/**', 'anna/bundle/**', 'anna/executas/**', 'data/**', 'assets/**', '.github/workflows/desktop.yml']
+    paths: ['desktop/**', 'engine/**', 'anna/bundle/**', 'anna/executas/**', 'data/**', 'assets/**', '.github/workflows/desktop.yml', '!desktop/*.md']
 permissions:
   contents: read
+concurrency:
+  group: desktop-${{ github.ref }}
+  cancel-in-progress: true
 jobs:
   package:
     strategy:

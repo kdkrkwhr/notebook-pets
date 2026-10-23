@@ -1,4 +1,5 @@
 const copy={
+ saveQuotaError:['Local storage is full or this save is too large. Check available disk space.','디스크 공간이 부족하거나 저장할 데이터가 너무 커요. 남은 공간을 확인해 주세요.','空き容量が不足しているか、データが大きすぎます。','磁盘空间不足或存档过大。','磁碟空間不足或存檔過大。'],
  privacyStored:[
  'This computer stores your companion, recent chat (up to 64 messages / 40 KB), portraits, resized references, and stories in NoteBuddy’s private data folder. Language and theme stay in the app. Backups contain the same personal data. No Anna account or cloud save is used.',
  '친구·최근 대화(최대 64개 / 40KB)·초상화·크기를 조정한 참고 이미지·이야기를 이 PC의 노트버디 데이터 폴더에 저장해요. 언어와 테마도 앱에 보관해요. 백업에도 같은 개인 데이터가 포함돼요. Anna 계정이나 클라우드 저장은 사용하지 않아요.',

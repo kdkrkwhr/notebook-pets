@@ -31,7 +31,7 @@ def prepare():
                     ('Anna image request', 'Codex image request'), ('Anna 사용량', 'Codex 사용량'),
                     ('Anna stores', 'This computer stores'), ('Anna에 친구', '이 PC에 친구'),
                     ('Anna and AI-provider', 'Codex and AI-provider'), ('Anna or AI-provider', 'Codex or AI-provider'),
-                    ('Anna와 AI 제공자', 'Codex와 AI 제공자'), ('in this browser', 'in this app'), ('이 브라우저', '이 앱')]
+                    ('Anna와 AI 제공자', 'Codex와 AI 제공자'), ('in this browser', 'in this app'), ('이 브라우저', '이 앱'), ('Anna', 'Codex')]
     for name in ('i18n.mjs', 'locale-data.mjs'):
         content = (target / name).read_text('utf-8')
         for before, after in replacements:
