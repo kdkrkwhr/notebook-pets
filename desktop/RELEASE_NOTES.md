@@ -2,6 +2,8 @@
 
 첫 Windows·Mac 설치판 미리보기입니다. Anna UI 1.4.16과 게임 규칙 0.9.7을 바탕으로 합니다.
 
+[GitHub 미리보기 릴리스 · 설치 파일 다운로드](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a1)
+
 - 네이티브 앱 창에서 기존 그림·사진 탄생, 대화, 돌봄, 진화, 산책·던전, 마이홈, 도감을 실행합니다.
 - 세이브·대화·이미지는 이 PC의 SQLite 저장소에 보관합니다. Anna 계정은 사용하지 않습니다.
 - 사용자가 설치하고 로그인한 Codex CLI로 대화·그림 분석·이미지 생성을 연결합니다.

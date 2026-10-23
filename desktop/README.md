@@ -3,6 +3,19 @@
 Windows와 macOS에서 별도 창으로 실행하는 노트버디 초기 설치판입니다.
 Anna에 로그인하지 않아도 게임을 실행할 수 있고, AI 기능은 **이 PC에 설치하고 로그인한 Codex CLI**에 연결합니다.
 
+## 설치 파일 다운로드
+
+**0.1.0a1 미리보기** · [릴리스 안내](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a1)
+
+| 운영체제 | 다운로드 |
+| --- | --- |
+| Windows 10/11 x64 | [Windows 설치 파일 (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-windows-x64-setup.exe) |
+| macOS 15 이상 · Apple Silicon (M 시리즈) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-macos-arm64.dmg) |
+| macOS 15 이상 · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-macos-x64.dmg) |
+
+[SHA-256 체크섬](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/SHA256SUMS.txt)으로 파일을 확인할 수 있습니다.
+GitHub의 Source code ZIP/TAR 대신 위 설치 파일을 내려받으세요. 초기 미리보기에는 Windows 코드서명과 Apple 공증이 없어 운영체제 경고가 표시될 수 있습니다.
+
 ## 할 수 있는 일
 
 - 직접 그린 그림·업로드한 사진을 분석해 내 캐릭터 만들기

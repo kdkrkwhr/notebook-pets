@@ -16,4 +16,10 @@
 - Locally downloaded Windows installer: SHA-256 matched CI. Installed into an isolated path, launched twice, verified identity/data preservation, uninstalled successfully, and confirmed the save and a preservation marker remained. Existing installations are explicitly protected by the verification script.
 - Local installer evidence: `desktop/runtime/desktop-installer-verification.json`; full native reports and UI screenshots are also included in CI artifacts. These disposable test files are excluded from Git.
 - Deliverables: `dist/installers/NoteBuddy-0.1.0a1-windows-x64-setup.exe`, `NoteBuddy-0.1.0a1-macos-arm64.dmg`, `NoteBuddy-0.1.0a1-macos-x64.dmg`, plus combined `SHA256SUMS.txt`.
-- Existing `release`, `release-web`, Anna review/test deployments, web site and original dirty worktree were left unchanged. No public GitHub Release was published; installers are local files and workflow artifacts.
+- At package completion, `release`, `release-web`, Anna review/test deployments, web site and original dirty worktree were left unchanged. The installers were initially delivered as local files and workflow artifacts.
+
+## Public preview release — 2026-10-23
+
+- User explicitly requested publishing the installers. [NoteBuddy Desktop 0.1.0a1](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a1) is now a public GitHub **prerelease**, tagged `desktop-v0.1.0a1` at the verified package source `3f212c44fc8eae1b711831f76a22ad416eac5b0c`.
+- Published the Windows x64 installer, both macOS DMGs and combined `SHA256SUMS.txt`. GitHub asset sizes and SHA-256 digests match the locally verified CI deliverables.
+- Added direct downloads, prerequisites and preview limitations to Korean/English root READMEs on `release` and `release-desktop`, plus this branch's desktop guide. The default branch receives documentation changes only; no Anna test/review version or public web build is deployed for this distribution task.
