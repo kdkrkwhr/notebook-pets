@@ -12,7 +12,7 @@ import traceback
 from urllib.parse import urlsplit
 
 from . import __version__
-from .codex import Codex
+from .providers import AI
 from .runtime import Runtime
 from .server import make_server
 from .pet import DesktopPet
@@ -59,7 +59,7 @@ def instance_lock(root):
 def running(root):
     with instance_lock(root):
         runtime = Runtime(root)
-        ai = Codex(root)
+        ai = AI(root)
         server = None
         try:
             port_file = root / 'local-port.json'
@@ -192,6 +192,15 @@ def main(argv=None):
                         status = runtime.invoke('game', {'command': 'start', 'name': 'Desktop Test', 'request_id': status['request_id_prefix'] + 'native-smoke'})
                     result['pet_id'] = status.get('pet_id')
                     result['ok'] = result['ok'] and bool(result['pet_id'])
+                    # Exercise the bundled native SVG renderer without calling an AI.
+                    from .vector_art import render_svg
+                    from io import BytesIO
+                    from PIL import Image
+                    svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><circle cx="256" cy="256" r="200" fill="#72c9ab"/></svg>'
+                    with Image.open(BytesIO(render_svg(svg))) as drawing:
+                        assert drawing.size == (512, 512) and drawing.getpixel((256, 256)) == (114, 201, 171, 255)
+                    result['vector_renderer'] = True
+                    assert window.evaluate_js("!!document.querySelector('#desktop-provider option[value=claude]')")
                     from .pet_smoke import verify
                     result['desktop_pet'] = verify(window, bridge._pet)
                 except Exception as exc:

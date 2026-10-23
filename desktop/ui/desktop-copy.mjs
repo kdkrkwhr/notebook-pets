@@ -20,4 +20,4 @@ const copy={
  permissionError:['Check Codex login and your local data folder permissions.','Codex 로그인과 데이터 폴더 권한을 확인해 주세요.','Codex のログインと保存先の権限を確認してください。','请检查 Codex 登录和文件夹权限。','請檢查 Codex 登入與資料夾權限。'],
  artVisionUnavailable:['This CLI/model cannot analyze images. Check AI settings, or meet a random companion.','현재 CLI·모델은 이미지를 분석하지 못해요. AI 설정을 확인하거나 랜덤 친구로 시작해 주세요.','AI 設定を確認するか、ランダムな仲間を選んでください。','请检查 AI 设置或选择随机伙伴。','請檢查 AI 設定或選擇隨機夥伴。']
 };
-export function desktopText(language,key){const value=copy[key];return value?.[Math.max(0,['en','ko','ja','zh-Hans','zh-Hant'].indexOf(language))];}
+export function desktopText(language,key){const value=copy[key]?.[Math.max(0,['en','ko','ja','zh-Hans','zh-Hant'].indexOf(language))];return document.body.dataset.aiProvider==='claude'?value?.replaceAll('Codex CLI','Claude Code').replaceAll('Codex','Claude Code'):value;}

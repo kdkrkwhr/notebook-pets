@@ -1,3 +1,4 @@
 pywebview==6.1
 Pillow==12.0.0
+resvg_py==0.5.0
 executa-sdk @ git+https://github.com/whtcjdtc2007/anna-executa-examples.git@49749905d443a7e8e7479a8faab39c03c7f16c16#subdirectory=sdk/python

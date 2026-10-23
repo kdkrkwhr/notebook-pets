@@ -139,7 +139,7 @@ def make_server(runtime, ai, ui, port=0):
                     runtime.storage.put_file(name, data)
                     result = {'images': [{'url': self.image_url(name)['get_url']}]}
                 elif method == 'desktop.info':
-                    result = ai.info(check=bool(args.get('check')))
+                    result = ai.info(check=bool(args.get('check')), **({'provider':args['provider']} if args.get('provider') else {}))
                 elif method == 'desktop.configure':
                     result = ai.configure(args)
                 elif method == 'desktop.cancel':

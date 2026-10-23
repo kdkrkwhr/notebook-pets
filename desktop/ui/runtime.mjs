@@ -8,7 +8,7 @@ export async function rpc(method,args={}){
   return body.result;
 }
 export const AnnaAppRuntime={async connect(){
-  await rpc('desktop.info');
+  const info=await rpc('desktop.info');document.body.dataset.aiProvider=info.settings.provider||'codex';
   const bridge={};
   for(const [group,methods] of Object.entries({tools:['invoke'],storage:['get','set'],files:['upload_init','upload_finalize','download_url','list','delete'],llm:['complete'],image:['generate']})){
     bridge[group]=Object.fromEntries(methods.map(method=>[method,args=>rpc(`${group}.${method}`,args)]));

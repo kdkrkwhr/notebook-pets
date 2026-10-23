@@ -14,8 +14,16 @@ from PIL import Image, ImageDraw
 
 
 class FakeAI:
-    def __init__(self): self.calls = []
-    def info(self, check=False): return {'settings': {'path': '', 'model': ''}, 'busy': False, 'lastError': '', 'compatible': True, 'loggedIn': True, 'version': 'fixture', 'calls': self.calls}
+    def __init__(self):
+        self.calls = []; self.provider = 'codex'
+        self.profiles = {'codex': {'path': '', 'model': ''}, 'claude': {'path': '', 'model': ''}}
+    def info(self, check=False, provider=None):
+        selected = provider or self.provider
+        return {'settings': {**self.profiles[selected], 'provider': selected}, 'profiles': self.profiles,
+                'busy': False, 'lastError': '', 'compatible': True, 'loggedIn': True, 'version': 'fixture', 'calls': self.calls}
+    def configure(self, args):
+        self.provider = args['provider']; self.profiles[self.provider] = {k: args[k] for k in ('path', 'model')}
+        return {'saved': True}
     def complete(self, args):
         prompt = args.get('systemPrompt', ''); self.calls.append('text')
         value = 'I am happy to see you!'

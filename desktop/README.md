@@ -1,19 +1,19 @@
 # NoteBuddy Desktop · 설치형 노트버디
 
 Windows와 macOS에서 별도 창으로 실행하는 노트버디 초기 설치판입니다.
-Anna에 로그인하지 않아도 게임을 실행할 수 있고, AI 기능은 **이 PC에 설치하고 로그인한 Codex CLI**에 연결합니다.
+Anna에 로그인하지 않아도 게임을 실행할 수 있고, AI 기능은 **이 PC에 설치하고 로그인한 Codex CLI 또는 Claude Code**에 연결합니다.
 
 ## 설치 파일 다운로드
 
-**0.1.0a2 미리보기** · [릴리스 안내](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a2)
+**0.1.0a3 미리보기** · [릴리스 안내](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a3)
 
 | 운영체제 | 다운로드 |
 | --- | --- |
-| Windows 10/11 x64 | [Windows 설치 파일 (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-windows-x64-setup.exe) |
-| macOS 15 이상 · Apple Silicon (M 시리즈) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-macos-arm64.dmg) |
-| macOS 15 이상 · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-macos-x64.dmg) |
+| Windows 10/11 x64 | [Windows 설치 파일 (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a3/NoteBuddy-0.1.0a3-windows-x64-setup.exe) |
+| macOS 15 이상 · Apple Silicon (M 시리즈) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a3/NoteBuddy-0.1.0a3-macos-arm64.dmg) |
+| macOS 15 이상 · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a3/NoteBuddy-0.1.0a3-macos-x64.dmg) |
 
-[SHA-256 체크섬](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/SHA256SUMS.txt)으로 파일을 확인할 수 있습니다.
+[SHA-256 체크섬](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a3/SHA256SUMS.txt)으로 파일을 확인할 수 있습니다.
 GitHub의 Source code ZIP/TAR 대신 위 설치 파일을 내려받으세요. 초기 미리보기에는 Windows 코드서명과 Apple 공증이 없어 운영체제 경고가 표시될 수 있습니다.
 
 이미 설치했다면 앱을 종료한 뒤 새 버전을 설치하세요. 기존 세이브는 그대로 사용하며, 데이터를 초기화할 필요가 없습니다.
@@ -28,13 +28,25 @@ GitHub의 Source code ZIP/TAR 대신 위 설치 파일을 내려받으세요. �
 - 게임·대화·이미지를 PC에 저장하고 백업 파일 내보내기
 
 랜덤 생성과 기본 게임 규칙, 도감과 저장된 그림 보기는 AI 없이 동작합니다.
-그림 분석·생성, 대화, 켜 둔 돌봄 반응, 꾸며 줘 등은 Codex를 사용합니다.
-AI는 PC에서 모델을 직접 돌리는 방식이 아닙니다. **인터넷과 사용자 Codex 계정의 이용 한도**가 필요합니다.
+그림 분석·생성, 대화, 켜 둔 돌봄 반응, 꾸며 줘 등은 선택한 CLI를 사용합니다.
+AI는 PC에서 모델을 직접 돌리는 방식이 아닙니다. **인터넷과 선택한 AI 계정의 이용 한도**가 필요합니다.
 CLI 인증 정보를 앱에 입력하거나 복사하지 않습니다. Anna 사용량과 별개입니다.
+
+### Claude 구독으로 사용하기 (0.1.0a3)
+
+**AI 연결 설정 → 사용할 AI → Claude Code → 설정 저장 → 연결 확인**으로 선택합니다.
+공식 [Claude Code](https://code.claude.com/docs/en/overview)를 먼저 설치하고 `claude auth login`으로 Claude 구독 계정에 로그인하세요.
+Claude Code **2.1.301**에서 이미지 분석·캐릭터 제작을 실제로 검증했습니다.
+
+- 그림·사진의 특징 분석, 캐릭터 대화, 성격과 홈 꾸미기를 Claude Code로 처리합니다.
+- 캐릭터 그림은 Claude가 직접 작성한 SVG를 PC에서 PNG로 저장합니다. **깔끔한 벡터 일러스트풍**이며 Codex의 이미지 생성 모델과 결과 스타일이 다릅니다. 사진을 그대로 편집하는 기능은 아닙니다.
+- Codex 계정, 별도 이미지 서비스, API 키를 요구하지 않습니다. 다른 AI로 자동 전환하거나 실패한 요청을 자동 재시도하지 않습니다.
+- AI 제공자를 바꿔도 기존 캐릭터·그림·대화는 유지하고, 각 CLI의 경로와 모델 설정을 따로 보관합니다. 바꾸는 순간 기존 그림을 새로 만들지 않습니다.
+- **구독료 외 지출을 막으려면 Claude 계정에서 Usage credits / Extra usage를 꺼 주세요.** 앱은 계정의 결제 설정을 변경하거나 추가 사용량을 구매하지 않습니다. 계정에 이미 켜 둔 유료 추가 사용량은 Claude의 정책을 따릅니다. [공식 사용량 안내](https://support.claude.com/en/articles/12429409-manage-usage-credits-for-paid-claude-plans)
 
 ## 처음 실행하기
 
-### 친구를 바탕화면으로 부르기 (0.1.0a2)
+### 친구를 바탕화면으로 부르기 (0.1.0a2부터)
 
 상단 **AI 연결 설정** 옆의 **밖으로 부르기**를 누르면 지금 친구가 픽셀 모습으로 바탕화면을 돌아다닙니다.
 밖에 있는 동안 원래 초상화 자리는 흰색으로 비워 둡니다. 사진이나 세이브를 삭제하지 않습니다.
@@ -47,15 +59,15 @@ CLI 인증 정보를 앱에 입력하거나 복사하지 않습니다. Anna 사�
 
 ### 설치와 AI 연결
 
-1. Windows는 `NoteBuddy-0.1.0a2-windows-x64-setup.exe`를 실행합니다.
+1. Windows는 `NoteBuddy-0.1.0a3-windows-x64-setup.exe`를 실행합니다.
    macOS는 본인 Mac에 맞는 `macos-arm64`(Apple Silicon) 또는 `macos-x64`(Intel) DMG에서 앱을 Applications로 옮깁니다.
-2. AI를 쓸 경우 [공식 Codex CLI](https://learn.chatgpt.com/docs/cli)를 설치하고 터미널에서 `codex login`을 실행합니다.
-   이 버전은 Codex CLI **0.159.3**으로 검증했습니다. `--ignore-user-config`, `--ignore-rules`, `--ephemeral` 지원이 필요합니다.
-3. 앱 상단의 **AI 연결 설정 → 연결 확인**을 누릅니다. CLI가 검색되지 않으면 실행 파일 경로를 입력합니다.
-4. 모델은 비워 두면 Codex 기본 모델을 사용합니다. 원하는 모델 ID를 직접 넣을 수도 있으며 계정에서 지원해야 합니다.
+2. AI를 쓸 경우 Codex CLI 또는 Claude Code 중 하나를 설치하고 해당 구독 계정으로 로그인합니다.
+   Codex는 `codex login`, Claude Code는 `claude auth login`을 사용합니다. Codex CLI **0.159.3**, Claude Code **2.1.301**로 검증했습니다.
+3. 앱 상단의 **AI 연결 설정**에서 사용할 AI를 선택하고 **설정 저장 → 연결 확인**을 누릅니다. CLI가 검색되지 않으면 실행 파일 경로를 입력해 저장합니다.
+4. 모델은 비워 두면 선택한 CLI의 기본 모델을 사용합니다. 원하는 모델 ID를 직접 넣을 수도 있으며 계정에서 지원해야 합니다.
 5. 친구 이름을 정하고 랜덤으로 만나거나 그림·사진을 입력합니다.
 
-그림 생성은 일반 대화보다 오래 걸리고 Codex 한도를 더 많이 사용할 수 있습니다.
+그림 생성은 일반 대화보다 오래 걸리고 AI 한도를 더 많이 사용할 수 있습니다.
 실패했다고 자동으로 반복 생성하지 않습니다. 오류는 AI 연결 설정에서 확인할 수 있고, 진행 중인 요청도 그곳에서 취소할 수 있습니다.
 첫 마이홈 방문에서는 AI 픽셀 캐릭터 또는 현재 초상화를 이용한 무료 기본 이미지를 선택합니다.
 
@@ -65,7 +77,8 @@ CLI 인증 정보를 앱에 입력하거나 복사하지 않습니다. Anna 사�
 - macOS 15 이상, Apple Silicon 및 Intel용 별도 패키지
 - Python이나 게임 서버는 따로 설치할 필요가 없습니다. CLI와 그 계정은 사용자가 준비합니다.
 - 첫 배포는 개발자 인증서 서명·Apple 공증이 없는 미리보기 패키지입니다. OS에서 게시자 확인 안내가 나올 수 있습니다.
-- 자동 업데이트, 기기 간 동기화, Anna 세이브 가져오기, Claude Code/Cursor 연결은 아직 없습니다.
+- 자동 업데이트, 기기 간 동기화, Anna 세이브 가져오기, Cursor 연결은 아직 없습니다.
+- Claude Code의 벡터 캐릭터는 복잡한 사진·회화나 정교한 방향별 스프라이트를 완벽하게 재현하지 못할 수 있습니다. 마이홈의 무료 기본 픽셀 선택도 사용할 수 있습니다.
 - 설치판의 세이브는 Anna·공개 웹과 독립적입니다. 앱을 삭제해도 저장 폴더는 남습니다.
 - Codex 이미지 결과 수집은 현재 CLI의 `generated_images/<요청 thread_id>` 구조를 지원합니다. CLI가 이 형식을 바꾸면 업데이트가 필요할 수 있습니다. 다른 세션의 이미지는 가져오지 않습니다.
 
@@ -75,7 +88,7 @@ Windows: `%LOCALAPPDATA%\NoteBuddyDesktop`
 
 macOS: `~/Library/Application Support/NoteBuddyDesktop`
 
-`notebuddy.sqlite3`에 게임·대화·이미지를 저장합니다. AI 설정에는 CLI 경로와 모델 이름만 저장합니다.
+`notebuddy.sqlite3`에 게임·대화·이미지를 저장합니다. AI 설정에는 제공자 선택, CLI 경로와 모델 이름만 저장합니다.
 게임 자료와 내보낸 백업은 암호화되지 않으므로 개인 파일처럼 관리하세요.
 앱의 데이터 삭제는 Codex·AI 제공자의 로그나 생성 이미지 사본, 직접 만든 백업까지 지우지 않습니다.
 
@@ -104,7 +117,7 @@ npm test --prefix desktop
 ```
 
 브라우저 통합 검사는 실제 Python 게임·SQLite·HTTP 저장소와 결정적인 AI 대역을 사용합니다.
-테스트 대역은 배포 앱에 포함하지 않습니다. 실제 Codex 테스트는 별도로 수행하며 자동 CI에서 계정·AI 한도를 쓰지 않습니다.
+테스트 대역은 배포 앱에 포함하지 않습니다. 실제 Codex·Claude Code 테스트는 별도로 수행하며 자동 CI에서 계정·AI 한도를 쓰지 않습니다.
 
 ## 코드 구조
 
@@ -113,7 +126,8 @@ npm test --prefix desktop
 게임 규칙·보상·상태·타이머를 별도로 복제하거나 AI가 수정하게 하지 않습니다.
 
 `storage.py`는 SQLite와 조건부 저장, `server.py`는 토큰과 Origin 검사로 보호된 루프백 통신,
-`codex.py`는 제한된 CLI 호출, `app.py`는 네이티브 창·백업 대화상자·프로세스 수명을 담당합니다.
+`providers.py`는 제공자 선택, `codex.py`·`claude.py`는 제한된 CLI 호출, `vector_art.py`는 자체 완결적인 SVG 검증과 로컬 PNG 렌더링을 담당합니다.
+`app.py`는 네이티브 창·백업 대화상자·프로세스 수명을 관리합니다.
 새 CLI 요청은 임시 작업 폴더와 새 세션을 사용하며 개발 중인 저장소·기존 대화 세션을 재개하지 않습니다.
 
 설치판 작업 브랜치는 `release-desktop`입니다. 이 브랜치의 빌드는 Anna 심사본이나 GitHub Pages를 배포하지 않습니다.

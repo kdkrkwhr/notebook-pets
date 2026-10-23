@@ -81,9 +81,29 @@ test('desktop drawing birth, chat, care, first-home default, save and five local
  assert.equal(await page.locator('#pet-image').evaluate(e=>getComputedStyle(e).visibility),'visible');
  await page.evaluate(()=>window.petTest.fail=false);
  assert.equal((await rpc('desktop.info')).calls.length,aiBeforePet,'desktop pet must not call AI');
+ // Select Claude without losing either the existing Codex profile or the pet.
+ await page.locator('#desktop-settings').click();
+ await page.locator('#desktop-model').fill('codex-saved-model');
+ await page.locator('#desktop-dialog [type=submit]').click();
+ await page.waitForFunction(()=>document.querySelector('#desktop-result').textContent==='Settings saved.');
+ await page.locator('#desktop-provider').selectOption('claude');
+ assert.equal(await page.locator('#desktop-model').inputValue(),'');
+ assert(await page.locator('#desktop-image-mode').isVisible());
+ assert.match(await page.locator('#desktop-image-mode').textContent(),/vector/);
+ await page.locator('#desktop-dialog [type=submit]').click();
+ await page.waitForFunction(()=>document.body.dataset.aiProvider==='claude');
+ await page.locator('#desktop-check').click();
+ await page.waitForFunction(()=>document.querySelector('#desktop-result').textContent.includes('fixture'));
+ assert.equal((await rpc('desktop.info')).settings.provider,'claude');
+ assert.equal((await rpc('desktop.info')).profiles.codex.model,'codex-saved-model');
+ await page.screenshot({path:fileURLToPath(new URL('../runtime/screenshots/claude-settings.png',import.meta.url))});
+ await page.locator('#desktop-close').click();
  for(const locale of ['en','ko','ja','zh-Hans','zh-Hant']){await page.locator('#language').selectOption(locale);await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);await page.locator('#desktop-settings').click();assert(await page.locator('#desktop-dialog h2').textContent());await page.locator('#desktop-close').click();}
  await page.locator('#language').selectOption('ko');await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);await page.screenshot({path:fileURLToPath(new URL('../runtime/screenshots/main.png',import.meta.url))});
  await page.reload();await page.waitForFunction(()=>document.body.dataset.desktopReady==='true'&&!document.querySelector('#refresh').disabled);await page.locator('#title-start').click();
  assert.equal((await rpc('tools.invoke',{method:'game',args:{command:'status'}})).pet_id,status.pet_id);assert.equal(await page.locator('#language').inputValue(),'ko');
+ assert.equal(await page.evaluate(()=>document.body.dataset.aiProvider),'claude');
+ assert.match(await page.locator('body').textContent(),/Claude Code/);
+ assert.equal(await page.locator('#pet-image').getAttribute('src'),portrait);
  assert.equal((await rpc('desktop.info')).calls.filter(x=>x==='image').length,1);assert.deepEqual(errors,[]);
 });

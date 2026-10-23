@@ -20,6 +20,7 @@ def prepare():
     app = app.replace(original, "'./desktop-runtime.mjs'")
     # Desktop settings remain usable while an AI request is in progress.
     app = app.replace("#title-screen,#theme-dialog", "#title-screen,#theme-dialog,#desktop-dialog")
+    app += "\nwindow.addEventListener('desktop-provider-changed',()=>{translate();render();if(anna)text('#connection',tr('connected'));});\n"
     (target / 'app.js').write_text(app, encoding='utf-8')
     html = (target / 'index.html').read_text('utf-8').replace('</head>', '<link rel="stylesheet" href="desktop.css"></head>')
     html = html.replace('</body>', '<script type="module" src="settings.mjs"></script></body>')
@@ -36,7 +37,7 @@ def prepare():
     for name in ('i18n.mjs', 'locale-data.mjs'):
         content = (target / name).read_text('utf-8')
         for before, after in replacements:
-            content = content.replace(before, after)
+            content = content.replace(before, after.replace('Codex', 'AI'))
         (target / name).write_text(content, encoding='utf-8')
     content = (target / 'i18n.mjs').read_text('utf-8')
     content = "import {desktopText} from './desktop-copy.mjs';\n" + content
