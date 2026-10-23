@@ -12,6 +12,24 @@
 
 노트버디는 한 마리의 AI 친구와 일상을 쌓아 가는 육성 게임입니다. 직접 그린 그림이나 사진으로 친구를 만들고, 밥을 주고 이야기를 나누며 성장시킬 수 있어요. 산책길에서는 이어지는 이야기와 픽셀 던전을 만나고, 돌아와서는 성장 앨범과 아이템 도감을 펼쳐 보세요.
 
+## Windows·Mac 설치판 다운로드
+
+**NoteBuddy Desktop 0.1.0a1 · 미리보기** — PC에 설치해 그림·사진으로 친구를 만들고, 대화·돌봄·산책·진화·마이홈을 즐겨 보세요.
+
+| 내 컴퓨터 | 다운로드 |
+| --- | --- |
+| Windows 10/11 · x64 | [Windows 설치 파일 (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-windows-x64-setup.exe) |
+| macOS 15 이상 · Apple Silicon (M 시리즈) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-macos-arm64.dmg) |
+| macOS 15 이상 · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-macos-x64.dmg) |
+
+AI 기능은 **내 PC에 설치하고 로그인한 Codex CLI**를 사용합니다. 설치 후 **AI 연결 설정 → 연결 확인**으로 시작하세요. 인터넷과 본인 Codex 계정의 이용 한도가 필요하며, Anna 계정은 필요하지 않습니다. 게임·대화·이미지는 PC에 저장하고, Anna·웹 세이브와는 별개로 시작합니다.
+
+초기 미리보기에는 Windows 코드서명·Apple 공증이 없어 OS 경고가 표시될 수 있습니다. Windows에는 WebView2 Runtime이 필요합니다. 업데이트는 수동 설치 방식입니다.
+
+[설치·사용 안내](https://github.com/kdkrkwhr/notebook-pets/blob/release-desktop/desktop/README.md) · [릴리스와 검증 내역](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a1) · [SHA-256 체크섬](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/SHA256SUMS.txt)
+
+## Anna에서 시작하기
+
 **[Anna 스토어에서 노트버디 다운로드](https://anna.partners/store/@kdkrkwhr/notebuddy)** · 심사를 통과한 **1.4.13**이 공개됐어요!
 
 **1.4.15 업데이트는 심사 중입니다.** 소유자 테스트 앱에서 영어·한국어·일본어·중국어 간체·번체와 모바일 대응 화면을 사용할 수 있습니다. 320px 화면, 터치 설명, 안전 영역과 가로·세로 배치를 점검했습니다. 기존 대화와 생성된 이야기는 원문을 유지하며 언어 변경에 AI를 쓰지 않습니다. 현재 스토어 공개 버전은 1.4.13입니다. 실물 iOS·Android 동작은 별도 확인 대상입니다.
