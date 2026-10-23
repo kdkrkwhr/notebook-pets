@@ -14,12 +14,12 @@ test('desktop drawing birth, chat, care, first-home default, save and five local
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  t.after(async()=>{await mkdir(new URL('../runtime/screenshots/',import.meta.url),{recursive:true});await page.screenshot({path:fileURLToPath(new URL('../runtime/screenshots/last.png',import.meta.url))});if(errors.length)console.error(errors);await browser.close();});
  const rpc=(method,args={})=>page.evaluate(async({method,args})=>(await import('/desktop-runtime.mjs')).rpc(method,args),{method,args});
- await page.goto(origin);await page.waitForFunction(()=>document.body.dataset.desktopReady==='true'&&!document.querySelector('#refresh').disabled);
+ await page.goto(origin);await page.waitForFunction(()=>document.body.dataset.desktopReady==='true'&&!document.querySelector('#refresh').disabled);await page.evaluate(()=>document.fonts.ready);
  await page.locator('#title-start').click();await page.locator('#birth-mode').selectOption('art');await page.locator('#choose-art').click();
  const canvas=await page.locator('#art-canvas').boundingBox();
  await page.mouse.move(canvas.x+120,canvas.y+120);await page.mouse.down();await page.mouse.move(canvas.x+200,canvas.y+100,{steps:12});await page.mouse.move(canvas.x+250,canvas.y+200,{steps:12});await page.mouse.move(canvas.x+120,canvas.y+220,{steps:12});await page.mouse.move(canvas.x+120,canvas.y+120,{steps:12});await page.mouse.up();
- await page.locator('#art-use').click();await page.locator('#pet-name').fill('Desktop Sprout');await page.locator('#start-form button').click();
- await page.waitForFunction(()=>!document.querySelector('#refresh').disabled&&document.body.textContent.includes('Desktop Sprout')).catch(async e=>{console.error(await page.locator('body').innerText());throw e;});
+ await page.locator('#art-use').click();await page.waitForFunction(()=>!document.querySelector('#art-dialog').open&&document.querySelector('#birth-art-choice img').naturalWidth>0);await page.locator('#pet-name').fill('Desktop Sprout');await page.locator('#start-form button').click();
+ await page.waitForFunction(()=>!document.querySelector('#refresh').disabled&&document.body.textContent.includes('Desktop Sprout')).catch(async e=>{console.error(await page.evaluate(()=>({body:document.body.innerText,name:document.querySelector('#pet-name').value,mode:document.querySelector('#birth-mode').value,preview:document.querySelector('#birth-art-choice img').hidden,valid:document.querySelector('#start-form').checkValidity()})));console.error(await rpc('desktop.info'));throw e;});
  const status=await rpc('tools.invoke',{method:'game',args:{command:'status'}});assert.equal(status.status.name,'Desktop Sprout');assert.equal(status.species_key,'plant');
  const art=(await rpc('storage.get',{key:'notebuddy/art-v1'})).value;
  assert(Object.values(art).some(x=>x.phase==='done'));assert.equal((await rpc('desktop.info')).calls.filter(x=>x==='image').length,1);

@@ -60,4 +60,5 @@ jobs:
             dist/${{ matrix.target }}/*.dmg
             dist/${{ matrix.target }}/SHA256SUMS.txt
             desktop/runtime/native-smoke/*.json
+            desktop/runtime/screenshots/*.png
           if-no-files-found: error
