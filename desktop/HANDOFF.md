@@ -1,10 +1,17 @@
 # Desktop handoff — 2026-10-23
 
-## Desktop companion 0.1.0a2 — validation in progress
+## Desktop companion 0.1.0a2 — verified packages
 
 - User requested an adjacent Call outside button, a free-roaming pixel companion and a temporarily white original portrait. Desktop scope only; Anna and public web are unchanged.
 - Native WinForms/Cocoa surfaces reuse personal 16-frame home sprites or a free portrait-derived default. Motion and summon/recall never invoke AI or persist new artwork. No new Python dependencies or duplicated game rules.
-- Local source validation: 11 backend tests and browser flow passed; native Windows summon, movement, white portrait, recall and original portrait restoration passed. Packaging and macOS native validation are pending.
+- Package source: `c0efe9883ecf7df7efc551b4f583c0cb8a135d3f`, branch `release-desktop`. Anna remains UI 1.4.16 / tool 0.9.7; neither Anna nor public web is deployed by this change.
+- [Desktop CI run 39905138820](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39905138820): Windows x64, macOS 15 Apple Silicon and macOS 15 Intel all passed. Each ran 11 backend/storage/security checks, built an installer and opened the frozen app twice with the same saved pet and local origin. Windows also passed the real-backend browser flow, all 16 personal sprite frames, failed-summon recovery and zero AI requests for summon/recall.
+- All six native package runs verified summon, actual timer movement, white/hidden original portrait, recall, native dismissal, unchanged artwork, automatic dismissal when artwork changes, restart persistence and clean shutdown with a pet still outside. The Windows source app was also visually inspected in its actual native window.
+- The user's installed 0.1.0a1 and live data were not replaced during testing. This update reuses its installer identity, data directory and save format. The original isolated install/uninstall preservation test is recorded below; this release's new native behavior was verified in the frozen packages. Manual Mac pointer interaction and multi-monitor behavior remain separate from CI validation.
+- Distribution limits remain: unsigned Windows / ad-hoc signed, non-notarized Mac; manual updates; no new AI integration, sync or Anna save import. A portrait-derived default has no invented directional poses; existing valid personal home sheets retain their directional/action frames.
+- [Public desktop preview 0.1.0a2](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a2): published the three verified installers and combined SHA-256 manifest at tag `desktop-v0.1.0a2`, targeting the package source above. GitHub asset sizes and SHA-256 digests match the downloaded CI packages. Local copies: `dist/installers/0.1.0a2/`. Korean/English root READMEs and the desktop guide link to this release.
+
+## Initial desktop preview 0.1.0a1
 
 - Branch: `release-desktop`, based on Anna `release` at `04f4b405` (UI 1.4.16 / game tool 0.9.7).
 - Desktop version: `0.1.0a1`. Anna and public web deployment are outside this task.

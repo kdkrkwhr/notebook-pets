@@ -5,16 +5,18 @@ Anna에 로그인하지 않아도 게임을 실행할 수 있고, AI 기능은 *
 
 ## 설치 파일 다운로드
 
-**0.1.0a1 미리보기** · [릴리스 안내](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a1)
+**0.1.0a2 미리보기** · [릴리스 안내](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a2)
 
 | 운영체제 | 다운로드 |
 | --- | --- |
-| Windows 10/11 x64 | [Windows 설치 파일 (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-windows-x64-setup.exe) |
-| macOS 15 이상 · Apple Silicon (M 시리즈) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-macos-arm64.dmg) |
-| macOS 15 이상 · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-macos-x64.dmg) |
+| Windows 10/11 x64 | [Windows 설치 파일 (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-windows-x64-setup.exe) |
+| macOS 15 이상 · Apple Silicon (M 시리즈) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-macos-arm64.dmg) |
+| macOS 15 이상 · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-macos-x64.dmg) |
 
-[SHA-256 체크섬](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/SHA256SUMS.txt)으로 파일을 확인할 수 있습니다.
+[SHA-256 체크섬](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/SHA256SUMS.txt)으로 파일을 확인할 수 있습니다.
 GitHub의 Source code ZIP/TAR 대신 위 설치 파일을 내려받으세요. 초기 미리보기에는 Windows 코드서명과 Apple 공증이 없어 운영체제 경고가 표시될 수 있습니다.
+
+이미 설치했다면 앱을 종료한 뒤 새 버전을 설치하세요. 기존 세이브는 그대로 사용하며, 데이터를 초기화할 필요가 없습니다.
 
 ## 할 수 있는 일
 
@@ -45,7 +47,7 @@ CLI 인증 정보를 앱에 입력하거나 복사하지 않습니다. Anna 사�
 
 ### 설치와 AI 연결
 
-1. Windows는 `NoteBuddy-0.1.0a1-windows-x64-setup.exe`를 실행합니다.
+1. Windows는 `NoteBuddy-0.1.0a2-windows-x64-setup.exe`를 실행합니다.
    macOS는 본인 Mac에 맞는 `macos-arm64`(Apple Silicon) 또는 `macos-x64`(Intel) DMG에서 앱을 Applications로 옮깁니다.
 2. AI를 쓸 경우 [공식 Codex CLI](https://learn.chatgpt.com/docs/cli)를 설치하고 터미널에서 `codex login`을 실행합니다.
    이 버전은 Codex CLI **0.159.3**으로 검증했습니다. `--ignore-user-config`, `--ignore-rules`, `--ephemeral` 지원이 필요합니다.
