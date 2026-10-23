@@ -1,0 +1,7 @@
+{
+  "name":"notebuddy-desktop-tests",
+  "private":true,
+  "type":"module",
+  "scripts":{"test":"node --test --test-concurrency=1 tests/*.browser.mjs"},
+  "devDependencies":{"playwright-core":"1.64.0"}
+}

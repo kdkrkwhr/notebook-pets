@@ -42,3 +42,11 @@ anna/dist/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Standalone desktop builds and disposable verification data
+.venv-desktop/
+.desktop-research/
+build/
+dist/
+desktop/runtime/
+desktop/node_modules/
