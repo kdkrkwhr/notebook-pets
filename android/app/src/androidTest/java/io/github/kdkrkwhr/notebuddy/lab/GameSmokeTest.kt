@@ -48,8 +48,8 @@ class GameSmokeTest {
             scenario.onActivity { activity=it }
             until("!!window.NoteBuddyPlatform&&document.querySelector('#notice').textContent.includes('공책이 준비')")
             assertEquals("notebuddy-android-test",js("window.NoteBuddyPlatform.databaseName").asString)
-            val userBefore=async("const s=await import('./store.js');return await s.snapshot(await s.openStore('notebuddy-android'))")
-            async("const s=await import('./store.js'),db=await s.openStore(window.NoteBuddyPlatform.databaseName),old=await s.load(db);await s.commit(db,old.revision,null);return true")
+            val userBefore=async("const s=await import(new URL('./store.js',location.href).href);return await s.snapshot(await s.openStore('notebuddy-android'))")
+            async("const s=await import(new URL('./store.js',location.href).href),db=await s.openStore(window.NoteBuddyPlatform.databaseName),old=await s.load(db);await s.commit(db,old.revision,null);return true")
             js("document.querySelector('#title-start').click();document.querySelector('#refresh').click()")
             until("!document.querySelector('#refresh').disabled")
             js("document.querySelector('#choose-art').click();document.querySelector('#art-input-mode').value='file';document.querySelector('#art-input-mode').dispatchEvent(new Event('change'))")
@@ -61,7 +61,7 @@ class GameSmokeTest {
             until("document.querySelector('#pet-name').textContent==='기기 검증 친구'&&!document.querySelector('#refresh').disabled")
             js("const care=document.querySelector('#care-ai-enabled');care.checked=false;care.dispatchEvent(new Event('change'));document.querySelector('[data-action=feed]').click()")
             until("!document.querySelector('#refresh').disabled")
-            val save=async("const s=await import('./store.js');return await s.snapshot(await s.openStore(window.NoteBuddyPlatform.databaseName))")
+            val save=async("const s=await import(new URL('./store.js',location.href).href);return await s.snapshot(await s.openStore(window.NoteBuddyPlatform.databaseName))")
             assertTrue(save.asJsonObject.getAsJsonObject("player").getAsJsonObject("state").get("xp").asInt>0)
             js("document.querySelector('#open-home').click()")
             until("document.querySelector('#home-dialog').open&&!document.querySelector('#refresh').disabled")
@@ -77,7 +77,7 @@ class GameSmokeTest {
                 until("!document.querySelector('#chat button').disabled",180000)
                 assertTrue(js("document.querySelectorAll('#messages .assistant').length>0").asBoolean)
             }
-            val userAfter=async("const s=await import('./store.js');return await s.snapshot(await s.openStore('notebuddy-android'))")
+            val userAfter=async("const s=await import(new URL('./store.js',location.href).href);return await s.snapshot(await s.openStore('notebuddy-android'))")
             assertEquals("User game untouched",userBefore,userAfter)
             val reports=File(context.getExternalFilesDir(null),"reports").also { it.mkdirs() }
             instrumentation.uiAutomation.takeScreenshot()?.let { bitmap->File(reports,"game-test.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG,100,it) };bitmap.recycle() }

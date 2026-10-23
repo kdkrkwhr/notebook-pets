@@ -175,7 +175,7 @@ async function act(command,args=[]){
   try{const saved=await load(db);const candidate=await calculate(saved.state,command,args,requestId);
     if(candidate.changed){activity.notice.set('save');await commit(db,saved.revision,candidate.state);}
     $('result').textContent=candidate.result.msg??JSON.stringify(candidate.result);
-    await refresh(command==='start'&&!saved.state);$('notice').textContent=candidate.changed?'이 브라우저에 저장했습니다.':'행동 결과를 확인해 주세요.';
+    await refresh(command==='start'&&!saved.state);$('notice').textContent=candidate.changed?'이 기기에 저장했습니다.':'행동 결과를 확인해 주세요.';
     activity.notice.clear();
     if(candidate.result.dungeon_visit)dungeons.visit(candidate.result.dungeon_visit);
     if(candidate.result.dungeon_run)dungeons.show(candidate.result.dungeon_run);

@@ -7,10 +7,11 @@
 - Shared web UI + Anna common modules/art + Pyodide 314.0.7 + unchanged portable Python rules bundled into the APK. No application server, no cloud AI fallback. Native bridge is restricted to the trusted local HTTPS main frame.
 - Original drawing/photo is the portrait. Evolution preserves it. Home offers a free default portrait-derived pixel appearance; AI image generation unavailable.
 - PC validation: 20 unit tests, APK/test APK builds, lint 0 errors / 18 advisory warnings; actual Python/WASM game-flow browser test at 320/360/412/800px and core smoke passed. See `VALIDATION.md`.
-- Physical installation/verification currently blocked by disconnected USB. Requested reconnection; do not describe 0.2.0 as installed or its native game integration as device-verified yet. Prior 0.1.0 inference results remain historical.
-- Device harness uses a distinct debug test notebook and checks user-game snapshot plus Lab file hashes; do not mutate the default notebook or use personal photos as test fixtures.
+- Installed 0.2.0-alpha (versionCode 2) over Lab on Galaxy Z Flip6 after USB reconnection. Real WebView/Python game + local chat, name recall, local furniture AI, home/back navigation, reload and native SAF backup export/import passed. Reused downloaded model. Prior 0.1.0 inference figures remain historical.
+- Final local APK: `runtime/dist/NoteBuddy-Android-0.2.0-alpha.apk`, 228,093,478 bytes, SHA-256 `567923c91b8467233cfc4085877e33bd923933a4c45a4d8bf275f78e2cd4cc75`. Includes the tested implementation plus device-harness import correction and minor mobile wording/header follow-up. Installed in place and returned to the ordinary launcher, not the test notebook.
+- Device harness used a distinct debug test notebook; user-game snapshot and Lab original/analysis/chat file hashes were unchanged. Do not mutate the default notebook or use personal photos as test fixtures.
 - UI hooks in shared web/home/evolution code are optional and retain the original web/Anna defaults. Changes exist only on this branch; no shared release or review bump was performed.
-- CI setup now explicitly requests supported SDK packages, packages the game and runs the mobile browser harness. Confirm the new run before claiming CI success.
+- CI setup explicitly requests supported SDK packages, packages the game and runs the mobile browser harness. Run 39921998760 passed for implementation commit ae0ba5f. Follow-up fixes the device test import base URL and records actual device results; latest run should be checked separately.
 - APK, reports, screenshots and downloaded models remain under ignored `android/runtime` / build directories. No private photos or signing keys committed.
 
 ## 2026-10-23 · 0.1.0-lab
