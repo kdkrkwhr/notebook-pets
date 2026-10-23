@@ -2,7 +2,8 @@ import {call,state,status} from './native.js';
 export function createAISettings(document){
   const $=id=>document.getElementById(id);let downloading=false;
   function render(){
-    if(!downloading)$('native-model-status').textContent=state.ready?'✓ 모델 준비 완료 · 휴대폰에서 실행':'모델이 아직 준비되지 않았어요. 돌봄·산책·홈은 AI 없이도 사용할 수 있어요.';
+    if(!downloading)$('native-model-status').textContent=state.ready?'✓ 친구와 대화할 준비가 됐어요':'대화를 준비하는 동안에도 친구를 돌보고 산책할 수 있어요.';
+    $('native-download-help').hidden=state.ready;$('native-cancel').hidden=!downloading;
     $('native-download').hidden=state.ready;$('native-download').disabled=downloading;
   }
   window.addEventListener('native-state',render);

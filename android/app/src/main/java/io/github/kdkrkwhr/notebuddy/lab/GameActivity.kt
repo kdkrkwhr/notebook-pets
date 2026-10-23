@@ -73,7 +73,10 @@ class GameActivity : ComponentActivity() {
         root.addView(gameView, FrameLayout.LayoutParams(-1, -1)); setContentView(root)
         ViewCompat.setOnApplyWindowInsetsListener(root) { v, insets ->
             val safe = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime())
-            v.setPadding(safe.left, safe.top, safe.right, safe.bottom); insets
+            v.setPadding(safe.left, safe.top, safe.right, safe.bottom)
+            val keyboard = insets.isVisible(WindowInsetsCompat.Type.ime())
+            gameView.evaluateJavascript("window.dispatchEvent(new CustomEvent('native-keyboard',{detail:$keyboard}))", null)
+            insets
         }
         ViewCompat.requestApplyInsets(root)
         gameView.settings.apply {
@@ -150,7 +153,7 @@ class GameActivity : ComponentActivity() {
                     reply(true)
                 }
                 "download", "complete" -> {
-                    check(busy.compareAndSet(false, true)) { "AI가 다른 요청을 처리 중이에요. 잠시 기다려 주세요." }
+                    check(busy.compareAndSet(false, true)) { "친구가 아직 답장을 쓰고 있어요. 잠시 기다려 주세요." }
                     activeId = id; stopped.set(false)
                     val action = request.get("action").asString
                     worker.execute {
@@ -162,11 +165,19 @@ class GameActivity : ComponentActivity() {
                                     runOnUiThread { if (!isDestroyed) runCatching { proxy.postMessage(progress) } }
                                 }; reply(true)
                             } else {
-                                check(models.ready()) { "AI 설정에서 모델을 먼저 받아 주세요." }
-                                reply(complete(GameRequest.parse(payload)))
+                                check(models.ready()) { "설정에서 친구와 대화할 준비를 해 주세요." }
+                                var lastUpdate = 0L
+                                fun progress(phase: String, text: String? = null) {
+                                    val now = System.nanoTime()
+                                    if (text != null && now - lastUpdate < 100_000_000) return
+                                    lastUpdate = now
+                                    val data = gson.toJson(mapOf("id" to id, "progress" to mapOf("phase" to phase, "text" to text)))
+                                    runOnUiThread { if (!isDestroyed) runCatching { proxy.postMessage(data) } }
+                                }
+                                reply(complete(GameRequest.parse(payload), ::progress))
                             }
                         } catch (e: Exception) {
-                            reply(error = if (stopped.get() || e is CancellationException) "요청을 중지했어요. 자동으로 다시 시도하지 않아요." else e.message?.take(220) ?: "로컬 AI 요청을 완료하지 못했어요.")
+                            reply(error = if (stopped.get() || e is CancellationException) "잠시 멈췄어요." else e.message?.take(220) ?: "로컬 AI 요청을 완료하지 못했어요.")
                         } finally { activeId = null; busy.set(false) }
                     }
                 }
@@ -200,7 +211,7 @@ class GameActivity : ComponentActivity() {
         } catch (e: Exception) { reply(error = e.message?.take(220) ?: "요청 형식을 확인해 주세요.") }
     }
 
-    private fun complete(request: GameRequest): String {
+    private fun complete(request: GameRequest, progress: (String, String?) -> Unit): String {
         val picture = request.image?.let { data ->
             val bytes = Base64.decode(data.substringAfter(','), Base64.NO_WRAP)
             val size = BitmapFactory.Options().apply { inJustDecodeBounds = true }
@@ -211,7 +222,8 @@ class GameActivity : ComponentActivity() {
         try {
             val history = request.messages.dropLast(1).map { if (it.role == "user") Message.user(it.text) else Message.model(it.text) }
             val system = request.system + if (request.json) "\nReturn only the requested JSON object. No markdown or explanation. Keep every field concise." else "\nKeep your answer to at most three short sentences."
-            return ai.run(system, request.messages.last().text, history, picture, phase = {}, update = {},
+            return ai.run(system, request.messages.last().text, history, picture,
+                phase = { progress(it, null) }, update = { if (!request.json) progress("generating", it) },
                 shouldCancel = { stopped.get() }, maxTokens = request.tokens, temperature = if (request.json) .2 else .7).text
         } finally { picture?.delete() }
     }

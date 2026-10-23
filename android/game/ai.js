@@ -5,7 +5,7 @@ export function createAI(){
   const controllers=new Set();let closed=false;
   async function text(options,{signal}={}){
     if(closed)throw Error('친구가 바뀌었어요.');
-    if(!state.ready)throw Error('AI 설정에서 모델을 먼저 받아 주세요.');
+    if(!state.ready)throw Error('설정에서 친구와 대화할 준비를 해 주세요.');
     const controller=new AbortController(),abort=()=>controller.abort();controllers.add(controller);
     signal?.addEventListener('abort',abort,{once:true});if(signal?.aborted)controller.abort();
     try{return {content:{text:await call('complete',options,controller.signal)}};}

@@ -46,7 +46,7 @@ class GameSmokeTest {
         val intent=Intent(context,GameActivity::class.java).putExtra("testNotebook",true).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         ActivityScenario.launch<GameActivity>(intent).use { scenario ->
             scenario.onActivity { activity=it }
-            until("!!window.NoteBuddyPlatform&&document.querySelector('#notice').textContent.includes('공책이 준비')")
+            until("!!window.NoteBuddyPlatform&&document.body.classList.contains('mobile-ready')")
             assertEquals("notebuddy-android-test",js("window.NoteBuddyPlatform.databaseName").asString)
             val userBefore=async("const s=await import(new URL('./store.js',location.href).href);return await s.snapshot(await s.openStore('notebuddy-android'))")
             async("const s=await import(new URL('./store.js',location.href).href),db=await s.openStore(window.NoteBuddyPlatform.databaseName),old=await s.load(db);await s.commit(db,old.revision,null);return true")

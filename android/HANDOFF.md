@@ -1,5 +1,17 @@
 # Android handoff
 
+## 2026-10-23 · 0.2.1-alpha · mobile UX
+
+- Branch: `release-android`; Android only. Anna, its review candidate, Desktop and public Pages are unchanged.
+- Replaced the long page with companion/chat/adventure/journal tabs, compact cards and normal UI typography. Home/dungeon/evolution use full-screen flows; furniture shop overlays the world. Native Back dismisses keyboard, inner shop/dialog, then returns to the companion tab.
+- Outgoing chat appears immediately, native response progress/preview is streamed, cancellation is available inside dialogs too, and drafts survive cancellation. Conflicting game actions are disabled while a chat request is active. No automatic paid service or new image generation added.
+- Removed model/engine/implementation copy from normal gameplay. Required download size, backup and app information remain in Settings.
+- Builds, 20 unit tests, lint (0 errors, 19 advisories) and the existing real Python/WASM game suite passed. Added 4-viewport UX tests, keyboard-space checks, tab scroll restoration, primary touch target checks, modal Back, delayed cancellation/late-result rejection and light/dark screenshots.
+- Flip6: in-place update, real game instrumentation passed in 27.275 seconds. Native keyboard + Back, actual local chat and cancellation, home-shop Back and evolution close passed through the installed WebView. Test notebook and original Lab file hashes/user-game snapshot preserved. Existing downloaded model reused.
+- Final locally installed APK: `runtime/dist/NoteBuddy-Android-0.2.1-alpha.apk`, versionCode 3, 227,990,536 bytes, SHA-256 `0e613efee54a76467fef8006281aee81c730b2a375b04d2b2fe8b544f3f44173`. Last rebuild only raises dark-theme selected-tab contrast; no game or native logic changed after the complete flow checks.
+- Local evidence: `runtime/game-browser/report.json`, `runtime/ux-device/report.json`, `runtime/ux-device-test.txt`; private/runtime files stay ignored. Instrumentation and CDP tests select `notebuddy-android-test`, never reset the default notebook.
+- Limits: cover display/physical folding, other devices/system large-font settings, prolonged thermals/memory and process-kill recovery remain unverified. Landscape was exercised in browser emulation. CI for this new commit should be checked separately; prior commit bef4e88 CI run 39923343592 passed.
+
 ## 2026-10-23 · 0.2.0-alpha
 
 - Branch: `release-android`. Android-only game integration; Anna review, installed Anna, Desktop and public Pages unchanged.
@@ -13,18 +25,3 @@
 - UI hooks in shared web/home/evolution code are optional and retain the original web/Anna defaults. Changes exist only on this branch; no shared release or review bump was performed.
 - CI setup explicitly requests supported SDK packages, packages the game and runs the mobile browser harness. Run 39921998760 passed for implementation commit ae0ba5f. Follow-up fixes the device test import base URL and records actual device results; latest run should be checked separately.
 - APK, reports, screenshots and downloaded models remain under ignored `android/runtime` / build directories. No private photos or signing keys committed.
-
-## 2026-10-23 · 0.1.0-lab
-
-- Branch: `release-android`, based on `release-web` at `ca5648b`.
-- Separate package: `io.github.kdkrkwhr.notebuddy.lab`. Native Kotlin prototype, not a full game port.
-- Build: Gradle 8.13 / AGP 8.13.2 / Kotlin 2.4.21; LiteRT-LM 0.18.1; pinned Gemma 4 E2B model with size + SHA-256 verification.
-- Installed debug APK on Galaxy Z Flip6, API 36. Final APK SHA-256: `287c078b0bfaa739e008a262523d5fac9e56ac325dd4fc04a48459c4c292b1fe`.
-- Local unit tests: 15 passed. Device tests: 3 passed including 5 real local inference requests and user-file hash preservation. Lint: 0 errors, 14 advisory warnings.
-- Final GPU figures and image-quality failure are documented in [VALIDATION.md](VALIDATION.md).
-- Preserved the latest selected photo and re-analyzed it through the UI after fixing a test fixture collision. Earlier profile/chat were overwritten by the initial harness; do not claim complete recovery. Final tests use cache/report files only.
-- Native model processing is local. Model download requires network. Physical offline mode, long sessions and CPU-only fallback still need validation.
-- Anna, Desktop and public Pages deployments unchanged. No review candidate created, no store submission and no public Android release.
-- No model binaries, device serials, private photos, local reports or signing keys committed. CI builds a separate debug artifact; its signature may differ from the locally installed APK.
-
-Next integration should keep the current game UI and shared Python rules. Do not adopt this lab UI as the NoteBuddy mobile product UI. Local image analysis plus limited shape rendering is not equivalent to the existing image-generation service.

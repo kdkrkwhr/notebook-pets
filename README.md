@@ -2,7 +2,7 @@
 
 **한국어** · [English](README.en.md)
 
-**Android 게임 알파 0.2.0:** [설치·사용 안내](android/README.md) · [검증 결과](android/VALIDATION.md). 그림·사진을 그대로 친구로 사용하고, 휴대폰 로컬 AI와 대화하며 돌봄·산책·진화·홈을 즐기는 설치판입니다. 새 이미지 생성은 아직 지원하지 않습니다.
+**Android 게임 알파 0.2.1:** [설치·사용 안내](android/README.md) · [검증 결과](android/VALIDATION.md). 그림·사진을 그대로 친구로 사용하고, 휴대폰 로컬 AI와 대화하며 돌봄·산책·진화·홈을 즐기는 설치판입니다. 새 이미지 생성은 아직 지원하지 않습니다.
 
 [문서 목차](docs/README.md) · [현재 설치·배포 상태](anna/HANDOFF.md) · [프로젝트 구조 지도](https://kdkrkwhr.github.io/notebook-pets/architecture/) · [프로젝트 위키](https://kdkrkwhr.github.io/notebook-pets/wiki/)
 

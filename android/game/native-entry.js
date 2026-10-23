@@ -2,6 +2,7 @@ import {call,state,status} from './native.js';
 import {createArtworkEditor,normalizeArtwork} from './birth-art.mjs';
 import {imageKey} from './model.mjs';
 import {t} from './i18n.mjs';
+import {mountMobile,chatStarted,chatFinished} from './mobile-shell.js';
 const $=id=>document.getElementById(id);
 try{await status();}catch(e){$('notice').textContent=e.message;}
 let imported=null,preview='';
@@ -14,10 +15,11 @@ $('import-lab-photo').onclick=async()=>{
     const image=await call('labPhoto');
     imported=await normalizeArtwork(await(await fetch(image)).blob());
     if(preview)URL.revokeObjectURL(preview);preview=URL.createObjectURL(imported);$('birth-preview').src=preview;$('birth-preview').hidden=false;
-    $('birth-art-status').textContent='검증판 사진을 가져왔어요. 친구 만나기를 누르면 새 게임에 저장해요. 검증판 기록은 그대로 유지돼요.';
+    $('birth-art-status').textContent='이전에 고른 사진을 가져왔어요. 친구에게 이름을 지어 주세요.';
   }catch(e){$('birth-art-status').textContent=e.message;}
 };
 window.NoteBuddyPlatform={
+  chatStarted,chatFinished,
   imageGeneration:false,databaseName:state.testMode?'notebuddy-android-test':'notebuddy-android',
   async birth(){
     const blob=imported??editor.get()?.blob;
@@ -33,9 +35,10 @@ window.NoteBuddyPlatform={
     catch(e){await call('exportCancel').catch(()=>{});throw e;}
   },
   mounted(){
-    $('story-usage').textContent='AI 산책 이야기는 휴대폰 모델로 만들어요. 기본 이야기와 결말 선택은 AI를 사용하지 않아요.';
-    const hints=document.querySelector('.chat-bottom > small');if(hints)hints.firstChild.textContent='대화는 이 휴대폰에서 실행해요. ';
-    if(state.testMode){const note=document.createElement('p');note.id='test-mode';note.textContent='자동 검증용 별도 공책 · 사용자 공책과 분리됨';document.querySelector('main').prepend(note);}
+    $('story-usage').hidden=true;
+    const hints=document.querySelector('.chat-bottom > small');if(hints)hints.hidden=true;
+    if(state.testMode){const note=document.createElement('p');note.id='test-mode';note.textContent='테스트 공책';document.querySelector('.masthead').append(note);}
+    mountMobile();
   }
 };
 window.NoteBuddyBack=()=>{
