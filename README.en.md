@@ -8,6 +8,24 @@
 
 Notebuddy is a companion game about growing alongside one AI friend. Start with a drawing, a photo or a surprise companion. Share your day, build a routine, discover stories and pixel dungeons on walks, and keep a little album of your friend's growth.
 
+## Download for Windows and Mac
+
+**NoteBuddy Desktop 0.1.0a1 · Preview** — Install NoteBuddy to create a friend from a drawing or photo, chat, care, explore, evolve, and enjoy a pixel home.
+
+| Your computer | Download |
+| --- | --- |
+| Windows 10/11 · x64 | [Windows installer (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-windows-x64-setup.exe) |
+| macOS 15+ · Apple Silicon (M series) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-macos-arm64.dmg) |
+| macOS 15+ · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-macos-x64.dmg) |
+
+AI features use **Codex CLI installed and signed in on your computer**. Open **AI connection settings → Check connection** after installation. Internet access and your Codex account's allowance are required; an Anna account is not. Saves, conversations and images stay on your computer, separately from Anna and web saves.
+
+This initial preview has no Windows code-signing certificate or Apple notarization, so OS warnings may appear. Windows requires WebView2 Runtime. Updates are installed manually.
+
+[Installation and usage guide (Korean)](https://github.com/kdkrkwhr/notebook-pets/blob/release-desktop/desktop/README.md) · [Release and verification details](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a1) · [SHA-256 checksums](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/SHA256SUMS.txt)
+
+## Get started on Anna
+
 **[Get Notebuddy on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy)** · **1.4.13** has passed review and is now publicly available!
 
 **Update 1.4.15 is in review.** The owner test app supports English, Korean, Japanese, Simplified Chinese and Traditional Chinese, plus mobile layouts tested at 320px with tap-accessible help, safe areas and portrait/landscape views. Language changes use no AI and keep previous conversations and generated prose in their original language. Public store version: 1.4.13. Physical iOS/Android verification remains separate.
