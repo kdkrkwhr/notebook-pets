@@ -1,5 +1,7 @@
 # NoteBuddy Desktop 0.1.0a3
 
+[GitHub 미리보기 릴리스 · 설치 파일 다운로드](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a3)
+
 - AI 연결 설정에서 **Codex CLI / Claude Code**를 선택할 수 있습니다. 기존 Codex 설정과 모든 게임 데이터는 유지됩니다.
 - Claude 구독에 로그인한 공식 Claude Code로 대화, 그림·사진 분석, 캐릭터 제작을 처리합니다. Codex 계정이나 별도 이미지 API 키가 필요하지 않습니다.
 - Claude가 SVG로 그린 캐릭터를 PC에서 PNG로 저장합니다. 벡터 일러스트풍이며 Codex 이미지 모델과 스타일이 다릅니다. 외부 이미지 서비스나 임의의 생성 코드를 실행하지 않습니다.

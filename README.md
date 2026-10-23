@@ -1,6 +1,6 @@
 # Notebook Pets · 노트버디
 
-> **설치판 작업 브랜치 (`release-desktop`)** — Windows·Mac용 독립 앱과 Codex CLI 연결을 추가했습니다.
+> **설치판 작업 브랜치 (`release-desktop`)** — Windows·Mac용 독립 앱과 Codex CLI·Claude Code 연결을 추가했습니다.
 > 설치·사용 방법은 [NoteBuddy Desktop 안내](desktop/README.md), 검증 상태는 [Desktop handoff](desktop/HANDOFF.md)를 참고하세요.
 > 아래 Anna 서비스 소개와 별개로, 설치판은 PC에 게임과 이미지를 저장합니다.
 
