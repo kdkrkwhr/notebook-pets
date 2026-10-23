@@ -2,6 +2,8 @@
 
 [한국어](README.md) · **English**
 
+**Android on-device AI preview:** [Build and usage](android/README.md) · [Device validation](android/VALIDATION.md). A separate lab app for local picture analysis and chat without an AI subscription; the full game has not been ported yet.
+
 [Documentation index](docs/README.md) · [Installed app and deployment status](anna/HANDOFF.md) · [Project architecture](https://kdkrkwhr.github.io/notebook-pets/architecture/) · [Project wiki (Korean guides + Graphify)](https://kdkrkwhr.github.io/notebook-pets/wiki/)
 
 **Draw a little friend. Care for them, talk to them, and go on adventures together.**

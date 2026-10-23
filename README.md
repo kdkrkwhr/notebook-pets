@@ -2,6 +2,8 @@
 
 **한국어** · [English](README.en.md)
 
+**Android 온디바이스 AI 검증판:** [설치·사용 안내](android/README.md) · [실기기 검증 결과](android/VALIDATION.md). AI 구독 없이 휴대폰에서 그림 분석과 대화를 시험하는 별도 앱이며, 전체 게임 이식은 아직 진행 전입니다.
+
 [문서 목차](docs/README.md) · [현재 설치·배포 상태](anna/HANDOFF.md) · [프로젝트 구조 지도](https://kdkrkwhr.github.io/notebook-pets/architecture/) · [프로젝트 위키](https://kdkrkwhr.github.io/notebook-pets/wiki/)
 
 **내가 그린 작은 친구와 대화하고, 돌보고, 함께 모험하세요.**

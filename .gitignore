@@ -43,3 +43,13 @@ anna/dist/
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# Android local AI prototype
+android/.gradle/
+android/.kotlin/
+android/local.properties
+android/**/build/
+android/runtime/
+android/*.jks
+android/*.keystore
+*.litertlm

@@ -1,0 +1,5 @@
+<resources>
+    <item name="main_scroll" type="id"/>
+    <item name="chat_input" type="id"/>
+    <item name="backend" type="id"/>
+</resources>
