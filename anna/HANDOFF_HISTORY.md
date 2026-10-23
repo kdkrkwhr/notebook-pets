@@ -1,3 +1,15 @@
+# Anna 1.4.14 multilingual update — 2026-10-19
+
+Owner-authorized app **1.4.14 / working revision 90 / installed 0.0.0-draft**, actual cloud tool **0.9.6 / Executa 786 / master 1193 loaded/running**. Review **1.4.14 / ID 1478 / pending**; public **1.4.13** retained. Per-version release review is pending while the app lifecycle remains published; no immediate public promotion or web deployment.
+
+- Added **Japanese / Simplified Chinese / Traditional Chinese** across static UI, furniture/items, fallback stories and selected-language AI output prompts. Old names, chats, portraits and prose remain original; optional new personality text and evolution prose support all five locale codes. No automatic translation/AI on language changes. Includes album containment and truthful 64-message/40-KB retention copy.
+- Final source **f3f655b**, CI **39247474069** passed both OSes: **131 browser / 96 JS / 76 storage-protocol**, strict validation and executable build/smoke. Shared CI **39247474128** passed. Earlier Windows cold page-load timeouts were addressed in the test harness; focused **11** checks also passed. Both tested platform archives were published together.
+- Used exactly **six authorized text calls / zero images**, public copy only, no paid retries. Raw results saved before local JSON framing repair. Traditional Chinese converted offline; glossary corrected, including the calm mood meaning of Content. **1,064** static entries. Native-speaker editorial review and physical PC execution remain unperformed.
+- Installed source hashes match; actual five-language UI/tool reads passed. Game ETag and art/chat/story/personality values/ETags are unchanged. Shared listing and all six screenshots retained; public release is separate from this review submission.
+- Bundle **1374 / 174 files / 171598743 bytes**, manifest SHA-256 **f5c1811787c3a0bab742f7ae20d2f499a8e50fc7dc287c1d0dbb13ef5e12109f**; working hash **f6bf2d50a2f5787d4e079fd576bd1e23fe2eecd71acde485c43c8cace493570a**, **dirty_vs_latest_cut false**, exact/minimum tool **0.9.6**. Details: **releases/RELEASE_1414.md**, **reviews/REVIEW_1414.md**, **locales/README.md**.
+
+---
+
 # Anna growth-album image containment — 2026-10-18
 
 CSS-only source **1f2e312**, owner draft **1.4.13 / working revision 89 / installed 0.0.0-draft**, actual cloud tool **0.9.5 / Executa 774 / master 1193 loaded/running**. Review **1.4.13 / ID 1446** and shared listing must remain unchanged; public web excluded.
