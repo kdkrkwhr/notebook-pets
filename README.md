@@ -10,21 +10,23 @@
 
 ## Windows·Mac 설치판 다운로드
 
-**NoteBuddy Desktop 0.1.0a2 · 미리보기** — PC에 설치해 그림·사진으로 친구를 만들고, 대화·돌봄·산책·진화·마이홈을 즐겨 보세요.
+**NoteBuddy Desktop 0.1.0a3 · 미리보기** — PC에 설치해 그림·사진으로 친구를 만들고, 대화·돌봄·산책·진화·마이홈을 즐겨 보세요.
 
-**새 기능: 밖으로 부르기** — AI 설정 옆 버튼을 누르면 내 픽셀 친구가 바탕화면을 돌아다녀요. 밖에 있는 동안 앱의 사진 자리는 흰색으로 비워지고, 안으로 부르면 다시 나타납니다. 이 기능에는 AI 사용량이 들지 않아요.
+**새 기능: Claude Code 연결** — Claude 구독만으로 대화·그림 분석과 캐릭터 제작을 이용할 수 있어요. Claude가 SVG로 그린 캐릭터를 PC에서 PNG로 저장하며, 그림은 벡터 일러스트풍입니다. Codex 계정이나 별도 이미지 API 키는 필요하지 않아요.
+
+**밖으로 부르기** — AI 설정 옆 버튼을 누르면 내 픽셀 친구가 바탕화면을 돌아다녀요. 밖에 있는 동안 앱의 사진 자리는 흰색으로 비워지고, 안으로 부르면 다시 나타납니다. 이 기능에는 AI 사용량이 들지 않아요.
 
 | 내 컴퓨터 | 다운로드 |
 | --- | --- |
-| Windows 10/11 · x64 | [Windows 설치 파일 (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-windows-x64-setup.exe) |
-| macOS 15 이상 · Apple Silicon (M 시리즈) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-macos-arm64.dmg) |
-| macOS 15 이상 · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-macos-x64.dmg) |
+| Windows 10/11 · x64 | [Windows 설치 파일 (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a3/NoteBuddy-0.1.0a3-windows-x64-setup.exe) |
+| macOS 15 이상 · Apple Silicon (M 시리즈) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a3/NoteBuddy-0.1.0a3-macos-arm64.dmg) |
+| macOS 15 이상 · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a3/NoteBuddy-0.1.0a3-macos-x64.dmg) |
 
-AI 기능은 **내 PC에 설치하고 로그인한 Codex CLI**를 사용합니다. 설치 후 **AI 연결 설정 → 연결 확인**으로 시작하세요. 인터넷과 본인 Codex 계정의 이용 한도가 필요하며, Anna 계정은 필요하지 않습니다. 게임·대화·이미지는 PC에 저장하고, Anna·웹 세이브와는 별개로 시작합니다.
+AI 기능은 **내 PC에 설치하고 로그인한 Codex CLI 또는 Claude Code**를 사용합니다. 설치 후 **AI 연결 설정 → 사용할 AI 선택 → 설정 저장 → 연결 확인**으로 시작하세요. 인터넷과 선택한 계정의 이용 한도가 필요하며, Anna 계정은 필요하지 않습니다. 구독료만 쓰려면 Claude 계정의 유료 추가 사용량(Usage credits / Extra usage)을 꺼 주세요. 게임·대화·이미지는 PC에 저장하며, AI 제공자를 바꿔도 유지됩니다. Anna·웹 세이브와는 별개입니다.
 
 초기 미리보기에는 Windows 코드서명·Apple 공증이 없어 OS 경고가 표시될 수 있습니다. Windows에는 WebView2 Runtime이 필요합니다. 업데이트는 수동 설치 방식입니다.
 
-[설치·사용 안내](https://github.com/kdkrkwhr/notebook-pets/blob/release-desktop/desktop/README.md) · [릴리스와 검증 내역](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a2) · [SHA-256 체크섬](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/SHA256SUMS.txt)
+[설치·사용 안내](https://github.com/kdkrkwhr/notebook-pets/blob/release-desktop/desktop/README.md) · [릴리스와 검증 내역](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a3) · [SHA-256 체크섬](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a3/SHA256SUMS.txt)
 
 ## Anna에서 시작하기
 
