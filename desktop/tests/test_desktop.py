@@ -20,6 +20,7 @@ from desktop.codex import Codex, AIError
 from desktop.runtime import Runtime
 from desktop.server import make_server
 from desktop.storage import Storage, portrait_path
+from desktop.pet import DesktopPet, Walk, decode_frames
 
 
 def png():
@@ -95,6 +96,40 @@ class DesktopTests(unittest.TestCase):
         with instance_lock(self.root):
             with self.assertRaises(RuntimeError):
                 with instance_lock(self.root): pass
+
+    def test_desktop_pet_identity_tracks_actual_portrait_and_reset(self):
+        first = self.start()
+        pet = DesktopPet(self.runtime, None)
+        initial = pet.current_identity()
+        self.assertEqual(initial[:2], [first['pet_id'], first['stage']])
+        owner = first['pet_id']
+        self.runtime.wait(self.runtime.storage.set('notebuddy/art-v1', {
+            f'{owner}/stage-1': {'path': f'portraits/{owner}/one.png'},
+            f'{owner}/home-sprite-stage-1': {'format': 'home-sprite-v1', 'pet_id': owner, 'stage': 1,
+                'source_path': 'old.png', 'path': f'portraits/{owner}/old-sheet.png'}}))
+        self.assertEqual(pet.current_identity(), [owner, 1, f'portraits/{owner}/one.png', ''])
+        with self.assertRaises(ValueError): pet.summon({'identity': initial, 'frames': []})
+        preview = self.runtime.invoke('reset', {'action': 'inspect'})
+        self.runtime.invoke('reset', {'action': 'begin', 'confirmation': 'RESET NOTEBUDDY', 'expected_etag': preview['etag'], 'reset_id': 'b' * 32})
+        self.assertIsNone(pet.current_identity())
+
+    def test_desktop_pet_frames_and_motion_stay_bounded(self):
+        image = Image.new('RGBA', (160, 160), (40, 120, 50, 255))
+        output = BytesIO(); image.save(output, format='PNG')
+        frame = 'data:image/png;base64,' + base64.b64encode(output.getvalue()).decode()
+        self.assertEqual(len(decode_frames([frame] * 16)), 16)
+        for frames in ([frame], ['http://example.test/image.png'] * 16, ['data:image/png;base64,!!!!'] * 16):
+            with self.assertRaises(ValueError): decode_frames(frames)
+        walk = Walk((-1920, -200, 1920, 1080))
+        start = (walk.x, walk.y)
+        for _ in range(500):
+            pose = walk.step(.04, (-1920, -200, 1920, 1080))
+            self.assertTrue(-1920 <= walk.x <= -160 and -200 <= walk.y <= 720)
+            self.assertIn(pose, range(16))
+        self.assertNotEqual(start, (walk.x, walk.y))
+        walk.x, walk.y = -10000, 10000
+        walk.step(1000, (0, 0, 800, 600))
+        self.assertTrue(0 <= walk.x <= 640 and 0 <= walk.y <= 440)
 
     def test_http_rejects_cross_origin_and_wrong_token(self):
         server = make_server(self.runtime, Codex(self.root), Path('build/desktop-ui'))

@@ -1,1 +1,4 @@
 #desktop-settings{margin:8px;white-space:nowrap}#desktop-dialog{width:min(620px,90vw);max-height:85vh;overflow:auto}#desktop-dialog label{display:block;margin:14px 0}#desktop-dialog label span{display:block;margin-bottom:6px}#desktop-dialog input{width:100%;box-sizing:border-box}#desktop-error{white-space:pre-wrap;overflow-wrap:anywhere;font:12px/1.5 monospace;max-height:150px;overflow:auto;color:var(--danger,#b64135)}#desktop-dialog .dialog-actions{display:flex;flex-wrap:wrap;gap:8px}
+#desktop-pet{white-space:nowrap}#desktop-pet-status{font-size:12px;line-height:1.6;margin:12px 0 0;color:var(--muted,#676767)}
+.desktop-pet-outside .pet-card .portrait{background:#fff!important;background-image:none!important}
+.desktop-pet-outside #pet-image,.desktop-pet-outside #image-caption{visibility:hidden!important}

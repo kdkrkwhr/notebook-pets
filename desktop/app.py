@@ -15,6 +15,7 @@ from . import __version__
 from .codex import Codex
 from .runtime import Runtime
 from .server import make_server
+from .pet import DesktopPet
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -81,6 +82,7 @@ class Dialogs:
     def __init__(self, runtime, origin, root):
         self._runtime, self._origin, self._root = runtime, origin, root
         self._window = None
+        self._pet = None
 
     def _check(self):
         current = urlsplit(self._window.get_current_url() or '')
@@ -111,6 +113,18 @@ class Dialogs:
         else:
             subprocess.Popen(['/usr/bin/open', str(self._root)])
         return True
+
+    def pet_summon(self, payload):
+        self._check()
+        return self._pet.summon(payload)
+
+    def pet_recall(self):
+        self._check()
+        return self._pet.recall()
+
+    def pet_status(self):
+        self._check()
+        return self._pet.status()
 
 
 def prepare_environment():
@@ -144,11 +158,14 @@ def main(argv=None):
                                            width=1280, height=900, min_size=(720, 560), text_select=True,
                                            background_color='#fbf6e9')
             bridge._window = window
+            bridge._pet = DesktopPet(runtime, window)
             webview.settings['ALLOW_FILE_URLS'] = False
             webview.settings['OPEN_EXTERNAL_LINKS_IN_BROWSER'] = True
             def closing():
                 if ai.lock.locked():
-                    return window.create_confirmation_dialog('Exit NoteBuddy?', 'The current AI request will stop. Saved game progress will be kept.')
+                    if not window.create_confirmation_dialog('Exit NoteBuddy?', 'The current AI request will stop. Saved game progress will be kept.'):
+                        return False
+                bridge._pet.shutdown()
                 return True
             window.events.closing += closing
             if args.smoke_report:
@@ -175,6 +192,8 @@ def main(argv=None):
                         status = runtime.invoke('game', {'command': 'start', 'name': 'Desktop Test', 'request_id': status['request_id_prefix'] + 'native-smoke'})
                     result['pet_id'] = status.get('pet_id')
                     result['ok'] = result['ok'] and bool(result['pet_id'])
+                    from .pet_smoke import verify
+                    result['desktop_pet'] = verify(window, bridge._pet)
                 except Exception as exc:
                     result['error'] = str(exc); result['ok'] = False
                 finally:

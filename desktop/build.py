@@ -78,7 +78,7 @@ def main():
     if sys.platform=='darwin':
         info=out/'NoteBuddy.app/Contents/Info.plist'
         data=plistlib.loads(info.read_bytes())
-        data.update(CFBundleDisplayName='NoteBuddy',CFBundleShortVersionString='0.1.0',CFBundleVersion='1001',LSMinimumSystemVersion='15.0')
+        data.update(CFBundleDisplayName='NoteBuddy',CFBundleShortVersionString='0.1.0',CFBundleVersion='1002',LSMinimumSystemVersion='15.0')
         info.write_bytes(plistlib.dumps(data))
         run('codesign','--force','--deep','--sign','-',out/'NoteBuddy.app')
         run('codesign','--verify','--deep','--strict',out/'NoteBuddy.app')

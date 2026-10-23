@@ -23,6 +23,7 @@ def prepare():
     (target / 'app.js').write_text(app, encoding='utf-8')
     html = (target / 'index.html').read_text('utf-8').replace('</head>', '<link rel="stylesheet" href="desktop.css"></head>')
     html = html.replace('</body>', '<script type="module" src="settings.mjs"></script></body>')
+    html = html.replace('</body>', '<script type="module" src="desktop-pet.mjs"></script></body>')
     html = html.replace('<script src="anna-tool-ids.js"></script>', '')
     (target / 'index.html').write_text(html, encoding='utf-8')
     # Platform presentation only. Stable shared game/UI modules are otherwise

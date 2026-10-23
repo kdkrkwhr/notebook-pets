@@ -1,5 +1,11 @@
 # Desktop handoff — 2026-10-23
 
+## Desktop companion 0.1.0a2 — validation in progress
+
+- User requested an adjacent Call outside button, a free-roaming pixel companion and a temporarily white original portrait. Desktop scope only; Anna and public web are unchanged.
+- Native WinForms/Cocoa surfaces reuse personal 16-frame home sprites or a free portrait-derived default. Motion and summon/recall never invoke AI or persist new artwork. No new Python dependencies or duplicated game rules.
+- Local source validation: 11 backend tests and browser flow passed; native Windows summon, movement, white portrait, recall and original portrait restoration passed. Packaging and macOS native validation are pending.
+
 - Branch: `release-desktop`, based on Anna `release` at `04f4b405` (UI 1.4.16 / game tool 0.9.7).
 - Desktop version: `0.1.0a1`. Anna and public web deployment are outside this task.
 - Shared game rules and original worktree remain unchanged. Original Anna save data is not read or migrated.
