@@ -10,19 +10,21 @@ Notebuddy is a companion game about growing alongside one AI friend. Start with 
 
 ## Download for Windows and Mac
 
-**NoteBuddy Desktop 0.1.0a1 · Preview** — Install NoteBuddy to create a friend from a drawing or photo, chat, care, explore, evolve, and enjoy a pixel home.
+**NoteBuddy Desktop 0.1.0a2 · Preview** — Install NoteBuddy to create a friend from a drawing or photo, chat, care, explore, evolve, and enjoy a pixel home.
+
+**New: Call outside** — Use the button beside AI settings to let your pixel friend roam the desktop. Their portrait becomes white while they are outside and returns when you bring them inside. This feature makes no AI requests.
 
 | Your computer | Download |
 | --- | --- |
-| Windows 10/11 · x64 | [Windows installer (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-windows-x64-setup.exe) |
-| macOS 15+ · Apple Silicon (M series) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-macos-arm64.dmg) |
-| macOS 15+ · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/NoteBuddy-0.1.0a1-macos-x64.dmg) |
+| Windows 10/11 · x64 | [Windows installer (.exe)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-windows-x64-setup.exe) |
+| macOS 15+ · Apple Silicon (M series) | [Mac Apple Silicon (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-macos-arm64.dmg) |
+| macOS 15+ · Intel | [Mac Intel (.dmg)](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/NoteBuddy-0.1.0a2-macos-x64.dmg) |
 
 AI features use **Codex CLI installed and signed in on your computer**. Open **AI connection settings → Check connection** after installation. Internet access and your Codex account's allowance are required; an Anna account is not. Saves, conversations and images stay on your computer, separately from Anna and web saves.
 
 This initial preview has no Windows code-signing certificate or Apple notarization, so OS warnings may appear. Windows requires WebView2 Runtime. Updates are installed manually.
 
-[Installation and usage guide (Korean)](https://github.com/kdkrkwhr/notebook-pets/blob/release-desktop/desktop/README.md) · [Release and verification details](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a1) · [SHA-256 checksums](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a1/SHA256SUMS.txt)
+[Installation and usage guide (Korean)](https://github.com/kdkrkwhr/notebook-pets/blob/release-desktop/desktop/README.md) · [Release and verification details](https://github.com/kdkrkwhr/notebook-pets/releases/tag/desktop-v0.1.0a2) · [SHA-256 checksums](https://github.com/kdkrkwhr/notebook-pets/releases/download/desktop-v0.1.0a2/SHA256SUMS.txt)
 
 ## Get started on Anna
 
