@@ -1,6 +1,6 @@
-export function openStore() {
+export function openStore(name='notebuddy-web') {
   return new Promise((resolve,reject)=>{
-    const request=indexedDB.open('notebuddy-web',1);
+    const request=indexedDB.open(name,1);
     request.onupgradeneeded=()=>request.result.createObjectStore('saves');
     request.onsuccess=()=>resolve(request.result);
     request.onerror=()=>reject(request.error);

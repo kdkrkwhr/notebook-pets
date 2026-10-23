@@ -1,10 +1,10 @@
-name: Android AI Lab
+name: Android NoteBuddy
 on:
   push:
     branches: [release-android]
-    paths: ['android/**', '.github/workflows/android.yml']
+    paths: ['android/**', 'web/**', 'anna/bundle/**', 'assets/**', 'engine/**', 'data/**', 'tests/pyodide/**', '.github/workflows/android.yml']
   pull_request:
-    paths: ['android/**', '.github/workflows/android.yml']
+    paths: ['android/**', 'web/**', 'anna/bundle/**', 'assets/**', 'engine/**', 'data/**', 'tests/pyodide/**', '.github/workflows/android.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,13 +18,26 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools platforms;android-36 build-tools;35.0.0'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm ci --prefix tests/pyodide --ignore-scripts
       - uses: gradle/actions/setup-gradle@v4
       - name: Build and verify (no model download or AI calls)
         working-directory: android
         run: ./gradlew --no-daemon :app:assembleDebug :app:assembleDebugAndroidTest :app:testDebugUnitTest :app:lintDebug
+      - name: Check shared game in mobile browser (mock AI)
+        run: |
+          npm exec --prefix tests/pyodide -- playwright-core install --with-deps chromium
+          node tests/pyodide/android-game.mjs
       - uses: actions/upload-artifact@v4
         with:
-          name: NoteBuddy-Android-AI-Lab-debug
+          name: NoteBuddy-Android-debug
           path: android/app/build/outputs/apk/debug/*.apk
       - uses: actions/upload-artifact@v4
         if: always()

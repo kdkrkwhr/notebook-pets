@@ -1,0 +1,15 @@
+<dialog id="settings-dialog" aria-labelledby="settings-heading">
+  <div class="section-heading"><h2 id="settings-heading">휴대폰 AI</h2><button class="quiet" data-close="settings-dialog" aria-label="닫기">×</button></div>
+  <p>Gemma 4 E2B가 이 휴대폰에서 실행돼요. 계정·API 키·AI 구독은 필요 없어요.</p>
+  <p id="native-model-status" role="status">모델을 확인하고 있어요…</p>
+  <p class="muted small">최초 모델 다운로드는 약 2.59GB예요. Wi-Fi를 권장해요. 다운로드가 끝나면 게임과 AI 대화를 인터넷 없이 사용할 수 있어요. 다운로드 중 다른 앱으로 이동하면 일시정지되며, 다시 눌러 이어받을 수 있어요.</p>
+  <div class="dialog-actions"><button id="native-download" class="primary">모델 받기 · 이어받기</button><button id="native-cancel" class="quiet">AI 요청 · 다운로드 중지</button></div>
+  <p class="muted">이 버전은 대화·사진 이해를 지원해요. 새 캐릭터 그림이나 방향별 동작 이미지는 생성하지 않아요. 진화할 때도 원래 그림을 간직해요.</p>
+  <p class="muted small">작은 로컬 모델의 응답은 부정확하거나 느릴 수 있어요. AI 응답이 실패해도 저장된 친구와 게임 보상은 유지돼요. 모델은 게임 능력치·보상·시간을 변경하지 못해요.</p>
+  <p id="native-error" role="status"></p>
+  <p class="muted small">Android 0.2.0 alpha · Gemma 4 E2B / Apache 2.0<br>모델 파일 검증: SHA-256 · 사진/대화 외부 전송 없음</p>
+  <details id="native-licenses"><summary>오픈소스 고지</summary><pre id="native-license-text" style="white-space:pre-wrap;font-size:12px"></pre></details>
+  <div class="dialog-actions"><button class="primary" data-close="settings-dialog">완료</button></div>
+  <!-- Shared UI keeps these inert legacy bindings; there is no cloud provider here. -->
+  <div hidden><input id="key"><button id="forget"></button><button id="load-models"></button><select id="model"></select><span id="key-status"></span><span id="model-status"></span></div>
+</dialog>

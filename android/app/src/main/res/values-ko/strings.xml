@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">노트버디 AI Lab</string>
+    <string name="app_name">노트버디</string>
     <string name="subtitle">내 휴대폰 안에서 만나는 작은 친구.</string>
     <string name="lab_note">안드로이드 AI 검증판 · 0.1.0\n대화와 그림 분석을 먼저 시험하는 앱이에요. 노트버디 전체 게임은 아직 포함되지 않았어요.</string>
     <string name="setup">1 · 휴대폰에 AI 준비하기</string>

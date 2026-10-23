@@ -91,7 +91,7 @@ export function createEvolution(h){
   const art=await readArt(),entry=portraitEntry(before,art),source=entry?.path||starter(before),observed=art[observationKey(before)];
   const features=observed?.path===source&&observed.choice_id===p.id?observed.features:entry?.features||(!entry&&(art[`${before.pet_id}/birth-source`]?.features||before.status.personality?.origin?.appearance));
   const route=before.status.evolution.catalog.find(r=>r.id===selected),description=p.prose[selected]?.appearance||route.appearance.en;
-  const wanted=$('#evolution-image').checked,draw=wanted&&typeof features==='string'&&!!features.trim();
+  const wanted=h.imageAvailable?.()!==false&&$('#evolution-image').checked,draw=wanted&&typeof features==='string'&&!!features.trim();
   const expected=epoch;show('saving');
   await commit(before,'evolve',{pet_id:before.pet_id,choice_id:p.id,route_id:selected},async v=>{
    if(expected!==epoch)throw Error('Companion changed');
@@ -157,8 +157,8 @@ export function createEvolution(h){
    const name=x=>lang()==='ko'?elementNames[x]||x:x;
    title.textContent=prose?.title||route.title[lang()];element.textContent=`${name(v.element_key)} → ${name(route.element)} · ${t(id==='keep'?'keep':'change')}`;reason.textContent=prose?.reason||t('fallbackReason');appearance.textContent=prose?.appearance||route.appearance[lang()];appearance.className='muted';card.append(title,element,reason,appearance);card.onclick=()=>{selected=id;render();cards.querySelector(`[data-route="${id}"]`)?.focus();};cards.append(card);
   }
-  $('#evolution-image-label').hidden=!p;$('#evolution-image-label span').textContent=t('image');
-  const help=dialog.querySelector('.evolution-help');help.querySelector('summary').textContent=lang()==='ko'?'AI 사용 안내':'AI usage';help.querySelector('p').textContent=t('usage');
+  $('#evolution-image-label').hidden=!p||h.imageAvailable?.()===false;$('#evolution-image-label span').textContent=t('image');
+  const help=dialog.querySelector('.evolution-help');help.querySelector('summary').textContent=lang()==='ko'?'AI 사용 안내':'AI usage';help.querySelector('p').textContent=h.imageAvailable?.()===false?(lang()==='ko'?'진화 방향을 로컬 AI로 제안해요. 응답이 없으면 기본 세 방향을 사용해요. 새 그림은 만들지 않고 지금 모습을 유지해요.':'Local AI suggests paths; built-in paths remain available if it fails. Your current portrait is kept.'):t('usage');
   const unsaved=!!output||h.art()?.[evolutionRequestKey(v||{})]?.phase==='uploaded';
   const prepareButton=$('#evolution-prepare');prepareButton.hidden=!!p||!e?.next_stage||!!pendingCommand;prepareButton.textContent=t('prepare');prepareButton.disabled=working||!e?.ready||e?.blocked||unsaved;
   const confirm=$('#evolution-confirm');confirm.hidden=!p||!!pendingCommand;confirm.textContent=t('choose');confirm.disabled=working||!selected||e?.blocked;

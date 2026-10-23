@@ -6,8 +6,8 @@ android {
         applicationId = "io.github.kdkrkwhr.notebuddy.lab"
         minSdk = 31
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0-lab"
+        versionCode = 2
+        versionName = "0.2.0-alpha"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += listOf("arm64-v8a", "x86_64") }
     }
@@ -16,10 +16,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     testOptions { unitTests.isReturnDefaultValues = true }
+    buildFeatures { buildConfig = true }
+    sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/gameAssets"))
     buildTypes { release { isMinifyEnabled = false } }
 }
 kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
 dependencies {
+    implementation("androidx.webkit:webkit:1.14.0")
     implementation("com.google.ai.edge.litertlm:litertlm-android:0.18.1")
     implementation("androidx.activity:activity-ktx:1.11.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.4")
@@ -30,3 +33,8 @@ dependencies {
     androidTestImplementation("androidx.test:runner:1.6.2")
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
 }
+val bundleGame by tasks.registering(Exec::class) {
+    workingDir(rootProject.projectDir.parentFile)
+    commandLine(providers.gradleProperty("bundlePython").orElse("python").get(), "android/build_bundle.py")
+}
+tasks.named("preBuild") { dependsOn(bundleGame) }

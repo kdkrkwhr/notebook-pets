@@ -24,7 +24,8 @@ class LocalAI(private val model: File, private val cache: File) {
 
     fun run(system: String, prompt: String, history: List<Message> = emptyList(), image: File? = null,
             schema: String? = null, backend: String = "gpu", phase: (String) -> Unit,
-            update: (String) -> Unit, shouldCancel: () -> Boolean = { false }): AIResult {
+            update: (String) -> Unit, shouldCancel: () -> Boolean = { false }, maxTokens: Int = if (schema == null) 200 else 450,
+            temperature: Double = if (schema == null) .7 else .2): AIResult {
         cancelled.set(false)
         if (shouldCancel()) throw CancellationException("Cancelled")
         val start = System.nanoTime()
@@ -42,8 +43,8 @@ class LocalAI(private val model: File, private val cache: File) {
         val loaded = System.nanoTime()
         phase("generating")
         val config = ConversationConfig(systemInstruction = Contents.of(system), initialMessages = history,
-            samplerConfig = SamplerConfig(topK = 40, topP = .95, temperature = if (schema == null) .7 else .2),
-            automaticToolCalling = false, tools = emptyList(), maxOutputToken = if (schema == null) 200 else 450,
+            samplerConfig = SamplerConfig(topK = 40, topP = .95, temperature = temperature.coerceIn(0.0, 1.0)),
+            automaticToolCalling = false, tools = emptyList(), maxOutputToken = maxTokens.coerceIn(64, 1200),
             thinkingConfig = ThinkingConfig(enableThinking = false), enableResponseFormat = schema != null)
         val active = engine!!.createConversation(config)
         synchronized(conversationLock) { conversation = active }

@@ -1,6 +1,8 @@
 import {createGemini} from './gemini.js';
 import {ollamaText,comfyImage,validateWorkflow,localURL} from './local-ai.js';
 
+export function textReady(config){return config.textProvider==='ollama'?!!config.ollamaModel:!!config.key;}
+
 export function imageReady(config){
  if(config.imageProvider!=='comfyui')return !!config.key;
  try{localURL(config.comfyURL);validateWorkflow(config.workflow,config.binding);return true;}catch{return false;}

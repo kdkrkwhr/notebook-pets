@@ -5,17 +5,23 @@ import re
 import hashlib
 import subprocess
 import sys
+import argparse
 
 ROOT = Path(__file__).resolve().parents[1]
-OUT = ROOT / 'web' / 'dist'
-OUT.mkdir(exist_ok=True)
+parser = argparse.ArgumentParser()
+parser.add_argument('--out', type=Path, default=ROOT / 'web' / 'dist')
+parser.add_argument('--app-only', action='store_true', help='Package the game without developer documentation.')
+args = parser.parse_args()
+OUT = args.out.resolve()
+OUT.mkdir(parents=True, exist_ok=True)
 architecture = ROOT / '.local' / 'architecture' / 'graphify-out'
-if not (architecture / 'metadata.json').is_file():
+if not args.app_only and not (architecture / 'metadata.json').is_file():
     raise SystemExit('Run python tools/build_architecture.py before the web build.')
-shutil.copytree(ROOT / 'web' / 'architecture', OUT / 'architecture', dirs_exist_ok=True)
-for name in ('graph.html', 'graph.json', 'GRAPH_REPORT.md', 'metadata.json'):
-    shutil.copyfile(architecture / name, OUT / 'architecture' / name)
-subprocess.run([sys.executable, str(ROOT / 'tools' / 'build_wiki.py')], check=True)
+if not args.app_only:
+    shutil.copytree(ROOT / 'web' / 'architecture', OUT / 'architecture', dirs_exist_ok=True)
+    for name in ('graph.html', 'graph.json', 'GRAPH_REPORT.md', 'metadata.json'):
+        shutil.copyfile(architecture / name, OUT / 'architecture' / name)
+    subprocess.run([sys.executable, str(ROOT / 'tools' / 'build_wiki.py')], check=True)
 for name in ('app.js', 'store.js', 'worker.js', 'style.css', 'models.js', 'visuals.js', 'gemini.js', 'local-ai.js', 'ai.js', 'ai-settings.js', 'LOCAL_AI.md'):
     shutil.copyfile(ROOT / 'web' / name, OUT / name)
 anna = ROOT / 'anna' / 'bundle'

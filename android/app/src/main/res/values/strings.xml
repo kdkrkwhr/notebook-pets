@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NoteBuddy AI Lab</string>
+    <string name="app_name">NoteBuddy</string>
     <string name="subtitle">A little friend, running on your phone.</string>
     <string name="lab_note">Android AI preview · 0.1.0\nChat and picture analysis only. The full NoteBuddy game is not included yet.</string>
     <string name="setup">1 · Prepare your local AI</string>

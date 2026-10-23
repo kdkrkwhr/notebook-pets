@@ -1,4 +1,17 @@
-# Android AI Lab handoff
+# Android handoff
+
+## 2026-10-23 · 0.2.0-alpha
+
+- Branch: `release-android`. Android-only game integration; Anna review, installed Anna, Desktop and public Pages unchanged.
+- New launcher: `GameActivity`. Existing package `io.github.kdkrkwhr.notebuddy.lab`, versionCode 2, same local signing key. Keep Lab private files and downloaded model; explicit photo import only, no silent character/data migration.
+- Shared web UI + Anna common modules/art + Pyodide 314.0.7 + unchanged portable Python rules bundled into the APK. No application server, no cloud AI fallback. Native bridge is restricted to the trusted local HTTPS main frame.
+- Original drawing/photo is the portrait. Evolution preserves it. Home offers a free default portrait-derived pixel appearance; AI image generation unavailable.
+- PC validation: 20 unit tests, APK/test APK builds, lint 0 errors / 18 advisory warnings; actual Python/WASM game-flow browser test at 320/360/412/800px and core smoke passed. See `VALIDATION.md`.
+- Physical installation/verification currently blocked by disconnected USB. Requested reconnection; do not describe 0.2.0 as installed or its native game integration as device-verified yet. Prior 0.1.0 inference results remain historical.
+- Device harness uses a distinct debug test notebook and checks user-game snapshot plus Lab file hashes; do not mutate the default notebook or use personal photos as test fixtures.
+- UI hooks in shared web/home/evolution code are optional and retain the original web/Anna defaults. Changes exist only on this branch; no shared release or review bump was performed.
+- CI setup now explicitly requests supported SDK packages, packages the game and runs the mobile browser harness. Confirm the new run before claiming CI success.
+- APK, reports, screenshots and downloaded models remain under ignored `android/runtime` / build directories. No private photos or signing keys committed.
 
 ## 2026-10-23 · 0.1.0-lab
 

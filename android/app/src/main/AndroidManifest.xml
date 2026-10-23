@@ -6,7 +6,9 @@
         android:usesCleartextTraffic="false" android:supportsRtl="true">
         <uses-native-library android:name="libOpenCL.so" android:required="false"/>
         <uses-native-library android:name="libvndksupport.so" android:required="false"/>
-        <activity android:name=".MainActivity" android:exported="true"
+        <activity android:name=".MainActivity" android:exported="false"/>
+        <activity android:name=".GameActivity" android:exported="true"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
