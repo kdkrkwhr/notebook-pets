@@ -16,6 +16,12 @@
       "timeout": 60,
       "parameters": [
         {
+          "name": "equipment_payload",
+          "type": "string",
+          "required": false,
+          "description": "UI equipment transaction only; disabled pending image quality validation. Bounded JSON <=1024 chars."
+        },
+        {
           "name": "evolution_payload",
           "type": "string",
           "required": false,
@@ -44,6 +50,9 @@
             "claimquest",
             "dungeon_risk",
             "dungeon_safe",
+            "equipment_apply",
+            "equipment_cancel",
+            "equipment_prepare",
             "evolution_options",
             "evolution_prepare",
             "evolve",

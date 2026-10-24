@@ -1,6 +1,9 @@
 import {createHints} from './hints.mjs';
 import {createActivity} from './activity.mjs';
 let hints;
+import {createEquipment,equipmentJournal,EQUIPMENT_ENABLED} from './equipment.mjs';
+let equipment;
+const fittingJournal=equipmentJournal(window.indexedDB);
 import {createItemCatalog} from './item-catalog.mjs';
 import {createThemes} from './themes.mjs';
 import {createHome} from './home.mjs';
@@ -26,7 +29,7 @@ import {createBattle} from './battle.mjs';
 import {createDungeons} from './dungeon.mjs';
 import {createPixelPet,currentPixel,pixelKey,pixelSource} from './pixel-pet.mjs';
 import { AnnaAppRuntime } from '/static/anna-apps/_sdk/latest/index.js';
-import {unwrap,starter,imageKey,mergeHistory,errorText,newAction} from './model.mjs';
+import {unwrap,starter,imageKey,portraitEntry,mergeHistory,errorText,newAction} from './model.mjs';
 import {t,loadLanguage,saveLanguage,translateDocument,chatPrompt} from './i18n.mjs';
 
 import {finishReset} from './reset-data.mjs';
@@ -54,7 +57,7 @@ careHelp.addEventListener('click',()=>{careHelpPinned=!careHelpPinned;showCareHe
 document.addEventListener('pointerdown',event=>{if(!careHelp.parentElement.contains(event.target)){careHelpPinned=false;showCareHelp(false);}});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){careHelpPinned=false;showCareHelp(false);}});
 const appearance=createThemes(document,preferences,()=>language);
-const itemCatalog=createItemCatalog(document,()=>language);
+const itemCatalog=createItemCatalog(document,()=>language,{enabled:EQUIPMENT_ENABLED,pending:()=>view?.status?.equipment?.pending,start:item=>equipment.start(item),recover:()=>equipment.recover(),apply:expected=>equipment.apply(expected),cancel:()=>equipment.cancel()});
 const titleScreen=createTitleScreen(document,{privacy:()=>$('#privacy-dialog').showModal()});
 const birthSteps=createBirthSteps(document);
 let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingChat=null;
@@ -142,7 +145,7 @@ function render(){
   if(resetting)forgetCachedData();
   const s=resetting?null:view?.status;
   homeUI?.update(resetting?null:view);
-  itemCatalog.update(s?.collectibles);
+  itemCatalog.update(s?.collectibles,s?.collectible_discoveries);
   $('#removed').hidden=!view?.erased;
   $('#reset-game').hidden=resetting||!s;
   if(view?.erased)forgetCachedData();
@@ -227,6 +230,8 @@ async function readExtras(){
   if(results.some(r=>r.status==='rejected'))notice(tr('extrasError'));
   await stories?.load(view);
   urls={};await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)&&!key.endsWith('/birth-source')).map(async([key,entry])=>{try{urls[key]=(await anna.files.download_url({path:entry.path})).get_url;}catch{/* Keep the bundled portrait visible. */}}));
+  const current=portraitEntry(view||{},art);
+  if(view?.status?.equipment?.portrait&&current?.path)try{urls[imageKey(view)]=(await anna.files.download_url({path:current.path})).get_url;}catch{}
 }
 async function invoke(command,extra={}){return unwrap(await anna.tools.invoke({tool_id:TOOL,method:'game',args:{command,...extra,language}}, {timeoutMs:60000}));}
 async function refresh(){
@@ -336,7 +341,7 @@ async function previewRemoval(){
 }
 async function cleanupRemovedData(){
   try{
-    await removeAppData(anna,()=>privacyCall({action:'inspect'}));
+    await fittingJournal.clear();await removeAppData(anna,()=>privacyCall({action:'inspect'}));
     try{preferences?.removeItem('notebuddy/language-v1');}catch{/* No personal content is stored in this preference. */}
     appearance.clear();
     notice(tr('cleanupChecked'));
@@ -378,7 +383,7 @@ async function resumeReset(){
     const check=await resetCall({action:'inspect'});
     if(check.erased)throw new ErasedError();
     if(!check.reset_pending&&check.reset_id===view.reset_id){view=await invoke('status');await readExtras();render();notice(tr('resetDone'));return;}
-    await finishReset(anna,resetCall,view.reset_id);
+    await fittingJournal.clear();await finishReset(anna,resetCall,view.reset_id);
     forgetCachedData();view=await invoke('status');await readExtras();render();notice(tr('resetDone'));
   }catch(error){
     if(error instanceof ErasedError){pendingResetRequest=null;view={erased:true};render();notice(tr('removedHeading'));}
@@ -530,4 +535,7 @@ homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertAct
  spritePending:()=>homeSprites.hasPending(),retrySprite:()=>homeSprites.retry()});
 hints=createHints(document,()=>language);
 titleScreen.show();
+
+equipment=createEquipment({enabled:EQUIPMENT_ENABLED,anna:()=>anna,active:assertActive,invoke,journal:fittingJournal,baseURL:location.href,fetch:(...args)=>fetch(...args),upload:uploadPortrait,validate:async blob=>{const b=await createImageBitmap(blob);try{if(b.width<32||b.height<32||b.width*b.height>16000000)throw Error('Invalid image');}finally{b.close();}},saved:async next=>{adoptView(next);await readExtras();render();}});
+
 await refresh();

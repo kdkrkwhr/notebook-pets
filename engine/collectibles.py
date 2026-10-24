@@ -19,6 +19,15 @@ def validate(st):
         raise ValueError('Invalid cosmetic ownership')
 
 
+    history = st.get('collectible_discoveries', [])
+    if not isinstance(history, list) or any(x not in IDS for x in history) or len(history) != len(set(history)):
+        raise ValueError('Invalid collection history')
+
+
+def discovered(st):
+    return set(st.get('collectible_discoveries', [])) | set(st.get('collectibles', {}))
+
+
 def view(st):
     return copy.deepcopy(st.get('collectibles', {}))
 

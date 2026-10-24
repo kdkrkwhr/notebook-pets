@@ -1,0 +1,32 @@
+import {test} from 'node:test';
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+import {createEquipment,EQUIPMENT_ENABLED,equipmentPrompt} from '../bundle/equipment.mjs';
+import {items} from '../bundle/items.mjs';
+import {portraitEntry} from '../bundle/model.mjs';
+const item=items.find(i=>i.id==='ember-horns');
+function fixture(){
+ let state,art={},etag=1,calls=0,uploads=0;const files=new Map(),local=new Map(),receipts=new Map(),faults={};
+ function worker(command,args={}){const p=spawnSync('python',['-B','executas/notebuddy/game_worker.py'],{input:JSON.stringify({state,command,...args}),encoding:'utf8'});assert.equal(p.status,0,p.stderr);const r=JSON.parse(p.stdout);if(r.changed)state=r.state;return {...r.result,...r.view,request_id_prefix:'nb2:0:'};}
+ worker('start',{name:'Equipment test'});state.collectibles={'ember-horns':1};
+ const h={enabled:true,baseURL:'https://fixture.test/',active:async()=>worker('status'),saved:async()=>{},
+  invoke:async(command,args)=>{if(receipts.has(args.request_id))return {...receipts.get(args.request_id),replayed:true};if(faults.commit){faults.commit=false;throw Error('offline');}const result=worker(command,args);receipts.set(args.request_id,result);if(faults.lost===command){faults.lost=null;throw Error('lost reply');}return result;},
+  journal:{get:async k=>local.get(k),put:async(k,v)=>local.set(k,v),delete:async k=>local.delete(k)},
+  fetch:async url=>{if(faults.download){faults.download=false;throw Error('download failed');}return new Response(url==='generated'?new Blob(['valid']):files.get(url),{status:url==='generated'||files.has(url)?200:404});},
+  validate:async blob=>{if(await blob.text()!=='valid')throw Error('invalid image');},
+  upload:async(path,blob)=>{uploads++;if(faults.upload){faults.upload=false;throw Error('upload failed');}files.set(path,blob);},
+ };
+ const anna={storage:{get:async()=>({exists:true,etag:String(etag),value:structuredClone(art)}),set:async({value,if_match})=>{if(faults.conflict){faults.conflict=false;etag++;throw Error('conflict');}assert.equal(if_match,String(etag));art=value;etag++;}},files:{download_url:async({path})=>({get_url:path})},image:{edit:async(body,opts)=>{calls++;assert.deepEqual(Object.keys(body).sort(),['image_url','model','n','prompt']);assert.equal(body.model,'fal-ai/nano-banana-2');assert.equal(opts.timeoutMs,240000);if(faults.generate)throw Error('response lost');return {images:[{url:'generated'}]};}}};h.anna=()=>anna;
+ return {h,faults,files,local,get state(){return state;},get calls(){return calls;},get uploads(){return uploads;},get art(){return art;},flow:()=>createEquipment(h)};
+}
+test('production gate blocks calls and prompt uses actual fit constraints',async()=>{assert.equal(EQUIPMENT_ENABLED,false);const f=fixture();f.h.enabled=false;await assert.rejects(f.flow().start(item),/disabled/);assert.equal(f.calls,0);assert.match(equipmentPrompt(item),/never add a new head/i);});
+test('duplicate clicks, ART ETag conflict, apply and repeated recovery consume once',async()=>{const f=fixture(),flow=f.flow();f.faults.conflict=true;const [a,b]=await Promise.all([flow.start(item),flow.start(item)]);assert.equal(a,b);assert.equal(f.calls,1);assert.equal(f.state.collectibles['ember-horns'],1);assert.ok(f.files.has(a.pending.path));await flow.apply();assert.equal(f.state.collectibles['ember-horns'],undefined);assert.deepEqual(f.state.collectible_discoveries,['ember-horns']);assert.equal(await f.flow().recover(),null);assert.equal(portraitEntry(await f.h.active(),f.art).path,a.pending.path);});
+test('upload failure survives controller recreation and uses durable blob without generation',async()=>{const f=fixture();f.faults.upload=true;await assert.rejects(f.flow().start(item));assert.equal(f.state.collectibles['ember-horns'],1);await f.flow().recover();f.faults.commit=true;await assert.rejects(f.flow().apply());assert.equal(f.state.collectibles['ember-horns'],1);await f.flow().recover();assert.equal(f.state.collectibles['ember-horns'],undefined);assert.equal(f.calls,1);});
+test('lost apply response resolves from stable receipt, no second consumption or image',async()=>{const f=fixture();await f.flow().start(item);f.faults.lost='equipment_apply';await assert.rejects(f.flow().apply());assert.equal(f.state.collectibles['ember-horns'],undefined);assert.equal(await f.flow().recover(),null);assert.equal(f.calls,1);});
+test('lost reservation and lost generation responses never invoke automatic paid retries',async()=>{for(const kind of ['reservation','generation']){const f=fixture();if(kind==='reservation')f.faults.lost='equipment_prepare';else f.faults.generate=true;await assert.rejects(f.flow().start(item));await assert.rejects(f.flow().recover());assert.equal(f.calls,kind==='reservation'?0:1);assert.equal(f.state.collectibles['ember-horns'],1);assert.equal(f.state.equipment.portrait,null);}});
+test('cancel before applying preserves previous portrait and ownership; no refund added',async()=>{const f=fixture();await f.flow().start(item);await f.flow().cancel();await assert.rejects(f.flow().apply());assert.equal(f.state.collectibles['ember-horns'],1);assert.equal(f.state.equipment.portrait,null);assert.equal(f.calls,1);});
+test('source changes block application and preserve saved result',async()=>{const f=fixture();const p=await f.flow().start(item);const v=await f.h.active();f.art[`${v.pet_id}/stage-1`]={path:`portraits/${v.pet_id}/new.png`,at:Date.now()};await assert.rejects(f.flow().apply(),/changed/);assert.equal(f.state.collectibles['ember-horns'],1);assert.ok(f.files.has(p.pending.path));});
+
+test('journal write failure keeps generated bytes in memory for save-only retry',async()=>{const f=fixture(),flow=f.flow(),put=f.h.journal.put;f.h.journal.put=async(k,v)=>{if(v.blob&& !f.faults.once){f.faults.once=true;throw Error('disk full');}return put(k,v);};await assert.rejects(flow.start(item));await flow.recover();assert.equal(f.calls,1);assert.equal(f.state.collectibles['ember-horns'],1);});
+test('download failure retries the same returned URL in the current session',async()=>{const f=fixture(),flow=f.flow();f.faults.download=true;await assert.rejects(flow.start(item));await flow.recover();assert.equal(f.calls,1);});
+test('a changed preview token cannot apply an image',async()=>{const f=fixture(),flow=f.flow();await flow.start(item);await assert.rejects(flow.apply({id:'other'}),/Preview changed/);assert.equal(f.state.collectibles['ember-horns'],1);});

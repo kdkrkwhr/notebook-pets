@@ -14,6 +14,7 @@ from ports import ContextMapping, current, random, time, uuid
 import art
 import dungeons
 import collectibles
+import equipment
 import journeys
 import personality
 import home
@@ -103,6 +104,7 @@ def validate_state(st, uid):
         require(isinstance(st, dict) and st["user_id"] == uid)
         dungeons.validate(st)
         collectibles.validate(st)
+        equipment.validate(st)
         journeys.validate(st)
         personality.validate(st)
         home.validate(st)
@@ -333,7 +335,7 @@ def cmd_status(st):
                stats=t, intimacy=st["intimacy"], satiety=st["satiety"], encounter=st.get("_wild"), image=art.describe(st),
                walk_choice=copy.deepcopy(st.get("_walk_choice")), record=st["record"], walk_energy={k: v for k, v in walk_energy(st).items() if k != "updated_at"}, quest=daily_quest(st), title=(titles(st)[0] if titles(st) else "새내기"),
                personality=personality.view(st), memories=journeys.context(st), journey=copy.deepcopy(st.get("journey", {}).get("current")),
-               dungeons=dungeons.view(st, today(), type_mult), collectibles=collectibles.view(st), evolution=evolution.view(st),
+               dungeons=dungeons.view(st, today(), type_mult), collectibles=collectibles.view(st), collectible_discoveries=sorted(collectibles.discovered(st)), equipment=equipment.view(st), evolution=evolution.view(st),
                mood=("배고픔" if st["satiety"] < 30 else ("심심함" if st["intimacy"] < 40 else "평온")))
 
 def cmd_personality(st, raw):
@@ -341,6 +343,11 @@ def cmd_personality(st, raw):
     save_state(st)
     return out(True, 'Your companion has found their voice.', personality=result)
 
+
+def cmd_equipment(st, command, raw):
+    result=equipment.request(st,command,raw)
+    save_state(st)
+    return result
 
 def cmd_evolution(st, command, raw):
     result=evolution.request(st,command,raw)
@@ -748,7 +755,7 @@ ALIASES = {
     "퀘스트": "quests", "일일퀘스트": "quests", "퀘스트보상": "claimquest",
 }
 BASE_COMMANDS = frozenset({'start','feed','snack','play','sleep','train','walk','battle','flee','attendance'})
-COMMANDS = ({'evolution_prepare','evolution_options','evolve','home','home_buy','home_apply','home_undo','personality','walk_begin','walk_collect','walk_leave'} | BASE_COMMANDS |
+COMMANDS = (equipment.COMMANDS | {'evolution_prepare','evolution_options','evolve','home','home_buy','home_apply','home_undo','personality','walk_begin','walk_collect','walk_leave'} | BASE_COMMANDS |
             set(dungeons.COMMANDS) | dungeons.CHOICES |
             {'status','quests','claimquest','album','titles','rank','help','owner','clearowner','reset'})
 PLAYER_COMMANDS = COMMANDS - {"owner", "clearowner", "reset"}
@@ -765,6 +772,7 @@ def dispatch_player(actor_id, command, arguments):
         return out(False, "!공책시작 으로 먼저 몬스터를 만들어.", code="not_started")
     fresh_daily(st)
     table = {
+        **{key:(lambda key=key:cmd_equipment(st,key,arguments[0])) for key in equipment.COMMANDS},
         **{key:(lambda key=key:cmd_evolution(st,key,arguments[0])) for key in ('evolution_prepare','evolution_options','evolve')},
         **{key:(lambda key=key:cmd_home(st,key,arguments)) for key in ('home','home_buy','home_apply','home_undo')},
         "personality": lambda: cmd_personality(st, arguments[0]),

@@ -1,9 +1,27 @@
 import {localeText,localeObject} from './locale.mjs';
+import {equipmentWords,EQUIPMENT_ENABLED} from './equipment.mjs';
 import {items,regions,slots,selectItems,fitRules} from './items.mjs';
 
-export function createItemCatalog(document,language){
+export function createItemCatalog(document,language,h={}){
  const $=s=>document.querySelector(s),dialog=$('#item-catalog'),detail=$('#item-detail');
- let selected=null,owned={};
+ let selected=null,owned={},discovered=[],working=false,preview=null,previewURL=null;
+ const fitting=document.createElement('section');fitting.id='equipment-controls';detail.append(fitting);
+ const enabled=()=>h.enabled??EQUIPMENT_ENABLED;
+ const ew=k=>equipmentWords[k][language()==='ko'?1:0];
+ function renderFitting(){
+  fitting.replaceChildren();
+  const status=document.createElement('p');status.setAttribute('role','status');status.textContent=ew(enabled()?'usage':'unavailable');fitting.append(status);
+  if(previewURL){const img=document.createElement('img');img.src=previewURL;img.alt=language()==='ko'?'착용 결과 미리보기':'Fitting preview';img.width=256;fitting.append(img);}
+  const pending=h.pending?.();
+  const pendingItem=items.find(i=>i.id===pending?.item_id);
+  if(pendingItem){const label=document.createElement('p');label.textContent=(language()==='ko'?'진행 중인 아이템: ':'Pending item: ')+local(pendingItem.name);fitting.append(label);}
+  for(const [key,action] of [['wear',()=>h.start(selected)],['retry',()=>h.recover()],['apply',()=>h.apply(preview?.pending)],['cancel',()=>h.cancel()]]){
+   if(key!=='wear'&&!pending)continue;
+   const button=document.createElement('button');button.type='button';button.dataset.equipment=key;button.textContent=ew(key);button.disabled=!enabled()||working||(key==='wear'&&(!selected||owned[selected.id]!==1||!!pending))||(key==='apply'&&!preview);
+   button.onclick=async()=>{if(working)return;working=true;renderFitting();try{const value=await action();preview=value?.blob?value:null;if(previewURL)URL.revokeObjectURL(previewURL);previewURL=preview?URL.createObjectURL(preview.blob):null;working=false;renderFitting();}catch{working=false;renderFitting();fitting.querySelector('[role=status]').textContent=ew('uncertain');}};fitting.append(button);
+  }
+ }
+ detail.addEventListener('cancel',e=>{if(working)e.preventDefault();});
  const words={
   heading:['Explorer’s item book','탐험가의 아이템 도감'],open:['Browse items','아이템 둘러보기'],
   intro:['Twenty-four little treasures from familiar paths and five distant dungeons.','익숙한 산책길과 다섯 던전에서 만날 24종의 작은 보물들.'],
@@ -29,11 +47,12 @@ export function createItemCatalog(document,language){
  }
  function renderDetail(){
   if(!selected)return;
+  renderFitting();
   $('#item-detail-name').textContent=local(selected.name);$('#item-detail-image').src=selected.icon;$('#item-detail-image').alt=local(selected.name);
   $('#item-detail-description').textContent=local(selected.description);
   $('#item-detail-meta').textContent=[text(selected.region),text(selected.slot),text(selected.rarity)].join(' · ');
   $('#item-detail-reward').textContent=text(selected.reward);$('#item-detail-fit').textContent=local(fitRules[selected.slot]);
-  $('#item-detail-owned').textContent=text(owned[selected.id]===1?'owned':'missing');
+  $('#item-detail-owned').textContent=owned[selected.id]===1?text('owned'):discovered.includes(selected.id)?(language()==='ko'?'발견 · 현재 미보유':'Discovered · not owned'):text('missing');
  }
  function renderList(){
   const filter=$('#item-owned').value;
@@ -47,8 +66,8 @@ export function createItemCatalog(document,language){
    const img=document.createElement('img');img.src=item.icon;img.alt='';img.loading='lazy';img.width=128;img.height=128;art.append(img);
    const name=document.createElement('strong');name.textContent=local(item.name);
    const meta=document.createElement('span');meta.className='item-card-meta';meta.textContent=`${text(item.slot)} · ${text(item.rarity)}`;
-   const badge=document.createElement('span');badge.className='badge item-ownership';badge.textContent=text(owned[item.id]===1?'owned':'missing');button.dataset.owned=String(owned[item.id]===1);
-   button.append(art,name,meta,badge);button.onclick=()=>{selected=item;renderDetail();detail.showModal();};return button;
+   const badge=document.createElement('span');badge.className='badge item-ownership';badge.textContent=owned[item.id]===1?text('owned'):discovered.includes(item.id)?(language()==='ko'?'발견 · 현재 미보유':'Discovered · not owned'):text('missing');button.dataset.owned=String(owned[item.id]===1);
+   button.append(art,name,meta,badge);button.onclick=()=>{selected=item;preview=null;if(previewURL)URL.revokeObjectURL(previewURL);previewURL=null;renderDetail();detail.showModal();};return button;
   });$('#item-grid').replaceChildren(...cards);
  }
  function render(){
@@ -75,5 +94,5 @@ export function createItemCatalog(document,language){
  $('#item-owned').onchange=renderList;
  $('#item-clear').onclick=()=>{$('#item-region').value='all';$('#item-slot').value='all';$('#item-owned').value='all';$('#item-search').value='';renderList();};
  dialog.addEventListener('close',()=>{if(detail.open)detail.close();});
- return {render,open,update(value){owned=value||{};renderList();renderDetail();},clear(){owned={};selected=null;if(detail.open)detail.close();if(dialog.open)dialog.close();renderList();$('#item-detail-owned').textContent='';}};
+ return {render,open,update(value,history=[]){owned=value||{};discovered=history;renderList();renderDetail();},clear(){owned={};discovered=[];selected=null;preview=null;if(previewURL)URL.revokeObjectURL(previewURL);previewURL=null;if(detail.open)detail.close();if(dialog.open)dialog.close();renderList();$('#item-detail-owned').textContent='';}};
 }

@@ -80,6 +80,15 @@ replay = worker({'command':'dungeon_safe','state':reward['state'],
     'choice_id':entry['result']['dungeon_visit']['choice_id'],'request_id':'build-reward'})
 assert replay['state'] == reward['state']
 
+# The packaged worker must include the same atomic equipment rules.
+fit=dict(pet_id=reward['state']['pet_id'],revision=0,id='a'*32,item_id='ember-horns',stage=1,source_path='assets/starters-v1/ghost_fire_stage1.png')
+reserved=worker({'command':'equipment_prepare','state':reward['state'],'equipment_payload':json.dumps(fit),'request_id':'build-fit'})
+apply_fit=dict(pet_id=fit['pet_id'],revision=1,id=fit['id'])
+worn=worker({'command':'equipment_apply','state':reserved['state'],'equipment_payload':json.dumps(apply_fit),'request_id':'build-fit-apply'})
+assert worn['result']['ok'] and worn['state']['collectibles']=={}
+assert worn['view']['status']['collectible_discoveries']==['ember-horns']
+assert worker({'command':'equipment_apply','state':worn['state'],'equipment_payload':json.dumps(apply_fit),'request_id':'build-fit-apply'})['state']==worn['state']
+
 home_state = personal['state'].copy()
 home_state['coins'] = 30
 payload = dict(pet_id=home_state['pet_id'], revision=0, item_id='desk')

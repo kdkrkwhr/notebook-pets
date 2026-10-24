@@ -35,6 +35,15 @@ won = transition(candidate, 'dungeon_safe', context, arguments=[ex['choice_id']]
 assert won.result['ok'], won.result
 replay = transition(won.state, 'dungeon_safe', context, arguments=[ex['choice_id']], request_id='win')
 assert won.state['collectibles'] == {'ember-horns':1}
+equipment_payload=dict(pet_id=won.state['pet_id'],revision=0,id='a'*32,item_id='ember-horns',stage=1,source_path='assets/starters-v1/ghost_fire_stage1.png')
+reserved=transition(won.state,'equipment_prepare',context,arguments=[json.dumps(equipment_payload)],request_id='equipment-reserve')
+assert reserved.result['ok'],reserved.result
+apply_payload=dict(pet_id=won.state['pet_id'],revision=1,id='a'*32)
+worn=transition(reserved.state,'equipment_apply',context,arguments=[json.dumps(apply_payload)],request_id='equipment-apply')
+assert worn.result['ok'] and worn.state['collectibles']=={}
+assert worn.state['collectible_discoveries']==['ember-horns']
+assert not transition(worn.state,'equipment_apply',context,arguments=[json.dumps(apply_payload)],request_id='equipment-apply').changed
+
 home_state = copy.deepcopy(fed.state)
 home_state['coins'] = 30
 payload = dict(pet_id=home_state['pet_id'], revision=0, item_id='desk')
