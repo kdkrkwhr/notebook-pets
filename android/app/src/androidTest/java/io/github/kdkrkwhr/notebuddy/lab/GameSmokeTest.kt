@@ -72,6 +72,21 @@ class GameSmokeTest {
             until("!document.querySelector('#home-dialog').open")
             // Remote content cannot be loaded into the offline game.
             assertTrue(async("try{return (await fetch('https://example.com/blocked')).status===403}catch{return true}").asBoolean)
+            // A real WebView recreation must restore the bounded draft without running AI.
+            js("document.querySelector('#tab-chat').click();const input=document.querySelector('#message');input.value='다시 열어도 남아 있는 초안';input.dispatchEvent(new Event('input'))")
+            scenario.recreate(); scenario.onActivity { activity=it }
+            until("document.body.classList.contains('mobile-ready')&&!document.querySelector('#refresh').disabled")
+            assertEquals("다시 열어도 남아 있는 초안",js("document.querySelector('#message').value").asString)
+            instrumentation.runOnMainSync {
+                assertEquals((activity.resources.configuration.fontScale*100).toInt().coerceIn(50,300),activity.gameView.settings.textZoom)
+                activity.gameView.settings.textZoom=200
+            }
+            js("document.querySelector('#tab-chat').click()")
+            async("await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));return true")
+            until("document.querySelector('#chat').getBoundingClientRect().bottom<=innerHeight+1")
+            assertTrue(js("document.documentElement.scrollWidth<=innerWidth+1").asBoolean)
+            assertTrue(js("document.querySelector('.mobile-tabs').getBoundingClientRect().bottom<=innerHeight+1").asBoolean)
+            instrumentation.runOnMainSync { activity.gameView.settings.textZoom=100 }
             if(InstrumentationRegistry.getArguments().getString("liveGame")=="true") {
                 js("document.querySelector('#message').value='안녕! 내 이름은 동기야. 짧게 인사해 줘.';document.querySelector('#chat').requestSubmit()")
                 until("!document.querySelector('#chat button').disabled",180000)
@@ -79,6 +94,27 @@ class GameSmokeTest {
             }
             val userAfter=async("const s=await import(new URL('./store.js',location.href).href);return await s.snapshot(await s.openStore('notebuddy-android'))")
             assertEquals("User game untouched",userBefore,userAfter)
+            // Optional crash injection is only enabled in an isolated emulator run.
+            if (InstrumentationRegistry.getArguments().getString("rendererRecovery")=="true") {
+                var terminated=false
+                instrumentation.runOnMainSync { terminated=activity.gameView.webViewRenderProcess?.terminate()==true }
+                assertTrue("Renderer must be running",terminated)
+                val deadline=System.currentTimeMillis()+30000
+                var prompt=false
+                while(!prompt&&System.currentTimeMillis()<deadline) {
+                    scenario.onActivity { prompt=it.recoveryDialog?.isShowing==true }
+                    if(!prompt)Thread.sleep(200)
+                }
+                assertTrue("Recoverable renderer failure dialog",prompt)
+                val crashReports=File(context.getExternalFilesDir(null),"reports").also { it.mkdirs() }
+                instrumentation.uiAutomation.takeScreenshot()?.let { bitmap->File(crashReports,"renderer-recovery.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG,100,it) };bitmap.recycle() }
+                scenario.onActivity { assertTrue(it.recoveryDialog!!.getButton(android.app.AlertDialog.BUTTON_POSITIVE).performClick()) }
+                // ActivityScenario observes the replacement Activity.
+                Thread.sleep(600);scenario.onActivity { activity=it }
+                until("document.body.classList.contains('mobile-ready')&&!document.querySelector('#refresh').disabled")
+                assertEquals("다시 열어도 남아 있는 초안",js("document.querySelector('#message').value").asString)
+                assertEquals(userBefore,async("const s=await import(new URL('./store.js',location.href).href);return await s.snapshot(await s.openStore('notebuddy-android'))"))
+            }
             val reports=File(context.getExternalFilesDir(null),"reports").also { it.mkdirs() }
             instrumentation.uiAutomation.takeScreenshot()?.let { bitmap->File(reports,"game-test.png").outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG,100,it) };bitmap.recycle() }
             File(reports,"game-test.json").writeText("""{"game":true,"sharedPython":true,"defaultHome":true,"externalBlocked":true,"userGameUnchanged":true,"localChat":${InstrumentationRegistry.getArguments().getString("liveGame")=="true"}}""")

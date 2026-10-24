@@ -1,4 +1,5 @@
 import {verifyMobileUX} from './android-mobile-ux.mjs';
+import {verifyRecoveryUX} from './android-persistence-ux.mjs';
 import assert from 'node:assert/strict';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
 import {createServer} from 'node:http';
@@ -19,7 +20,8 @@ try{
  await page.addInitScript(()=>{
   window.testCalls=[];window.testBackup='';
   window.NoteBuddyNative={postMessage(raw){const r=JSON.parse(raw);window.testCalls.push(r);let result=true;
-   if(r.action==='status')result={ready:true,hasLabPhoto:false,testMode:true};
+   if(r.action==='status')result={ready:true,hasLabPhoto:true,testMode:true};
+   if(r.action==='labPhoto')result=window.testLabPhoto;
    if(r.action==='complete'){
     const c=r.payload.messages.at(-1).content;
     const input=typeof c==='string'?c:Array.isArray(c)?c[0].text:c.text;
@@ -28,7 +30,9 @@ try{
    }
    if(r.action==='exportBegin')window.testBackup='';
    if(r.action==='exportChunk')window.testBackup+=r.payload.text;
-   setTimeout(()=>window.NoteBuddyNative.onmessage({data:JSON.stringify({id:r.id,result})}),r.action==='complete'?(window.testDelay||0):0);
+   const deliver=()=>window.NoteBuddyNative.onmessage({data:JSON.stringify({id:r.id,result})});
+   if(r.action==='labPhoto'&&window.testHoldLab){window.deliverTestLab=deliver;return;}
+   setTimeout(deliver,r.action==='complete'?(window.testDelay||0):0);
   }};
  });
  const idle=()=>page.waitForFunction(()=>!document.querySelector('#refresh').disabled);
@@ -42,11 +46,21 @@ try{
  await page.locator('#birth button').click();await idle();assert.match(await page.locator('#notice').textContent(),/그림/);assert.equal((await snapshot()).player.state,null);
  await page.locator('#choose-art').click();
  const canvas=await page.locator('#art-canvas').boundingBox();await page.mouse.move(canvas.x+canvas.width*.2,canvas.y+canvas.height*.3);await page.mouse.down();await page.mouse.move(canvas.x+canvas.width*.8,canvas.y+canvas.height*.7,{steps:15});await page.mouse.up();await page.locator('#art-use').click();assert.match(await page.locator('#birth-art-status').textContent(),/그림/);
- await page.locator('#choose-art').click();await page.locator('#art-input-mode').selectOption('file');
- await page.locator('#art-file').setInputFiles(fileURLToPath(new URL('../../assets/starters-v1/mammal_fire_stage1.png',import.meta.url)));
- await page.locator('#art-use').click();await page.locator('#name').fill('모바일 테스트');await page.locator('#birth button').click();await idle();
+ await page.locator('#art-dialog').waitFor({state:'hidden'});
+ const selectedDrawing=await page.locator('#birth-preview').getAttribute('src');
+ let picker=page.waitForEvent('filechooser');await page.locator('#choose-photo').click();await(await picker).setFiles({name:'bad.png',mimeType:'image/png',buffer:Buffer.from('not really a PNG')});
+ await page.waitForFunction(()=>document.querySelector('#art-editor-error').textContent.length>0);assert(await page.locator('#art-use').isDisabled());
+ await page.evaluate(()=>window.NoteBuddyBack());assert.equal(await page.locator('#birth-preview').getAttribute('src'),selectedDrawing,'failed/cancelled selection preserves the previous drawing');
+ await page.evaluate(async()=>{const blob=await(await fetch('./assets/starters-v1/fairy_nature_stage1.png')).blob();window.testLabPhoto=await new Promise(resolve=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.readAsDataURL(blob);});window.testHoldLab=true;});
+ await page.locator('#import-lab-photo').click();
+ picker=page.waitForEvent('filechooser');await page.locator('#choose-photo').click();
+ await(await picker).setFiles(fileURLToPath(new URL('../../assets/starters-v1/mammal_fire_stage1.png',import.meta.url)));
+ await page.waitForFunction(()=>!document.querySelector('#art-use').disabled);
+ await page.locator('#art-use').click();await page.locator('#art-dialog').waitFor({state:'hidden'});
+ const confirmedPhoto=await page.locator('#birth-preview').getAttribute('src');await page.evaluate(()=>window.deliverTestLab());await page.waitForFunction(()=>!document.querySelector('#import-lab-photo').disabled);assert.equal(await page.locator('#birth-preview').getAttribute('src'),confirmedPhoto,'late Lab import must not replace the newly confirmed photo');
+ await page.locator('#name').fill('모바일 테스트');await page.locator('#birth button').click();await idle();
  assert.equal((await snapshot()).player.state.name,'모바일 테스트');assert.equal(Object.keys((await snapshot()).visuals.files).length,1);assert.equal(await page.evaluate(()=>testCalls.filter(r=>r.action==='complete').length),0);
- await settings();await page.locator('#care-ai-enabled').uncheck();await closeSettings();await page.locator('[data-action="feed"]').click();await idle();assert((await snapshot()).player.state.xp>0);
+ await settings();await page.locator('#care-ai-enabled').uncheck();await closeSettings();await page.locator('[data-action="feed"]').click();await idle();assert((await snapshot()).player.state.xp>0);assert.equal(await page.locator('#result').textContent(),'밥을 맛있게 먹었어요.');
  await tab('chat');await page.locator('#message').fill('내 이름은 동기야');await page.locator('#chat button').click();await page.waitForFunction(()=>!document.querySelector('#chat button').disabled);
  await page.locator('#message').fill('내 이름 기억해?');await page.locator('#chat button').click();await page.waitForFunction(()=>!document.querySelector('#chat button').disabled);
  assert.equal((await snapshot()).visuals.chat.length,4);assert.equal(await page.evaluate(()=>testCalls.filter(r=>r.action==='complete').at(-1).payload.messages.length),3);
@@ -69,8 +83,11 @@ try{
  const before=await snapshot();await page.reload();await page.waitForFunction(()=>document.querySelector('#pet-name').textContent==='모바일 테스트',{},{timeout:120000});await page.waitForFunction(()=>document.body.classList.contains('mobile-ready'));assert.deepEqual((await snapshot()).player,before.player);
  const out=fileURLToPath(new URL('../../android/runtime/game-browser/',import.meta.url));await mkdir(out,{recursive:true});
  for(const width of [320,360,412,800]){await page.setViewportSize({width,height:800});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),`overflow at ${width}`);await page.screenshot({path:path.join(out,`game-${width}.png`),fullPage:true});}
+ console.log('Game flow passed; checking mobile UX.');
  const ux=await verifyMobileUX(page,out,snapshot);
+ console.log('Mobile UX passed; checking failure recovery.');
+ const recovery=await verifyRecoveryUX(page,out,snapshot);
  assert.deepEqual(errors,[]);assert.deepEqual(external,[]);
- const report={ux,drawing:true,photo:true,birth:true,missingImagePreservesState:true,feed:true,chatHistory:true,homeDefault:true,homeFurniture:true,walk:true,dungeon:true,evolutionFallback:true,backup:true,reload:true,widths:[320,360,412,800],externalRequests:external.length};
+ const report={ux,recovery,drawing:true,photo:true,birth:true,missingImagePreservesState:true,feed:true,chatHistory:true,homeDefault:true,homeFurniture:true,walk:true,dungeon:true,evolutionFallback:true,backup:true,reload:true,widths:[320,360,412,800],externalRequests:external.length};
  await writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));console.log(report);
 }catch(error){await page?.screenshot({path:fileURLToPath(new URL('../../android/runtime/ux-failure.png',import.meta.url))}).catch(()=>{});console.error('page errors',await page?.evaluate(()=>document.body.innerText.slice(-1000)).catch(()=>''));throw error;}finally{await browser?.close();await new Promise(r=>server.close(r));}

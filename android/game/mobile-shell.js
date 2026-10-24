@@ -39,6 +39,9 @@ export function mountMobile(){
   panels.friend.querySelector('.stats-help-row')?.remove();
   panels.friend.querySelector('.web-world-actions .explanation-help')?.remove();
   const chat=document.querySelector('.chat-card');chat.querySelector('h2').textContent='친구에게 이야기하기';panels.chat.append(chat);
+  const draftInput=chat.querySelector('#message'),draftState=document.createElement('small');draftState.id='chat-draft-state';draftState.className='muted';chat.querySelector('.card-top').append(draftState);
+  const showDraft=()=>{const state=draftInput.dataset.draftState;draftState.hidden=!draftInput.value;draftState.textContent=state==='saved'?'초안 저장됨':state==='saving'?'초안 저장 중…':'초안 저장 확인 필요';};
+  document.addEventListener('draft-state',showDraft);showDraft();
   const adventure=document.createElement('section');adventure.className='paper mobile-outing';
   adventure.innerHTML='<span class="eyebrow">A LITTLE ADVENTURE</span><h2>오늘은 어디로 갈까?</h2><p>산책하며 이야기를 만나고, 숨겨진 던전을 발견해요.</p><div class="outing-actions"></div><p class="muted small">산책 기회는 한 시간마다 하나씩 채워져요.</p>';
   adventure.querySelector('.outing-actions').append(panels.friend.querySelector('[data-action="walk"]'),panels.friend.querySelector('#story-resume'));
@@ -64,12 +67,18 @@ export function mountMobile(){
   const syncEvolution=()=>{evolutionPreview.hidden=$('evolution-routes').childElementCount>0;evolutionPreview.querySelector('img').src=$('pet-image').src;};
   new MutationObserver(syncEvolution).observe($('evolution-routes'),{childList:true});
   const notice=$('notice');notice.tabIndex=-1;
+  const dismissNotice=document.createElement('button');dismissNotice.id='notice-dismiss';dismissNotice.type='button';dismissNotice.className='quiet';dismissNotice.textContent='알림 닫기';dismissNotice.hidden=true;
+  notice.after(dismissNotice);dismissNotice.onclick=()=>{notice.textContent='';notice.hidden=true;dismissNotice.hidden=true;};
   let noticeTimer;
   const showNotice=()=>{
     notice.hidden=!notice.textContent.trim();clearTimeout(noticeTimer);
-    if(!notice.querySelector('.activity')&&!notice.textContent.includes('실패'))noticeTimer=setTimeout(()=>notice.hidden=true,6000);
+    // A failed save/request must stay readable until the user dismisses it.
+    const ok=/^(오늘도 친구와|친구의 소식을 확인|이 기기에 친구와 그림을 저장|이 기기에 저장했습니다|공책을 초기화했어요|백업을 가져왔|그림을 저장했어요|이미 저장된 그림|행동과 친구의 반응을 확인|행동 결과를 확인)/.test(notice.textContent);
+    notice.setAttribute('role',ok?'status':'alert');
+    dismissNotice.hidden=ok||notice.hidden||notice.classList.contains('activity-running');
+    if(ok)noticeTimer=setTimeout(()=>notice.hidden=true,6000);
   };
-  new MutationObserver(showNotice).observe(notice,{childList:true,subtree:true,characterData:true});showNotice();
+  new MutationObserver(showNotice).observe(notice,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class']});showNotice();
   new MutationObserver(()=>{result.textContent=$('result').textContent;result.hidden=false;}).observe($('result'),{childList:true,subtree:true,characterData:true});
   // Local replies also appear in the care screen, so an action never feels silent.
   const reply=document.createElement('button');reply.id='care-reply';reply.type='button';reply.className='care-reply';reply.hidden=true;reply.onclick=()=>selectTab('chat');
@@ -119,7 +128,7 @@ export function mountMobile(){
   // The game opens directly, without the web landing screen on every launch.
   $('title-screen').close();selectTab('friend');document.body.classList.add('mobile-ready');
 }
-function scrollChat(){if(active==='chat')$('messages').scrollTop=$('messages').scrollHeight;}
+function scrollChat(){if(active==='chat')$('messages').scrollTop=$('messages').querySelector('.message')?$('messages').scrollHeight:0;}
 export function selectTab(key){
   if(!panels[key])return;
   document.activeElement?.blur();active=key;document.body.dataset.screen=key;
@@ -132,5 +141,7 @@ export function chatStarted(input){
   const answer=document.createElement('div');answer.className='message assistant pending-answer';answer.textContent='생각하고 있어요…';
   pendingChat.append(user,answer);$('chat-empty').hidden=true;$('messages').append(pendingChat);
   $('message').readOnly=true;scrollChat();
+  document.querySelectorAll('[data-prompt]').forEach(button=>button.disabled=true);
 }
-export function chatFinished(){pendingChat?.remove();pendingChat=null;$('message').readOnly=false;$('chat-empty').hidden=!!document.querySelector('#messages .message');scrollChat();}
+export function chatFinished(){pendingChat?.remove();pendingChat=null;$('message').readOnly=false;document.querySelectorAll('[data-prompt]').forEach(button=>button.disabled=false);$('chat-empty').hidden=!!document.querySelector('#messages .message');scrollChat();}
+export function chatReceived(reply){if(pendingChat)pendingChat.querySelector('.pending-answer').textContent=reply;}

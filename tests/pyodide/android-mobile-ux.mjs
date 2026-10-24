@@ -32,6 +32,7 @@ export async function verifyMobileUX(page,out,snapshot){
   await page.evaluate(()=>window.testDelay=1800);await page.locator('#message').fill('천천히 대답해 줘');await page.locator('#chat button').click();
   await page.waitForFunction(()=>!document.querySelector('#mobile-ai').hidden);
   assert.match(await page.locator('.pending-chat .user').textContent(),/천천히/);
+  assert(await page.locator('[data-prompt]').first().isDisabled());
   assert(await page.locator('#chat button').isDisabled());await tab('friend');assert(await page.locator('[data-action=feed]').isDisabled());
   await page.locator('#open-settings').click();assert.equal(await page.locator('#mobile-ai').evaluate(el=>el.parentElement.id),'settings-dialog');
   await page.locator('#mobile-ai-cancel').click();await page.waitForFunction(()=>document.querySelector('#mobile-ai').hidden);

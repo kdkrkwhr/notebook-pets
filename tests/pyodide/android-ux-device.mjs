@@ -8,7 +8,7 @@ import path from 'node:path';
 const serial=process.argv[3];assert(serial,'Pass the explicitly selected adb serial');
 const adb=process.platform==='win32'?path.join(process.env.LOCALAPPDATA,'Android/Sdk/platform-tools/adb.exe'):'adb';
 const back=()=>execFileSync(adb,['-s',serial,'shell','input','keyevent','KEYCODE_BACK']);
-const browser=await chromium.connectOverCDP(`http://127.0.0.1:${process.argv[2]}`);
+const browser=await chromium.connectOverCDP(`http://127.0.0.1:${process.argv[2]}`,{noDefaults:true});
 const out=fileURLToPath(new URL('../../android/runtime/ux-device/',import.meta.url));await mkdir(out,{recursive:true});
 try{
  let page;

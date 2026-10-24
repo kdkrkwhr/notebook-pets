@@ -1,5 +1,19 @@
 # Android handoff
 
+## 2026-10-24 · 0.2.2-alpha · offline recovery and accessibility
+
+- Branch: `release-android`, based on `3502bc7`. Android only; Anna test/review/listing, Desktop and public Pages are unchanged. This task had no USB phone access; installation and validation used a disposable API 36 emulator, not the user's Flip6.
+- Split photo/drawing actions. Invalid/cancelled selections retain the confirmed picture; stale Lab imports cannot replace a newer selection. Original portraits remain original pictures; no new image generator or paid API was added.
+- Persist a bounded per-companion/epoch draft in separate IndexedDB storage with strict durability and an explicit saved/saving/failure label. Actual force-stop exposed stale localStorage persistence; fixed and verified with the latest draft after process restart. Reset/same-pet backup replacement invalidates prior drafts.
+- Save received chat before clearing the composer. On storage failure retain the received answer and offer save-only retry/discard, without another inference or duplicate messages. Prevent suggestion buttons from overwriting an active request.
+- Show startup progress, delayed-start reopen and initialization-error recovery. Retain early engine failures instead of waiting for a first request that can never finish. Persistent errors have an explicit dismiss action. Native requests have document-unique IDs and clean up failed send/cancel/timeout paths.
+- Honor system font scale. Tested 200% font at the normal emulator size and 320px width; visually corrected companion heading width, empty chat scrolling and debug label overlap. Native renderer termination offers an actual recovery dialog and retains saved notebook/draft after reopening.
+- Validation: 230 Python tests (229 pass, one skip); 20 native unit tests; six bridge/draft checks; APK/test APK builds; lint zero errors / 19 advisories. Shared real Python/WASM game, four-viewport UX, quota recovery, 1,000-message history and startup failure/reopen browser checks passed. No external browser HTTP calls, model downloads or paid AI calls.
+- API 36 real WebView: native keyboard/Back, no-model guidance, shop Back, force-stop/restart and system-font checks passed. GameSmokeTest including renderer termination/recovery passed in 34.194 seconds before the final font-layout polish; the final installed UI was separately rechecked with the offline device harness. Test/default notebook snapshots and original Lab file hashes were preserved. First emulator attempts suffered an existing AVD mount failure and System UI ANR under PC memory pressure; neither was counted as a successful app check.
+- Final local APK: `runtime/dist/NoteBuddy-Android-0.2.2-alpha.apk`, versionCode 4, 228,126,842 bytes, SHA-256 `56d3c43e95c19e75eda2a204c7e38ede75f4a6d4adfa4c06fb33bc68a75bff4f`. The installed emulator APK hash/version matched this exact artifact. Phone deployment remains unavailable until USB/device access returns.
+- Evidence (ignored): `runtime/game-browser/report.json`, `runtime/offline-device/report.json`, `runtime/final-native.log`, `runtime/emulator-reports/renderer-recovery.png`, unit/build logs. CI is checked after pushing this bundle; record its implementation revision/run in the follow-up validation entry.
+- Limits: no renewed on-device model/vision quality, long inference/thermal/memory endurance, physical fold/cover or other phone/gallery verification. Portrait-to-new-monster generation, iOS and store release remain separate work. A draft still showing saving/failure may not be durable; an unsaved received answer is retained only in the current screen's memory.
+
 ## 2026-10-23 · 0.2.1-alpha · mobile UX
 
 - Branch: `release-android`; Android only. Anna, its review candidate, Desktop and public Pages are unchanged.
@@ -12,16 +26,3 @@
 - Local evidence: `runtime/game-browser/report.json`, `runtime/ux-device/report.json`, `runtime/ux-device-test.txt`; private/runtime files stay ignored. Instrumentation and CDP tests select `notebuddy-android-test`, never reset the default notebook.
 - Limits: cover display/physical folding, other devices/system large-font settings, prolonged thermals/memory and process-kill recovery remain unverified. Landscape was exercised in browser emulation. CI for this new commit should be checked separately; prior commit bef4e88 CI run 39923343592 passed.
 
-## 2026-10-23 · 0.2.0-alpha
-
-- Branch: `release-android`. Android-only game integration; Anna review, installed Anna, Desktop and public Pages unchanged.
-- New launcher: `GameActivity`. Existing package `io.github.kdkrkwhr.notebuddy.lab`, versionCode 2, same local signing key. Keep Lab private files and downloaded model; explicit photo import only, no silent character/data migration.
-- Shared web UI + Anna common modules/art + Pyodide 314.0.7 + unchanged portable Python rules bundled into the APK. No application server, no cloud AI fallback. Native bridge is restricted to the trusted local HTTPS main frame.
-- Original drawing/photo is the portrait. Evolution preserves it. Home offers a free default portrait-derived pixel appearance; AI image generation unavailable.
-- PC validation: 20 unit tests, APK/test APK builds, lint 0 errors / 18 advisory warnings; actual Python/WASM game-flow browser test at 320/360/412/800px and core smoke passed. See `VALIDATION.md`.
-- Installed 0.2.0-alpha (versionCode 2) over Lab on Galaxy Z Flip6 after USB reconnection. Real WebView/Python game + local chat, name recall, local furniture AI, home/back navigation, reload and native SAF backup export/import passed. Reused downloaded model. Prior 0.1.0 inference figures remain historical.
-- Final local APK: `runtime/dist/NoteBuddy-Android-0.2.0-alpha.apk`, 228,093,478 bytes, SHA-256 `567923c91b8467233cfc4085877e33bd923933a4c45a4d8bf275f78e2cd4cc75`. Includes the tested implementation plus device-harness import correction and minor mobile wording/header follow-up. Installed in place and returned to the ordinary launcher, not the test notebook.
-- Device harness used a distinct debug test notebook; user-game snapshot and Lab original/analysis/chat file hashes were unchanged. Do not mutate the default notebook or use personal photos as test fixtures.
-- UI hooks in shared web/home/evolution code are optional and retain the original web/Anna defaults. Changes exist only on this branch; no shared release or review bump was performed.
-- CI setup explicitly requests supported SDK packages, packages the game and runs the mobile browser harness. Run 39921998760 passed for implementation commit ae0ba5f. Follow-up fixes the device test import base URL and records actual device results; latest run should be checked separately.
-- APK, reports, screenshots and downloaded models remain under ignored `android/runtime` / build directories. No private photos or signing keys committed.

@@ -35,6 +35,9 @@ class GameActivity : ComponentActivity() {
     private val busy = AtomicBoolean(false)
     private val stopped = AtomicBoolean(false)
     private var activeId: String? = null
+    private var rendererGone = false
+    internal var recoveryDialog: AlertDialog? = null
+        private set
     private lateinit var models: ModelFiles
     private lateinit var ai: LocalAI
     private val gson = Gson()
@@ -75,7 +78,7 @@ class GameActivity : ComponentActivity() {
             val safe = insets.getInsets(WindowInsetsCompat.Type.systemBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.ime())
             v.setPadding(safe.left, safe.top, safe.right, safe.bottom)
             val keyboard = insets.isVisible(WindowInsetsCompat.Type.ime())
-            gameView.evaluateJavascript("window.dispatchEvent(new CustomEvent('native-keyboard',{detail:$keyboard}))", null)
+            if (!rendererGone) gameView.evaluateJavascript("window.dispatchEvent(new CustomEvent('native-keyboard',{detail:$keyboard}))", null)
             insets
         }
         ViewCompat.requestApplyInsets(root)
@@ -85,6 +88,7 @@ class GameActivity : ComponentActivity() {
             mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
             setSupportMultipleWindows(false); javaScriptCanOpenWindowsAutomatically = false
             mediaPlaybackRequiresUserGesture = true
+            textZoom = (resources.configuration.fontScale * 100).toInt().coerceIn(50, 300)
         }
         WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG)
         val loader = WebViewAssetLoader.Builder().addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this)).build()
@@ -98,7 +102,15 @@ class GameActivity : ComponentActivity() {
             override fun shouldInterceptRequest(view: WebView, request: WebResourceRequest) = resource(request.url)
             override fun shouldOverrideUrlLoading(view: WebView, request: WebResourceRequest) = request.url.toString().substringBefore('#') != GAME
             override fun onReceivedError(view: WebView, request: WebResourceRequest, error: WebResourceError) {
-                if (request.isForMainFrame) AlertDialog.Builder(this@GameActivity).setMessage("게임 화면을 열지 못했어요. 앱을 다시 열어 주세요. 저장 데이터는 유지돼요.").setPositiveButton("확인", null).show()
+                if (request.isForMainFrame) offerRecovery()
+            }
+            override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
+                rendererGone = true
+                stopped.set(true); ai.cancel(); models.cancel()
+                chooser?.onReceiveValue(null); chooser = null
+                root.removeView(view); view.destroy()
+                offerRecovery()
+                return true
             }
         }
         if (WebViewFeature.isFeatureSupported(WebViewFeature.SERVICE_WORKER_BASIC_USAGE)) {
@@ -127,6 +139,7 @@ class GameActivity : ComponentActivity() {
         }
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
+                if (rendererGone) { finish(); return }
                 gameView.evaluateJavascript("window.NoteBuddyBack ? window.NoteBuddyBack() : false") { handled -> if (handled != "true") finish() }
             }
         })
@@ -138,7 +151,7 @@ class GameActivity : ComponentActivity() {
         var id = ""
         fun reply(result: Any? = null, error: String? = null) {
             val response = gson.toJson(mapOf("id" to id, "result" to result, "error" to error))
-            runOnUiThread { if (!isDestroyed) runCatching { proxy.postMessage(response) } }
+            runOnUiThread { if (!isDestroyed && !rendererGone) runCatching { proxy.postMessage(response) } }
         }
         try {
             val request = JsonParser.parseString(raw).asJsonObject
@@ -162,7 +175,7 @@ class GameActivity : ComponentActivity() {
                             if (action == "download") {
                                 models.download { bytes, phase ->
                                     val progress = gson.toJson(mapOf("id" to id, "progress" to mapOf("kind" to "download", "bytes" to bytes, "phase" to phase)))
-                                    runOnUiThread { if (!isDestroyed) runCatching { proxy.postMessage(progress) } }
+                                    runOnUiThread { if (!isDestroyed && !rendererGone) runCatching { proxy.postMessage(progress) } }
                                 }; reply(true)
                             } else {
                                 check(models.ready()) { "설정에서 친구와 대화할 준비를 해 주세요." }
@@ -172,7 +185,7 @@ class GameActivity : ComponentActivity() {
                                     if (text != null && now - lastUpdate < 100_000_000) return
                                     lastUpdate = now
                                     val data = gson.toJson(mapOf("id" to id, "progress" to mapOf("phase" to phase, "text" to text)))
-                                    runOnUiThread { if (!isDestroyed) runCatching { proxy.postMessage(data) } }
+                                    runOnUiThread { if (!isDestroyed && !rendererGone) runCatching { proxy.postMessage(data) } }
                                 }
                                 reply(complete(GameRequest.parse(payload), ::progress))
                             }
@@ -228,8 +241,17 @@ class GameActivity : ComponentActivity() {
         } finally { picture?.delete() }
     }
 
-    override fun onResume() { super.onResume(); if (::gameView.isInitialized) gameView.onResume() }
-    override fun onPause() { if (::gameView.isInitialized) gameView.onPause(); super.onPause() }
+    private fun offerRecovery() {
+        if (isFinishing || isDestroyed || recoveryDialog?.isShowing == true) return
+        recoveryDialog = AlertDialog.Builder(this)
+            .setTitle("화면을 다시 열어 주세요")
+            .setMessage("화면 실행이 중단됐어요. 저장된 친구와 기록은 유지돼요. 아직 저장하지 못한 작업은 다시 확인해 주세요.")
+            .setPositiveButton("다시 열기") { _, _ -> recreate() }
+            .setNegativeButton("닫기") { _, _ -> finish() }.setCancelable(false).show()
+    }
+
+    override fun onResume() { super.onResume(); if (::gameView.isInitialized && !rendererGone) gameView.onResume() }
+    override fun onPause() { if (::gameView.isInitialized && !rendererGone) gameView.onPause(); super.onPause() }
     override fun onStop() {
         stopped.set(true); if (::ai.isInitialized) ai.cancel(); if (::models.isInitialized) models.cancel()
         if (!worker.isShutdown) worker.execute { ai.close() }
@@ -237,7 +259,8 @@ class GameActivity : ComponentActivity() {
     }
     override fun onDestroy() {
         chooser?.onReceiveValue(null); chooser = null
-        if (::gameView.isInitialized) { gameView.stopLoading(); gameView.destroy() }
+        recoveryDialog?.dismiss(); recoveryDialog = null
+        if (::gameView.isInitialized && !rendererGone) { gameView.stopLoading(); gameView.destroy() }
         worker.shutdown(); super.onDestroy()
     }
 }

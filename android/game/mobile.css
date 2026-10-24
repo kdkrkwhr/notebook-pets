@@ -1,5 +1,14 @@
 /* Android navigation and viewport. The game rules and component handlers stay shared. */
 :root{--pixel:system-ui,-apple-system,'Noto Sans KR',sans-serif;--mobile-gap:12px;font-size:14px}
+#native-startup{position:fixed;inset:0;z-index:99999;background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;gap:16px;overflow:auto}
+#native-startup img{width:64px;height:64px}#native-startup h1{font-size:22px;margin:0}#native-startup p{font-size:14px;max-width:30em;margin:0}
+body .chat-card>.card-top{flex-wrap:wrap}#chat-draft-state{font-size:11px;flex-basis:100%;text-align:right;line-height:1.3}
+body .masthead .brand>span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body .masthead .brand small{overflow:hidden;text-overflow:ellipsis}
+.birth-image-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}
+body #notice-dismiss{align-self:flex-end;flex:none;margin:2px 14px 0;padding:6px 10px;font-size:12px}
+body .birth-image-actions button{white-space:normal;min-width:0}
+body #retry-chat-save,body #discard-chat-save{flex-shrink:0;white-space:normal;margin:4px 12px}
 html,body{width:100%;height:100%;min-height:0;overflow:hidden;overscroll-behavior:none}
 body{display:flex;flex-direction:column;background:var(--page);background-image:none;color:var(--ink);font-family:var(--pixel);-webkit-tap-highlight-color:transparent}
 [hidden]{display:none!important}*,*::before,*::after{box-sizing:border-box}
@@ -46,7 +55,7 @@ body .messages{flex:1;min-height:50px;max-height:none;overflow:auto;padding:8px 
 body .message{font:14px/1.7 var(--pixel);padding:12px 14px;max-width:90%;border:0;border-radius:16px 16px 16px 4px;box-shadow:none;background:var(--paper);color:var(--ink)}
 body .message.user{border-radius:16px 16px 4px 16px;background:color-mix(in srgb,var(--green) 16%,var(--paper));color:var(--ink);align-self:flex-end}
 body .message-body{line-height:1.7}body .message-label{font-size:10px;margin-bottom:3px}body .pending-chat{display:flex;flex-direction:column;gap:12px}.pending-answer{opacity:.8}
-body .chat-empty{padding:20px 10px}body .chat-empty p{font-size:14px}body .chat-bottom{padding:10px 12px;background:var(--paper);border-top:1px solid var(--line);flex:none}
+body .chat-empty{padding:12px 0;margin:auto 0;flex-shrink:0}body .chat-empty p{font-size:14px;margin:0}body .chat-empty img,body .chat-empty small{display:none}body .chat-bottom{padding:10px 12px;background:var(--paper);border-top:1px solid var(--line);flex:none}
 body .suggestions{gap:6px;flex-wrap:nowrap;overflow:auto;margin-bottom:8px}body .suggestions button{white-space:nowrap;font-size:11px;min-height:36px;padding:7px 10px;flex-shrink:0}
 body #chat{display:flex;gap:8px}body #chat input{min-width:0;padding:10px 12px}body #chat button{width:46px;flex:none;font-size:22px;padding:6px}body #reply{font-size:12px;margin:6px 0 0}body #reply.activity-running{display:none}
 body .mobile-outing{padding:22px 18px}body .mobile-outing .eyebrow{font:10px/1.3 var(--pixel);letter-spacing:1.5px}body .mobile-outing h2{margin:6px 0 10px;font-size:23px}body .mobile-outing>p{font-size:13px;color:var(--muted);margin:8px 0}
@@ -81,6 +90,7 @@ body .mobile-utilities{display:grid;grid-template-columns:1fr 1fr;gap:10px;margi
 body #native-model-status{padding:14px;border-radius:14px;background:color-mix(in srgb,var(--green) 10%,var(--paper))}body #native-license-text{font:11px/1.6 monospace;max-height:300px;overflow:auto}
 body .home-usage-details{display:none}body .stats-help-row:empty{display:none}
 body button.quiet,body button.primary,body button.danger,body button.evolution-open{box-shadow:none}body .mobile-tabs svg{width:22px;height:22px;flex:none;margin:3px 0}body .pet-card .portrait{height:clamp(105px,18dvh,145px)}body #open-evolution{float:none;margin:0;min-height:44px;padding:8px 10px;flex:none}body .pet-heading>div{flex:1;min-width:0}body .pet-heading h2{font-size:20px}body .pet-heading .level{font-size:15px}body #mobile-ai-cancel{min-height:44px}
+body .pet-heading{flex-wrap:wrap}body .pet-heading>div:first-child{flex:1 1 max-content;max-width:100%;overflow-wrap:anywhere}body .pet-heading #open-evolution{margin-left:auto}
 body #actions [data-action=attendance]{grid-column:auto}body dialog#home-dialog,body dialog#dungeon-dialog,body dialog#evolution-dialog{padding:0;border:0!important;border-radius:0!important;box-shadow:none!important}body dialog#settings-dialog,body dialog#backup-dialog,body dialog#appearance-dialog,body dialog#art-dialog,body dialog#item-catalog,body dialog#theme-dialog,body dialog#walk-story{padding:16px;border:0!important;border-radius:0!important;box-shadow:none!important}
 .mobile-evolution-preview{text-align:center;padding:32px 12px}.mobile-evolution-preview img{width:150px;height:150px;max-height:24dvh;object-fit:contain}.mobile-evolution-preview p{color:var(--muted);font-size:13px}
 @media(min-width:650px){.mobile-screen{padding:16px 24px}body #screen-friend{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;gap:12px;align-content:start}body #screen-friend .pet-card{grid-row:1/3;margin:0}body .web-world-actions{margin:0}body .mobile-tabs{justify-content:center}body .mobile-tabs button{max-width:150px}.mobile-screen>section{max-width:800px;margin-left:auto;margin-right:auto}body .dungeon-experience{flex-direction:row}body .dungeon-sidebar{max-height:none;width:310px;flex:0 0 310px;align-content:start}body #evolution-routes{grid-template-columns:repeat(3,minmax(0,1fr))}}
