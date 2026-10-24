@@ -10,7 +10,7 @@ Both `bundle/equipment.mjs` and `executas/notebuddy/notebuddy_plugin.py` set `EQ
 
 The experimental transport edits the current portrait using the item's textual description and attachment constraints. It does **not** take the catalog illustration as a second reference, nor claim to reproduce its exact artwork. Approval of this visual approach versus the planned character+item composite, fit/anatomy inspection, and actual quality tests remain release prerequisites. A user preview is required before application; it is not an automated quality guarantee.
 
-The app manifest still declares only `image.generate`. Adding `image.edit` would expand the app's allowed host methods; obtaining its platform grant requires a separate approved step. The tool distribution manifest only synchronizes its new command/argument schema, with unchanged capability declarations. No security settings were changed.
+The initial implementation declared only `image.generate`. The October 24 follow-up adds `image.edit` to the source manifest under the user's explicit approval for item fitting. Both fitting gates remain off until live quality and platform validation pass; the production working/review manifests have not been changed. The existing owner's app450 grant already reports `allowEdit: true` and `maxPerCallEdit: 1`; no new platform grant or security setting was changed. The tool distribution manifest only synchronizes its new command/argument schema, with unchanged capability declarations. See [Windows preflight and remaining billing gate](../releases/EQUIPMENT_PREFLIGHT_20261024.md).
 
 ## Transaction and recovery
 

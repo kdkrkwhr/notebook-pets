@@ -1,3 +1,19 @@
+
+# Anna 1.4.16 storage declaration fix — 2026-10-23
+
+Runtime source **daa3014**. The reported server error was reproduced: the tool's cached runtime manifest declared only `aps.kv`, while the app also required files and tool read/write access. Tool **0.9.7** declares all four capabilities in distribution metadata and its runtime `describe`, without a separate tool `storage` field. App permissions, UI source, gameplay, save format and AI behavior are unchanged. Full-manifest protocol and packaged-binary smoke assertions prevent an incomplete declaration from passing validation.
+
+[Anna CI 39711760114](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39711760114) passed Windows and Linux: each **135 browser / 96 JS / 76 storage-protocol**, strict validation and standalone build/smoke. [Shared CI 39711760205](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39711760205) passed. Full local Windows checks passed the same counts plus binary smoke. Initial local generated-engine staleness was resolved by `prepare:assets` and a full passing rerun; the first Windows CI attempt timed out after slow tooling setup, and the rerun passed. Both tested platform packages are published and their CDN bytes/metadata hashes match the tested archives; exact hashes are in **releases/RELEASE_1416.md**.
+
+Installed owner app **1.4.16 / revision 92 / 0.0.0-draft**, actual cloud tool **0.9.7 / immutable Executa 818 / master 1193 / user executable 35689 loaded/running**. Final install status is **success / Already loaded**. An initial stale executable-path error was resolved by reinstalling only this tool and reopening the draft. The cloud agent resumed on the following day's refresh and still runs 0.9.7. UI is connected with no notice; the existing portrait and two chat messages load, home sprite is ready, and installed **app.js / mobile.css / data.mjs / home-sprite.mjs / anna-tool-ids.js** hashes match the local bundle. All five owner APS documents (game, art, chat, walk story, personality draft) retain identical values and ETags. Paid AI calls: **0 text / 0 images**.
+
+Fresh user authorization covers **1.4.16**, since immutable 1.4.15 cannot be overwritten. Cut **1.4.16 / ID 1587** freezes tool **0.9.7 / Executa 818**, bundle **1472 / 175 files / 171604935 bytes**, manifest SHA-256 **83c7c16b6be79de692bdb8608d3eb57a0af446dcaf0bfd4c3cd3669f237cba8a**. Working hash **c6ed85cf2c262e4f340f1b4610f1c1c42058c758c8b5be3c22cf4727957e6fcf**, **dirty_vs_latest_cut false**, minimum/exact tool **0.9.7**. The release request returned **pending / is_latest false / published_at null**; old **1.4.15 / 1486** is **superseded**. Developer Console confirms **1.4.16 in release review**. Public **1.4.13 / 1446**, its complete immutable row, listing and six screenshots remain unchanged; no public web deployment.
+
+Server manifest validation passed after installation, overnight and for frozen 1.4.16 after submission, with **valid true / errors []** and all four cached capabilities retained. Approval/publication, physical mobile/native-shell behavior and new provider-quality testing are not claimed. Private evidence: **.local/storage-fix-{cut-result,submission,final,ui-final,validation-binaries,validation-latest}.json** and test/build logs; do not commit these owner-data snapshots. See **releases/RELEASE_1416.md** and **reviews/REVIEW_1416.md**.
+
+
+---
+
 # Anna 1.4.15 mobile support — 2026-10-20
 
 Runtime source **cc36c65**. Anna CI **39273350333** passed Windows and Linux: each **135 browser / 96 JS / 76 storage-protocol** checks, strict manifest validation and standalone build/smoke. Shared CI **39273349842** passed all three jobs. Focused mobile suite **4/4** passed locally; the earlier full local run passed 134 before the fourth mobile scenario was added.

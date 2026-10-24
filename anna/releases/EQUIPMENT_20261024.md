@@ -2,6 +2,8 @@
 
 Anna `release` implementation; no version bump, deployment or review submission. Baseline: `a9b6843d6d7716b7a19e5ab8dd94fd18ced6bc26`. Both GitHub workflows triggered by `release` pushes run checks/builds only and do not deploy Anna. No force push or release-web update.
 
+Follow-up: the user authorized the item-fitting `image.edit` declaration and bounded live validation without extra payment or auto-recharge. The declaration is now in source, with both feature gates still off and no Anna deployment. See [Windows preflight and unresolved billing gate](EQUIPMENT_PREFLIGHT_20261024.md). The implementation details below describe the original baseline commit.
+
 Implemented: per-companion item fitting reservation, single-reference edit adapter, durable local/file recovery, explicit preview/application, uploaded-file verification and atomic portrait-pointer/item/receipt commit. Discovered items remain recorded after consumption. Existing reward eligibility remains unchanged. Pending cancellation is not unequip/refund. Frontend and tool gates are both off; `image.edit` is not added to the app manifest. [Design, API evidence and release limits](../docs/EQUIPMENT.md).
 
 Local validation on Linux:

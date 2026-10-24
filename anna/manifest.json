@@ -67,7 +67,8 @@
         "complete"
       ],
       "image": [
-        "generate"
+        "generate",
+        "edit"
       ],
       "storage": [
         "get",
