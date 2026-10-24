@@ -10,7 +10,8 @@
 - 강제 종료 검사는 localStorage의 최신 입력이 디스크에 반영되지 않을 수 있음을 드러냈습니다. 별도 IndexedDB에 `durability: strict`로 저장하고 완료 표시를 추가해 재검증했습니다. 저장 완료의 기준은 [IndexedDB 명세](https://w3c.github.io/IndexedDB/#dom-idbtransactionoptions-durability)를 참고했습니다. 작성 중/실패 상태의 마지막 입력까지 보장한다는 뜻은 아닙니다.
 - 초기 가상 기기의 metadata 파티션 부팅 실패와 PC 메모리 부족으로 뜬 System UI ANR은 환경 실패로 기록했습니다. 사용자 가상 기기를 수정하지 않고 격리된 기기를 새로 만들었으며, 환경 정리 후 재검사 결과만 통과로 집계했습니다.
 - 최종 APK: `runtime/dist/NoteBuddy-Android-0.2.2-alpha.apk` (228,126,842 bytes), SHA-256 `56d3c43e95c19e75eda2a204c7e38ede75f4a6d4adfa4c06fb33bc68a75bff4f`. 설치된 가상 기기의 APK 해시와 versionCode 4 / 0.2.2-alpha가 일치했습니다. 실제 사용자 휴대폰은 이번에 업데이트하지 않았습니다.
-- 결과·캡처: `runtime/game-browser/`, `runtime/offline-device/`, `runtime/emulator-reports/`, `runtime/final-native.log`. 개인정보·모델·APK는 Git에 추가하지 않습니다. GitHub CI는 푸시 후 별도로 확인합니다.
+- 결과·캡처: `runtime/game-browser/`, `runtime/offline-device/`, `runtime/emulator-reports/`, `runtime/final-native.log`. 개인정보·모델·APK는 Git에 추가하지 않습니다.
+- 구현 커밋 `2d0898a556dfa8accfdcdc89b50674cb00c63ca7`의 [GitHub CI 40099733875](https://github.com/kdkrkwhr/notebook-pets/actions/runs/40099733875)도 통과했습니다. Linux APK/테스트 APK 빌드·단위 검사·lint·복구 6개·모바일 브라우저 전체 검사를 완료했고, APK와 검증 보고서 아티팩트를 업로드했습니다. 후속 문서 커밋은 검증 결과만 기록하며 앱 코드를 바꾸지 않습니다.
 
 남은 실기기 확인은 실제 갤러리별 파일 선택·접힘/커버 화면·다른 제조사·장시간 발열/메모리·로컬 추론 중 백그라운드/종료입니다. 이번 검사는 모델을 받거나 유료 AI를 호출하지 않았으므로 사진→새 몬스터 이미지 품질 개선을 입증하지 않습니다. Anna 심사본·공개 웹·Desktop도 변경하지 않았습니다.
 
