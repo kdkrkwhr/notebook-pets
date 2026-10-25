@@ -57,7 +57,7 @@ careHelp.addEventListener('click',()=>{careHelpPinned=!careHelpPinned;showCareHe
 document.addEventListener('pointerdown',event=>{if(!careHelp.parentElement.contains(event.target)){careHelpPinned=false;showCareHelp(false);}});
 document.addEventListener('keydown',event=>{if(event.key==='Escape'){careHelpPinned=false;showCareHelp(false);}});
 const appearance=createThemes(document,preferences,()=>language);
-const itemCatalog=createItemCatalog(document,()=>language,{enabled:EQUIPMENT_ENABLED,pending:()=>view?.status?.equipment?.pending,start:item=>equipment.start(item),recover:()=>equipment.recover(),apply:expected=>equipment.apply(expected),cancel:()=>equipment.cancel()});
+const itemCatalog=createItemCatalog(document,()=>language,{enabled:EQUIPMENT_ENABLED,pending:()=>view?.status?.equipment?.pending,original:async pending=>{const path=pending.source_path,url=path.startsWith('portraits/')?(await anna.files.download_url({path})).get_url:new URL(path,location.href).href;const result=await fetch(url);if(!result.ok)throw Error('Original unavailable');return result.blob();},start:item=>equipment.start(item),recover:()=>equipment.recover(),apply:expected=>equipment.apply(expected),cancel:()=>equipment.cancel()});
 const titleScreen=createTitleScreen(document,{privacy:()=>$('#privacy-dialog').showModal()});
 const birthSteps=createBirthSteps(document);
 let anna,view=null,busy=false,history=[],art={},urls={},pendingAction=null,pendingChat=null;
@@ -536,6 +536,6 @@ homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertAct
 hints=createHints(document,()=>language);
 titleScreen.show();
 
-equipment=createEquipment({enabled:EQUIPMENT_ENABLED,anna:()=>anna,active:assertActive,invoke,journal:fittingJournal,baseURL:location.href,fetch:(...args)=>fetch(...args),upload:uploadPortrait,validate:async blob=>{const b=await createImageBitmap(blob);try{if(b.width<32||b.height<32||b.width*b.height>16000000)throw Error('Invalid image');}finally{b.close();}},saved:async next=>{adoptView(next);await readExtras();render();}});
+equipment=createEquipment({phase:kind=>itemCatalog.phase(kind),enabled:EQUIPMENT_ENABLED,anna:()=>anna,active:assertActive,invoke,journal:fittingJournal,baseURL:location.href,fetch:(...args)=>fetch(...args),upload:uploadPortrait,validate:async blob=>{const b=await createImageBitmap(blob);try{if(b.width<32||b.height<32||b.width*b.height>16000000)throw Error('Invalid image');}finally{b.close();}},saved:async next=>{adoptView(next);await readExtras();render();}});
 
 await refresh();

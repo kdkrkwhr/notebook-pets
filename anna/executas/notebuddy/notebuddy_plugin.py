@@ -16,9 +16,9 @@ from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-# Release gate: requires visual validation and separately approved image.edit grant.
-EQUIPMENT_ENABLED = False
-VERSION = '0.9.7'
+# Enabled after approved image editing, live quality and real APS validation.
+EQUIPMENT_ENABLED = True
+VERSION = '0.9.8'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'
@@ -33,7 +33,7 @@ MANIFEST = {
         'name': 'game', 'description': 'Read or care for your pet. Never choose a user or provide game state. Read status first. For a new action append a unique suffix to request_id_prefix from the latest response. Reuse the entire request_id on retries. Never restamp an expired request automatically.',
         'timeout': 60,
         'parameters': [
-            {'name':'equipment_payload','type':'string','required':False,'description':'UI equipment transaction only; disabled pending image quality validation. Bounded JSON <=1024 chars.'},
+            {'name':'equipment_payload','type':'string','required':False,'description':'UI-confirmed equipment transaction only. Reserve without consumption; apply a stored preview once. Bounded JSON <=1024 chars. No automatic generation or paid retry.'},
             {'name':'evolution_payload','type':'string','required':False,'description':'Explicit user evolution only. JSON <=4096 chars with current pet_id. evolution_prepare adds current stage to reserve three routes once; evolution_options adds choice_id, three allowed options (keep first), language, memory <=600 chars and observed appearance features <=1200 chars; evolve adds choice_id and the exact route_id the user selected. Never evolve automatically or invent elements/stats. Read status.evolution first.'},
             {'name':'home_payload','type':'string','required':False,'description':'home_buy/home_apply/home_undo only: bounded JSON. Current pet_id and home revision required. Buy adds item_id; apply adds a current home_candidates candidate_id and short reason. Invoke home_apply only for explicit room-decoration requests. Buying/viewing/animation never require AI.'},
             {'name': 'profile', 'type': 'string', 'required': False, 'description': 'personality only: bounded JSON with appearance, source (reference/portrait/starter), traits (curiosity/warmth/energy/caution: -1/0/1), and bilingual en/ko summary, voice, habit. Establish once from the pet name and visual features. Cannot overwrite an existing personality or change rewards.'},

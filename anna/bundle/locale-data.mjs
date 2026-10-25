@@ -5285,6 +5285,131 @@ export const catalog={
     "zh-Hans": "及之前的谨慎选择",
     "zh-Hant": "及先前的謹慎選擇"
   },
+  "Original portrait": {
+    "ja": "元の肖像",
+    "zh-Hans": "原肖像",
+    "zh-Hant": "原肖像"
+  },
+  "Preview · not applied": {
+    "ja": "プレビュー · 未適用",
+    "zh-Hans": "预览 · 未应用",
+    "zh-Hant": "預覽 · 未套用"
+  },
+  "Saved portrait": {
+    "ja": "保存した肖像",
+    "zh-Hans": "已保存肖像",
+    "zh-Hant": "已儲存肖像"
+  },
+  "Preview ready. Your original portrait and item are unchanged.": {
+    "ja": "プレビューができました。元の肖像とアイテムはまだ変更されていません。",
+    "zh-Hans": "预览已就绪。原肖像和物品尚未改变。",
+    "zh-Hant": "預覽已就緒。原肖像和物品尚未改變。"
+  },
+  "Portrait saved. 1 item used.": {
+    "ja": "肖像を保存し、アイテムを1個使いました。",
+    "zh-Hans": "肖像已保存，已使用1件物品。",
+    "zh-Hant": "肖像已儲存，已使用1件物品。"
+  },
+  "Fitting cancelled. Your original portrait and item were kept.": {
+    "ja": "着せ替えをキャンセルしました。元の肖像とアイテムは保持されています。",
+    "zh-Hans": "已取消穿戴，原肖像和物品已保留。",
+    "zh-Hant": "已取消穿戴，原肖像和物品已保留。"
+  },
+  "Saved progress restored. Check your portrait and inventory.": {
+    "ja": "保存済みの進行を復旧しました。肖像と所持品を確認してください。",
+    "zh-Hans": "已恢复保存的进度，请检查肖像和物品。",
+    "zh-Hant": "已復原儲存的進度，請檢查肖像和物品。"
+  },
+  "The result is saved, but the original could not be loaded. Recover the preview before applying.": {
+    "ja": "結果は保存済みですが、元の肖像を読み込めませんでした。適用前にプレビューを復旧してください。",
+    "zh-Hans": "结果已保存，但无法加载原肖像。请先恢复预览再应用。",
+    "zh-Hant": "結果已儲存，但無法載入原肖像。請先復原預覽再套用。"
+  },
+  "No pending fitting. Your latest saved state is shown.": {
+    "ja": "保留中の着せ替えはありません。最新の保存状態を表示しています。",
+    "zh-Hans": "没有待处理穿戴，当前显示最新保存状态。",
+    "zh-Hant": "沒有待處理穿戴，目前顯示最新儲存狀態。"
+  },
+  "Fitting continues when this view is closed. Keep the app window open until saving finishes.": {
+    "ja": "この画面を閉じても着せ替えは続きます。保存が終わるまでアプリのウィンドウを開いたままにしてください。",
+    "zh-Hans": "关闭此页面后穿戴仍会继续。保存完成前请保持应用窗口打开。",
+    "zh-Hant": "關閉此頁面後穿戴仍會繼續。儲存完成前請保持應用視窗開啟。"
+  },
+  "A fitting is waiting. Open it to review the saved result without another image request.": {
+    "ja": "保留中の着せ替えがあります。開くと追加の画像リクエストなしで保存結果を確認できます。",
+    "zh-Hans": "有待处理的穿戴。打开后可查看保存结果，不会再次请求图片。",
+    "zh-Hant": "有待處理的穿戴。開啟後可查看儲存結果，不會再次請求圖片。"
+  },
+  "Open fitting": {
+    "ja": "着せ替えを開く",
+    "zh-Hans": "打开穿戴",
+    "zh-Hant": "開啟穿戴"
+  },
+  "Fitting item: ": {
+    "ja": "着せ替えアイテム：",
+    "zh-Hans": "穿戴物品：",
+    "zh-Hant": "穿戴物品："
+  },
+  "Enlarge": {
+    "ja": "拡大",
+    "zh-Hans": "放大",
+    "zh-Hant": "放大"
+  },
+  "Item fitting is unavailable while image quality is being verified. Your items are safe.": {
+    "ja": "画像品質の確認中は着せ替えを利用できません。アイテムは保持されます。",
+    "zh-Hans": "图片质量验证期间暂不可穿戴，物品会保留。",
+    "zh-Hant": "圖片品質驗證期間暫不可穿戴，物品會保留。"
+  },
+  "Wear · 1 image request": {
+    "ja": "着せ替え · 画像リクエスト1回",
+    "zh-Hans": "穿戴 · 1次图片请求",
+    "zh-Hant": "穿戴 · 1次圖片請求"
+  },
+  "A new portrait interprets the item and may differ from its catalog art. Preview it first. Applying a saved result consumes one item.": {
+    "ja": "アイテムを解釈した新しい肖像なので、図鑑の絵とは異なる場合があります。先にプレビューを確認してください。保存済みの結果を適用するとアイテムを1個消費します。",
+    "zh-Hans": "新肖像会重新诠释物品，可能与图鉴插画不同。请先查看预览。应用已保存的结果会消耗1件物品。",
+    "zh-Hant": "新肖像會重新詮釋物品，可能與圖鑑插畫不同。請先查看預覽。套用已儲存的結果會消耗1件物品。"
+  },
+  "Recover saved image (no generation)": {
+    "ja": "保存画像を復旧（再生成なし）",
+    "zh-Hans": "恢复已保存图片（不重新生成）",
+    "zh-Hant": "復原已儲存圖片（不重新生成）"
+  },
+  "Apply this image · consume 1 item": {
+    "ja": "この画像を適用 · アイテム1個を消費",
+    "zh-Hans": "应用此图片 · 消耗1件物品",
+    "zh-Hant": "套用此圖片 · 消耗1件物品"
+  },
+  "Cancel pending fitting": {
+    "ja": "保留中の着せ替えをキャンセル",
+    "zh-Hans": "取消待处理穿戴",
+    "zh-Hant": "取消待處理穿戴"
+  },
+  "Could not confirm completion. Recover checks saved results without another image request. An unseen result may be unrecoverable; your original portrait and item remain unless application already committed.": {
+    "ja": "完了を確認できませんでした。復旧は追加の画像リクエストなしで保存結果を確認します。未受信の結果は復旧できない場合があります。適用が確定済みの場合を除き、元の肖像とアイテムは保持されます。",
+    "zh-Hans": "无法确认是否完成。恢复会检查已保存的结果，不会再次请求图片。未收到的结果可能无法恢复；除非应用已提交，否则原肖像和物品会保留。",
+    "zh-Hant": "無法確認是否完成。復原會檢查已儲存的結果，不會再次請求圖片。未收到的結果可能無法復原；除非套用已提交，否則原肖像和物品會保留。"
+  },
+  "Pending item: ": {
+    "ja": "処理中のアイテム：",
+    "zh-Hans": "待处理物品：",
+    "zh-Hant": "待處理物品："
+  },
+  "Discovered · not owned": {
+    "ja": "発見済み · 現在未所持",
+    "zh-Hans": "已发现 · 当前未持有",
+    "zh-Hant": "已發現 · 目前未持有"
+  },
+  "Each final guardian clear grants one unowned regional item. Wear an owned item to preview a new portrait; applying it consumes one item. Common gifts and the item shop are not available yet.": {
+    "ja": "最後の守護者を倒すと、その地域の未所持アイテムを1個獲得します。所持アイテムの着せ替えをプレビューし、適用すると1個消費します。共通ギフトとアイテムショップはまだ利用できません。",
+    "zh-Hans": "击败最终守护者可获得1件该地区未持有的物品。穿戴已持有物品可预览新肖像，应用后消耗1件物品。普通礼物和物品商店暂未开放。",
+    "zh-Hant": "擊敗最終守護者可獲得1件該地區未持有的物品。穿戴已持有物品可預覽新肖像，套用後消耗1件物品。普通禮物和物品商店暫未開放。"
+  },
+  "Choose a cosmetic that suits your companion. Wearing interprets the item rather than copying its catalog art exactly. Check identity and anatomy in the preview before applying. Missing limbs must never be added.": {
+    "ja": "仲間の体形に合う装飾を選んでください。着せ替えは図鑑の絵をそのまま複製せず、アイテムを解釈して描きます。適用前にプレビューで姿や体の形を確認してください。存在しない手足を追加してはいけません。",
+    "zh-Hans": "请选择适合伙伴体型的装饰。穿戴会重新诠释物品，而非完全复制图鉴插画。应用前请在预览中检查角色特征和身体结构，不得添加原本没有的肢体。",
+    "zh-Hant": "請選擇適合夥伴體型的裝飾。穿戴會重新詮釋物品，而非完全複製圖鑑插畫。套用前請在預覽中檢查角色特徵和身體結構，不得添加原本沒有的肢體。"
+  },
   "Could not complete this action. Refresh your status and check again.": {
     "ja": "操作を完了できませんでした。状態を更新して確認してください。",
     "zh-Hans": "未能完成此操作。请刷新状态后再确认。",

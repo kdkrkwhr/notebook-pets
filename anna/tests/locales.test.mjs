@@ -7,7 +7,14 @@ import {reactionPrompt} from '../bundle/reactions.mjs';
 import {storyPrompt,basicStory} from '../bundle/walk-stories.mjs';
 import {evolutionSystem} from '../bundle/evolution.mjs';
 import {journeyStory} from '../bundle/journey-stories.mjs';
+import {equipmentWords} from '../bundle/equipment.mjs';
 const added=['ja','zh-Hans','zh-Hant'],slots=s=>[...s.matchAll(/\{\w+\}/g)].map(m=>m[0]).sort();
+test('fitting usage, consumption and recovery are available in all CJK locales without AI',()=>{
+ for(const lang of added)for(const [key,[en]]of Object.entries(equipmentWords)){
+  assert.ok(catalog[en]?.[lang],`${lang}:equipment:${key}`);
+  assert.notEqual(localeText(lang,en),en,`${lang}:equipment:${key}`);
+ }
+});
 test('all new locales cover every public UI message and preserve interpolation fields',()=>{
  for(const lang of added)for(const[key,[en]]of Object.entries(messages)){
   assert.ok(catalog[en]?.[lang],`${lang}:${key}`);assert.deepEqual(slots(catalog[en][lang]),slots(en),`${lang}:${key}`);

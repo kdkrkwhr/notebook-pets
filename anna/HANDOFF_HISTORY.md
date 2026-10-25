@@ -1,4 +1,18 @@
 
+# Gated item fitting source · 2026-10-24
+
+Source-only implementation on Anna `release`, based on **a9b6843**. No Anna deployment, production-data changes, live image calls, new credential/permission grant, public-web publish or review submission. Installed app/tool versions are not changed by this work. Both UI and tool fitting flags remain **false**; the app manifest continues to permit only image.generate.
+
+The transaction reserves without consuming, stages and preserves the result, then atomically commits portrait pointer + one-item consumption + discovery history + receipt. Reconnect/save recovery does not generate another image. Explicit preview/application and pending cancellation are included; no unequip/refund rules were introduced. The existing ownership-based regional reward rule is unchanged.
+
+Local checks: **234 Python / 6 engine / 106 JS / 79 storage-protocol / 138 browser**, strict validation, Pyodide and locked Linux Executa build/smoke passed. Focused browser recheck passed **3/3**. Exact remote SHA/CI are reported in the task result. See [verification](releases/EQUIPMENT_20261024.md) and [API/design/release conditions](docs/EQUIPMENT.md).
+
+Remaining: actual image quality, catalog-art matching, anatomy fit, deployed API/grant and cross-window platform validation. The confirmed single-image edit contract does not establish multi-image composition support. Unseen provider results cannot be recovered without provider support; automatic paid retries remain blocked. Explicit activation/versioning/deployment requires a later authorized step.
+
+
+---
+
+
 # Anna 1.4.16 storage declaration fix — 2026-10-23
 
 Runtime source **daa3014**. The reported server error was reproduced: the tool's cached runtime manifest declared only `aps.kv`, while the app also required files and tool read/write access. Tool **0.9.7** declares all four capabilities in distribution metadata and its runtime `describe`, without a separate tool `storage` field. App permissions, UI source, gameplay, save format and AI behavior are unchanged. Full-manifest protocol and packaged-binary smoke assertions prevent an incomplete declaration from passing validation.

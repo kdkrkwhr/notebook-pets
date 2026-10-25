@@ -1,7 +1,7 @@
 {
   "name": "tool-dev-notebuddy",
   "display_name": "Notebuddy Game",
-  "version": "0.9.7",
+  "version": "0.9.8",
   "description": "Care for the authenticated user’s lifelong pet. Python rules are authoritative.",
   "host_capabilities": [
     "aps.kv",
@@ -19,7 +19,7 @@
           "name": "equipment_payload",
           "type": "string",
           "required": false,
-          "description": "UI equipment transaction only; disabled pending image quality validation. Bounded JSON <=1024 chars."
+          "description": "UI-confirmed equipment transaction only. Reserve without consumption; apply a stored preview once. Bounded JSON <=1024 chars. No automatic generation or paid retry."
         },
         {
           "name": "evolution_payload",
