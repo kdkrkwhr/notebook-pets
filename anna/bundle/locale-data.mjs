@@ -5405,10 +5405,10 @@ export const catalog={
     "zh-Hans": "击败最终守护者可获得1件该地区未持有的物品。穿戴已持有物品可预览新肖像，应用后消耗1件物品。普通礼物和物品商店暂未开放。",
     "zh-Hant": "擊敗最終守護者可獲得1件該地區未持有的物品。穿戴已持有物品可預覽新肖像，套用後消耗1件物品。普通禮物和物品商店暫未開放。"
   },
-  "Choose a cosmetic that suits your companion. Wearing interprets the item rather than copying its catalog art exactly. Check identity and anatomy in the preview before applying. Missing limbs must never be added.": {
-    "ja": "仲間の体形に合う装飾を選んでください。着せ替えは図鑑の絵をそのまま複製せず、アイテムを解釈して描きます。適用前にプレビューで姿や体の形を確認してください。存在しない手足を追加してはいけません。",
-    "zh-Hans": "请选择适合伙伴体型的装饰。穿戴会重新诠释物品，而非完全复制图鉴插画。应用前请在预览中检查角色特征和身体结构，不得添加原本没有的肢体。",
-    "zh-Hant": "請選擇適合夥伴體型的裝飾。穿戴會重新詮釋物品，而非完全複製圖鑑插畫。套用前請在預覽中檢查角色特徵和身體結構，不得添加原本沒有的肢體。"
+  "Collecting and wearing are separate. Even a companion without hands can collect gloves. Choose a cosmetic that suits your companion. Wearing interprets the item rather than copying its catalog art exactly. Check identity and anatomy in the preview before applying. Missing limbs must never be added.": {
+    "ja": "収集と着用は別です。手のない仲間も手袋を収集できます。仲間の体形に合う装飾を選んでください。着せ替えは図鑑の絵をそのまま複製せず、アイテムを解釈して描きます。適用前にプレビューで姿や体の形を確認してください。存在しない手足を追加してはいけません。",
+    "zh-Hans": "收集和穿戴是两回事。没有手的伙伴也能收集手套。请选择适合伙伴体型的装饰。穿戴会重新诠释物品，而非完全复制图鉴插画。应用前请在预览中检查角色特征和身体结构，不得添加原本没有的肢体。",
+    "zh-Hant": "收集和穿戴是兩回事。沒有手的夥伴也能收集手套。請選擇適合夥伴體型的裝飾。穿戴會重新詮釋物品，而非完全複製圖鑑插畫。套用前請在預覽中檢查角色特徵和身體結構，不得添加原本沒有的肢體。"
   },
   "Could not complete this action. Refresh your status and check again.": {
     "ja": "操作を完了できませんでした。状態を更新して確認してください。",
