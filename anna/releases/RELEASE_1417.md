@@ -1,6 +1,6 @@
 # Anna 1.4.17 - item fitting
 
-Runtime candidate: **app1.4.17 / tool0.9.8**. Source activation is prepared after live checks; Anna publication, installation and review submission have not yet occurred at this entry. The final deployment outcome belongs in `HANDOFF.md` and this note.
+Deployed candidate: **app1.4.17 / tool0.9.8**, runtime commit **85de6460afbce9c5c2b967fdd2a55f6d26b870ae**. Normal release review is **pending**, candidate **1640**, replacing superseded1.4.16/1587. Public1.4.13 remains current. Submission is not review approval or public promotion.
 
 ## Behavior
 
@@ -34,7 +34,7 @@ Actual Anna APS in the existing developer app451 was exercised through the offic
 - A deliberately lost response after a real application commit resolved from the same receipt after reload; no second consumption occurred.
 - An observed portrait change from the other window rejected stale application. Cancellation retained ownership and the prior portrait.
 
-This establishes real storage/receipt/file behavior in the development harness. It does not replace verification of the deployed host, installed cloud executable or native/mobile shell. Those checks must precede submission. ART/files/game remain separate stores, with the documented cross-store concurrency limits in [EQUIPMENT.md](../docs/EQUIPMENT.md).
+This establishes real storage/receipt/file behavior in the development harness. Deployed files, grants and the actual PC executable were separately checked below. It does not establish native/mobile-shell rendering or a running Linux cloud executable. ART/files/game remain separate stores, with the documented cross-store concurrency limits in [EQUIPMENT.md](../docs/EQUIPMENT.md).
 
 ## Validation and deployment
 
@@ -44,4 +44,10 @@ Independent UI/UX review used isolated local Chromium at desktop1100x850 and mob
 
 These are automated regression tests and human visual inspection of locally rendered shipped code. Actual installed Anna/native-shell rendering and physical mobile keyboards/back gestures remain separate deployment/device checks; they are not claimed by this local review.
 
-Required sequence: publish tested Windows/Linux tool0.9.8 packages, push working draft under its observed revision, verify installation and actual runtime/tool versions, then cut1.4.17 and request its normal release review. The existing1.4.16 immutable version must not be overwritten or deleted; normal new-candidate supersession is authorized. Do not use first-app submit-review or app deletion/recreation as an update path. A pending request is not approval/public publication.
+Final CI on85de646 passed both platforms: **107 JS /140 browser /79 storage-protocol** plus strict validation and standalone build/smoke. [Anna workflow40158963056](https://github.com/kdkrkwhr/notebook-pets/actions/runs/40158963056); [shared workflow40158963066](https://github.com/kdkrkwhr/notebook-pets/actions/runs/40158963066). The initial candidate's missing collection/body guidance was fixed in all five languages and its failing narrow-screen check passed before this successful full CI.
+
+Both exact CI packages were directly uploaded to existing tool1193, frozen as0.9.8/849. Linux archive SHA-256 **30ec3b6a5cbb0251b433df0ae693374b3050b55dbb6388beb279f0a69f2119ce**; Windows **68202be0af08343589bdb4db45a5e1cc2fb2f209edc120045b0a3d31ba1a8009**. Server hashes, entrypoints and all four storage capabilities match. Tool0.9.7 remains preserved.
+
+Working push used observed revision92 and produced **revision93 /ready**, content hash **51c9f74f1e49b90768dd824194d2a365bd6da012d41f5af4b6548d6dec9727ce**. Shared listing writes were blocked and before/after hashes match, including screenshot URLs. A normal single-tool reinstall on the existing PC installation35689 returned success; status confirms **0.9.8 loaded/running**, install success. Installed0.0.0-draft serves six checked UI files byte-identical to source; image.edit is declared, existing allowEdit grant is enabled/max1, and permissions are satisfied. Production game/art/chat/story/personality record hashes and ETags remain unchanged.
+
+Cut1.4.17/1640 freezes849 and bundle **1523 /176 files /171636644 bytes /bundle_ready**, manifest SHA-256 **b1515f206c4128fe853db1c5350b8c059f3ea10340cab1c814d8b61b1282c22d**. Working is clean vs cut. Normal `apps release 1.4.17` returned pending/is_latest false/published_at null; final server readback confirms old1.4.16 superseded and public1.4.13 unchanged. No first-app submit-review, app deletion, new credentials/grants, cloud resume or public-web deployment occurred. The final bookkeeping commit changes documentation only; runtime CI/package provenance remains85de646.

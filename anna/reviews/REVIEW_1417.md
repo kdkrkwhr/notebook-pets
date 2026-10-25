@@ -1,6 +1,6 @@
 # Review notes - Notebuddy1.4.17
 
-Target: app450, version1.4.17, bundled game tool0.9.8. Review submission and installed-version evidence are recorded in the release handoff after deployment; this file alone is not proof of submission.
+Submitted target: **app450 /1.4.17 /version1640 /release_review_state pending**, frozen game tool **0.9.8 /Executa849**. Normal candidate replacement superseded1.4.16/1587; public1.4.13 remains current. Owner draft93 is ready, six served UI files match runtime source85de646 and the actual PC tool0.9.8 is loaded/running. Evidence and exact validation limits are recorded in the release handoff; submission is not approval.
 
 1. Open the collection/inventory. Browsing and switching any of the five languages must not request AI. Common gifts and the item shop remain unavailable.
 2. Select an owned regional cosmetic. Wear makes one image-edit request. The result is an interpretation of the item, not an exact second-image composite of the catalog illustration.
