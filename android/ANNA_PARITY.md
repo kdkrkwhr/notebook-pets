@@ -22,6 +22,8 @@ Reference: `246781d1ec7a55f014756acc71100e9b531d8dad` (recorded public 1.4.13 pa
 
 `android/anna-reference.json` pins source hashes. The build fails if reference bytes differ. Render comparisons use the same viewport, input/state and deterministic host fixtures; these establish rendered UI behavior only, not real model quality or Android performance.
 
+CI 40289897874 passed the canonical source-byte test, Android build and real Python/IndexedDB recovery suite. Its render check found five native select-corner pixels with at most 5/255 channel difference in otherwise identical 390px welcome screenshots. The render comparator records raw differences and permits at most eight pixels, each at most 5/255, with identical dimensions; larger/count/dimension changes fail tested bounds. Text/flow and source-byte checks remain exact. This test-only correction does not change the APK or establish phone parity.
+
 ## Unverified constraints (not silently substituted)
 
 Anna requests 1024×1024 images, including birth/evolution and home sprite sheets. The existing phone measurement is only 256px img2img (174.9 seconds, peak RSS 5.45 GiB, poor quality). 1024px text2img CPU speed, memory, character quality and sprite coherence are unverified and may be impractical. No downscaling, backend/model replacement, phone execution or quality claim is authorized in this PC preparation stage. CPU sampling parameters are adapter implementation details, not Anna parity evidence.

@@ -24,6 +24,10 @@
   "render": {
     "kind": "PC render, identical deterministic fixture host/AI; no model or phone execution",
     "reference": "246781d",
+    "rasterTolerance": {
+      "maxPixels": 8,
+      "maxChannelDelta": 5
+    },
     "deviceRatioSource": "existing evidence/connection.json physicalSize 1080x2640; represented as 360x880 CSS pixels",
     "comparisons": [
       {
@@ -35,13 +39,17 @@
         "unmodifiedPixels": {
           "width": 320,
           "height": 780,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 249600
         },
         "mobilePixels": {
           "width": 320,
           "height": 780,
+          "sameDimensions": true,
           "differentPixels": 17524,
+          "maxChannelDelta": 203,
           "totalPixels": 249600
         },
         "contentAndFlowEqual": true,
@@ -56,13 +64,17 @@
         "unmodifiedPixels": {
           "width": 320,
           "height": 780,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 249600
         },
         "mobilePixels": {
           "width": 320,
           "height": 780,
+          "sameDimensions": true,
           "differentPixels": 101593,
+          "maxChannelDelta": 210,
           "totalPixels": 249600
         },
         "contentAndFlowEqual": true,
@@ -77,13 +89,17 @@
         "unmodifiedPixels": {
           "width": 320,
           "height": 780,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 249600
         },
         "mobilePixels": {
           "width": 320,
           "height": 780,
+          "sameDimensions": true,
           "differentPixels": 57403,
+          "maxChannelDelta": 202,
           "totalPixels": 249600
         },
         "contentAndFlowEqual": true,
@@ -98,13 +114,17 @@
         "unmodifiedPixels": {
           "width": 320,
           "height": 780,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 249600
         },
         "mobilePixels": {
           "width": 320,
           "height": 780,
+          "sameDimensions": true,
           "differentPixels": 82810,
+          "maxChannelDelta": 209,
           "totalPixels": 249600
         },
         "contentAndFlowEqual": true,
@@ -119,13 +139,17 @@
         "unmodifiedPixels": {
           "width": 320,
           "height": 780,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 249600
         },
         "mobilePixels": {
           "width": 320,
           "height": 780,
+          "sameDimensions": true,
           "differentPixels": 88690,
+          "maxChannelDelta": 209,
           "totalPixels": 249600
         },
         "contentAndFlowEqual": true,
@@ -140,13 +164,17 @@
         "unmodifiedPixels": {
           "width": 390,
           "height": 844,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 329160
         },
         "mobilePixels": {
           "width": 390,
           "height": 844,
+          "sameDimensions": true,
           "differentPixels": 17465,
+          "maxChannelDelta": 203,
           "totalPixels": 329160
         },
         "contentAndFlowEqual": true,
@@ -161,13 +189,17 @@
         "unmodifiedPixels": {
           "width": 390,
           "height": 844,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 329160
         },
         "mobilePixels": {
           "width": 390,
           "height": 844,
+          "sameDimensions": true,
           "differentPixels": 99196,
+          "maxChannelDelta": 216,
           "totalPixels": 329160
         },
         "contentAndFlowEqual": true,
@@ -182,13 +214,17 @@
         "unmodifiedPixels": {
           "width": 390,
           "height": 844,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 329160
         },
         "mobilePixels": {
           "width": 390,
           "height": 844,
+          "sameDimensions": true,
           "differentPixels": 85248,
+          "maxChannelDelta": 202,
           "totalPixels": 329160
         },
         "contentAndFlowEqual": true,
@@ -203,13 +239,17 @@
         "unmodifiedPixels": {
           "width": 390,
           "height": 844,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 329160
         },
         "mobilePixels": {
           "width": 390,
           "height": 844,
+          "sameDimensions": true,
           "differentPixels": 105862,
+          "maxChannelDelta": 209,
           "totalPixels": 329160
         },
         "contentAndFlowEqual": true,
@@ -224,13 +264,17 @@
         "unmodifiedPixels": {
           "width": 390,
           "height": 844,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 329160
         },
         "mobilePixels": {
           "width": 390,
           "height": 844,
+          "sameDimensions": true,
           "differentPixels": 117455,
+          "maxChannelDelta": 209,
           "totalPixels": 329160
         },
         "contentAndFlowEqual": true,
@@ -245,13 +289,17 @@
         "unmodifiedPixels": {
           "width": 360,
           "height": 880,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 316800
         },
         "mobilePixels": {
           "width": 360,
           "height": 880,
+          "sameDimensions": true,
           "differentPixels": 17502,
+          "maxChannelDelta": 203,
           "totalPixels": 316800
         },
         "contentAndFlowEqual": true,
@@ -266,13 +314,17 @@
         "unmodifiedPixels": {
           "width": 360,
           "height": 880,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 316800
         },
         "mobilePixels": {
           "width": 360,
           "height": 880,
+          "sameDimensions": true,
           "differentPixels": 129776,
+          "maxChannelDelta": 216,
           "totalPixels": 316800
         },
         "contentAndFlowEqual": true,
@@ -287,13 +339,17 @@
         "unmodifiedPixels": {
           "width": 360,
           "height": 880,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 316800
         },
         "mobilePixels": {
           "width": 360,
           "height": 880,
+          "sameDimensions": true,
           "differentPixels": 72297,
+          "maxChannelDelta": 202,
           "totalPixels": 316800
         },
         "contentAndFlowEqual": true,
@@ -308,13 +364,17 @@
         "unmodifiedPixels": {
           "width": 360,
           "height": 880,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 316800
         },
         "mobilePixels": {
           "width": 360,
           "height": 880,
+          "sameDimensions": true,
           "differentPixels": 105037,
+          "maxChannelDelta": 209,
           "totalPixels": 316800
         },
         "contentAndFlowEqual": true,
@@ -329,13 +389,17 @@
         "unmodifiedPixels": {
           "width": 360,
           "height": 880,
+          "sameDimensions": true,
           "differentPixels": 0,
+          "maxChannelDelta": 0,
           "totalPixels": 316800
         },
         "mobilePixels": {
           "width": 360,
           "height": 880,
+          "sameDimensions": true,
           "differentPixels": 112386,
+          "maxChannelDelta": 209,
           "totalPixels": 316800
         },
         "contentAndFlowEqual": true,
@@ -370,5 +434,12 @@
     "Previous unconfirmed drafts retained without auto-commit; user-facing recovery not newly designed"
   ],
   "referenceByteConvention": "Exact Git blob bytes; core.autocrlf disabled explicitly during archive",
-  "referencePortabilityTest": "passed: core.autocrlf=true cannot alter any source byte; all archived files equal git cat-file blobs"
+  "referencePortabilityTest": "passed: core.autocrlf=true cannot alter any source byte; all archived files equal git cat-file blobs",
+  "renderComparatorRegression": "passed: recorded native-control raster variation; larger color, count and dimension changes fail",
+  "ciRenderCorrection": {
+    "run": 40289897874,
+    "observedPixels": 5,
+    "maxChannelDelta": 5,
+    "scope": "test-only; no packaged source or APK change"
+  }
 }

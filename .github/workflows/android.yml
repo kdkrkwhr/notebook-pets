@@ -42,6 +42,7 @@ jobs:
           node --test tests/pyodide/android-recovery.mjs
           node --test tests/pyodide/android-image-birth.mjs
           node --test tests/pyodide/android-model-verify.mjs
+          node --test tests/pyodide/android-render-pixels.test.mjs
           python -m unittest discover -s tests -p test_birth_traits.py
           node tests/pyodide/android-anna-parity.mjs
           node tests/pyodide/android-anna-render.mjs
