@@ -60,7 +60,7 @@ class InstalledPackageTests(unittest.TestCase):
     def test_help_and_data_location_do_not_create_a_save(self):
         self.assertEqual(self.call('--help').returncode, 0)
         self.assertEqual(self.call('--version').stdout.strip(), distribution('notebook-pets').version)
-        self.assertEqual(Path(self.call('data-dir').stdout.strip()), self.store)
+        self.assertEqual(Path(self.call('data-dir').stdout.strip()).resolve(), self.store.resolve())
         self.assertFalse(self.store.exists())
 
     def test_birth_care_reload_and_notebook_isolation(self):
