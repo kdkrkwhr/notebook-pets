@@ -18,17 +18,19 @@ export function load(db) {
 export function commit(db,revision,state,visuals,replace=false) {
   return new Promise((resolve,reject)=>{
     const tx=db.transaction('saves','readwrite'), store=tx.objectStore('saves');
-    let conflict=false;
+    let conflict=false,failure;
     const request=store.get('player');
     request.onsuccess=()=>{
+      try{
       if((request.result?.revision??0)!==revision){conflict=true;tx.abort();return;}
       const old=request.result,changed=replace||old?.state?.pet_id!==state?.pet_id;
       const epoch=(old?.epoch??0)+(changed?1:0);
       store.put({revision:revision+1,epoch,state},'player');
-      if(changed)store.put(visuals??{revision:0,art:{},files:{}},'visuals');
+      if(changed){store.put(visuals??{revision:0,art:{},files:{}},'visuals');store.delete('birth-draft');}
+      }catch(error){failure=error;try{tx.abort();}catch{/* Already aborted. */}}
     };
     tx.oncomplete=()=>resolve();
-    tx.onabort=()=>reject(new Error(conflict?'다른 창에서 저장이 변경되었습니다. 다시 시도해 주세요.':'저장에 실패했습니다.'));
+    tx.onabort=()=>reject(new Error(conflict?'다른 창에서 저장이 변경되었습니다. 다시 시도해 주세요.':'저장에 실패했습니다. 받은 결과로 저장만 다시 시도할 수 있어요.',{cause:failure}));
     tx.onerror=()=>{};
   });
 }

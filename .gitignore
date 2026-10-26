@@ -49,7 +49,9 @@ android/.gradle/
 android/.kotlin/
 android/local.properties
 android/**/build/
+android/**/.cxx/
 android/runtime/
 android/*.jks
 android/*.keystore
 *.litertlm
+*.safetensors

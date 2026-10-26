@@ -27,10 +27,17 @@ class ModelFiles(private val directory: File, val spec: ModelSpec = ModelSpec.GE
     @Volatile private var connection: HttpURLConnection? = null
 
     init { directory.mkdirs() }
-    fun ready(): Boolean = model.length() == spec.bytes && receipt.isFile &&
+    fun hasCompleteLocalFile(): Boolean = model.isFile && model.length() == spec.bytes
+    fun ready(): Boolean = hasCompleteLocalFile() && receipt.isFile &&
         receipt.readText() == "${spec.sha256}:${model.lastModified()}"
     fun cancel() { stopped.set(true); connection?.disconnect() }
     fun delete() { cancel(); model.delete(); partial.delete(); receipt.delete() }
+    /** No URL/connection/download/partial promotion. Preserve an existing file on failure. */
+    fun verifyExisting(progress: (Long, String) -> Unit): File {
+        stopped.set(false)
+        check(hasCompleteLocalFile()) { "기존 모델 파일이 없거나 크기가 달라요. 다운로드하지 않았어요." }
+        return verify(model, progress, preserveFileOnFailure = true)
+    }
     fun download(progress: (Long, String) -> Unit): File {
         stopped.set(false)
         if (ready()) { partial.delete(); return model }
@@ -76,21 +83,32 @@ class ModelFiles(private val directory: File, val spec: ModelSpec = ModelSpec.GE
         return verify(partial, progress)
     }
 
-    private fun verify(file: File, progress: (Long, String) -> Unit): File {
+    private fun verify(file: File, progress: (Long, String) -> Unit, preserveFileOnFailure: Boolean = false): File {
+        val modified = file.lastModified()
         val hash = MessageDigest.getInstance("SHA-256"); var read = 0L; var last = 0L
         file.inputStream().buffered(1024 * 1024).use { input ->
             val buffer = ByteArray(1024 * 1024)
             while (true) {
                 if (stopped.get()) throw CancellationException("Paused")
                 val n = input.read(buffer); if (n < 0) break
+                if (read + n > spec.bytes) throw IOException("Model changed during verification. No model was removed.")
                 hash.update(buffer, 0, n); read += n
                 if (System.currentTimeMillis() - last > 250 || read == spec.bytes) {
                     progress(read, "verify"); last = System.currentTimeMillis()
                 }
             }
         }
+        if (stopped.get()) throw CancellationException("Paused")
+        if (read != spec.bytes || file.length() != spec.bytes || file.lastModified() != modified) {
+            receipt.delete()
+            throw IOException("Model changed during verification. No model was removed.")
+        }
         val digest = hash.digest().joinToString("") { "%02x".format(it) }
-        if (digest != spec.sha256) { file.delete(); receipt.delete(); throw IOException("Checksum mismatch. File removed; download the model again.") }
+        if (digest != spec.sha256) {
+            receipt.delete()
+            if (preserveFileOnFailure) throw IOException("기존 모델의 해시가 달라요. 파일은 보존했고 다운로드하지 않았어요.")
+            file.delete(); throw IOException("Checksum mismatch. File removed; download the model again.")
+        }
         if (file != model) check(file.renameTo(model)) { "Could not finish model storage." }
         receipt.writeText("${spec.sha256}:${model.lastModified()}")
         return model

@@ -36,7 +36,11 @@ jobs:
         run: |
           npm exec --prefix tests/pyodide -- playwright-core install --with-deps chromium
           node --test tests/pyodide/android-recovery.mjs
+          node --test tests/pyodide/android-image-birth.mjs
+          node --test tests/pyodide/android-model-verify.mjs
+          python -m unittest discover -s tests -p test_birth_traits.py
           node tests/pyodide/android-game.mjs
+          node tests/pyodide/android-image-ui.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: NoteBuddy-Android-debug
@@ -48,3 +52,4 @@ jobs:
           path: |
             android/app/build/reports/
             android/runtime/game-browser/
+            android/runtime/image-browser/

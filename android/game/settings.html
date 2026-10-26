@@ -1,11 +1,11 @@
 <dialog id="settings-dialog" aria-labelledby="settings-heading">
   <div class="section-heading"><h2 id="settings-heading">설정</h2><button class="quiet" data-close="settings-dialog" aria-label="닫기">×</button></div>
-  <h3>친구와 대화하기</h3>
+  <h3>대화와 그림 분석 준비</h3>
   <p id="native-model-status" role="status">대화 준비를 확인하고 있어요…</p>
   <p id="native-download-help" class="muted small">처음 한 번, 대화에 필요한 파일 2.59GB를 받아요. Wi-Fi에서 받아 주세요. 다른 앱으로 이동하면 멈추며, 돌아와 이어받을 수 있어요.</p>
-  <div class="dialog-actions"><button id="native-download" class="primary">대화 준비하기 · 이어받기</button><button id="native-cancel" class="quiet" hidden>받기 중지</button></div>
+  <div class="dialog-actions"><button id="native-verify" class="primary" hidden>기존 파일만 확인 · 다운로드 없음</button><button id="native-download" class="primary">대화 준비하기 · 이어받기</button><button id="native-cancel" class="quiet" hidden>준비 중지</button></div>
   <p id="native-error" role="status"></p>
-  <details><summary>앱 정보와 데이터</summary><p>노트버디 0.2.2 alpha<br>그림과 대화는 이 휴대폰에 보관해요. 앱을 삭제하기 전에는 공책을 백업해 주세요.</p><p>직접 고른 그림이 친구의 모습이 돼요. 진화해도 원래 그림을 간직해요.</p><p class="muted small">대화: Gemma 4 E2B · 기기 내 실행</p></details>
+  <details><summary>앱 정보와 데이터</summary><p>노트버디 0.2.3 alpha<br>그림과 대화는 이 휴대폰에 보관해요. 앱을 삭제하기 전에는 공책을 백업해 주세요.</p><p>새 친구 만들기는 그림 분석 후 새 모습을 만들고 확인한 뒤 저장해요. 중단된 원본·미리보기는 다시 열어 이어갈 수 있어요. 진화·집·아이템 착용의 새 이미지 생성은 아직 지원하지 않아요.</p><p class="muted small">분석·대화: Gemma 4 E2B · 기기 내 실행<br>생성: Stable Diffusion 1.5 · 휴대폰 CPU · 256px<br>이전 설정의 합성 테스트는 약 3분 걸렸어요. 이번 분석·생성 설정의 시간과 품질은 실기기 확인 전이며 더 오래 걸릴 수 있어요. 모델 한계로 무늬·형태가 달라질 수 있어요.</p></details>
   <details id="native-licenses"><summary>오픈소스 고지</summary><pre id="native-license-text" style="white-space:pre-wrap;font-size:12px"></pre></details>
   <!-- Shared UI keeps these inert legacy bindings; there is no cloud provider here. -->
   <div hidden><input id="key"><button id="forget"></button><button id="load-models"></button><select id="model"></select><span id="key-status"></span><span id="model-status"></span></div>

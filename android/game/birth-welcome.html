@@ -1,0 +1,28 @@
+<section id="welcome" class="welcome paper">
+  <div>
+    <ol id="birth-steps" class="birth-steps" aria-label="친구를 만나는 순서"><li data-step="mode"><span>1</span><b>만남 방식</b></li><li data-step="name"><span>2</span><b>이름</b></li><li data-step="meet"><span>3</span><b>함께하기</b></li></ol>
+    <h2>어떤 친구를 만나게 될까요?</h2>
+    <p>그림이나 사진 속 특징을 간직한 친구, 또는 준비된 깜짝 친구를 만나 보세요.</p>
+    <div class="birth-choice">
+      <label for="birth-mode">친구를 만나는 방법</label>
+      <select id="birth-mode"><option value="art">내 그림·사진으로 만나기</option><option value="random">깜짝 친구 만나기</option></select>
+      <div id="birth-art-choice" class="birth-art">
+        <div class="birth-image-actions"><button id="choose-photo" class="primary" type="button">사진 고르기</button><button id="choose-art" class="quiet" type="button">직접 그리기</button></div>
+        <button id="import-lab-photo" class="quiet" type="button" hidden>이전 사진 가져오기</button>
+        <p id="birth-art-status" class="muted small" role="status">그림이나 사진을 직접 골라 주세요.</p>
+      </div>
+    </div>
+    <div id="birth-comparison" class="birth-buttons">
+      <figure id="birth-original-figure" hidden><img id="birth-preview" class="art-source-preview" alt="선택한 원본 그림"><figcaption>내가 고른 원본</figcaption></figure>
+      <figure id="birth-generated-figure" hidden><img id="birth-generated-preview" class="art-source-preview" alt="새로 만든 친구 미리보기"><figcaption>새로 만든 모습 · 저장 전</figcaption></figure>
+    </div>
+    <section id="birth-recovery" class="birth-recovery" aria-label="친구의 모습 준비" hidden>
+      <p id="birth-generation-status" role="status" aria-live="polite"></p>
+      <details id="birth-analysis" hidden><summary>확인한 특징 보기</summary><p id="birth-analysis-kind" class="muted small"></p><p id="birth-analysis-features"></p></details><button id="birth-analysis-confirm" class="primary" type="button" hidden>이 특징으로 만들기</button>
+      <div class="birth-buttons"><button id="birth-generate" class="primary" type="button">특징을 살려 친구 만들기</button><button id="birth-generation-cancel" class="quiet" type="button" hidden>만들기 취소</button><button id="birth-generation-discard" class="quiet" type="button" hidden>다른 모습 준비하기</button><button id="birth-draft-retry" class="quiet" type="button" hidden>받은 결과 다시 보관</button><button id="birth-prepare" class="quiet" type="button" hidden>모델 준비 확인</button></div>
+      <small class="muted">사진은 휴대폰에서만 분석해요. 원본과 새 그림은 따로 보관해요. 특징이 달라질 수 있으니 저장 전에 확인해 주세요.</small>
+    </section>
+    <form id="birth"><label for="name">친구의 이름</label><div class="inline"><input id="name" maxlength="24" placeholder="예: 모찌" value="노트버디" required autocomplete="off"><button class="primary" disabled>이 모습으로 친구 만나기 · 저장</button></div></form>
+    <small class="muted">그림의 종·속성은 분석한 특징에서 정해져요. 명확한 속성이 없으면 무작위로 정해져요.</small>
+  </div>
+</section>

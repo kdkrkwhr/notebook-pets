@@ -5,3 +5,4 @@ dependencyResolutionManagement {
 }
 rootProject.name = "NoteBuddyLocalAI"
 include(":app")
+if (providers.gradleProperty("imageRuntimePath").isPresent) include(":imageprobe")

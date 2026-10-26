@@ -5,6 +5,15 @@ import android.app.AlertDialog
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.PowerManager
+import android.os.BatteryManager
+import android.os.SystemClock
+import android.app.ActivityManager
+import android.content.Intent
+import android.content.IntentFilter
+import android.view.WindowManager
 import android.util.Base64
 import android.webkit.*
 import android.widget.FrameLayout
@@ -34,12 +43,38 @@ class GameActivity : ComponentActivity() {
     private val worker = Executors.newSingleThreadExecutor()
     private val busy = AtomicBoolean(false)
     private val stopped = AtomicBoolean(false)
-    private var activeId: String? = null
+    @Volatile private var activeId: String? = null
     private var rendererGone = false
     internal var recoveryDialog: AlertDialog? = null
         private set
     private lateinit var models: ModelFiles
     private lateinit var ai: LocalAI
+    private lateinit var images: LocalImage
+    private val imageHandler=Handler(Looper.getMainLooper())
+    private var imageActive=false
+    private var imageStarted=0L
+    private var imageNotice:((Map<String,Any>)->Unit)?=null
+    private var imageStopReason=""
+    private val imageMonitor=object:Runnable {
+        override fun run(){
+            if(!imageActive)return
+            val battery=registerReceiver(null,IntentFilter(Intent.ACTION_BATTERY_CHANGED))
+            val temperature=battery?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE,0)?:0
+            val memory=ActivityManager.MemoryInfo().also {getSystemService(ActivityManager::class.java).getMemoryInfo(it)}
+            val elapsed=SystemClock.elapsedRealtime()-imageStarted
+            val reason=when {
+                getSystemService(PowerManager::class.java).currentThermalStatus>=PowerManager.THERMAL_STATUS_SEVERE || temperature>=420 -> "기기가 뜨거워 생성을 멈췄어요. 식힌 뒤 다시 시도해 주세요."
+                memory.lowMemory || memory.availMem<512L*1024*1024 -> "여유 메모리가 부족해 생성을 멈췄어요. 원본은 그대로예요."
+                (battery?.getIntExtra(BatteryManager.EXTRA_LEVEL,100)?:100)<=15 && (battery?.getIntExtra(BatteryManager.EXTRA_PLUGGED,0)?:0)==0 -> "배터리가 부족해 생성을 멈췄어요."
+                elapsed>600000 -> "생성 시간이 너무 길어 멈췄어요. 자동으로 다시 실행하지 않아요."
+                else -> null
+            }
+            if(reason!=null){imageStopReason=reason;stopped.set(true);images.cancel()}
+            val p=images.progress()
+            imageNotice?.invoke(mapOf("kind" to "image","elapsedSeconds" to elapsed/1000,"step" to (p?.get(0)?:0),"steps" to (p?.get(1)?:0),"cancelling" to stopped.get()))
+            imageHandler.postDelayed(this,1000)
+        }
+    }
     private val gson = Gson()
     private var chooser: ValueCallback<Array<Uri>>? = null
     private var exportReply: ((Any?, String?) -> Unit)? = null
@@ -71,6 +106,7 @@ class GameActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         models = ModelFiles(File(getExternalFilesDir(null), "models"))
         ai = LocalAI(models.model, File(cacheDir, "litert").also { it.mkdirs() })
+        images = LocalImage(File(getExternalFilesDir(null), "models/sd15.safetensors"))
         val root = FrameLayout(this)
         gameView = WebView(this)
         root.addView(gameView, FrameLayout.LayoutParams(-1, -1)); setContentView(root)
@@ -106,7 +142,7 @@ class GameActivity : ComponentActivity() {
             }
             override fun onRenderProcessGone(view: WebView, detail: RenderProcessGoneDetail): Boolean {
                 rendererGone = true
-                stopped.set(true); ai.cancel(); models.cancel()
+                stopped.set(true); ai.cancel(); models.cancel(); images.cancel()
                 chooser?.onReceiveValue(null); chooser = null
                 root.removeView(view); view.destroy()
                 offerRecovery()
@@ -159,24 +195,42 @@ class GameActivity : ComponentActivity() {
             require(id.matches(Regex("[A-Za-z0-9-]{1,64}")))
             val payload = request.getAsJsonObject("payload") ?: JsonObject()
             when (request.get("action").asString) {
-                "status" -> reply(mapOf("ready" to models.ready(), "hasLabPhoto" to File(filesDir, "input.png").isFile, "testMode" to testMode))
+                "status" -> reply(mapOf("ready" to models.ready(), "hasLabPhoto" to File(filesDir, "input.png").isFile, "testMode" to testMode,
+                    "imageEnabled" to BuildConfig.LOCAL_IMAGE_ENABLED,"localImageReady" to images.ready(),"textModelPresent" to models.hasCompleteLocalFile(),"busy" to busy.get()))
                 "cancel" -> {
                     val target = payload.get("target")?.asString
-                    if (target == null || target == activeId) { stopped.set(true); ai.cancel(); models.cancel() }
+                    if (target == null || target == activeId) { stopped.set(true); ai.cancel(); models.cancel(); images.cancel() }
                     reply(true)
                 }
-                "download", "complete" -> {
+                "download", "verifyModel", "complete", "generateImage" -> {
                     check(busy.compareAndSet(false, true)) { "친구가 아직 답장을 쓰고 있어요. 잠시 기다려 주세요." }
                     activeId = id; stopped.set(false)
                     val action = request.get("action").asString
+                    if(action=="generateImage"||action=="complete")window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    if(action=="generateImage"){
+                        images.prepare();imageActive=true;imageStarted=SystemClock.elapsedRealtime();imageStopReason=""
+                        imageNotice={ data->if(!isDestroyed&&!rendererGone)runCatching {proxy.postMessage(gson.toJson(mapOf("id" to id,"progress" to data)))} }
+                        imageHandler.post(imageMonitor)
+                    }
                     worker.execute {
                         try {
                             if (stopped.get()) throw CancellationException()
-                            if (action == "download") {
-                                models.download { bytes, phase ->
+                            if(action=="generateImage"){
+                                // One worker owns both runtimes; never keep Gemma resident during SD.
+                                ai.close()
+                                val generated=images.run(ImageRequest.parse(payload))
+                                if(stopped.get())throw CancellationException()
+                                if(BuildConfig.DEBUG)runCatching {
+                                    File(getExternalFilesDir(null),"last-image-generation.json").writeText(gson.toJson(generated.filterKeys {it!="image"}))
+                                }
+                                reply(generated)
+                            } else if (action == "download" || action == "verifyModel") {
+                                val progress: (Long,String)->Unit = { bytes, phase ->
                                     val progress = gson.toJson(mapOf("id" to id, "progress" to mapOf("kind" to "download", "bytes" to bytes, "phase" to phase)))
                                     runOnUiThread { if (!isDestroyed && !rendererGone) runCatching { proxy.postMessage(progress) } }
-                                }; reply(true)
+                                }
+                                if(action=="verifyModel")models.verifyExisting(progress) else models.download(progress)
+                                reply(true)
                             } else {
                                 check(models.ready()) { "설정에서 친구와 대화할 준비를 해 주세요." }
                                 var lastUpdate = 0L
@@ -190,8 +244,15 @@ class GameActivity : ComponentActivity() {
                                 reply(complete(GameRequest.parse(payload), ::progress))
                             }
                         } catch (e: Exception) {
-                            reply(error = if (stopped.get() || e is CancellationException) "잠시 멈췄어요." else e.message?.take(220) ?: "로컬 AI 요청을 완료하지 못했어요.")
-                        } finally { activeId = null; busy.set(false) }
+                            reply(error = imageStopReason.takeIf { action=="generateImage" && it.isNotEmpty() }
+                                ?: if (stopped.get() || e is CancellationException) "취소했어요. 원본과 저장된 자료는 그대로예요." else e.message?.take(220) ?: "로컬 AI 요청을 완료하지 못했어요.")
+                        } finally { runOnUiThread {
+                            if(action=="generateImage"){
+                                imageActive=false;imageNotice=null;imageHandler.removeCallbacks(imageMonitor)
+                            }
+                            if(action=="generateImage"||action=="complete")window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                            activeId = null; busy.set(false)
+                        } }
                     }
                 }
                 "labPhoto" -> {
@@ -254,10 +315,12 @@ class GameActivity : ComponentActivity() {
     override fun onPause() { if (::gameView.isInitialized && !rendererGone) gameView.onPause(); super.onPause() }
     override fun onStop() {
         stopped.set(true); if (::ai.isInitialized) ai.cancel(); if (::models.isInitialized) models.cancel()
+        if(::images.isInitialized)images.cancel()
         if (!worker.isShutdown) worker.execute { ai.close() }
         super.onStop()
     }
     override fun onDestroy() {
+        imageHandler.removeCallbacks(imageMonitor)
         chooser?.onReceiveValue(null); chooser = null
         recoveryDialog?.dismiss(); recoveryDialog = null
         if (::gameView.isInitialized && !rendererGone) { gameView.stopLoading(); gameView.destroy() }

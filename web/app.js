@@ -106,12 +106,12 @@ $('confirm-reset').onclick=async()=>{
 };
 worker.onmessage=({data})=>{const p=pending.get(data.id);if(!p)return;clearTimeout(p.timer);pending.delete(data.id);data.error?p.reject(Error(data.error)):p.resolve(data.result);};
 worker.onerror=event=>{event.preventDefault();engineFailure=Error('게임 엔진 실행에 실패했습니다. 새로고침해 주세요.');for(const p of pending.values()){clearTimeout(p.timer);p.reject(engineFailure);}pending.clear();};
-function calculate(state,command,args=[],requestId=null){
+function calculate(state,command,args=[],requestId=null,birth=null){
   if(engineFailure)return Promise.reject(engineFailure);
   return new Promise((resolve,reject)=>{
     const id=++serial,timer=setTimeout(()=>{pending.delete(id);reject(Error('엔진 준비 시간이 초과되었습니다. 새로고침해 주세요.'));},120000);
     pending.set(id,{resolve,reject,timer});
-    worker.postMessage({id,payload:{state,command,arguments:args,requestId,now:Date.now()/1000,seed:crypto.getRandomValues(new Uint32Array(1))[0],ids:Array.from({length:64},()=>crypto.randomUUID().replaceAll('-',''))}});
+    worker.postMessage({id,payload:{state,command,arguments:args,requestId,birth,now:Date.now()/1000,seed:crypto.getRandomValues(new Uint32Array(1))[0],ids:Array.from({length:64},()=>crypto.randomUUID().replaceAll('-',''))}});
   });
 }
 function lock(value){busy=value;aiSettings.lock(value||!!chatController);document.querySelectorAll('#actions button,#choices button,#dungeon-list button,#birth button,#import,#export,#refresh,#claimquest,#open-reset,#confirm-reset,#open-home,#open-appearance,#save-portrait,#portrait-file').forEach(b=>b.disabled=value||!!chatController);if(!value&&!chatController){$('claimquest').disabled=!current?.quest?.ready;$('confirm-reset').disabled=$('reset-phrase').value!=='초기화';$('save-portrait').disabled=!selectedPortrait;}if(window.NoteBuddyPlatform)$('chat').querySelector('button').disabled=value||!!chatController||!!pendingChatSave;dungeons.render();stories?.render();evolution.render();}
@@ -222,10 +222,11 @@ $('birth').onsubmit=async e=>{
       if(saved.state)throw Error('이미 함께하는 친구가 있어요.');
       const name=$('name').value;
       const prepared=await window.NoteBuddyPlatform.birth(name);
-      const candidate=await calculate(null,'start',[name],crypto.randomUUID());
+      const candidate=await calculate(null,'start',[name],crypto.randomUUID(),prepared.traits??null);
       if(!candidate.result.ok||!candidate.changed)throw Error(candidate.result.msg||'친구를 만들지 못했어요.');
       const initial=await prepared.visuals(candidate.view);
       await commit(db,saved.revision,candidate.state,initial);
+      await window.NoteBuddyPlatform.birthCommitted?.();
       await refresh(true);text('notice','이 기기에 친구와 그림을 저장했어요.');
     }catch(error){text('notice',error.message);}finally{lock(false);}
   }else await act('start',[$('name').value]);

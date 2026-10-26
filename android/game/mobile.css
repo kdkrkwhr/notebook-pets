@@ -62,7 +62,7 @@ body .mobile-outing{padding:22px 18px}body .mobile-outing .eyebrow{font:10px/1.3
 .outing-actions{display:flex;gap:8px;margin:20px 0 12px;flex-wrap:wrap}body .outing-actions button{flex:1;background:var(--green);color:#fffaf0;padding:14px;display:flex;align-items:center;justify-content:center;gap:10px;min-height:56px}.outing-actions small{display:none}.outing-actions span{font-size:24px}
 body .web-choices{padding:10px;margin:12px 0 0;border:1px solid var(--line);border-radius:12px;background:var(--paper)}body .dungeon-section{padding:16px}body .dungeon-list{grid-template-columns:1fr;gap:12px}body .web-dungeon-art{height:130px}body .dungeon-card{border-radius:14px;box-shadow:none}
 body .quest-card,body .album-card,body .item-book-teaser{padding:16px}body .album{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}body .quests{font-size:13px;gap:12px}body .mobile-pet-details{padding:12px 16px;background:var(--paper);border:1px solid var(--line);border-radius:16px}body summary{min-height:44px;padding:12px 0;font-size:14px;cursor:pointer}body .stats{text-align:left;word-spacing:0;font:12px/1.8 var(--pixel);margin:0;padding:10px 0}
-body #welcome{overflow-y:auto;display:flex;flex-direction:column;align-items:stretch;min-height:0;margin:12px;padding:20px;gap:12px;border-radius:20px}body #welcome h2{font-size:22px;margin:12px 0}body #welcome>img{order:-1;width:100%;height:120px;object-fit:contain;margin:0}body #welcome .birth-steps{display:none}body #birth .inline{flex-wrap:wrap}body #birth .inline input{flex-basis:100%}body #birth button{width:100%}
+body #welcome{overflow-y:auto;display:flex;flex-direction:column;align-items:stretch;min-height:0;margin:12px;padding:20px;gap:12px;border-radius:20px}body #welcome h2{font-size:22px;margin:12px 0}body #welcome>img{order:-1;width:100%;height:120px;object-fit:contain;margin:0}body #welcome .birth-steps{display:flex}body #birth .inline{flex-wrap:wrap}body #birth .inline input{flex-basis:100%}body #birth button{width:100%}
 .birth-art{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0}.birth-art button{width:100%}.birth-art p{flex-basis:100%}body #birth-art-status{font-size:12px}
 /* Dedicated full-screen worlds and flows, with one scroll owner per surface. */
 body dialog:not(#title-screen){max-width:100vw;max-height:100dvh;border:0;border-radius:20px;box-shadow:0 12px 70px #0005;padding:20px;background:var(--paper);color:var(--ink);overscroll-behavior:contain}
@@ -96,3 +96,14 @@ body #actions [data-action=attendance]{grid-column:auto}body dialog#home-dialog,
 @media(min-width:650px){.mobile-screen{padding:16px 24px}body #screen-friend{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto 1fr;gap:12px;align-content:start}body #screen-friend .pet-card{grid-row:1/3;margin:0}body .web-world-actions{margin:0}body .mobile-tabs{justify-content:center}body .mobile-tabs button{max-width:150px}.mobile-screen>section{max-width:800px;margin-left:auto;margin-right:auto}body .dungeon-experience{flex-direction:row}body .dungeon-sidebar{max-height:none;width:310px;flex:0 0 310px;align-content:start}body #evolution-routes{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-height:500px){body .masthead{min-height:48px;padding:4px 12px}body .brand small{display:none}body .mobile-tabs{min-height:50px}body .mobile-tabs button{min-height:44px;flex-direction:row;justify-content:center;gap:6px}body .chat-card>.card-top,body.keyboard-open .suggestions{display:none}body .home-footer{max-height:45%}body #mobile-ai{padding:4px 12px}body #mobile-ai-time{display:none}}
 @media(prefers-reduced-motion:reduce){body *,body *::before,body *::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+/* Reuse Anna's welcome/steps/recovery components, with contained mobile portraits. */
+body #welcome #birth-recovery{max-width:none;margin:16px 0;padding:0;text-align:left}
+body #welcome #birth-recovery .birth-buttons{justify-content:flex-start}
+body #welcome figure{margin:12px 0;text-align:center;min-width:0}
+body #welcome #birth-comparison{display:flex;flex-wrap:nowrap;gap:12px;align-items:start}
+body #welcome #birth-comparison figure{flex:1 1 0;min-width:0}
+body #welcome figure img{width:100%;height:160px;max-width:100%;object-fit:contain;image-rendering:auto;background:white;margin:0}
+body #welcome figcaption{font-size:12px;color:var(--muted)}
+body #birth-analysis-features{overflow-wrap:anywhere;white-space:pre-wrap}
+body #birth-generation-status{font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+body #welcome .birth-steps{font-size:11px;gap:6px;margin-bottom:12px}

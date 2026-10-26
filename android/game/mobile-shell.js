@@ -103,6 +103,7 @@ export function mountMobile(){
   };
   new MutationObserver(dialogChanged).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
   window.NoteBuddyBack=()=>{
+    if(window.NoteBuddyPlatform?.cancelImageBeforeBack?.())return true;
     const dialogs=[...document.querySelectorAll('dialog[open]')],dialog=dialogs.at(-1);
     if(dialog){
       if(dialog.id==='home-dialog'&&!$('home-shop-panel').hidden){$('home-shop-close').click();return true;}

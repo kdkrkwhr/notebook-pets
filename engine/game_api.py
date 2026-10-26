@@ -48,7 +48,7 @@ def validate_request(actor_id, command, arguments, request_id):
 
 
 def transition(state, command, context: ExecutionContext, *,
-               actor_id='1', arguments=(), request_id=None):
+               actor_id='1', arguments=(), request_id=None, birth=None):
     """Calculate one candidate. The caller alone decides whether to persist it.
 
     The state, rules and template input must be supplied by the host. Time is
@@ -60,12 +60,30 @@ def transition(state, command, context: ExecutionContext, *,
     try:
         with execution(context, candidate):
             canonical = validate_request(actor_id, command, arguments, request_id)
+            if birth is not None:
+                if (canonical != 'start' or not isinstance(birth, dict)
+                    or set(birth) != {'species', 'element'}
+                    or birth['species'] not in context.rules['species']
+                    or birth['element'] not in (*context.rules['elements'], 'random')):
+                    raise GameError('invalid_arguments', 'Invalid drawing birth traits')
             if canonical == 'help':
                 result = engine.cmd_help()
             elif request_id is not None and canonical not in engine.READ_COMMANDS:
                 result = engine.execute_once(actor_id, canonical, arguments, request_id)
             else:
                 result = engine.dispatch_player(actor_id, canonical, arguments)
+            # One shared rule for Anna and mobile. Never change an existing pet/replay.
+            if birth is not None and original is None and candidate.state and result.get('ok'):
+                import art
+                current = candidate.state
+                current['species'] = birth['species']
+                if birth['element'] != 'random':
+                    current['element'] = birth['element']
+                result.update(species=engine.G['species'][current['species']]['name_kr'],
+                              element=engine.G['elements'][current['element']]['name_kr'],
+                              image_key=art.describe(current)['key'], image=art.describe(current))
+                if request_id in current.get('processed_requests', {}):
+                    current['processed_requests'][request_id]['result'] = copy.deepcopy(result)
         changed = candidate.written and candidate.state != original
         current = candidate.state if changed else original
         old_history = original.get('history', []) if original else []

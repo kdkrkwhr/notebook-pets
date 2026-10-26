@@ -44,24 +44,10 @@ def run(payload):
         if command == 'personality': arguments = [payload.get('profile', '')]
         if command in ('home_buy','home_apply','home_undo'):arguments=[payload.get('home_payload','')]
         if command in ('evolution_prepare','evolution_options','evolve'):arguments=[payload.get('evolution_payload','')]
-        outcome = transition(previous, command, context, actor_id='1', arguments=arguments, request_id=payload.get('request_id'))
+        birth = ({'species': payload['birth_species'], 'element': payload.get('birth_element', 'random')}
+                 if payload.get('birth_species') is not None else None)
+        outcome = transition(previous, command, context, actor_id='1', arguments=arguments, request_id=payload.get('request_id'), birth=birth)
         result, current = outcome.result, outcome.state
-        # Only the new local candidate is adjusted before its single APS commit.
-        # Replays and already-created pets never reapply or reroll these traits.
-        species, element = payload.get('birth_species'), payload.get('birth_element', 'random')
-        if species is not None:
-            if command != 'start' or species not in engine.G['species'] or element not in (*engine.G['elements'], 'random'):
-                raise ValueError('Invalid drawing birth traits')
-            if previous is None and current and result.get('ok'):
-                current['species'] = species
-                if element != 'random':
-                    current['element'] = element
-                result.update(species=engine.G['species'][species]['name_kr'],
-                              element=engine.G['elements'][current['element']]['name_kr'],
-                              image_key=art.describe(current)['key'], image=art.describe(current))
-                request = payload.get('request_id')
-                if request in current.get('processed_requests', {}):
-                    current['processed_requests'][request]['result'] = result.copy()
         status = transition(current, 'status', context).result if current else None
         album = transition(current, 'album', context).result.get('album') if current else None
         view = {'status': status, 'album': album}

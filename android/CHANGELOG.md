@@ -1,5 +1,15 @@
 # Android release notes
 
+## 0.2.3-alpha — 2026-10-26 — integration verification pending
+
+- Add optional Android SD1.5 img2img via the pinned stable-diffusion.cpp JNI bridge. Inference stays on the phone; close Gemma first on the same worker.
+- Separate input and generated previews. Require explicit generation and save; commit original/generated PNGs with the companion in one existing transaction. Reopening never invokes generation.
+- Reuse Anna's artwork analysis contract and uncertainty confirmation through local Gemma; apply observed species/element in the shared core. Preserve human references, cropped framing and input aspect ratio. Show original/result comparison and an explicit save within shared welcome components.
+- Retain pending source/assessment/preview for reload and save-only recovery. Keep prior saved notebooks intact on failure. Explain the previous roughly three-minute probe measurement and that current settings are unmeasured. Bound concurrent requests, cancel on Back/background/thermal/memory limits, and keep the visible analysis/generation window awake.
+- Add PNG request validation, cancel/stale-result tests, mock UI save/reload coverage and opt-in real-phone instrumentation isolated from user notebooks.
+- The earlier APK was installed separately as `.lab.ondevice`; SD/Gemma files were copied and hash-checked. Missing Gemma readiness receipt blocks text/vision in that installation. A separate offline-only verifier is now prepared and PC-tested; no rejected download was retried.
+- Probe succeeded on SM-F741N at 256px in 174.9 seconds, but visual quality failed. This correction changes strength/steps/conditioning and remains pending physical generation/cancel/save/recreate checks. Phone work is paused by request; no store/public release.
+
 ## 0.2.2-alpha · 2026-10-24
 
 - Split photo selection and drawing into explicit buttons; open the Android file picker directly. Keep the confirmed artwork on invalid input or cancellation and ignore stale Lab-photo import results.

@@ -11,5 +11,5 @@ export function createAI(){
     try{return {content:{text:await call('complete',options,controller.signal)}};}
     finally{controllers.delete(controller);signal?.removeEventListener('abort',abort);}
   }
-  return {text,llm:{complete:(o,opts)=>text({...o,json:true},opts)},image:{async generate(){throw Error('이 Android판은 새 이미지를 생성하지 않아요. 원본 그림을 사용해 주세요.');}},clear(){closed=true;for(const c of controllers)c.abort();controllers.clear();}};
+  return {text,llm:{complete:(o,opts)=>text({...o,json:true},opts)},image:{async generate(){throw Error('이 화면의 새 이미지 생성은 아직 지원하지 않아요. 현재 그림은 그대로 보관해요.');}},clear(){closed=true;for(const c of controllers)c.abort();controllers.clear();}};
 }

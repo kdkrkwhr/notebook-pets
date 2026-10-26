@@ -18,7 +18,7 @@ def execute(raw):
     p=json.loads(raw)
     ids=iter(p['ids'])
     context=ExecutionContext(rules,templates,p['now'],random.Random(p['seed']),lambda:next(ids))
-    r=transition(p['state'],p['command'],context,arguments=p['arguments'],request_id=p['requestId'])
+    r=transition(p['state'],p['command'],context,arguments=p['arguments'],request_id=p['requestId'],birth=p.get('birth'))
     status=transition(r.state,'status',context).result
     home=transition(r.state,'home',context).result if r.state else {}
     album=transition(r.state,'album',context).result.get('album') if r.state else None
