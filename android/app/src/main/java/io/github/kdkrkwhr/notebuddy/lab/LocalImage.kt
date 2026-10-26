@@ -34,6 +34,26 @@ class LocalImage(private val model: File) {
         model.inputStream().use { input->val buffer=ByteArray(1024*1024);while(true){checkRunning();val n=input.read(buffer);if(n<0)break;digest.update(buffer,0,n)} }
         check(digest.digest().joinToString(""){"%02x".format(it)}==SHA256){"이미지 모델 파일 확인에 실패했어요."}
     }
+    fun runText(request:TextImageRequest):Map<String,Any>{
+        val started=System.nanoTime();verifyModel();checkRunning()
+        val size=request.size
+        val job=synchronized(lock){NativeImage.create().also {handle=it;if(cancelled.get())NativeImage.cancel(it)}}
+        try {
+            checkRunning()
+            // Empty init pixels selects text2img. Keep the exact Anna prompt and
+            // requested dimensions; do not silently downscale or add a policy.
+            val seed=java.security.SecureRandom().nextInt(Int.MAX_VALUE).toLong()
+            val generated=NativeImage.run(job,model.absolutePath,ByteArray(0),size,20,1f,seed,request.prompt)
+            checkRunning();check(generated.size==size*size*3){"생성 이미지가 올바르지 않아요."}
+            val colors=IntArray(size*size){i->(0xff shl 24) or ((generated[i*3].toInt() and 255) shl 16) or ((generated[i*3+1].toInt() and 255) shl 8) or (generated[i*3+2].toInt() and 255)}
+            val bitmap=Bitmap.createBitmap(colors,size,size,Bitmap.Config.ARGB_8888)
+            val png=ByteArrayOutputStream().also {check(bitmap.compress(Bitmap.CompressFormat.PNG,100,it))}.toByteArray();bitmap.recycle()
+            checkRunning();val stats=NativeImage.stats(job)
+            return mapOf("image" to "data:image/png;base64,"+Base64.encodeToString(png,Base64.NO_WRAP),
+                "totalWallMs" to (System.nanoTime()-started)/1_000_000,"generationMs" to stats[1],"peakRssKiB" to stats[2],
+                "seed" to seed,"size" to size,"steps" to 20,"backend" to "phone_cpu","mode" to "text2img")
+        }finally{synchronized(lock){NativeImage.destroy(job);handle=0}}
+    }
     fun run(request:ImageRequest):Map<String,Any>{
         val started=System.nanoTime()
         verifyModel();checkRunning()

@@ -6,10 +6,11 @@ import org.junit.Test
 
 class GameRequestTest {
     private fun parse(value: String) = GameRequest.parse(JsonParser.parseString(value).asJsonObject)
-    @Test fun acceptsHistoryAndBoundsGeneration() {
-        val r = parse("""{"messages":[{"role":"user","content":"안녕"},{"role":"assistant","content":"반가워"},{"role":"user","content":"놀자"}],"maxTokens":9999}""")
-        assertEquals(3,r.messages.size); assertEquals("assistant",r.messages[1].role); assertEquals(1200,r.tokens)
+    @Test fun preservesAnnaGenerationSettings() {
+        val r = parse("""{"messages":[{"role":"user","content":"안녕"},{"role":"assistant","content":"반가워"},{"role":"user","content":"놀자"}],"maxTokens":2000,"temperature":0}""")
+        assertEquals(3,r.messages.size); assertEquals("assistant",r.messages[1].role); assertEquals(2000,r.tokens);assertEquals(0.0,r.temperature,0.0)
     }
+    @Test(expected=IllegalArgumentException::class) fun rejectsOversizeInsteadOfSilentlyTruncating() { parse("""{"messages":[{"role":"user","content":"hello"}],"maxTokens":9999}""") }
     @Test fun acceptsStructuredHomeMessage() {
         val r = parse("""{"json":true,"messages":[{"role":"user","content":{"type":"text","text":"{}"}}]}""")
         assertTrue(r.json);assertEquals("{}",r.messages.single().text)

@@ -7,10 +7,10 @@ android {
         applicationId = "io.github.kdkrkwhr.notebuddy.lab"
         minSdk = 31
         targetSdk = 36
-        versionCode = 5
-        versionName = "0.2.3-alpha"
+        versionCode = 6
+        versionName = "0.2.4-parity-preview"
         providers.gradleProperty("imageTestSuffix").orNull?.let { applicationIdSuffix = it }
-        manifestPlaceholders["appLabel"] = if (providers.gradleProperty("imageTestSuffix").isPresent) "Notebuddy · 기기생성" else "@string/app_name"
+        manifestPlaceholders["appLabel"] = if (providers.gradleProperty("imageTestSuffix").isPresent) "Notebuddy · 모바일 검증" else "@string/app_name"
         buildConfigField("boolean", "LOCAL_IMAGE_ENABLED", localImageEnabled.toString())
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += if (localImageEnabled) listOf("arm64-v8a") else listOf("arm64-v8a", "x86_64") }

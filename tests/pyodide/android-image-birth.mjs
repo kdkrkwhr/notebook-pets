@@ -1,6 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {birthArtwork,createBirthGeneration,localBirthPrompt} from '../../android/app/build/generated/gameAssets/game/local-image-birth.mjs';
+// Archived 6066cad controller regression only; it is no longer packaged in Android.
+import {readFile} from 'node:fs/promises';
+const legacy=(await readFile(new URL('../../android/game/local-image-birth.mjs',import.meta.url),'utf8')).replace("'./birth-art.mjs'",JSON.stringify(new URL('../../anna/bundle/birth-art.mjs',import.meta.url).href));
+const {birthArtwork,createBirthGeneration,localBirthPrompt}=await import('data:text/javascript;base64,'+Buffer.from(legacy).toString('base64'));
 const original=new Blob(['original'],{type:'image/png'}),generated=new Blob(['new pixels'],{type:'image/png'});
 const assessment={features:'Blue legless snake, no ears, a red diamond on the left side.',species:'reptile',element:'water',confidence:'clear'};
 const options={analyze:async()=>assessment,encode:async()=>'',decode:async()=>generated,generate:async()=>({image:'ok'})};

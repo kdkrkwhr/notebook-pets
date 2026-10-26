@@ -17,6 +17,7 @@ import java.util.concurrent.TimeUnit
 
 /** Never reset the user notebook: every game mutation is in the explicit debug test database. */
 @RunWith(AndroidJUnit4::class)
+@org.junit.Ignore("Archived mobile-shell UI. Current Anna adapter is covered by android-anna-parity.mjs; device lifecycle parity remains unverified.")
 class GameSmokeTest {
     private lateinit var activity: GameActivity
     private val instrumentation get() = InstrumentationRegistry.getInstrumentation()

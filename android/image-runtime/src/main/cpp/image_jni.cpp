@@ -76,8 +76,9 @@ Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_run(JNIEnv* env, jobjec
     auto* job = reinterpret_cast<Job*>(handle);
     std::unique_lock<std::mutex> exclusive(runtime_lock, std::try_to_lock);
     if (!exclusive.owns_lock()) { fail(env, "A generation is already running"); return nullptr; }
-    if ((size != 256 && size != 384 && size != 512) || steps < 8 || steps > 30 ||
-        strength < .2f || strength > .8f || env->GetArrayLength(rgb) != size*size*3) {
+    const bool text_only = env->GetArrayLength(rgb) == 0;
+    if ((size != 256 && size != 384 && size != 512 && !(text_only && size == 1024)) || steps < 8 || steps > 30 ||
+        (!text_only && (strength < .2f || strength > .8f || env->GetArrayLength(rgb) != size*size*3))) {
         fail(env, "Invalid bounded image request"); return nullptr;
     }
     if (job->cancelled) { fail(env, "Cancelled"); return nullptr; }
@@ -111,15 +112,15 @@ Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_run(JNIEnv* env, jobjec
         if (loaded && job->cancelled) sd_cancel_generation(loaded, SD_CANCEL_ALL);
     }
     if (loaded && !job->cancelled) {
-        std::vector<uint8_t> pixels(size*size*3);
-        env->GetByteArrayRegion(rgb, 0, pixels.size(), reinterpret_cast<jbyte*>(pixels.data()));
+        std::vector<uint8_t> pixels(text_only ? 0 : size*size*3);
+        if (!text_only) env->GetByteArrayRegion(rgb, 0, pixels.size(), reinterpret_cast<jbyte*>(pixels.data()));
         sd_img_gen_params_t request;
         sd_img_gen_params_init(&request);
         request.prompt = prompt_text.c_str();
-        request.negative_prompt = "text, letters, watermark, photorealism, gore, duplicated subject, noisy background, scenery";
+        request.negative_prompt = text_only ? "" : "text, letters, watermark, photorealism, gore, duplicated subject, noisy background, scenery";
         request.width = request.height = size;
-        request.init_image = {static_cast<uint32_t>(size), static_cast<uint32_t>(size), 3, pixels.data()};
-        request.strength = strength;
+        if (!text_only) request.init_image = {static_cast<uint32_t>(size), static_cast<uint32_t>(size), 3, pixels.data()};
+        request.strength = text_only ? 1.f : strength;
         request.seed = seed;
         request.batch_count = 1;
         request.sample_params.sample_steps = steps;

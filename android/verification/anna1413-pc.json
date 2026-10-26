@@ -1,0 +1,372 @@
+{
+  "apkBytes": 313338670,
+  "apkSha256": "b97300626c52634f66293818515a4ac4b3a11f565bc9a11c0843f75512732e15",
+  "originalFiles": 467,
+  "adapterFiles": 54,
+  "assetMismatches": [],
+  "jvm": {
+    "tests": 36,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "phoneExecution": false,
+  "text2img1024": "blocked pending feasibility decision and validation",
+  "reference": "246781d1ec7a55f014756acc71100e9b531d8dad",
+  "preservedPrevious": "6066cadbc3379dd97dc4be97bc98d551518d5f9e",
+  "package": "io.github.kdkrkwhr.notebuddy.lab.ondevice",
+  "versionCode": 6,
+  "versionName": "0.2.4-parity-preview",
+  "signerSha256": "07987d756266505d7005e476357e8cbdd78d26b375174ff04520251a94026c7c",
+  "signerMatchesPreviouslyVerifiedInstalledApk": true,
+  "lint": "passed",
+  "androidBuild": "passed in 4m13s; JNI arm64/app/test APK; no device execution",
+  "render": {
+    "kind": "PC render, identical deterministic fixture host/AI; no model or phone execution",
+    "reference": "246781d",
+    "deviceRatioSource": "existing evidence/connection.json physicalSize 1080x2640; represented as 360x880 CSS pixels",
+    "comparisons": [
+      {
+        "viewport": {
+          "width": 320,
+          "height": 780
+        },
+        "state": "initial",
+        "unmodifiedPixels": {
+          "width": 320,
+          "height": 780,
+          "differentPixels": 0,
+          "totalPixels": 249600
+        },
+        "mobilePixels": {
+          "width": 320,
+          "height": 780,
+          "differentPixels": 17524,
+          "totalPixels": 249600
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 320,
+          "height": 780
+        },
+        "state": "welcome",
+        "unmodifiedPixels": {
+          "width": 320,
+          "height": 780,
+          "differentPixels": 0,
+          "totalPixels": 249600
+        },
+        "mobilePixels": {
+          "width": 320,
+          "height": 780,
+          "differentPixels": 101593,
+          "totalPixels": 249600
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 320,
+          "height": 780
+        },
+        "state": "generating",
+        "unmodifiedPixels": {
+          "width": 320,
+          "height": 780,
+          "differentPixels": 0,
+          "totalPixels": 249600
+        },
+        "mobilePixels": {
+          "width": 320,
+          "height": 780,
+          "differentPixels": 57403,
+          "totalPixels": 249600
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 320,
+          "height": 780
+        },
+        "state": "complete",
+        "unmodifiedPixels": {
+          "width": 320,
+          "height": 780,
+          "differentPixels": 0,
+          "totalPixels": 249600
+        },
+        "mobilePixels": {
+          "width": 320,
+          "height": 780,
+          "differentPixels": 82810,
+          "totalPixels": 249600
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 320,
+          "height": 780
+        },
+        "state": "revisit",
+        "unmodifiedPixels": {
+          "width": 320,
+          "height": 780,
+          "differentPixels": 0,
+          "totalPixels": 249600
+        },
+        "mobilePixels": {
+          "width": 320,
+          "height": 780,
+          "differentPixels": 88690,
+          "totalPixels": 249600
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "state": "initial",
+        "unmodifiedPixels": {
+          "width": 390,
+          "height": 844,
+          "differentPixels": 0,
+          "totalPixels": 329160
+        },
+        "mobilePixels": {
+          "width": 390,
+          "height": 844,
+          "differentPixels": 17465,
+          "totalPixels": 329160
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "state": "welcome",
+        "unmodifiedPixels": {
+          "width": 390,
+          "height": 844,
+          "differentPixels": 0,
+          "totalPixels": 329160
+        },
+        "mobilePixels": {
+          "width": 390,
+          "height": 844,
+          "differentPixels": 99196,
+          "totalPixels": 329160
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "state": "generating",
+        "unmodifiedPixels": {
+          "width": 390,
+          "height": 844,
+          "differentPixels": 0,
+          "totalPixels": 329160
+        },
+        "mobilePixels": {
+          "width": 390,
+          "height": 844,
+          "differentPixels": 85248,
+          "totalPixels": 329160
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "state": "complete",
+        "unmodifiedPixels": {
+          "width": 390,
+          "height": 844,
+          "differentPixels": 0,
+          "totalPixels": 329160
+        },
+        "mobilePixels": {
+          "width": 390,
+          "height": 844,
+          "differentPixels": 105862,
+          "totalPixels": 329160
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "state": "revisit",
+        "unmodifiedPixels": {
+          "width": 390,
+          "height": 844,
+          "differentPixels": 0,
+          "totalPixels": 329160
+        },
+        "mobilePixels": {
+          "width": 390,
+          "height": 844,
+          "differentPixels": 117455,
+          "totalPixels": 329160
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 360,
+          "height": 880
+        },
+        "state": "initial",
+        "unmodifiedPixels": {
+          "width": 360,
+          "height": 880,
+          "differentPixels": 0,
+          "totalPixels": 316800
+        },
+        "mobilePixels": {
+          "width": 360,
+          "height": 880,
+          "differentPixels": 17502,
+          "totalPixels": 316800
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 360,
+          "height": 880
+        },
+        "state": "welcome",
+        "unmodifiedPixels": {
+          "width": 360,
+          "height": 880,
+          "differentPixels": 0,
+          "totalPixels": 316800
+        },
+        "mobilePixels": {
+          "width": 360,
+          "height": 880,
+          "differentPixels": 129776,
+          "totalPixels": 316800
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 360,
+          "height": 880
+        },
+        "state": "generating",
+        "unmodifiedPixels": {
+          "width": 360,
+          "height": 880,
+          "differentPixels": 0,
+          "totalPixels": 316800
+        },
+        "mobilePixels": {
+          "width": 360,
+          "height": 880,
+          "differentPixels": 72297,
+          "totalPixels": 316800
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 360,
+          "height": 880
+        },
+        "state": "complete",
+        "unmodifiedPixels": {
+          "width": 360,
+          "height": 880,
+          "differentPixels": 0,
+          "totalPixels": 316800
+        },
+        "mobilePixels": {
+          "width": 360,
+          "height": 880,
+          "differentPixels": 105037,
+          "totalPixels": 316800
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      },
+      {
+        "viewport": {
+          "width": 360,
+          "height": 880
+        },
+        "state": "revisit",
+        "unmodifiedPixels": {
+          "width": 360,
+          "height": 880,
+          "differentPixels": 0,
+          "totalPixels": 316800
+        },
+        "mobilePixels": {
+          "width": 360,
+          "height": 880,
+          "differentPixels": 112386,
+          "totalPixels": 316800
+        },
+        "contentAndFlowEqual": true,
+        "intendedChanges": "mobile.css layout/font/touch sizing; no DOM steps or wording changes"
+      }
+    ],
+    "errors": []
+  },
+  "browser": {
+    "kind": "PC browser contract, fixture AI only; no inference or phone",
+    "sourceFiles": 467,
+    "checks": [
+      "original title/default-random/empty-name; no added preparation/preview/save shell",
+      "one Meet triggers original analysis -> real Python start -> text2img -> auto-save/personality; no img2img/download",
+      "saved game/art persist on reload; no automatic AI rerun",
+      "real GameService replay does not double-apply; stale KV/file writes preserve stored content",
+      "synthetic old schema migrated atomically; source, previous records and unconfirmed preview preserved",
+      "unsupported: original recovery preserves pet/source; explicit retry only",
+      "fail: original recovery preserves pet/source; explicit retry only",
+      "cancel: original recovery preserves pet/source; explicit retry only",
+      "save-fault: original recovery preserves pet/source; explicit retry only; save-only retry makes no new image request",
+      "missing-model: original analysis failure; no start/generation/download or fallback",
+      "verify-fail: original analysis failure; no start/generation/download or fallback"
+    ],
+    "errors": []
+  },
+  "limitations": [
+    "AI outputs are synthetic fixtures; not model quality evidence",
+    "1024px CPU text2img explicitly blocked pending feasibility decision and validation",
+    "Original 467-file hash match does not establish complete mobile behavior equivalence",
+    "No phone operations, installation, model downloads, PC/server inference or release deployment",
+    "Previous unconfirmed drafts retained without auto-commit; user-facing recovery not newly designed"
+  ]
+}

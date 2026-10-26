@@ -14,6 +14,8 @@ jobs:
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Android packages the hash-locked Anna 1.4.13 source commit.
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -39,8 +41,8 @@ jobs:
           node --test tests/pyodide/android-image-birth.mjs
           node --test tests/pyodide/android-model-verify.mjs
           python -m unittest discover -s tests -p test_birth_traits.py
-          node tests/pyodide/android-game.mjs
-          node tests/pyodide/android-image-ui.mjs
+          node tests/pyodide/android-anna-parity.mjs
+          node tests/pyodide/android-anna-render.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: NoteBuddy-Android-debug
@@ -53,3 +55,5 @@ jobs:
             android/app/build/reports/
             android/runtime/game-browser/
             android/runtime/image-browser/
+            android/runtime/anna-parity/
+            android/runtime/anna-render/

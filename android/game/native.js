@@ -15,7 +15,7 @@ export function call(action,payload={},signal){
     const id=session+'-'+(++sequence);
     function stop(message){if(!requests.has(id))return;requests.delete(id);cleanup();try{window.NoteBuddyNative.postMessage(JSON.stringify({id:'cancel-'+id,action:'cancel',payload:{target:id}}));}catch{}reject(Error(message));}
     const abort=()=>stop('답장을 멈췄어요.');
-    const timer=setTimeout(()=>stop('요청 시간이 길어져 멈췄어요. 입력한 내용은 남아 있어요. 준비 상태를 확인하고 다시 시도해 주세요.'),action==='download'?6*60*60*1000:action==='exportFinish'?30*60*1000:action==='generateImage'?11*60*1000:180000);
+    const timer=setTimeout(()=>stop('요청 시간이 길어져 멈췄어요. 입력한 내용은 남아 있어요. 준비 상태를 확인하고 다시 시도해 주세요.'),action==='download'?6*60*60*1000:action==='exportFinish'?30*60*1000:['generateImage','generateTextImage'].includes(action)?11*60*1000:180000);
     function cleanup(){clearTimeout(timer);signal?.removeEventListener('abort',abort);if(action==='complete')window.dispatchEvent(new CustomEvent('native-ai',{detail:{id,phase:'end'}}));}
     requests.set(id,{resolve,reject,cleanup,action,abort});signal?.addEventListener('abort',abort,{once:true});
     if(action==='complete')window.dispatchEvent(new CustomEvent('native-ai',{detail:{id,phase:'start'}}));

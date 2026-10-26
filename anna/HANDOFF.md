@@ -20,6 +20,18 @@
 
 ---
 
+# Android Anna 1.4.13 parity preparation — 2026-10-26
+
+`codex/android-anna1413-parity`는 기록된 Anna 공개 1.4.13 패키징 `246781d`를 직접 재사용합니다. 이전 Android `6066cad`는 원래 브랜치에 보존했습니다. Anna 공개/제출 상태를 새로 조회하지 않았으며 Anna·Pages·스토어 배포도 하지 않습니다.
+
+- 고정 원본 467개 파일 해시 일치. 추가 미리보기/확정저장 흐름 대신 Anna의 분석→text2img 요청→자동저장 흐름을 사용합니다. 공유 Python 서비스·규칙을 Pyodide로 실행합니다.
+- 사용자 승인 범위의 모바일 CSS/키보드 연결만 추가했습니다. PC 320/390px와 기존 폰 1080:2640 비율에서 초기·환영·생성중·완료·재방문 15쌍 대조: 원본 CSS 렌더는 픽셀 차이 0, 모바일 CSS는 의도된 배치/글자/터치 차이만 있고 표시 내용은 동일했습니다. AI는 합성 fixture입니다.
+- 실제 Python/IndexedDB의 저장·재실행·중복요청·충돌·이전 자료/미확정 초안 보존·미지원/실패/취소/저장만 재시도 통과. 실기기 결과가 아닙니다.
+- **1024px CPU text2img는 지원 검증 전 차단**합니다. JNI 경로는 준비하지만 시간/메모리/품질은 미검증이며 생성 기능 완성본이 아닙니다. 기존256px 실측174.9초/5.45GiB/품질 미통과와 구분합니다. 휴대폰 조작·설치·실제 추론은 하지 않았습니다.
+- Android arm64 APK/JNI·테스트 APK 빌드, JVM36건, Lint 통과. APK 313,338,670B, SHA256 `b97300626c52634f66293818515a4ac4b3a11f565bc9a11c0843f75512732e15`, 기존 `.lab.ondevice`와 서명 일치. CI는 아직 실행 전이며 최종 결과는 Android 검증 기록에서 갱신합니다. 이전 사용자 데이터/사진/공책에는 접근하지 않았습니다.
+
+---
+
 # Web 0.7.1 — 진행 안내·홈 복구·앨범 통합 — 2026-10-19
 
 사용자 요청에 따라 웹에 적용 가능한 Anna `cba0513` 변경을 merge `94c72c5`로 가져왔습니다. Anna **1.4.13 / working revision 89 / review ID 1446 / tool 0.9.5**는 유지합니다. 이번 작업에서는 Anna 업로드·설치·cut·심사 제출을 하지 않습니다.
@@ -28,15 +40,3 @@
 - 홈 진입 시 저장된 외형을 새로 읽고 실제 이미지 해독 성공 여부로 누락 안내를 표시합니다. 메인/도감 앨범의 패딩·프레임·contain 표시를 통일했습니다. 저장 스키마·Python 규칙·보상에는 변경이 없습니다.
 - 로컬 Edge에서 웹 기본·월드·현재 기능·진화·로컬 AI·7개 테마 검증과 제공자 단위 6건 통과. 생성 지연 31초 안내·360px 화면·중복 호출 없음·저장 실패 후 AI 없는 재시도·홈 이미지 실패 후 재진입·대화 오류 후 안내 정리·360/620/1280px 양쪽 앨범을 추가 검증했습니다. IndexedDB 보존·백업·초기화 경쟁 상태도 통과했고 페이지 오류는 없습니다. 모든 AI는 모의 응답이며 유료 사용은 없습니다.
 - 배포 완료: 런타임 **6b0b24a / 0.7.1**, [Pages 39184697747](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39184697747)와 [공통 CI 39184697850](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39184697850) 성공. 공개 주소에서 별도 공책으로 월드·현재 기능 시나리오를 다시 통과했고 주요 JS/CSS 14개가 검증 빌드와 일치합니다(BOM/줄바꿈 정규화). 공개 검증에서도 페이지 오류·실제 유료 AI 호출은 없습니다. Anna API의 전체 앱 정보·초안·전체 버전 목록은 배포 전후 동일하여 심사본·소개 자료·working revision이 유지됨을 확인했습니다. 기존 사용자 저장은 열거나 변경하지 않았습니다.
-
----
-
-# Anna growth-album image containment — 2026-10-18
-
-CSS-only source **1f2e312**, owner draft **1.4.13 / working revision 89 / installed 0.0.0-draft**, actual cloud tool **0.9.5 / Executa 774 / master 1193 loaded/running**. Review **1.4.13 / ID 1446** and shared listing must remain unchanged; public web excluded.
-
-- Measured the owner's four saved album portraits: each 90px image exceeded the bordered 92px frame's inner height by approximately **0.83px at both top and bottom** at the current display scale. Original portrait files and album records are unchanged.
-- Add 4px inner padding, contain images within the frame's content box and clip overflow at the rounded frame boundary. Keep `object-fit: contain`, so images scale without cropping. Use shrinkable album grid columns/items. Applies to both the main growth album and collection album.
-- Verified **21 layouts / 168 images** across seven themes and widths **360 / 620 / 1120**, with no boundary or horizontal overflow. Existing theme browser **3/3** and strict validation passed. No new permanent test or paid AI call. Private screenshots and measurements: `.local/album-layout/`. Installed `ui-polish.css` hash matches source; all four owner portraits are loaded and fully inside their 4px padded frames. UI is Connected with no notice. Game ETag and artwork/chat/story/personality values/ETags, frozen review row **1446** and shared listing remain unchanged. No tool or app version bump. Working bundle **172 files / 171338211 bytes**, content hash **c8dabd5ba1fdc2fcfd4b162965c633302b6e3083a0aa9cf5d0822b8105ec9cdc**. No additional AI calls.
-
----

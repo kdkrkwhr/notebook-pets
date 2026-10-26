@@ -3,13 +3,13 @@ package io.github.kdkrkwhr.notebuddy.lab
 import com.google.gson.JsonObject
 
 data class GameMessage(val role: String, val text: String)
-data class GameRequest(val system: String, val messages: List<GameMessage>, val image: String?, val json: Boolean, val tokens: Int) {
+data class GameRequest(val system: String, val messages: List<GameMessage>, val image: String?, val json: Boolean, val tokens: Int, val temperature: Double = .7) {
     companion object {
         fun parse(value: JsonObject): GameRequest {
             val system = value.get("systemPrompt")?.asString ?: "Reply briefly in Korean."
             require(system.length <= 5000) { "AI 지시문이 너무 길어요." }
             val source = value.getAsJsonArray("messages") ?: error("대화 내용이 없어요.")
-            require(source.size() in 1..10) { "최근 대화가 너무 길어요." }
+            require(source.size() in 1..12) { "최근 대화가 너무 길어요." }
             var image: String? = null
             val messages = source.map { item ->
                 val m = item.asJsonObject
@@ -38,7 +38,10 @@ data class GameRequest(val system: String, val messages: List<GameMessage>, val 
             require(messages.last().role == "user" && messages.last().text.isNotBlank()) { "메시지를 입력해 주세요." }
             require(system.length + messages.sumOf { it.text.length } <= 12000) { "이번 요청은 로컬 모델에 너무 길어요. 짧게 입력해 주세요." }
             val json = value.get("json")?.asBoolean ?: false
-            return GameRequest(system, messages, image, json, (value.get("maxTokens")?.asInt ?: 300).coerceIn(64, 1200))
+            val tokens=value.get("maxTokens")?.asInt ?: 300
+            val temperature=value.get("temperature")?.asDouble ?: .7
+            require(tokens in 64..2000 && temperature.isFinite() && temperature in 0.0..1.0) { "이 로컬 모델이 요청한 생성 설정을 지원하지 않아요." }
+            return GameRequest(system, messages, image, json, tokens, temperature)
         }
     }
 }

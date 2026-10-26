@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit
 
 /** Explicit opt-in real phone inference, only in the separately installed test package. */
 @RunWith(AndroidJUnit4::class)
+@org.junit.Ignore("Archived 6066cad img2img UI test. New 1024px text2img requires a separate feasibility decision; do not run this obsolete phone experiment.")
 class ImageBirthTest {
     private val instrumentation get()=InstrumentationRegistry.getInstrumentation()
     private lateinit var activity:GameActivity

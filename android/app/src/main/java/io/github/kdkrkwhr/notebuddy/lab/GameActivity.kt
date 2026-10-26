@@ -130,6 +130,11 @@ class GameActivity : ComponentActivity() {
         val loader = WebViewAssetLoader.Builder().addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this)).build()
         fun resource(uri: Uri): WebResourceResponse {
             if (uri.scheme == "https" && uri.host == "appassets.androidplatform.net" && uri.port == -1) {
+                // Preserve the pinned Anna import URL; only its host transport changes.
+                if (uri.path == "/static/anna-apps/_sdk/latest/index.js") {
+                    return WebResourceResponse("text/javascript", "utf-8", ByteArrayInputStream(
+                        "export {AnnaAppRuntime} from '/assets/game/local/runtime.mjs';".toByteArray()))
+                }
                 loader.shouldInterceptRequest(uri)?.let { return it }
             }
             return WebResourceResponse("text/plain", "utf-8", 403, "Blocked", emptyMap(), ByteArrayInputStream(ByteArray(0)))
@@ -196,18 +201,20 @@ class GameActivity : ComponentActivity() {
             val payload = request.getAsJsonObject("payload") ?: JsonObject()
             when (request.get("action").asString) {
                 "status" -> reply(mapOf("ready" to models.ready(), "hasLabPhoto" to File(filesDir, "input.png").isFile, "testMode" to testMode,
-                    "imageEnabled" to BuildConfig.LOCAL_IMAGE_ENABLED,"localImageReady" to images.ready(),"textModelPresent" to models.hasCompleteLocalFile(),"busy" to busy.get()))
+                    "imageEnabled" to BuildConfig.LOCAL_IMAGE_ENABLED,"localImageReady" to images.ready(),"textModelPresent" to models.hasCompleteLocalFile(),"busy" to busy.get(),
+                    "textImageReady" to TextImageCapability.ready,"textImageBlockedReason" to TextImageCapability.reason))
                 "cancel" -> {
                     val target = payload.get("target")?.asString
                     if (target == null || target == activeId) { stopped.set(true); ai.cancel(); models.cancel(); images.cancel() }
                     reply(true)
                 }
-                "download", "verifyModel", "complete", "generateImage" -> {
+                "download", "verifyModel", "complete", "generateImage", "generateTextImage" -> {
                     check(busy.compareAndSet(false, true)) { "친구가 아직 답장을 쓰고 있어요. 잠시 기다려 주세요." }
                     activeId = id; stopped.set(false)
                     val action = request.get("action").asString
-                    if(action=="generateImage"||action=="complete")window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-                    if(action=="generateImage"){
+                    val imageAction=action=="generateImage"||action=="generateTextImage"
+                    if(imageAction||action=="complete")window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                    if(imageAction){
                         images.prepare();imageActive=true;imageStarted=SystemClock.elapsedRealtime();imageStopReason=""
                         imageNotice={ data->if(!isDestroyed&&!rendererGone)runCatching {proxy.postMessage(gson.toJson(mapOf("id" to id,"progress" to data)))} }
                         imageHandler.post(imageMonitor)
@@ -215,10 +222,11 @@ class GameActivity : ComponentActivity() {
                     worker.execute {
                         try {
                             if (stopped.get()) throw CancellationException()
-                            if(action=="generateImage"){
+                            if(imageAction){
+                                val textRequest=if(action=="generateTextImage")TextImageRequest.parse(payload).also {TextImageCapability.requireSupported(it)} else null
                                 // One worker owns both runtimes; never keep Gemma resident during SD.
                                 ai.close()
-                                val generated=images.run(ImageRequest.parse(payload))
+                                val generated=if(textRequest!=null)images.runText(textRequest) else images.run(ImageRequest.parse(payload))
                                 if(stopped.get())throw CancellationException()
                                 if(BuildConfig.DEBUG)runCatching {
                                     File(getExternalFilesDir(null),"last-image-generation.json").writeText(gson.toJson(generated.filterKeys {it!="image"}))
@@ -244,13 +252,13 @@ class GameActivity : ComponentActivity() {
                                 reply(complete(GameRequest.parse(payload), ::progress))
                             }
                         } catch (e: Exception) {
-                            reply(error = imageStopReason.takeIf { action=="generateImage" && it.isNotEmpty() }
+                            reply(error = imageStopReason.takeIf { imageAction && it.isNotEmpty() }
                                 ?: if (stopped.get() || e is CancellationException) "취소했어요. 원본과 저장된 자료는 그대로예요." else e.message?.take(220) ?: "로컬 AI 요청을 완료하지 못했어요.")
                         } finally { runOnUiThread {
-                            if(action=="generateImage"){
+                            if(imageAction){
                                 imageActive=false;imageNotice=null;imageHandler.removeCallbacks(imageMonitor)
                             }
-                            if(action=="generateImage"||action=="complete")window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+                            if(imageAction||action=="complete")window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
                             activeId = null; busy.set(false)
                         } }
                     }
@@ -295,10 +303,9 @@ class GameActivity : ComponentActivity() {
         }
         try {
             val history = request.messages.dropLast(1).map { if (it.role == "user") Message.user(it.text) else Message.model(it.text) }
-            val system = request.system + if (request.json) "\nReturn only the requested JSON object. No markdown or explanation. Keep every field concise." else "\nKeep your answer to at most three short sentences."
-            return ai.run(system, request.messages.last().text, history, picture,
+            return ai.run(request.system, request.messages.last().text, history, picture,
                 phase = { progress(it, null) }, update = { if (!request.json) progress("generating", it) },
-                shouldCancel = { stopped.get() }, maxTokens = request.tokens, temperature = if (request.json) .2 else .7).text
+                shouldCancel = { stopped.get() }, maxTokens = request.tokens, temperature = request.temperature).text
         } finally { picture?.delete() }
     }
 

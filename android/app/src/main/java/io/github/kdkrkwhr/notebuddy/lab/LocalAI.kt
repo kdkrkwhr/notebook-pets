@@ -44,7 +44,7 @@ class LocalAI(private val model: File, private val cache: File) {
         phase("generating")
         val config = ConversationConfig(systemInstruction = Contents.of(system), initialMessages = history,
             samplerConfig = SamplerConfig(topK = 40, topP = .95, temperature = temperature.coerceIn(0.0, 1.0)),
-            automaticToolCalling = false, tools = emptyList(), maxOutputToken = maxTokens.coerceIn(64, 1200),
+            automaticToolCalling = false, tools = emptyList(), maxOutputToken = maxTokens,
             thinkingConfig = ThinkingConfig(enableThinking = false), enableResponseFormat = schema != null)
         val active = engine!!.createConversation(config)
         synchronized(conversationLock) { conversation = active }

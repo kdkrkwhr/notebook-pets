@@ -1,0 +1,18 @@
+{
+  "source": "https://github.com/whtcjdtc2007/anna-executa-examples",
+  "revision": "49749905d443a7e8e7479a8faab39c03c7f16c16",
+  "files": {
+    "agent.py": "de91c881850cd14798911ae31b0422508abc4e60367e6f51a5ffb969c89ab96b",
+    "context.py": "d16fb261700b28d1e3c17f8ebd9656a22e0bfb1851cc23b616726bc57fed09e6",
+    "credentials.py": "e85958cdb6fd0aa8a37295ca4be8eacdc9824cb0c36f5a13b24179ae7e6812c8",
+    "embeddings.py": "fe35f02a686e62fce728ff712b87759ecb5d77a8831d8c990aec8ca521541347",
+    "host_upload.py": "698c275e48f0a0b88267d4eb1ad79627502a0331971280094e706ea4c4c67877",
+    "image.py": "f4b467102546bc0ad89d8dffb21025723d84704e5229f910a0f49913a58e1094",
+    "progress.py": "9203442c36f7133bd5efbf76e00e67c8558881e8f0b27640566197af49997763",
+    "sampling.py": "26645e248b84137d47d5cac04d29a11cfb53f389f8a5f6b4c92d38afcbe139fc",
+    "storage.py": "aba24a65c259f10f990df9d856f6470d3642ed3ea07abf1532c9747e881a1d7f",
+    "web.py": "d4b4ccd5461c73641d1d8d9cad18cff0f62b753976c39f86a46fbcd5fb4c7aea",
+    "__init__.py": "eb2661c599b107acb3918f8b00583290e26c4916140fe72dd03aac58bbe52681"
+  },
+  "license_sha256": "282947c989719c3b3e9532cdc3834e115f9d5acc77bd15023c54577612efab12"
+}

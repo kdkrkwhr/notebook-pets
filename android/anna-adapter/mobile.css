@@ -1,0 +1,53 @@
+/* Approved mobile presentation only. Original Anna DOM, labels and flow remain. */
+@media(max-width:760px){
+ html{-webkit-text-size-adjust:100%;scroll-padding-block:16px}
+ body{font-size:14px;overflow-wrap:break-word}
+ button,select,input:not([type=checkbox]):not([type=color]){min-height:44px;font-size:16px}
+ button{touch-action:manipulation}
+ input[type=checkbox]{min-width:22px;min-height:22px}
+ .masthead{flex-wrap:wrap;gap:12px;padding:12px}
+ .brand{min-width:0;flex:1 1 150px}
+ .header-controls{max-width:none;width:100%;justify-content:flex-start;gap:8px;order:3}
+ .header-controls button{flex:1 1 auto}
+ #connection{max-width:100%;white-space:normal}
+ main{padding:20px 12px 24px}
+ .intro{margin-bottom:20px}
+ .main-grid,.bottom-grid{gap:16px}
+ .paper{max-width:100%;min-width:0}
+ .welcome{padding:20px;gap:20px}
+ .welcome>img{height:140px}
+ .welcome p:not(.eyebrow),.welcome label,.muted,.small,dialog p{font-size:14px;line-height:1.65}
+ .welcome small,.chat-bottom small{font-size:12px;line-height:1.6}
+ .welcome .inline{flex-wrap:wrap}
+ .welcome .inline input,.welcome .inline button{flex-basis:100%;width:100%}
+ .pet-card,.care-card,.quest-card,.album-card{padding:16px}
+ .chat-card{height:min(580px,85dvh);min-height:360px;max-height:none}
+ .chat-card>.card-top,.chat-bottom{padding:16px}
+ .messages{padding:16px;overscroll-behavior:contain}
+ .message{font-size:14px}
+ .chat-bottom .inline{flex-wrap:wrap}
+ #chat-input{flex-basis:100%;width:100%;scroll-margin-block:20px}
+ .actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+ .actions button{font-size:14px;padding:10px 4px}
+ .suggestions button{min-height:44px;font-size:14px}
+ .care-ai-toggle{flex-wrap:wrap;min-width:0}
+ .care-ai-toggle label{white-space:normal;min-width:120px}
+ dialog:not(.title-screen){width:calc(100vw - 24px);max-width:calc(100vw - 24px);max-height:calc(100dvh - 24px);padding:18px;overscroll-behavior:contain}
+ dialog .close{min-width:44px;min-height:44px}
+ .birth-buttons{align-items:stretch;gap:8px}
+ .birth-buttons>button,.birth-buttons>form{flex:1 1 140px}
+ .birth-buttons>form>button{width:100%}
+ #art-color{min-width:44px;min-height:44px}
+ .art-tools{gap:8px}
+ #art-canvas{max-width:100%}
+ .title-screen{padding:max(12px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+ .title-menu button{min-height:48px}
+ html[data-keyboard=open] .chat-card{height:auto;min-height:0}
+ html[data-keyboard=open] .messages{max-height:32dvh;min-height:96px}
+}
+@media(max-width:350px){
+ .welcome,.pet-card,.care-card,.quest-card,.album-card{padding:12px}
+ .actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .header-controls{gap:6px}
+ .header-controls button{padding-inline:10px}
+}
