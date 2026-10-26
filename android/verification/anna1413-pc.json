@@ -1,6 +1,6 @@
 {
-  "apkBytes": 313338670,
-  "apkSha256": "b97300626c52634f66293818515a4ac4b3a11f565bc9a11c0843f75512732e15",
+  "apkBytes": 313411762,
+  "apkSha256": "94b452f41238a71c31464613d7fc144f89b6579768623b069b01d5b4bb64ee32",
   "originalFiles": 467,
   "adapterFiles": 54,
   "assetMismatches": [],
@@ -20,7 +20,7 @@
   "signerSha256": "07987d756266505d7005e476357e8cbdd78d26b375174ff04520251a94026c7c",
   "signerMatchesPreviouslyVerifiedInstalledApk": true,
   "lint": "passed",
-  "androidBuild": "passed in 4m13s; JNI arm64/app/test APK; no device execution",
+  "androidBuild": "initial full arm64 JNI/app/test APK/JVM/Lint passed; canonical-byte increment passed in 1m31s",
   "render": {
     "kind": "PC render, identical deterministic fixture host/AI; no model or phone execution",
     "reference": "246781d",
@@ -368,5 +368,7 @@
     "Original 467-file hash match does not establish complete mobile behavior equivalence",
     "No phone operations, installation, model downloads, PC/server inference or release deployment",
     "Previous unconfirmed drafts retained without auto-commit; user-facing recovery not newly designed"
-  ]
+  ],
+  "referenceByteConvention": "Exact Git blob bytes; core.autocrlf disabled explicitly during archive",
+  "referencePortabilityTest": "passed: core.autocrlf=true cannot alter any source byte; all archived files equal git cat-file blobs"
 }

@@ -30,6 +30,8 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci --prefix tests/pyodide --ignore-scripts
+      - name: Verify platform-independent pinned source bytes
+        run: python -m unittest discover -s android -p test_package_anna.py
       - uses: gradle/actions/setup-gradle@v4
       - name: Build and verify (no model download or AI calls)
         working-directory: android

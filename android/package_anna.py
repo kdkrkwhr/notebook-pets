@@ -12,7 +12,9 @@ LOCK = Path(__file__).with_name('anna-reference.json')
 
 
 def sources():
-    raw = subprocess.check_output(['git', 'archive', REFERENCE, 'anna/bundle',
+    # git archive otherwise applies core.autocrlf conversion on Windows. Lock
+    # Git blob bytes, not host-specific checkout bytes, on every build platform.
+    raw = subprocess.check_output(['git', '-c', 'core.autocrlf=false', '-c', 'core.eol=lf', 'archive', REFERENCE, 'anna/bundle',
                                    'anna/executas/notebuddy', 'engine', 'data', 'assets'], cwd=ROOT)
     with tarfile.open(fileobj=io.BytesIO(raw)) as archive:
         return {m.name: archive.extractfile(m).read() for m in archive if m.isfile()}
