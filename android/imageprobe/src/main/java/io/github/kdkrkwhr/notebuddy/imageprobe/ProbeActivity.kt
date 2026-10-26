@@ -114,7 +114,7 @@ class ProbeActivity : Activity() {
                 resized.recycle();if(original!==resized)original.recycle()
                 val job=synchronized(handleLock){NativeImage.create().also {handle=it;if(cancelled.get())NativeImage.cancel(it)}}
                 main.post { message.text="휴대폰 CPU에서 모델 준비·이미지 생성 중…" }
-                val generated=NativeImage.run(job,model.absolutePath,rgb,size,steps,strength,seed,prompt)
+                val generated=NativeImage.run(job,model.absolutePath,rgb,size,steps,strength,seed,prompt,BuildConfig.IMAGE_BACKEND)
                 check(!cancelled.get()){"Cancelled"}
                 check(generated.size==rgb.size && !generated.contentEquals(rgb)){"새 이미지가 생성되지 않았습니다."}
                 val stats=NativeImage.stats(job)
@@ -122,7 +122,7 @@ class ProbeActivity : Activity() {
                 val bitmap=Bitmap.createBitmap(colors,size,size,Bitmap.Config.ARGB_8888)
                 result=File(cacheDir,"generated-${System.nanoTime()}.png")
                 result.outputStream().use {check(bitmap.compress(Bitmap.CompressFormat.PNG,100,it))};bitmap.recycle()
-                val report=JSONObject().put("status","GENERATED_PENDING_VISUAL_REVIEW").put("device",android.os.Build.MODEL).put("backend","phone_cpu").put("size",size).put("steps",steps).put("strength",strength).put("seed",seed).put("modelLoadMs",stats[0]).put("generationMs",stats[1]).put("processPeakRssKiB",stats[2]).put("totalWallMs",(System.nanoTime()-begin)/1000000).put("outputBytes",result.length()).put("outputSha256",sha(result)).put("thermalStatusAfter",getSystemService(PowerManager::class.java).currentThermalStatus).put("runtimeCommit","e41fbcf455e0fbb45e08bd535b00d6cba865e921").put("prompt",prompt)
+                val report=JSONObject().put("status","GENERATED_PENDING_VISUAL_REVIEW").put("device",android.os.Build.MODEL).put("backend",NativeImage.selectedDevice(job)).put("size",size).put("steps",steps).put("strength",strength).put("seed",seed).put("modelLoadMs",stats[0]).put("generationMs",stats[1]).put("processPeakRssKiB",stats[2]).put("totalWallMs",(System.nanoTime()-begin)/1000000).put("outputBytes",result.length()).put("outputSha256",sha(result)).put("thermalStatusAfter",getSystemService(PowerManager::class.java).currentThermalStatus).put("runtimeCommit","e41fbcf455e0fbb45e08bd535b00d6cba865e921").put("prompt",prompt)
                 report.put("outputFileName",result.name)
                 File(getExternalFilesDir(null),"probe-result.json").writeText(report.toString(2))
                 val completed=result

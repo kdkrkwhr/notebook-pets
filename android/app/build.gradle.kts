@@ -1,5 +1,10 @@
 plugins { id("com.android.application"); id("org.jetbrains.kotlin.android") }
 val localImageEnabled = providers.gradleProperty("imageRuntimePath").isPresent
+val imageBackend = providers.gradleProperty("imageBackend").orElse("cpu").get()
+require(imageBackend in listOf("cpu", "opencl")) { "Unsupported imageBackend; no automatic fallback" }
+require(imageBackend == "cpu" || (localImageEnabled && providers.gradleProperty("imageTestSuffix").orNull == ".ondevice.opencl")) {
+    "OpenCL preparation must use the isolated .ondevice.opencl package"
+}
 android {
     namespace = "io.github.kdkrkwhr.notebuddy.lab"
     compileSdk = 36
@@ -12,11 +17,15 @@ android {
         providers.gradleProperty("imageTestSuffix").orNull?.let { applicationIdSuffix = it }
         manifestPlaceholders["appLabel"] = if (providers.gradleProperty("imageTestSuffix").isPresent) "Notebuddy · 모바일 검증" else "@string/app_name"
         buildConfigField("boolean", "LOCAL_IMAGE_ENABLED", localImageEnabled.toString())
+        buildConfigField("String", "IMAGE_BACKEND", "\"$imageBackend\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         ndk { abiFilters += if (localImageEnabled) listOf("arm64-v8a") else listOf("arm64-v8a", "x86_64") }
         if (localImageEnabled) externalNativeBuild.cmake {
             arguments += listOf("-DANDROID_STL=c++_static", "-DSD_SOURCE=" + providers.gradleProperty("imageRuntimePath").get())
             providers.gradleProperty("imageRuntimeBuildPath").orNull?.let { arguments += "-DSD_BUILD_PATH=$it" }
+            arguments += "-DNB_IMAGE_BACKEND=$imageBackend"
+            providers.gradleProperty("imageOpenClLinkLibrary").orNull?.let { arguments += "-DOPENCL_LINK_LIBRARY=$it" }
+            providers.gradleProperty("imageOpenClHeaders").orNull?.let { arguments += "-DOPENCL_INCLUDE_DIR=$it" }
             cppFlags += "-std=c++17"
         }
     }
@@ -26,6 +35,7 @@ android {
     }
     testOptions { unitTests.isReturnDefaultValues = true }
     buildFeatures { buildConfig = true }
+    if (imageBackend == "opencl") packaging.jniLibs.excludes += "**/libOpenCL.so"
     sourceSets.getByName("main").assets.srcDir(layout.buildDirectory.dir("generated/gameAssets"))
     sourceSets.getByName("main").java.srcDir("../image-runtime/src/main/kotlin")
     if (localImageEnabled) {

@@ -1,0 +1,84 @@
+{
+  "apk": "NoteBuddy-0.2.4-opencl-preparation.apk",
+  "bytes": 316338831,
+  "sha256": "0ae2db1d225efcaf28623a7a6d4180829ffd92ae78579b746a3ad2cad041178c",
+  "nativeSha256": "4bd854fdccbdb594e8467919cdb8aa1e90c798117c676c0472bff998e0a6b445",
+  "abi": "arm64-v8a",
+  "backend": "opencl",
+  "vendorLibraryBundled": false,
+  "dynamicSection": "Dynamic section at offset 0x29cd7e8 contains 31 entries:\n  Tag                Type              Name/Value\n  0x0000000000000001 (NEEDED)          Shared library: [libOpenCL.so]\n  0x0000000000000001 (NEEDED)          Shared library: [liblog.so]\n  0x0000000000000001 (NEEDED)          Shared library: [libm.so]\n  0x0000000000000001 (NEEDED)          Shared library: [libdl.so]\n  0x0000000000000001 (NEEDED)          Shared library: [libc.so]\n  0x000000000000000e (SONAME)          Library soname: [libnotebuddy_image.so]\n  0x000000000000001e (FLAGS)           BIND_NOW \n  0x000000006ffffffb (FLAGS_1)         NOW \n  0x0000000000000007 (RELA)            0x17a688\n  0x0000000000000008 (RELASZ)          322704 (bytes)\n  0x0000000000000009 (RELAENT)         24 (bytes)\n  0x000000006fffe000 (ANDROID_RELR)    0x1c9318\n  0x000000006fffe001 (ANDROID_RELRSZ)  0x8f8\n  0x000000006fffe003 (ANDROID_RELRENT) 0x8\n  0x0000000000000017 (JMPREL)          0x1c9c10\n  0x0000000000000002 (PLTRELSZ)        120696 (bytes)\n  0x0000000000000003 (PLTGOT)          0x29da108\n  0x0000000000000014 (PLTREL)          RELA\n  0x0000000000000006 (SYMTAB)          0x368\n  0x000000000000000b (SYMENT)          24 (bytes)\n  0x0000000000000005 (STRTAB)          0x70b10\n  0x000000000000000a (STRSZ)           1088376 (bytes)\n  0x000000006ffffef5 (GNU_HASH)        0x58228\n  0x0000000000000019 (INIT_ARRAY)      0x29d5660\n  0x000000000000001b (INIT_ARRAYSZ)    392 (bytes)\n  0x000000000000001a (FINI_ARRAY)      0x29d5650\n  0x000000000000001c (FINI_ARRAYSZ)    16 (bytes)\n  0x000000006ffffff0 (VERSYM)          0x51578\n  0x000000006ffffffe (VERNEED)         0x581a4\n  0x000000006fffffff (VERNEEDNUM)      3\n  0x0000000000000000 (NULL)            0x0\n",
+  "pinnedAnnaFiles": 467,
+  "unchangedGameAssets": 496,
+  "libraries": [
+    "lib/arm64-v8a/liblitertlm_jni.so",
+    "lib/arm64-v8a/libnotebuddy_image.so"
+  ],
+  "phoneExecution": false,
+  "generationExecuted": false,
+  "qualityOrSpeedClaim": false,
+  "product1024": "blocked",
+  "limitations": [
+    "ELF linkage does not prove phone driver access, kernel compatibility or GPU execution",
+    "Default CI does not compile or execute the OpenCL native backend; local cross-build/ELF evidence only.",
+    "Internal 256/512 benchmark does not change Anna product dimensions or its 1024 guard.",
+    "No phone performance, quality, thermal or cancellation measurements."
+  ],
+  "package": "io.github.kdkrkwhr.notebuddy.lab.ondevice.opencl",
+  "versionName": "0.2.4-parity-preview",
+  "versionCode": 6,
+  "signerSha256": "07987d756266505d7005e476357e8cbdd78d26b375174ff04520251a94026c7c",
+  "testApk": {
+    "file": "NoteBuddy-0.2.4-opencl-preparation-test.apk",
+    "package": "io.github.kdkrkwhr.notebuddy.lab.ondevice.opencl.test",
+    "bytes": 879591,
+    "sha256": "9b15a2c20c2fa9f2b9988239ee0c4d0e153ead7a85b5bc885de596d2e77ecaa2"
+  },
+  "sourceBase": "ed73f6ddfffe55bccdf9188fcdfbf88d6c499350",
+  "engine": "e41fbcf455e0fbb45e08bd535b00d6cba865e921",
+  "jvm": {
+    "tests": 40,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0
+  },
+  "lint": "passed",
+  "engineBuild": "325/325 completed",
+  "apkBuild": "passed; final loader-exclusion increment 2m49s",
+  "dependencyArchivesVerified": [
+    {
+      "name": "OpenCL-Headers",
+      "version": "v2025.07.22",
+      "commit": "8a97ebc88daa3495d6f57ec10bb515224400186f",
+      "url": "https://codeload.github.com/KhronosGroup/OpenCL-Headers/zip/8a97ebc88daa3495d6f57ec10bb515224400186f",
+      "bytes": 126798,
+      "sha256": "9a87dbd9dfb83878a331f620af2b586e0de1d1ade4b310ccfbecf3d00c89300a",
+      "license": "Apache-2.0",
+      "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "name": "OpenCL-ICD-Loader",
+      "version": "v2025.07.22",
+      "commit": "ad770a1b64c6b8d5f2ed4e153f22e4f45939f27f",
+      "url": "https://codeload.github.com/KhronosGroup/OpenCL-ICD-Loader/zip/ad770a1b64c6b8d5f2ed4e153f22e4f45939f27f",
+      "bytes": 161373,
+      "sha256": "22b1e7b10e8f1d5b2b0cb26d8a3fbe371691d65188903cb6c8b3b47db048060e",
+      "license": "Apache-2.0",
+      "licenseSha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  ],
+  "dependenciesTotalBytes": 288171,
+  "requestedBackend": "opencl",
+  "fullBackendCpuFallback": false,
+  "cpuOperatorFallback": "possible upstream scheduler; not measured",
+  "nativeLibrariesBundled": [
+    "lib/arm64-v8a/liblitertlm_jni.so",
+    "lib/arm64-v8a/libnotebuddy_image.so"
+  ],
+  "phoneInstallation": false,
+  "driverLoad": "unverified on phone",
+  "phoneCheckPlan": [
+    "Install isolated app/test packages only after authorization; no model copy.",
+    "Invoke GpuBackendTest#inspectBackendWithoutModel only, collect report, finish USB session.",
+    "Generation benchmark requires separate instruction and guard; never implicit."
+  ]
+}

@@ -22,6 +22,8 @@
 
 # Android Anna 1.4.13 parity preparation — 2026-10-26
 
+- 후속 OpenCL 준비: 동일 엔진/SD1.5/Anna 요청을 유지하는 별도 `.lab.ondevice.opencl` APK와 모델 없는 드라이버 확인 테스트를 PC에서 준비했습니다. 네이티브 325/325, 앱·테스트 APK, JVM 40개와 Lint 통과. APK 316,338,831B, SHA256 `0ae2db1d225efcaf28623a7a6d4180829ffd92ae78579b746a3ad2cad041178c`. arm64/ELF/라이선스 검사 통과, 링크용 OpenCL 라이브러리는 패키지에서 제외했고 게임 자산 496개는 이전 APK와 동일합니다. 상세 출처·증거는 `android/image-runtime/GPU_PREPARATION.md`, `android/verification/opencl-pc.json`에 기록했습니다. 전체 CPU 자동 전환은 거부하지만 미지원 연산의 CPU 배정은 가능하므로 실제 가속을 주장하지 않습니다. 1024px 차단 유지. 휴대폰 설치·실행·추론 및 Anna/스토어 배포는 하지 않았으며, 연결 승인 뒤에도 첫 확인은 모델 복사·추론 없는 드라이버 열거만입니다.
+
 `codex/android-anna1413-parity`는 기록된 Anna 공개 1.4.13 패키징 `246781d`를 직접 재사용합니다. 이전 Android `6066cad`는 원래 브랜치에 보존했습니다. Anna 공개/제출 상태를 새로 조회하지 않았으며 Anna·Pages·스토어 배포도 하지 않습니다.
 
 - 고정 원본 467개 파일 해시 일치. 추가 미리보기/확정저장 흐름 대신 Anna의 분석→text2img 요청→자동저장 흐름을 사용합니다. 공유 Python 서비스·규칙을 Pyodide로 실행합니다.

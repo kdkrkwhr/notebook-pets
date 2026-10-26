@@ -1,5 +1,7 @@
 # Same-model GPU path: read-only readiness review
 
+Follow-up authorized PC preparation is recorded in [GPU_PREPARATION.md](GPU_PREPARATION.md). This original read-only review remains as historical context; OpenCL preparation does not establish device support.
+
 No GPU build, inference, phone operation, download, terms acceptance or safety-gate change was performed for this review.
 
 ## Why the APK uses CPU

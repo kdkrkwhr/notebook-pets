@@ -1,0 +1,22 @@
+[
+  {
+    "name": "OpenCL-Headers",
+    "version": "v2025.07.22",
+    "commit": "8a97ebc88daa3495d6f57ec10bb515224400186f",
+    "url": "https://codeload.github.com/KhronosGroup/OpenCL-Headers/zip/8a97ebc88daa3495d6f57ec10bb515224400186f",
+    "bytes": 126798,
+    "sha256": "9a87dbd9dfb83878a331f620af2b586e0de1d1ade4b310ccfbecf3d00c89300a",
+    "license": "Apache-2.0",
+    "licenseSha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "name": "OpenCL-ICD-Loader",
+    "version": "v2025.07.22",
+    "commit": "ad770a1b64c6b8d5f2ed4e153f22e4f45939f27f",
+    "url": "https://codeload.github.com/KhronosGroup/OpenCL-ICD-Loader/zip/ad770a1b64c6b8d5f2ed4e153f22e4f45939f27f",
+    "bytes": 161373,
+    "sha256": "22b1e7b10e8f1d5b2b0cb26d8a3fbe371691d65188903cb6c8b3b47db048060e",
+    "license": "Apache-2.0",
+    "licenseSha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+  }
+]

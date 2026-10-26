@@ -35,7 +35,7 @@ class LocalImage(private val model: File) {
         check(digest.digest().joinToString(""){"%02x".format(it)}==SHA256){"이미지 모델 파일 확인에 실패했어요."}
     }
     fun runText(request:TextImageRequest):Map<String,Any>{
-        val started=System.nanoTime();verifyModel();checkRunning()
+        val started=System.nanoTime();NativeImage.requireBackend(BuildConfig.IMAGE_BACKEND);verifyModel();checkRunning()
         val size=request.size
         val job=synchronized(lock){NativeImage.create().also {handle=it;if(cancelled.get())NativeImage.cancel(it)}}
         try {
@@ -43,7 +43,7 @@ class LocalImage(private val model: File) {
             // Empty init pixels selects text2img. Keep the exact Anna prompt and
             // requested dimensions; do not silently downscale or add a policy.
             val seed=java.security.SecureRandom().nextInt(Int.MAX_VALUE).toLong()
-            val generated=NativeImage.run(job,model.absolutePath,ByteArray(0),size,20,1f,seed,request.prompt)
+            val generated=NativeImage.run(job,model.absolutePath,ByteArray(0),size,20,1f,seed,request.prompt,BuildConfig.IMAGE_BACKEND)
             checkRunning();check(generated.size==size*size*3){"생성 이미지가 올바르지 않아요."}
             val colors=IntArray(size*size){i->(0xff shl 24) or ((generated[i*3].toInt() and 255) shl 16) or ((generated[i*3+1].toInt() and 255) shl 8) or (generated[i*3+2].toInt() and 255)}
             val bitmap=Bitmap.createBitmap(colors,size,size,Bitmap.Config.ARGB_8888)
@@ -51,12 +51,12 @@ class LocalImage(private val model: File) {
             checkRunning();val stats=NativeImage.stats(job)
             return mapOf("image" to "data:image/png;base64,"+Base64.encodeToString(png,Base64.NO_WRAP),
                 "totalWallMs" to (System.nanoTime()-started)/1_000_000,"generationMs" to stats[1],"peakRssKiB" to stats[2],
-                "seed" to seed,"size" to size,"steps" to 20,"backend" to "phone_cpu","mode" to "text2img")
+                "seed" to seed,"size" to size,"steps" to 20,"backend" to NativeImage.selectedDevice(job),"mode" to "text2img")
         }finally{synchronized(lock){NativeImage.destroy(job);handle=0}}
     }
     fun run(request:ImageRequest):Map<String,Any>{
         val started=System.nanoTime()
-        verifyModel();checkRunning()
+        NativeImage.requireBackend(BuildConfig.IMAGE_BACKEND);verifyModel();checkRunning()
         val bytes=Base64.decode(request.image.substringAfter(','),Base64.NO_WRAP)
         val bounds=BitmapFactory.Options().apply {inJustDecodeBounds=true}
         BitmapFactory.decodeByteArray(bytes,0,bytes.size,bounds)
@@ -72,7 +72,7 @@ class LocalImage(private val model: File) {
         val job=synchronized(lock){NativeImage.create().also {handle=it;if(cancelled.get())NativeImage.cancel(it)}}
         try {
             checkRunning()
-            val generated=NativeImage.run(job,model.absolutePath,rgb,size,20,.4f,1026L,request.prompt)
+            val generated=NativeImage.run(job,model.absolutePath,rgb,size,20,.4f,1026L,request.prompt,BuildConfig.IMAGE_BACKEND)
             checkRunning();check(generated.size==rgb.size && !generated.contentEquals(rgb)){"새 이미지가 나오지 않았어요. 원본은 그대로예요."}
             val colors=IntArray(size*size){i->(0xff shl 24) or ((generated[i*3].toInt() and 255) shl 16) or ((generated[i*3+1].toInt() and 255) shl 8) or (generated[i*3+2].toInt() and 255)}
             val bitmap=Bitmap.createBitmap(colors,size,size,Bitmap.Config.ARGB_8888)
@@ -80,7 +80,7 @@ class LocalImage(private val model: File) {
             checkRunning();val stats=NativeImage.stats(job)
             return mapOf("image" to "data:image/png;base64,"+Base64.encodeToString(png,Base64.NO_WRAP),
                 "totalWallMs" to (System.nanoTime()-started)/1_000_000,"generationMs" to stats[1],"peakRssKiB" to stats[2],
-                "seed" to 1026,"size" to size,"steps" to 20,"strength" to .4,"backend" to "phone_cpu","preprocessing" to "contain_white")
+                "seed" to 1026,"size" to size,"steps" to 20,"strength" to .4,"backend" to NativeImage.selectedDevice(job),"preprocessing" to "contain_white")
         }finally{synchronized(lock){NativeImage.destroy(job);handle=0}}
     }
 }

@@ -8,6 +8,13 @@
 #include <android/log.h>
 #include <sys/resource.h>
 #include "stable-diffusion.h"
+#include "ggml-backend.h"
+#ifdef NB_OPENCL
+#include <CL/cl.h>
+#endif
+#ifndef NB_IMAGE_BACKEND
+#define NB_IMAGE_BACKEND "cpu"
+#endif
 
 struct Job {
     std::mutex lock;
@@ -15,6 +22,7 @@ struct Job {
     std::atomic<bool> cancelled{false};
     std::atomic<int> step{0}, steps{0};
     long load_ms = 0, generate_ms = 0, peak_rss_kib = 0;
+    std::string device;
 };
 static std::mutex runtime_lock; // Upstream callbacks are global; serialize contexts.
 struct RunCleanup {
@@ -36,6 +44,52 @@ static std::string utf(JNIEnv* env, jstring value) {
     std::string result(chars);
     env->ReleaseStringUTFChars(value, chars);
     return result;
+}
+static bool preflight(JNIEnv* env) {
+#ifdef NB_OPENCL
+    // Return normal errors for absent platforms/devices before upstream's
+    // assertion-based initialization. Later driver/kernel faults still require
+    // isolated device validation and cannot be caught as Java exceptions.
+    cl_uint count = 0;
+    cl_int error = clGetPlatformIDs(0, nullptr, &count);
+    if (error != CL_SUCCESS || count == 0 || count > 32) {
+        __android_log_print(ANDROID_LOG_ERROR, "NBImage", "OpenCL platform enumeration error=%d count=%u", error, count);
+        fail(env, "OPENCL_PLATFORM_UNAVAILABLE; CPU fallback disabled"); return false;
+    }
+    std::vector<cl_platform_id> platforms(count);
+    if (clGetPlatformIDs(count, platforms.data(), nullptr) != CL_SUCCESS) {
+        fail(env, "OPENCL_PLATFORM_ENUMERATION_FAILED"); return false;
+    }
+    bool gpu = false;
+    for (auto platform : platforms) {
+        cl_uint devices = 0;
+        if (clGetDeviceIDs(platform, CL_DEVICE_TYPE_GPU, 0, nullptr, &devices) == CL_SUCCESS && devices > 0) gpu = true;
+    }
+    if (!gpu) { fail(env, "OPENCL_GPU_UNAVAILABLE; CPU fallback disabled"); return false; }
+#endif
+    return true;
+}
+extern "C" JNIEXPORT jstring JNICALL
+Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_nativeBackend(JNIEnv* env, jobject) {
+    return env->NewStringUTF(NB_IMAGE_BACKEND);
+}
+extern "C" JNIEXPORT jstring JNICALL
+Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_nativeDevices(JNIEnv* env, jobject) {
+    std::unique_lock<std::mutex> exclusive(runtime_lock, std::try_to_lock);
+    if (!exclusive.owns_lock()) { fail(env, "Image runtime busy; device probe not started"); return nullptr; }
+    try {
+        if (!preflight(env)) return nullptr;
+        const size_t needed = sd_list_devices(nullptr, 0);
+        if (needed > 65536) { fail(env, "Unexpected device listing size"); return nullptr; }
+        std::vector<char> buffer(needed + 1);
+        sd_list_devices(buffer.data(), buffer.size());
+        __android_log_print(ANDROID_LOG_INFO, "NBImage", "compiled_backend=%s devices=%s", NB_IMAGE_BACKEND, buffer.data());
+        return env->NewStringUTF(buffer.data());
+    } catch (const std::exception&) { fail(env, "GPU enumeration failed; CPU fallback disabled"); return nullptr; }
+}
+extern "C" JNIEXPORT jstring JNICALL
+Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_selectedDevice(JNIEnv* env, jobject, jlong handle) {
+    return env->NewStringUTF(reinterpret_cast<Job*>(handle)->device.c_str());
 }
 extern "C" JNIEXPORT jlong JNICALL
 Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_create(JNIEnv* env, jobject) {
@@ -71,8 +125,8 @@ Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_destroy(JNIEnv*, jobjec
     delete reinterpret_cast<Job*>(handle);
 }
 extern "C" JNIEXPORT jbyteArray JNICALL
-Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_run(JNIEnv* env, jobject, jlong handle,
-        jstring model, jbyteArray rgb, jint size, jint steps, jfloat strength, jlong seed, jstring prompt) {
+Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_nativeRun(JNIEnv* env, jobject, jlong handle,
+        jstring model, jbyteArray rgb, jint size, jint steps, jfloat strength, jlong seed, jstring prompt, jstring device) {
     auto* job = reinterpret_cast<Job*>(handle);
     std::unique_lock<std::mutex> exclusive(runtime_lock, std::try_to_lock);
     if (!exclusive.owns_lock()) { fail(env, "A generation is already running"); return nullptr; }
@@ -82,8 +136,18 @@ Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_run(JNIEnv* env, jobjec
         fail(env, "Invalid bounded image request"); return nullptr;
     }
     if (job->cancelled) { fail(env, "Cancelled"); return nullptr; }
+    if (size == 1024) { fail(env, "1024px generation remains blocked pending device feasibility validation"); return nullptr; }
     RunCleanup cleanup{job};
     try {
+    if (!preflight(env)) return nullptr;
+    const auto selected = utf(env, device);
+    const auto dev = ggml_backend_dev_by_name(selected.c_str());
+    const bool cpu = std::string(NB_IMAGE_BACKEND) == "cpu";
+    if (!dev || (cpu ? ggml_backend_dev_type(dev) != GGML_BACKEND_DEVICE_TYPE_CPU :
+            selected != "GPUOpenCL" || ggml_backend_dev_type(dev) != GGML_BACKEND_DEVICE_TYPE_GPU)) {
+        fail(env, "Requested backend unavailable or wrong device type; CPU fallback disabled"); return nullptr;
+    }
+    job->device = selected;
     auto start = std::chrono::steady_clock::now();
     const auto model_path = utf(env, model), prompt_text = utf(env, prompt);
     if (prompt_text.empty() || prompt_text.size() > 8192) { fail(env, "Prompt too long or missing"); return nullptr; }
@@ -99,10 +163,12 @@ Java_io_github_kdkrkwhr_notebuddy_imageprobe_NativeImage_run(JNIEnv* env, jobjec
     context.model_path = model_path.c_str();
     context.n_threads = 4;
     context.wtype = SD_TYPE_Q4_0;
-    context.backend = "cpu";
+    context.backend = selected.c_str(); // Exact enumerated name: upstream's default/CPU fallback path is never used.
+    context.params_backend = selected.c_str();
     context.enable_mmap = true;
     context.flash_attn = true;
     sd_ctx_t* loaded = new_sd_ctx(&context);
+    __android_log_print(ANDROID_LOG_INFO, "NBImage", "requested_backend=%s selected_device=%s model_loaded=%d full_backend_fallback=false cpu_operator_fallback=possible", NB_IMAGE_BACKEND, selected.c_str(), loaded != nullptr);
     auto ready = std::chrono::steady_clock::now();
     job->load_ms = std::chrono::duration_cast<std::chrono::milliseconds>(ready-start).count();
     jbyteArray output = nullptr;
