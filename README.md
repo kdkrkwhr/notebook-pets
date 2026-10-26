@@ -1,5 +1,7 @@
 # Notebook Pets · 노트버디
 
+**Python CLI·MCP 패키지 배포 준비 중:** 터미널에서 친구를 만들고 돌보거나 MCP로 상태를 조회할 수 있는 경량 배포판을 준비했습니다. PyPI 공개 전이며, Anna·데스크톱·Android와는 별도 저장을 사용합니다. [설치·사용 안내](cli/README.md) · [배포 절차](cli/PUBLISHING.md)
+
 **한국어** · [English](README.en.md)
 
 [문서 목차](docs/README.md) · [현재 설치·배포 상태](anna/HANDOFF.md)

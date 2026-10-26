@@ -1,5 +1,7 @@
 # Notebook Pets · Notebuddy
 
+**Python CLI/MCP distribution in preparation:** a lightweight terminal companion game with optional MCP status access. Not yet published to PyPI; saves are separate from Anna, desktop and Android. [Usage](cli/README.md) · [Publishing](cli/PUBLISHING.md)
+
 [한국어](README.md) · **English**
 
 [Documentation index](docs/README.md) · [Installed app and deployment status](anna/HANDOFF.md)

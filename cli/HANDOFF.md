@@ -1,0 +1,9 @@
+# CLI / PyPI handoff · 2026-10-26
+
+- User selected a CLI/MCP distribution of NoteBuddy for PyPI/pepy. Package `notebook-pets`, version `0.1.0a1`; independently versioned from the apps.
+- Implemented an installed launcher, private per-OS save directories, UTF-8 console output, nonzero rejected-action exits, optional MCP extra and source/wheel allowlists. Reuses canonical engine/rule files and the existing MCP adapter unchanged. Persistent MCP is read-only; trusted per-message gateways retain existing receipt rules.
+- No model calls, personal save reads/writes, Anna test/review changes, public web deployment or native app changes. Original `release` worktree's `.gitignore` and local agent files were preserved.
+- Built source archive and wheel-from-source-archive with uv. Both pass strict Twine metadata/README checks. A fresh external Python 3.11 environment passes seven installed-package checks, including real stdio MCP, replay/non-duplication, save preservation, actor isolation and source/payload checks. Basic install also works without the MCP extra. A Windows CP949 help failure was fixed by configuring UTF-8 before argparse output.
+- `pypi.yml` builds once and tests the same wheel on Windows, macOS and Linux. Push/PR never publishes; only explicit workflow dispatch with `publish=true` on `release` can upload the tested artifacts using a configured PyPI trusted publisher.
+- Publication is pending the user's PyPI account/pending-publisher connection. Do not claim the package is on PyPI, or display a successful download count, until the upload and public install have been verified. See PUBLISHING.md for exact account fields.
+- Repo documentation check found six pre-existing broken historical links in Anna handoff/release files. New CLI links resolve; historical entries were left untouched.

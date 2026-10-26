@@ -1,0 +1,78 @@
+[build-system]
+requires = ["hatchling>=1.27,<2"]
+build-backend = "hatchling.build"
+
+[project]
+name = "notebook-pets"
+version = "0.1.0a1"
+description = "A local companion game for your terminal and MCP agents, powered by NoteBuddy's shared rules"
+readme = "cli/README.md"
+requires-python = ">=3.11"
+license = "MIT"
+license-files = ["LICENSE"]
+authors = [{name = "김동기 (kdkrkwhr)"}]
+keywords = ["pet", "game", "cli", "mcp", "ai-companion", "notebuddy"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Topic :: Games/Entertainment",
+]
+dependencies = []
+
+[project.optional-dependencies]
+mcp = ["mcp>=1.28,<2"]
+
+[project.scripts]
+notebook-pets = "notebook_pets.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/kdkrkwhr/notebook-pets"
+Documentation = "https://github.com/kdkrkwhr/notebook-pets/blob/release/cli/README.md"
+Issues = "https://github.com/kdkrkwhr/notebook-pets/issues"
+Source = "https://github.com/kdkrkwhr/notebook-pets"
+
+# Select source files explicitly: never ship saves, credentials, CI evidence,
+# generated artwork, native executables or the Anna-only adapter.
+[tool.hatch.build.targets.sdist]
+only-include = [
+  "cli/notebook_pets", "cli/README.md", "cli/PUBLISHING.md", "cli/tests",
+  "pyproject.toml", "LICENSE",
+  "engine/engine.py", "engine/runtime.py", "engine/domain.py", "engine/ports.py",
+  "engine/game_api.py", "engine/repositories.py", "engine/local_runtime.py",
+  "engine/art.py", "engine/dungeons.py", "engine/collectibles.py", "engine/equipment.py",
+  "engine/journeys.py", "engine/personality.py", "engine/home.py", "engine/home_world.py",
+  "engine/evolution.py", "engine/adapter.py", "tools/mcp_server.py",
+  "data/game_data.json", "data/image_prompts.json",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["cli/notebook_pets"]
+
+# Build from the canonical files; there is no separately maintained rule copy.
+[tool.hatch.build.targets.wheel.force-include]
+"engine/engine.py" = "notebook_pets/_runtime/engine/engine.py"
+"engine/runtime.py" = "notebook_pets/_runtime/engine/runtime.py"
+"engine/domain.py" = "notebook_pets/_runtime/engine/domain.py"
+"engine/ports.py" = "notebook_pets/_runtime/engine/ports.py"
+"engine/game_api.py" = "notebook_pets/_runtime/engine/game_api.py"
+"engine/repositories.py" = "notebook_pets/_runtime/engine/repositories.py"
+"engine/local_runtime.py" = "notebook_pets/_runtime/engine/local_runtime.py"
+"engine/art.py" = "notebook_pets/_runtime/engine/art.py"
+"engine/dungeons.py" = "notebook_pets/_runtime/engine/dungeons.py"
+"engine/collectibles.py" = "notebook_pets/_runtime/engine/collectibles.py"
+"engine/equipment.py" = "notebook_pets/_runtime/engine/equipment.py"
+"engine/journeys.py" = "notebook_pets/_runtime/engine/journeys.py"
+"engine/personality.py" = "notebook_pets/_runtime/engine/personality.py"
+"engine/home.py" = "notebook_pets/_runtime/engine/home.py"
+"engine/home_world.py" = "notebook_pets/_runtime/engine/home_world.py"
+"engine/evolution.py" = "notebook_pets/_runtime/engine/evolution.py"
+"engine/adapter.py" = "notebook_pets/_runtime/engine/adapter.py"
+"data/game_data.json" = "notebook_pets/_runtime/data/game_data.json"
+"data/image_prompts.json" = "notebook_pets/_runtime/data/image_prompts.json"
+"tools/mcp_server.py" = "notebook_pets/_runtime/tools/mcp_server.py"
