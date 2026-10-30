@@ -1,4 +1,4 @@
-import {CHAT,ART,STORY,PERSONA,MEMORIES,erased,ErasedError} from './data.mjs';
+import {CHAT,ART,STORY,PERSONA,MEMORIES,erased,ErasedError,savedValue} from './data.mjs';
 
 export async function finishReset(anna,call,id){
   async function guard(){
@@ -13,7 +13,7 @@ export async function finishReset(anna,call,id){
     const row=await anna.storage.get({key});const state=await guard();
     if(erased(row.value)&&!state.reset_from_erasure)throw new ErasedError();
     if(erased(row.value)&&!row.etag)throw Error('Conditional writes required');
-    if((row.exists||row.value!==undefined)&&!row.etag)throw Error('Conditional writes required');
+    savedValue(row);
     await anna.storage.set({key,value,...(row.etag?{if_match:row.etag}:{})});
   }
   for(let batch=0;batch<20;batch++){

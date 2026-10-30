@@ -1,4 +1,4 @@
-import {MEMORIES,erased,ErasedError,mergeSaved} from './data.mjs';
+import {MEMORIES,erased,ErasedError,mergeSaved,savedValue} from './data.mjs';
 import {memoryText,memoryRegion} from './memory-text.mjs';
 
 const byteLength=value=>new TextEncoder().encode(JSON.stringify(value)).length;
@@ -91,7 +91,7 @@ export function createMemories(h){
   // A same-companion refresh must not invalidate an in-flight save result.
   if(working&&pet===view.pet_id)return;
   if(pet&&pet!==view.pet_id)clear();pet=view.pet_id;const token=++epoch;loading=true;loaded=false;loadError=null;render();
-  try{const row=await h.anna().storage.get({key:MEMORIES});if(token!==epoch||h.view()?.pet_id!==pet)return;if((row.exists||row.value!==undefined)&&!row.etag)throw Error('Conditional writes required');saved=normalizeMemories(row.value,pet);loaded=true;}
+  try{const row=await h.anna().storage.get({key:MEMORIES});if(token!==epoch||h.view()?.pet_id!==pet)return;saved=normalizeMemories(savedValue(row),pet);loaded=true;}
   catch(error){if(token===epoch){saved=null;loadError=errorKey(error,'loadError');}}
   finally{if(token===epoch){loading=false;render();}}
  }
