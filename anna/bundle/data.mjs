@@ -8,6 +8,13 @@ export class ErasedError extends Error{constructor(){super('Notebuddy data remov
 const code=e=>Number(e?.details?.jsonrpc_code??e?.code);
 const conflict=e=>code(e)===-32023||/precondition|conflict/i.test(String(e?.message));
 const missing=e=>code(e)===-32022||e?.code==='not_found';
+export function savedValue(row){
+  // Anna represents a missing key as {exists:false,value:null}. Only that
+  // explicit absence normalizes null; existing null reaches caller validation.
+  const absent=row.exists===false&&row.value==null;
+  if((row.exists||row.value!==undefined&&!absent)&&!row.etag)throw new Error('Conditional writes required');
+  return absent?undefined:row.value;
+}
 export async function mergeSaved(storage,key,merge,active){
   if(![CHAT,ART,STORY,PERSONA,MEMORIES].includes(key))throw new Error('Unsupported data key');
   for(let attempt=0;attempt<3;attempt++){
@@ -16,8 +23,8 @@ export async function mergeSaved(storage,key,merge,active){
     // while a delayed writer is retrying an ETag conflict.
     await active?.();
     if(erased(current.value))throw new ErasedError();
-    if((current.exists||current.value!==undefined)&&!current.etag)throw new Error('Conditional writes required');
-    try{const value=merge(current.value);await storage.set({key,value,...(current.etag?{if_match:current.etag}:{})});return value;}
+    const old=savedValue(current);
+    try{const value=merge(old);await storage.set({key,value,...(current.etag?{if_match:current.etag}:{})});return value;}
     catch(error){if(!conflict(error)||attempt===2)throw error;}
   }
 }
@@ -25,7 +32,7 @@ async function scrub(storage,key){
   for(let attempt=0;attempt<3;attempt++){
     const current=await storage.get({key});
     if(erased(current.value))return;
-    if((current.exists||current.value!==undefined)&&!current.etag)throw new Error('Conditional writes required');
+    savedValue(current);
     try{await storage.set({key,value:{...TOMBSTONE},...(current.etag?{if_match:current.etag}:{})});return;}
     catch(error){if(!conflict(error)||attempt===2)throw error;}
   }

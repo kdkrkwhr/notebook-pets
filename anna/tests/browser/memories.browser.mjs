@@ -5,7 +5,7 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright-core';
 const bundle=new URL('../../bundle/',import.meta.url),root=fileURLToPath(new URL('../../../',import.meta.url));
-const mock=(await readFile(new URL('./mock-sdk.mjs',import.meta.url),'utf8')).replace("if(faults.extras)throw", "if(faults.extras||faults.memoryRead&&key==='notebuddy/memories-v1')throw").replace("set:async({key,value})=>{", "set:async({key,value})=>{if(key==='notebuddy/memories-v1'&&faults.memoryDelay)await new Promise(r=>setTimeout(r,faults.memoryDelay));");
+const mock=(await readFile(new URL('./mock-sdk.mjs',import.meta.url),'utf8')).replace("if(faults.extras)throw", "if(faults.extras||faults.memoryRead&&key==='notebuddy/memories-v1')throw").replace('const reorder=v=>', 'if(!Object.hasOwn(state.kv,key))return {exists:false,value:null};const reorder=v=>').replace("set:async({key,value})=>{", "set:async({key,value})=>{if(key==='notebuddy/memories-v1'&&faults.memoryDelay)await new Promise(r=>setTimeout(r,faults.memoryDelay));");
 const key='notebuddy/memories-v1',chat='notebuddy/chat-v1';
 function worker(payload){const p=spawnSync(process.env.PYTHON??'python',['-B','-X','utf8','anna/executas/notebuddy/game_worker.py'],{cwd:root,input:JSON.stringify(payload),encoding:'utf8'});assert.equal(p.status,0,p.stderr);return JSON.parse(p.stdout);}
 const messages=[{id:'u',role:'user',text:'  Keep this <script>literal</script>\n우리 이야기  ',at:1700000000123},{role:'assistant',text:'An old message without an ID.',at:1700000001123},{id:'pending',role:'assistant',kind:'reaction',state:'pending',text:'',at:1700000002123},{id:'failed',role:'assistant',kind:'reaction',state:'failed',text:'',at:1700000003123}];
@@ -20,8 +20,8 @@ async function setup(t,faults={}){
 const idle=page=>page.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled);
 const aiCalls=page=>page.evaluate(()=>hostTest.calls.filter(c=>/llm|image/.test(c.method)).length);
 async function screenshot(page,name){const dir=new URL('../../../.local/memories/',import.meta.url);await mkdir(dir,{recursive:true});await page.screenshot({path:fileURLToPath(new URL(name,dir))});}
-test('actual core milestones and explicit saved text survive reload and rolling chat, with no AI',async t=>{
- const {page,save}=await setup(t);assert.equal(await page.locator('.memory-save').count(),2);
+test('actual core milestones and a missing APS notebook save survive reload and rolling chat, with no AI',async t=>{
+ const {page,save}=await setup(t);assert.equal(await page.locator('.memory-save').count(),2);assert(await page.locator('.memory-save').first().isEnabled());
  await page.locator('.memory-save').first().click();await page.waitForFunction(()=>hostTest.state.kv['notebuddy/memories-v1']?.entries.length===1);
  await page.locator('#open-memories').click();assert.equal(await page.locator('.memory-note-text').innerText(),messages[0].text);
  await screenshot(page,'en-desktop.png');

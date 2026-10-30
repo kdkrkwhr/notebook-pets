@@ -5,7 +5,7 @@ import {MEMORIES,TOMBSTONE,removeAppData,ErasedError} from '../bundle/data.mjs';
 import {finishReset} from '../bundle/reset-data.mjs';
 const message=(id='one',text='  original\n말  ')=>( {id,role:'assistant',text,at:1700000000123});
 function fixture(value){
- let row=value===undefined?{exists:false}:{exists:true,value,etag:'1'},writes=0;
+ let row=value===undefined?{exists:false,value:null}:{exists:true,value,etag:'1'},writes=0;
  const f={get row(){return row;},set row(v){row=v;},get writes(){return writes;}};
  f.storage={get:async()=>structuredClone(row),set:async({key,value,if_match})=>{assert.equal(key,MEMORIES);if(if_match&&if_match!==row.etag)throw {code:-32023};row={exists:true,value:structuredClone(value),etag:String(++writes+1)};}};
  f.active=async()=>({pet_id:'pet',status:{}});return f;
@@ -55,6 +55,10 @@ test('save failures keep the same operation retryable and missing ETag never wri
  delete f.row.etag;await assert.rejects(writeMemory(f.storage,f.active,'pet',operation),/Conditional/);assert.equal(f.writes,1);
  delete f.row.exists;await assert.rejects(writeMemory(f.storage,f.active,'pet',operation),/Conditional/);assert.equal(f.writes,1);
 });
+test('only confirmed missing APS rows treat null as an empty notebook',async()=>{
+ const absent=fixture();await writeMemory(absent.storage,absent.active,'pet',{add:keepsake(message())});assert.equal(absent.row.value.entries.length,1);
+ for(const exists of [true,undefined]){const present=fixture(null);present.row.exists=exists;await assert.rejects(writeMemory(present.storage,present.active,'pet',{add:keepsake(message())}),e=>e.code==='invalid');assert.equal(present.writes,0);}
+});
 test('each attempt reads the row before checking active pet and fences reset after conflict',async()=>{
  const f=fixture(changeMemory(undefined,'pet',{add:keepsake(message())})),order=[],get=f.storage.get;let calls=0;
  f.storage.get=async args=>{order.push('read');return get(args);};
@@ -71,7 +75,7 @@ test('inactive, resetting, erased and cross-pet rows reject delayed saves',async
 });
 test('reset and erasure include independent memories storage',async()=>{
  const rows=new Map([[MEMORIES,{exists:true,etag:'1',value:changeMemory(undefined,'pet',{add:keepsake(message())})}]]);
- const storage={get:async({key})=>rows.get(key)||{exists:false},set:async({key,value})=>rows.set(key,{exists:true,value,etag:'2'})};
+ const storage={get:async({key})=>rows.get(key)||{exists:false,value:null},set:async({key,value})=>rows.set(key,{exists:true,value,etag:'2'})};
  const files={list:async()=>({items:[]})};
  await finishReset({storage,files},async a=>a.action==='inspect'?{ok:true,reset_pending:true,reset_id:'r'}:{ok:true,reset_complete:true},'r');assert.deepEqual(rows.get(MEMORIES).value,{});
  await removeAppData({storage,files},async()=>({ok:true,erased:true}));assert.deepEqual(rows.get(MEMORIES).value,TOMBSTONE);

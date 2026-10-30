@@ -4,7 +4,7 @@ import {CHAT,ART,STORY,PERSONA,TOMBSTONE,ErasedError,mergeSaved,removeAppData} f
 function fixture(){
  const rows=new Map([[CHAT,{value:[{text:'private'}],etag:'1',exists:true}],[ART,{value:{portrait:'private'},etag:'1',exists:true}]]);
  const blobs=new Map([['portraits/a/old.png','1'],['portraits/a/new.png','2'],['unrelated/file','3']]);
- const storage={async get({key}){return structuredClone(rows.get(key)||{exists:false});},async set({key,value,if_match}){const row=rows.get(key);if(if_match&&row?.etag!==if_match)throw {code:-32023};rows.set(key,{value:structuredClone(value),etag:String(Number(row?.etag||0)+1),exists:true});}};
+ const storage={async get({key}){return structuredClone(rows.get(key)||{exists:false,value:null});},async set({key,value,if_match}){const row=rows.get(key);if(if_match&&row?.etag!==if_match)throw {code:-32023};rows.set(key,{value:structuredClone(value),etag:String(Number(row?.etag||0)+1),exists:true});}};
  const deleted=[];const files={async list(){return {items:[...blobs].filter(([p])=>p.startsWith('portraits/')).slice(0,1).map(([path,etag])=>({path,etag})),next_cursor:null};},async delete({path,if_match}){assert.equal(if_match,blobs.get(path));blobs.delete(path);deleted.push(path);}};
  return {rows,blobs,deleted,storage,files};
 }
