@@ -7,10 +7,12 @@ import {chromium} from 'playwright-core';
 const bundle=new URL('../../bundle/',import.meta.url),root=fileURLToPath(new URL('../../../',import.meta.url));
 const mock=await readFile(new URL('./mock-sdk.mjs',import.meta.url),'utf8');
 function worker(payload){const p=spawnSync(process.env.PYTHON??'python',['-B','-X','utf8','anna/executas/notebuddy/game_worker.py'],{cwd:root,input:JSON.stringify(payload),encoding:'utf8'});assert.equal(p.status,0,p.stderr);const result=JSON.parse(p.stdout);assert.notEqual(result.result.code,'invalid_state');return result;}
-async function setup(t,sandbox=false){
+async function setup(t,sandbox=false,life=false){
  const birth=worker({command:'start',name:'Home buddy',request_id:'birth'});let state=birth.state;state.coins=100;
+ if(life)state.home={version:1,revision:0,owned:['nest','bookshelf','plant'],layout:{nest:[7,0],bookshelf:[0,0],plant:[0,3]},previous:null,motion:[],reason:''};
  const initial=worker({command:'status',state});const save={...initial.result,...initial.view,pet_id:state.pet_id,request_id_prefix:'nb2:0:'};
  const browser=await chromium.launch(process.env.ANNA_BROWSER_CHANNEL?{channel:process.env.ANNA_BROWSER_CHANNEL}:process.platform==='win32'?{channel:'msedge'}:{});t.after(()=>browser.close());const page=await browser.newPage({viewport:{width:1280,height:900}});page.setDefaultTimeout(20000);const errors=[];page.on('pageerror',e=>errors.push(e.message));t.after(()=>assert.deepEqual(errors,[]));
+ if(life)await page.clock.install();
  await page.route('**/*',async route=>{const u=new URL(route.request().url());if(u.origin!=='https://notebuddy.test')return route.abort();if(u.pathname.includes('/_sdk/'))return route.fulfill({body:mock,contentType:'text/javascript'});
   if(u.pathname==='/sandbox-host')return route.fulfill({contentType:'text/html',body:'<iframe src="/" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads" style="position:fixed;inset:0;width:100vw;height:100vh;border:0"></iframe>'});
   if(u.pathname==='/fixture-upload')return route.fulfill({body:''});
@@ -24,6 +26,42 @@ async function setup(t,sandbox=false){
  await ui.locator('#home-shop-toggle').click();
  return {page:ui,hostPage:page,state:()=>state};
 }
+
+test('furniture life shows five-language captions with a default portrait, freezes on pause and stays read only',async t=>{
+ const {page,state}=await setup(t,false,true);
+ await page.locator('#home-appearance-default').click();
+ await page.waitForFunction(()=>document.querySelector('#home-canvas').dataset.sprite==='ready'&&!document.querySelector('#home-close').disabled);
+ await page.locator('#home-shop-close').click();await page.locator('#home-inside').click();
+ assert.equal(await page.locator('#home-life').count(),1,'the home scene needs an accessible activity caption');
+ const before=structuredClone(state()),savedExtras=await page.evaluate(()=>structuredClone(hostTest.state.kv));
+ const seen=new Map();
+ for(let i=0;i<120&&seen.size<3;i++){
+  await page.clock.runFor(500);
+  const current=await page.locator('#home-life').evaluate(e=>({activity:e.dataset.activity,text:e.textContent,visible:!e.hidden}));
+  if(current.activity){assert(current.visible);seen.set(current.activity,current.text);}
+ }
+ assert.deepEqual([...seen.keys()].sort(),['plant','read','rest']);
+ assert.match(seen.get('rest'),/Resting/);assert.match(seen.get('read'),/Reading/);assert.match(seen.get('plant'),/plant/);
+ await page.locator('#home-tools').evaluate(e=>e.open=true);await page.locator('#home-pause').click();
+ const held=await page.locator('#home-life').textContent();await page.clock.runFor(10000);assert.equal(await page.locator('#home-life').textContent(),held);
+ assert.equal(await page.locator('#home-canvas').getAttribute('data-appearance'),'default');
+ await page.locator('#home-yard').click();assert.equal(await page.locator('#home-life').isVisible(),false);
+ await page.locator('#home-close').click();await page.emulateMedia({reducedMotion:'reduce'});
+ const localized={ko:'쉬고 있어요',ja:'休んでいます','zh-Hans':'休息','zh-Hant':'休息'};
+ for(const [language,fragment] of Object.entries(localized)){
+  await page.locator('#language').selectOption(language);await page.waitForFunction(()=>!document.querySelector('#refresh').disabled);
+  await page.locator('#open-home').click();await page.locator('#home-inside').click();
+  await page.clock.runFor(1000);assert.equal(await page.locator('#home-life').isVisible(),false,'reduced motion starts paused');
+  await page.locator('#home-tools').evaluate(e=>e.open=true);assert.equal(await page.locator('#home-pause').getAttribute('aria-pressed'),'true');await page.locator('#home-pause').click();
+  for(let i=0;i<30&&!await page.locator('#home-life').isVisible();i++)await page.clock.runFor(500);
+  assert((await page.locator('#home-life').textContent()).includes(fragment),language);
+  await page.setViewportSize({width:320,height:740});assert(await page.locator('#home-dialog').evaluate(e=>e.scrollWidth<=e.clientWidth+1));
+  assert(await page.locator('#home-life').evaluate(e=>e.scrollWidth<=e.clientWidth+1));
+  await page.locator('#home-close').click();
+ }
+ assert.deepEqual(state(),before);assert.deepEqual(await page.evaluate(()=>hostTest.state.kv),savedExtras);
+ assert.equal(await page.evaluate(()=>hostTest.calls.filter(c=>['llm','image','home-image'].includes(c.method)).length),0);
+});
 test('real core home: buying and motion never invoke AI; one requested decorate, undo, lost reply retry, and mobile',async t=>{
  const {page,state}=await setup(t),llm=()=>page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm').length);
  assert.equal(await llm(),0);page.on('dialog',d=>d.accept());

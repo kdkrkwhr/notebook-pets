@@ -18,7 +18,7 @@ from receipts import disposition, event_key, prefix, commit_result, SaveCapacity
 
 # Enabled after approved image editing, live quality and real APS validation.
 EQUIPMENT_ENABLED = True
-VERSION = '0.9.8'
+VERSION = '0.9.9'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'

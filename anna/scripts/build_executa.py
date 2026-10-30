@@ -37,6 +37,9 @@ def worker(payload):
     assert value['result']['ok'], value
     return value
 created = worker({'command':'start','name':'Build test','request_id':'build-birth'})
+assert created['view']['memories'] == created['state']['milestones']
+assert created['view']['memories'] == [{'id':created['state']['pet_id']+':met',
+    'kind':'met', 'at':created['state']['history'][0]['ts']}]
 cared = worker({'command':'feed','state':created['state'],'request_id':'build-feed'})
 assert cared['view']['status']['xp'] == 10
 assert cared['state']['pet_id'] == created['state']['pet_id']
@@ -61,6 +64,8 @@ evolved=worker({'command':'evolve','state':prepared['state'],
     'evolution_payload':json.dumps({'pet_id':growth_state['pet_id'],'choice_id':token,'route_id':'keep'}),'request_id':'build-evolve'})
 assert evolved['state']['stage']==2 and evolved['state']['pet_id']==growth_state['pet_id']
 assert evolved['state']['stats']==growth_state['stats']
+assert evolved['view']['memories'][-1] == {'id':growth_state['pet_id']+':evolved:2',
+    'kind':'evolved', 'stage':2, 'at':evolved['result']['evolved']['at']}
 
 # Exercise the copied collectibles module in the actual standalone worker.
 from datetime import datetime, timedelta, timezone
@@ -76,9 +81,13 @@ reward = worker({'command':'dungeon_safe','state':entry['state'],
     'choice_id':entry['result']['dungeon_visit']['choice_id'],'request_id':'build-reward'})
 assert reward['result']['dungeon_run']['item_awarded'] == 'ember-horns'
 assert reward['view']['status']['collectibles'] == {'ember-horns':1}
+assert reward['view']['memories'][-1]['id'] == reward['state']['pet_id']+':dungeon:hellgate'
+assert reward['view']['memories'][-1]['region'] == 'hellgate'
+assert reward['view']['memories'][-1]['at'] > 0
 replay = worker({'command':'dungeon_safe','state':reward['state'],
     'choice_id':entry['result']['dungeon_visit']['choice_id'],'request_id':'build-reward'})
 assert replay['state'] == reward['state']
+assert replay['view']['memories'] == reward['view']['memories']
 
 # The packaged worker must include the same atomic equipment rules.
 fit=dict(pet_id=reward['state']['pet_id'],revision=0,id='a'*32,item_id='ember-horns',stage=1,source_path='assets/starters-v1/ghost_fire_stage1.png')

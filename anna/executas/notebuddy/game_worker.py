@@ -28,6 +28,7 @@ def run(payload):
     sys.path.insert(0, str(source / 'engine'))
     import engine
     import art
+    import memories
     from game_api import transition
     from ports import ExecutionContext, execution
     context = ExecutionContext(
@@ -65,7 +66,7 @@ def run(payload):
                     current['processed_requests'][request]['result'] = result.copy()
         status = transition(current, 'status', context).result if current else None
         album = transition(current, 'album', context).result.get('album') if current else None
-        view = {'status': status, 'album': album}
+        view = {'status': status, 'album': album, 'memories': memories.view(current) if current else []}
         if current:
             import home
             view['home']=home.view(current)

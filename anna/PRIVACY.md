@@ -1,6 +1,6 @@
 # Notebuddy — privacy and data notice
 
-Last updated: 16 October 2026. This notice describes the Notebuddy 1.4.4 source candidate; previously submitted versions keep their versioned notices. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
+Last updated: 30 October 2026. This notice describes the current Notebuddy source; previously submitted versions keep their versioned notices. Applies to the Notebuddy app on Anna, maintained by [kdkrkwhr](https://github.com/kdkrkwhr). The separately installed Discord/Hermes edition has a different storage setup.
 
 ## What the app stores and why
 
@@ -8,6 +8,7 @@ Last updated: 16 October 2026. This notice describes the Notebuddy 1.4.4 source 
 | --- | --- |
 | Companion name, species, element, progress, inventory, daily activity, growth album milestones and recent action results | Saved in your authenticated Anna account’s Notebuddy Game tool storage, to continue your game and prevent repeat rewards. |
 | Recent conversation | Up to 64 chat entries within 40 KB (latest 24 displayed), including care reactions and pending/failure markers, are retained by the app in Anna app storage to show your conversation and provide recent context. This limit does not describe Anna or AI-provider logs. |
+| Memory notebook | First meeting, recorded evolutions and first recorded regional guardian victories are retained with game progress. Up to 20 messages you explicitly save are stored separately in the app record `notebuddy/memories-v1`, scoped to the companion ID. Each message retains its original text, role and known timestamp, with a stable deduplication identifier. Limits are 3,000 characters per message and 40,000 UTF-8 bytes for the whole record; new saves exceeding a limit are refused without evicting existing words. |
 | Portrait index and generated portrait files | Saved in Anna app storage and file storage for the growth album. Drawing a replacement changes the displayed portrait; older files are not automatically erased. |
 | Pixel companion images and source-portrait paths | A 64×64 PNG is prepared locally from a completed portrait or bundled starter and saved in the same private portrait index/file storage for dungeon exploration. No AI request is made for conversion. |
 | Dungeon discoveries, daily clears, coins and latest expedition result | Stored with private game progress. Results and charges are committed together before animation; replaying or skipping cannot grant another reward. The latest result remains available across a daily reset until replaced. |
@@ -69,6 +70,10 @@ The app contains no separate advertising or analytics service. Anna still handle
 ## Retention and deletion — current preview
 
 Game records and portraits have no automatic expiry configured by Notebuddy. The recent-chat window is replaced as new messages are saved. Closing the window or changing language does not erase saved data. Uninstalling the app has **not** been verified to erase its app and tool storage.
+
+### Memory notebook
+
+Saving a completed visible message explicitly keeps a separate copy, independent of the rolling chat window. Removing that copy does not remove or edit the conversation. The saved words are never automatically added to AI prompts. Notebook viewing, saving, deletion and save-only retry make no AI request. A failed save can be retried with the same identifier; retrying does not create a duplicate. Known dates are shown; missing dates and unrecorded past victories are not invented. Reset and data removal include the notebook record and game milestones. Existing records use conditional writes and verify the active companion on each attempt. First-ever row creation retains the platform's existing non-atomic creation limitation.
 
 ### Retry saving a conversation
 

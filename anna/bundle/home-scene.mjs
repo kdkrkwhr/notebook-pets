@@ -4,10 +4,12 @@ import {gardenSprite} from './garden-art.mjs';
 export {routeAt} from './home-walk.mjs';
 const indices={house:0,tree:1,bush:2,bench:3,bookshelf:4,desk:5,nest:6,plant:7,rug:8};
 const extraIndices={lamp:0,'side-table':1,cushion:2,'wall-art':3,curtain:4,tea:5,basket:6,mailbox:7};
-export function createHomeScene(canvas){
+export function createHomeScene(canvas,{onActivity=()=>{}}={}){
  const ctx=canvas.getContext('2d'),reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const camera={x:320,y:240,zoom:innerWidth<500?1:2};
  let sheets,atlas,terrain,grassPattern,movement=null,s=null,home=null,pet=null,petSource='',ticket=0,active=false,frame=0,last=0,previousScene='',jobLayout=null;
+ let reportedActivity=null;
+ function reportActivity(value){if(value!==reportedActivity){reportedActivity=value;onActivity(value);}}
  const gardenArt=new Map();
  const load=name=>new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('Home artwork unavailable'));im.src=new URL(`./assets/home-v2/${name}.png`,import.meta.url).href;});
  const ready=Promise.all([load('objects'),load('extra'),fetch(new URL('./assets/home-v2/atlas.json',import.meta.url)).then(r=>{if(!r.ok)throw Error('Home atlas unavailable');return r.json();})]).then(([objects,extra,metadata])=>{
@@ -103,12 +105,13 @@ function fence(c,x,y){line(c,'#64482e',x,y-4,16,3);line(c,'#ab8247',x,y-5,16,2);
   if(s.fade){ctx.fillStyle=`rgba(31,39,27,${Math.min(1,Math.abs(s.fade))})`;ctx.fillRect(0,0,canvas.width,canvas.height);}
   canvas.dataset.place=s.scene;canvas.dataset.sprite=pet?'ready':'missing';
   canvas.dataset.appearance=pet?.kind==='default'?'default':pet?'directional':'missing';
+  reportActivity(pet?s.activity:null);
  }
  function resize(){canvas.width=Math.max(1,Math.round(canvas.clientWidth/camera.zoom));canvas.height=Math.max(1,Math.round(canvas.clientHeight/camera.zoom));previousScene='';render();}
  new ResizeObserver(resize).observe(canvas);
  function tick(now){if(!active)return;const dt=last?Math.min(.05,(now-last)/1000):0;last=now;if(!document.hidden&&movement){if(pet)movement.advance(dt);render(s.paused?0:dt);}frame=requestAnimationFrame(tick);}
  reduced.addEventListener('change',e=>{if(e.matches&&s)s.paused=true;});
- return {ready,hasPet:()=>!!pet,
+ return {ready,hasPet:()=>!!pet,activity:()=>pet?s?.activity??null:null,
   async set(value,source){
    const url=typeof source==='string'?source:source?.url,kind=typeof source==='object'?source.kind:undefined;
    source=url?`${kind||'directional'}:${url}`:'';
@@ -132,7 +135,7 @@ function fence(c,x,y){line(c,'#64482e',x,y-4,16,3);line(c,'#ab8247',x,y-5,16,2);
    movement.play(legs,()=>{jobLayout=null;});
   },
   jump(place){jobLayout=null;movement?.jump(place);render();},paused:()=>!!s?.paused,pause(){if(s)s.paused=!s.paused;return !!s?.paused;},zoom(delta){camera.zoom=Math.max(1,Math.min(5,camera.zoom+delta));resize();return camera.zoom;},
-  skip(){jobLayout=null;movement?.stopJob();},stop(){active=false;cancelAnimationFrame(frame);jobLayout=null;ticket++;},
+  skip(){jobLayout=null;movement?.stopJob();render();},stop(){active=false;cancelAnimationFrame(frame);jobLayout=null;ticket++;reportActivity(null);},
   thumb(key,item){if(!sheets)return null;if(item?.art&&!gardenArt.has(key))gardenArt.set(key,gardenSprite(item.art));const [sheet,crop]=source(key),b=document.createElement('canvas');b.width=b.height=160;const c=b.getContext('2d'),scale=Math.min(144/crop[2],144/crop[3]);c.imageSmoothingEnabled=false;c.drawImage(sheet,...crop,(160-crop[2]*scale)/2,(160-crop[3]*scale)/2,crop[2]*scale,crop[3]*scale);return b.toDataURL('image/png');}
  };
 }

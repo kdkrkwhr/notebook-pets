@@ -7,6 +7,8 @@ const fittingJournal=equipmentJournal(window.indexedDB);
 import {createItemCatalog} from './item-catalog.mjs';
 import {createThemes} from './themes.mjs';
 import {createHome} from './home.mjs';
+import {createMemories} from './memories.mjs';
+let notebook;
 import {createHomeSprite,currentHomeSprite,currentHomeAppearance,homeNeedsChoice,homeSpriteKey} from './home-sprite.mjs';
 import {localeText} from './locale.mjs';
 let homeUI,homeSprites;
@@ -83,13 +85,13 @@ function controls(value){
   if(!value&&pendingChat)document.querySelectorAll('#chat-form button,#chat-input').forEach(e=>e.disabled=true);
   if(!value&&(pendingRemoval||pendingAction))$('#retry-chat').disabled=true;
   if(!value&&anna&&!pendingRemoval&&!pendingAction&&!pendingResetRequest&&!view?.reset_pending&&view?.status)$('#claimquest').disabled=!view.status.quest?.ready;
-  birth?.render();stories?.render();dungeons?.render();renderPersonality();evolution?.render();
+  birth?.render();stories?.render();dungeons?.render();renderPersonality();evolution?.render();notebook?.sync();
 }
 function text(id,value){$(id).textContent=String(value??'');}
 function picture(img,src,fallback){img.onerror=()=>{img.onerror=null;img.src=fallback;};img.src=src;}
 function translate(){
   translateDocument(document,language);$('#language').value=language;
-  itemCatalog.render();appearance.render();hints?.render();
+  itemCatalog.render();appearance.render();hints?.render();notebook?.render();
   if(birthNotice)birthMessage(birthNotice.key,birthNotice.values);
 }
 function drawChat(){
@@ -103,7 +105,7 @@ function drawChat(){
     label.textContent=item.role==='user'?tr('you'):view?.status?.name||tr('friend');
     const content=item.kind==='reaction'&&item.state!=='done'?tr(item.state==='failed'?'reactionBubbleFailed':reactions?.messages().some(x=>x.id===item.id)?'reactionWorking':'reactionInterrupted',{name:view?.status?.name||tr('friend')}):item.text;
     if(item.kind==='reaction'){p.dataset.reactionState=item.state;if(item.state==='pending')p.classList.add('reaction-pending');}
-    p.append(label,document.createTextNode(content));container.append(p);
+    p.append(label,document.createTextNode(content));container.append(p);notebook?.attach(p,item);
   }
   reactionFeedback(reactionNotice);
   container.scrollTop=container.scrollHeight;
@@ -145,6 +147,7 @@ function render(){
   if(resetting)forgetCachedData();
   const s=resetting?null:view?.status;
   homeUI?.update(resetting?null:view);
+  notebook?.update();
   itemCatalog.update(s?.collectibles,s?.collectible_discoveries);
   $('#removed').hidden=!view?.erased;
   $('#reset-game').hidden=resetting||!s;
@@ -187,6 +190,7 @@ function render(){
 function forgetCachedData(){
   evolution?.clear();
   homeUI?.clear();homeSprites?.clear();
+  notebook?.clear();
   itemCatalog.clear();
   persona?.clear();
   pixels?.clear();dungeons?.close();dungeons?.clearPresentation();
@@ -221,6 +225,8 @@ async function assertActive(){
 async function readExtras(){
   if(view?.erased||view?.reset_pending||pendingResetRequest){forgetCachedData();return;}
 
+  // Notebook errors have their own retry UI and never erase recent conversation.
+  const memoryLoad=notebook?.load(view);
   const results=await Promise.allSettled([anna.storage.get({key:CHAT}),anna.storage.get({key:ART})]);
   // An interrupted cleanup can leave the tool and app records out of sync.
   // Block paid work before it produces an answer that cannot be saved.
@@ -228,6 +234,7 @@ async function readExtras(){
   if(results[0].status==='fulfilled')history=mergeHistory(results[0].value.value,pendingChat||[]);
   if(results[1].status==='fulfilled')art=results[1].value.value||{};
   if(results.some(r=>r.status==='rejected'))notice(tr('extrasError'));
+  await memoryLoad;
   await stories?.load(view);
   urls={};await Promise.all(Object.entries(art).filter(([key])=>key.startsWith(`${view?.pet_id}/`)&&!key.endsWith('/birth-source')).map(async([key,entry])=>{try{urls[key]=(await anna.files.download_url({path:entry.path})).get_url;}catch{/* Keep the bundled portrait visible. */}}));
   const current=portraitEntry(view||{},art);
@@ -279,7 +286,7 @@ async function act(command,extra={},retry=false){
     if(view?.status&&(!source||source.phase==='abandoned')){await setupPersonality(true);controls(true);try{await syncPortraitVisuals(await assertActive());await readExtras();render();}finally{controls(false);}}
   }
 }
-async function saveMerged(key,merge){await assertActive();return mergeSaved(anna.storage,key,merge);}
+async function saveMerged(key,merge){return mergeSaved(anna.storage,key,merge,assertActive);}
 async function chat(event){
   event.preventDefault();if(busy||pendingChat||pendingAction||pendingRemoval||!view?.status)return;
   const input=$('#chat-input'),message=input.value.trim();if(!message)return;
@@ -533,6 +540,9 @@ homeUI=createHome({document,language:()=>language,anna:()=>anna,active:assertAct
  sprite:homeSpriteUrl,loadSprite:loadHomeSprite,
   needsAppearance:()=>!!view?.status&&homeNeedsChoice(view,art),prepareAppearance:chooseHomeAppearance,
  spritePending:()=>homeSprites.hasPending(),retrySprite:()=>homeSprites.retry()});
+notebook=createMemories({document,anna:()=>anna,active:assertActive,view:()=>view,language:()=>language,
+ locked:()=>busy||!!(pendingAction||pendingRemoval||pendingResetRequest||view?.reset_pending),
+ completed:item=>!!item&&!pendingChat?.some(m=>m.id===item.id)&&!reactions?.messages().some(m=>m.id===item.id)&&(!item.kind||item.kind==='reaction'&&item.state==='done')});
 hints=createHints(document,()=>language);
 titleScreen.show();
 

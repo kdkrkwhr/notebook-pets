@@ -47,7 +47,7 @@ only-include = [
   "engine/game_api.py", "engine/repositories.py", "engine/local_runtime.py",
   "engine/art.py", "engine/dungeons.py", "engine/collectibles.py", "engine/equipment.py",
   "engine/journeys.py", "engine/personality.py", "engine/home.py", "engine/home_world.py",
-  "engine/evolution.py", "engine/adapter.py", "tools/mcp_server.py",
+  "engine/evolution.py", "engine/memories.py", "engine/adapter.py", "tools/mcp_server.py",
   "data/game_data.json", "data/image_prompts.json",
 ]
 
@@ -72,6 +72,7 @@ packages = ["cli/notebook_pets"]
 "engine/home.py" = "notebook_pets/_runtime/engine/home.py"
 "engine/home_world.py" = "notebook_pets/_runtime/engine/home_world.py"
 "engine/evolution.py" = "notebook_pets/_runtime/engine/evolution.py"
+"engine/memories.py" = "notebook_pets/_runtime/engine/memories.py"
 "engine/adapter.py" = "notebook_pets/_runtime/engine/adapter.py"
 "data/game_data.json" = "notebook_pets/_runtime/data/game_data.json"
 "data/image_prompts.json" = "notebook_pets/_runtime/data/image_prompts.json"

@@ -1,14 +1,24 @@
-import {localeText,localeObject,languageName} from './locale.mjs';
+import {localeText,localeObject,languageName,normalizeLocale} from './locale.mjs';
 import {newAction} from './model.mjs';
 import {createHomeScene} from './home-scene.mjs';
 import {createActivity} from './activity.mjs';
+const lifeCaptions={
+ en:{rest:'Resting by the cozy nest',read:'Reading at the bookcase',plant:'Taking a quiet look at the plant'},
+ ko:{rest:'포근한 둥지 곁에서 쉬고 있어요',read:'책장 앞에서 책을 읽고 있어요',plant:'화분을 가만히 살펴보고 있어요'},
+ ja:{rest:'心地よい寝床のそばで休んでいます',read:'本棚の前で本を読んでいます',plant:'鉢植えを静かに眺めています'},
+ 'zh-Hans':{rest:'在温暖的小窝旁休息',read:'在书架前读书',plant:'静静地看看盆栽'},
+ 'zh-Hant':{rest:'在溫暖的小窩旁休息',read:'在書架前讀書',plant:'靜靜地看看盆栽'}
+};
 export function homeDecision(response,candidates){
  const value=JSON.parse(response?.content?.text??'');
  if(!value||Object.keys(value).sort().join(',')!=='candidate_id,reason'||typeof value.reason!=='string'||!value.reason.trim()||value.reason.length>180||/[\x00-\x1f]/.test(value.reason)||!candidates.some(c=>c.id===value.candidate_id))throw Error('Invalid home decision');
  return {candidate_id:value.candidate_id,reason:value.reason};
 }
 export function createHome(h){
- const $=s=>h.document.querySelector(s),dialog=$('#home-dialog'),scene=createHomeScene($('#home-canvas'));let view=null,working=false,pending=null,shownPet=null;
+ const $=s=>h.document.querySelector(s),dialog=$('#home-dialog');
+ const life=h.document.createElement('p');life.id='home-life';life.className='home-life';life.hidden=true;life.setAttribute('role','status');life.setAttribute('aria-live','polite');life.setAttribute('aria-atomic','true');$('#home-canvas').after(life);
+ function showLife(id){life.textContent=lifeCaptions[normalizeLocale(h.language())][id]||'';life.dataset.activity=id||'';life.hidden=!life.textContent;}
+ const scene=createHomeScene($('#home-canvas'),{onActivity:showLife});let view=null,working=false,pending=null,shownPet=null;
  const ko=()=>h.language()==='ko',say=(a,b)=>localeText(h.language(),ko()?a:b);
  const activity=createActivity($('#home-status'),h.language);
  let shopArea='all',shopCategory='all',shopMode='shop';
@@ -36,6 +46,7 @@ export function createHome(h){
  function status(a,b){$('#home-status').textContent=say(a,b);}
  function controls(){appearanceControls();for(const b of dialog.querySelectorAll('button'))if(working||!b.closest('.home-item'))b.disabled=working;$('#home-retry').hidden=!pending;$('#home-decorate').disabled=working||!!pending;$('#home-undo').disabled=working||!!pending||!view?.home?.previous;$('#home-sprite-retry').disabled=working||!!pending;$('#home-sprite-retry').hidden=!h.spritePending();$('#home-sprite-retry').textContent=say('동작 저장 다시 시도','Retry saving movement');$('#home-empty').hidden=working||scene.hasPet();}
  async function render(){
+  showLife(scene.activity());
   appearanceControls();
   if(!view?.home)return;$('#home-coins').textContent=`${view.home.coins} ${say('코인','coins')}`;$('#home-name').textContent=say(`${view.status.name}의 집과 마당`,`${view.status.name}'s home & garden`);$('#home-reason').textContent=view.home.reason;
   const stored=view.home.owned.filter(id=>!(id in view.home.layout)).length;

@@ -19,6 +19,7 @@ import journeys
 import personality
 import home
 import evolution
+import memories
 
 G = ContextMapping('rules')
 _pending_save = ContextVar('pending_save', default=None)
@@ -78,6 +79,7 @@ def migrate_state(source, uid):
 
 def save_state(st):
     validate_state(st, st.get("user_id"))
+    memories.retain(st)
     pending = _pending_save.get()
     if pending is not None:
         pending.append(st)
@@ -109,6 +111,7 @@ def validate_state(st, uid):
         personality.validate(st)
         home.validate(st)
         evolution.validate(st)
+        memories.validate(st)
         require(type(st["version"]) is int and st["version"] in (2, 3, 4, 5))
         require(isinstance(st["name"], str))
         if "pet_id" in st:
@@ -546,6 +549,7 @@ def cmd_dungeon_choice(st, choice, token):
            'coins_awarded':reward,'complete':complete}
     st['coins'] = st.get('coins',0)+reward
     if complete:
+        memories.guardian_victory(st, key, time.time())
         run['item_awarded'] = collectibles.award(st, key)
         if key not in state['cleared']: state['cleared'].append(key)
         if key in state['discovered']: state['discovered'].remove(key)
