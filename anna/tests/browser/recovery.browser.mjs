@@ -522,11 +522,15 @@ test('walk counter recovers locally without issuing actions and caps at five',as
 });
 
 test('care reactions show pending after committed care without blocking another action',async t=>{
- const p=await setup(t,{llmDelay:800});await start(p);
+ // A timed reply can finish before a slow click returns. Hold it until the
+ // second care action commits so this checks behavior without a timing race.
+ const p=await setup(t,{holdReaction:true});await start(p);
  await p.locator('[data-action="feed"]').click();await p.waitForFunction(()=>!document.querySelector('#refresh').disabled);
  assert.equal(await p.locator('#xp-label').innerText(),'10 / 100 XP');
- await p.waitForFunction(()=>document.querySelector('#messages').textContent.includes('is reacting'));
- assert.equal(await p.locator('[data-action="play"]').isEnabled(),true);await p.locator('[data-action="play"]').click();await idle(p);
+ await p.waitForFunction(()=>typeof hostTest.releaseReaction==='function'&&document.querySelector('#messages').textContent.includes('is reacting'));
+ assert.equal(await p.locator('[data-action="play"]').isEnabled(),true);await p.locator('[data-action="play"]').click();await p.waitForFunction(()=>!document.querySelector('#refresh').disabled);
+ assert.equal(await p.locator('#xp-label').innerText(),'20 / 100 XP');assert.equal(await p.evaluate(()=>hostTest.state.kv['notebuddy/chat-v1'].find(m=>m.command==='feed')?.state),'pending');
+ await p.evaluate(()=>hostTest.releaseReaction());await idle(p);
  assert.equal((await calls(p,'llm')).length,2);assert.equal(await p.locator('[data-reaction-state="done"]').count(),2);
  const prompts=await p.evaluate(()=>window.hostTest.calls.filter(x=>x.method==='llm').map(x=>x.prompt));
  assert.match(prompts[0],/"command":"feed"/);assert.match(prompts[1],/"command":"play"/);
@@ -780,12 +784,17 @@ test('birth metadata save failure before source upload can be recovered after re
  await p.locator('#retry-birth').click();await idle(p);assert.equal((await calls(p,'start')).length,0);assert.equal((await calls(p,'image')).length,1);
 });
 test('replacement during birth generation never applies the old artwork to the new pet',async t=>{
- const p=await setup(t,{imageDelay:400});await artwork(p);
+ // Switch companions before releasing the old image, regardless of host speed.
+ const p=await setup(t,{holdBirthImage:true});await artwork(p);
  await p.locator('#pet-name').fill('Original');await p.locator('#start-form button').click();
- await p.waitForFunction(()=>window.hostTest.calls.some(x=>x.method==='image'));
- await p.evaluate(()=>{window.hostTest.state.save.pet_id='replacement';});await idle(p);
+ await p.waitForFunction(()=>typeof hostTest.releaseBirthImage==='function');
+ const replacement=await p.evaluate(()=>{window.hostTest.state.save.pet_id='replacement';return structuredClone(hostTest.state.save);});
+ await p.evaluate(()=>hostTest.releaseBirthImage());await idle(p);
  const saved=await p.evaluate(()=>window.hostTest.state.kv['notebuddy/art-v1']);
  assert.equal(saved?.['replacement/stage-1'],undefined);assert.equal(saved?.['isolated-fixture/stage-1'],undefined);
+ const current=await p.evaluate(()=>hostTest.state.save);assert.equal(current.pet_id,'replacement');assert.equal(current.stage,replacement.stage);assert.deepEqual(current.inventory,replacement.inventory);
+ for(const key of ['level','xp','stats'])assert.deepEqual(current.status[key],replacement.status[key]);
+ assert.equal((await calls(p,'image')).length,1);
  assert.match(await p.locator('#notice').innerText(),/changed/);
 });
 
@@ -813,16 +822,16 @@ test('reset returns to empty welcome and drawing can be chosen before a new birt
 
 
 test('drawing birth hides all game portraits while generating, then reveals the saved portrait',async t=>{
- const p=await setup(t,{imageDelay:1200});await artwork(p);
+ const p=await setup(t,{holdBirthImage:true});await artwork(p);
  await p.locator('#pet-name').fill('Waiting buddy');await p.locator('#start-form button').click();
- await p.waitForFunction(()=>window.hostTest.calls.some(x=>x.method==='image'));
+ await p.waitForFunction(()=>typeof hostTest.releaseBirthImage==='function');
  assert.equal(await p.locator('#birth-recovery').isVisible(),true);
  assert.equal(await p.locator('#game').isVisible(),false);
  assert.equal(await p.locator('#welcome').isVisible(),false);
  assert.equal(await p.locator('#pet-image').isVisible(),false);
  assert.equal(await p.locator('#birth-recovery .birth-buttons').isVisible(),false);
  assert.match(await p.locator('#birth-recovery-status').innerText(),/Bringing/);
- await idle(p);
+ await p.evaluate(()=>hostTest.releaseBirthImage());await idle(p);
  assert.equal(await p.locator('#birth-recovery').isVisible(),false);
  assert.equal(await p.locator('#pet-image').isVisible(),true);
  assert.equal((await calls(p,'image')).length,1);
