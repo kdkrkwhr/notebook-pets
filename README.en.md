@@ -32,9 +32,9 @@ This initial preview has no Windows code-signing certificate or Apple notarizati
 
 ## Get started on Anna
 
-**[Get Notebuddy on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy)** · **1.4.13** has passed review and is now publicly available!
+**[Get Notebuddy on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy)** · **1.4.17** has passed review and is now publicly available!
 
-**Update 1.4.15 is in review.** The owner test app supports English, Korean, Japanese, Simplified Chinese and Traditional Chinese, plus mobile layouts tested at 320px with tap-accessible help, safe areas and portrait/landscape views. Language changes use no AI and keep previous conversations and generated prose in their original language. Public store version: 1.4.13. Physical iOS/Android verification remains separate.
+**The owner test app is 1.4.18.** Furniture-aware home life and a memory notebook now collect evidenced milestones and conversation messages you explicitly keep. Neither feature calls AI. Existing pets, artwork and conversations are preserved. The public store version is 1.4.17; this test update did not submit another review. Five languages and 320px layouts are supported; physical iOS/Android verification remains separate.
 
 Anna is a platform for installing and using AI apps. Sign in with your Anna account, then open Notebuddy from its store page to get started. Chat, image generation and other AI features use your own Anna account's AI allowance.
 
@@ -163,7 +163,7 @@ Filter by region or type, search by name, and open a design to see its art, stor
 | :---: | :---: |
 | <img src="docs/screenshots/item-detail-112-ko.png" width="420" alt="Coral Pearl Tiara detail with artwork, description, planned reward and fit requirements in Korean"> | <img src="docs/screenshots/items-mobile-112-ko.png" width="280" alt="Korean item book in two columns on a 360-pixel screen"> |
 
-In 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common items, shops and equipment are deferred. Collection and browsing make no AI requests.
+In 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items remain deferred; home shopping and owned-item fitting previews are available. Collection and browsing make no AI requests.
 
 Future equipment will take each companion's body shape into account. A friend without hands may collect gloves, but wearing gloves will not invent hands. Ornaments such as floating starlight are planned to work without limbs.
 
@@ -171,10 +171,10 @@ Future equipment will take each companion's body shape into account. A friend wi
 
 | Edition | Availability |
 | --- | --- |
-| **Anna app** | The approved **1.4.13 public release** is available now. [Get it on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy) · [App user guide](anna/README.en.md) |
+| **Anna app** | The approved **1.4.17 public release** is available now. [Get it on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy) · [App user guide](anna/README.en.md) |
 | **Open-source engine, Discord and AI agents** | Run or connect the project yourself. The Anna interface, continuing stories and item book have their own feature scope. [Setup and integration guide](docs/DEVELOPMENT.en.md) |
 
-The Anna app supports **English and Korean**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.
+The Anna app supports **English, Korean, Japanese, Simplified Chinese and Traditional Chinese**. Choose a language in the header for the interface and new replies. Companion progress and recent conversations are stored separately for each user.
 
 Chat, optional care reactions and walk narration, initial personality, reference analysis, portrait generation, the optional home pixel character and requested decoration use **your Anna AI allowance**. Turn off care AI above chat to keep actions, stats and rewards without AI care replies or walk narration; direct chat still uses AI. Random portraits are bundled, while initial personality uses AI. Purchases, browsing, movement and free pixel conversion do not call AI.
 

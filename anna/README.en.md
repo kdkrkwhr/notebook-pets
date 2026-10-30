@@ -6,7 +6,7 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 **[Get Notebuddy on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy)**
 
-**Update 1.4.15 is in review.** The owner test app supports English, Korean, Japanese, Simplified Chinese and Traditional Chinese, plus mobile layouts tested at 320px with tap-accessible help, safe areas and portrait/landscape views. Language changes use no AI and keep previous conversations and generated prose in their original language. Public store version: 1.4.13. Physical iOS/Android verification remains separate.
+**The owner test app is 1.4.18.** Furniture-aware home life and a memory notebook now collect evidenced milestones and conversation messages you explicitly keep. Neither feature calls AI. Existing pets, artwork and conversations are preserved. The public store version is 1.4.17; this test update did not submit another review. Five languages and 320px layouts are supported; physical iOS/Android verification remains separate.
 
 Anna is a platform for installing and using AI apps. An Anna account is required; chat, image generation and other AI features use your own account's AI allowance.
 
@@ -16,9 +16,9 @@ Anna is a platform for installing and using AI apps. An Anna account is required
 
 ## What is available today?
 
-**1.4.13 has passed review and is now publicly available on the Anna App Store.** It uses game tool **0.9.5** and includes personalized evolution choices, home and garden decoration, five pixel dungeons and regional item collection. Equipment is planned for a later update. See the [current deployment status](HANDOFF.md).
+**1.4.17 has passed review and is now publicly available on the Anna App Store.** It uses game tool **0.9.8** and includes personalized evolution choices, home and garden decoration, five pixel dungeons and regional item collection. An explicit equipment preview is also available. See the [current deployment status](HANDOFF.md).
 
-Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
+Since 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items remain deferred; owned regional items have explicit fitting previews. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
 ## Clear progress while you wait
 
@@ -77,7 +77,7 @@ Everyday adventures and the five dungeon collections each offer one head, neck, 
   <img src="../docs/screenshots/items-catalog-112-ko.png" width="900" alt="All twenty-four items in the Korean item book; the same interface also supports English">
 </p>
 
-In 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items and equipment are deferred. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
+In 1.2.0, each final guardian clear grants one unowned regional item: three standard rewards, then the rare reward. Open **My inventory** to see owned items. There are no duplicate or retroactive grants; after all four regional items, clears retain their coin rewards. Common collectible items remain deferred; owned regional items have explicit fitting previews. The home furniture shop is available in 1.4.0. Collection and browsing make no AI requests.
 
 ## Return to your friend
 
@@ -85,7 +85,7 @@ Growth, recent conversation and artwork are stored separately for each user. Res
 
 Chat, optional care replies and walk narration, initial personality, reference analysis, portrait generation, optional home pixel generation and requested decoration use **your Anna AI allowance**. Care AI can be disabled above chat without losing actions, stats or rewards; direct chat still uses AI. Random portraits are bundled but their initial personality uses AI. Purchases, visits, movement and free pixel conversion do not call AI.
 
-Switching between English and Korean changes the interface and new replies while keeping names and previous conversations intact. To create a different companion, use **Start over** and confirm what will be deleted. Deleted companions and records cannot be recovered. [Privacy and data guide](PRIVACY.md)
+Switching languages changes the interface and new replies while keeping names and previous conversations intact. To create a different companion, use **Start over** and confirm what will be deleted. Deleted companions and records cannot be recovered. [Privacy and data guide](PRIVACY.md)
 
 ---
 
