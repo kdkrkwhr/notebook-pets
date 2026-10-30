@@ -13,6 +13,11 @@ if not platform_key or platform.machine().lower() not in ('amd64','x86_64'):
     raise SystemExit('This build script currently supports Windows/Linux x86_64.')
 sys.path.insert(0, str(PLUGIN))
 from notebuddy_plugin import MANIFEST
+from localization import localize
+for language in ('ja','zh-Hans','zh-Hant'):
+    sample=localize({'ok':True,'status':{'name':'Growing','stage_label':'새싹기'}},'start',language)
+    assert sample['status']['name']=='Growing'
+    assert sample['status']['stage_label'] not in ('새싹기','Hatchling')
 (PLUGIN / 'manifest.json').write_text(json.dumps(MANIFEST, ensure_ascii=False, indent=2)+'\n', encoding='utf-8')
 name = 'notebuddy-game'
 argv = [sys.executable, '-m', 'PyInstaller', '--noconfirm', '--clean', '--onefile',
@@ -32,6 +37,9 @@ def worker(payload):
     assert value['result']['ok'], value
     return value
 created = worker({'command':'start','name':'Build test','request_id':'build-birth'})
+assert created['view']['memories'] == created['state']['milestones']
+assert created['view']['memories'] == [{'id':created['state']['pet_id']+':met',
+    'kind':'met', 'at':created['state']['history'][0]['ts']}]
 cared = worker({'command':'feed','state':created['state'],'request_id':'build-feed'})
 assert cared['view']['status']['xp'] == 10
 assert cared['state']['pet_id'] == created['state']['pet_id']
@@ -56,6 +64,8 @@ evolved=worker({'command':'evolve','state':prepared['state'],
     'evolution_payload':json.dumps({'pet_id':growth_state['pet_id'],'choice_id':token,'route_id':'keep'}),'request_id':'build-evolve'})
 assert evolved['state']['stage']==2 and evolved['state']['pet_id']==growth_state['pet_id']
 assert evolved['state']['stats']==growth_state['stats']
+assert evolved['view']['memories'][-1] == {'id':growth_state['pet_id']+':evolved:2',
+    'kind':'evolved', 'stage':2, 'at':evolved['result']['evolved']['at']}
 
 # Exercise the copied collectibles module in the actual standalone worker.
 from datetime import datetime, timedelta, timezone
@@ -71,9 +81,22 @@ reward = worker({'command':'dungeon_safe','state':entry['state'],
     'choice_id':entry['result']['dungeon_visit']['choice_id'],'request_id':'build-reward'})
 assert reward['result']['dungeon_run']['item_awarded'] == 'ember-horns'
 assert reward['view']['status']['collectibles'] == {'ember-horns':1}
+assert reward['view']['memories'][-1]['id'] == reward['state']['pet_id']+':dungeon:hellgate'
+assert reward['view']['memories'][-1]['region'] == 'hellgate'
+assert reward['view']['memories'][-1]['at'] > 0
 replay = worker({'command':'dungeon_safe','state':reward['state'],
     'choice_id':entry['result']['dungeon_visit']['choice_id'],'request_id':'build-reward'})
 assert replay['state'] == reward['state']
+assert replay['view']['memories'] == reward['view']['memories']
+
+# The packaged worker must include the same atomic equipment rules.
+fit=dict(pet_id=reward['state']['pet_id'],revision=0,id='a'*32,item_id='ember-horns',stage=1,source_path='assets/starters-v1/ghost_fire_stage1.png')
+reserved=worker({'command':'equipment_prepare','state':reward['state'],'equipment_payload':json.dumps(fit),'request_id':'build-fit'})
+apply_fit=dict(pet_id=fit['pet_id'],revision=1,id=fit['id'])
+worn=worker({'command':'equipment_apply','state':reserved['state'],'equipment_payload':json.dumps(apply_fit),'request_id':'build-fit-apply'})
+assert worn['result']['ok'] and worn['state']['collectibles']=={}
+assert worn['view']['status']['collectible_discoveries']==['ember-horns']
+assert worker({'command':'equipment_apply','state':worn['state'],'equipment_payload':json.dumps(apply_fit),'request_id':'build-fit-apply'})['state']==worn['state']
 
 home_state = personal['state'].copy()
 home_state['coins'] = 30
@@ -104,6 +127,7 @@ protocol = subprocess.run([str(binary)], input='\n'.join(json.dumps({'jsonrpc':'
 frames = [json.loads(line) for line in protocol.stdout.splitlines()]
 assert frames[0]['result']['protocolVersion'] == '2.0'
 assert frames[1]['result']['version'] == MANIFEST['version']
+assert frames[1]['result'] == MANIFEST, 'Packaged describe must preserve the complete storage capability declaration'
 archive = PLUGIN / 'dist' / f'{name}-{MANIFEST["version"]}-{platform_key}.tar.gz'
 with tarfile.open(archive, 'w:gz') as output:
     output.add(binary, arcname=binary.name)

@@ -10,7 +10,15 @@ export function unwrap(value) {
   return result;
 }
 export function starter(view){return `assets/starters-v1/${view.species_key}_${view.status?.evolution?.records?.[0]?.from_element||view.element_key}_stage1.png`;}
-export function portraitEntry(view,art){for(let stage=view.stage;stage>=1;stage--){const entry=art?.[imageKey(view,stage)];if(entry?.path)return entry;}return null;}
+export function portraitEntry(view,art){
+ const worn=view.status?.equipment?.portrait;
+ for(let stage=view.stage;stage>=1;stage--){
+  const entry=art?.[imageKey(view,stage)];
+  if(worn?.stage===stage&&worn.path?.startsWith(`portraits/${view.pet_id}/equipment-`)&&(!entry?.path||worn.at>=(entry.at||0)))return worn;
+  if(entry?.path)return entry;
+ }
+ return null;
+}
 export function imageKey(view, stage=view.stage){return `${view.pet_id}/stage-${stage}`;}
 export function normalHistory(value){
  const items=Array.isArray(value)?value.filter(x=>['user','assistant'].includes(x?.role)&&typeof x.text==='string').slice(-64).map(x=>({...x,text:x.text.slice(0,3000)})):[];

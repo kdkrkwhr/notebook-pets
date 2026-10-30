@@ -1,9 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {finishReset} from '../bundle/reset-data.mjs';
-import {CHAT,ART,STORY,PERSONA} from '../bundle/data.mjs';
+import {CHAT,ART,STORY,PERSONA,MEMORIES} from '../bundle/data.mjs';
 function fixture(){
- const rows=new Map([[CHAT,{value:['old chat'],etag:'1'}],[ART,{value:{old:'portrait'},etag:'1'}],[STORY,{value:{current:'old story'},etag:'1'}],[PERSONA,{value:{output:'old private draft'},etag:'1'}]]);
+ const rows=new Map([[CHAT,{value:['old chat'],etag:'1'}],[ART,{value:{old:'portrait'},etag:'1'}],[STORY,{value:{current:'old story'},etag:'1'}],[PERSONA,{value:{output:'old private draft'},etag:'1'}],[MEMORIES,{value:{version:1,pet_id:'old',entries:[]},etag:'1'}]]);
  const blobs=new Map([['portraits/old/a.png','a'],['portraits/old/b.png','b']]);
  const f={rows,blobs,pending:true,finished:0};
  f.storage={get:async({key})=>structuredClone(rows.get(key)),set:async({key,value,if_match})=>{const row=rows.get(key);if(row.etag!==if_match)throw Error('conflict');rows.set(key,{value,etag:String(+row.etag+1)});}};

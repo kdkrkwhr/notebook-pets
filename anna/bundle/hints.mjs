@@ -1,3 +1,4 @@
+import {localeText,localeObject} from './locale.mjs';
 ﻿// Only secondary explanations are collapsible. Status, action costs, choices and
 // destructive confirmations remain visible beside their controls.
 const selectors=[
@@ -12,10 +13,13 @@ export function createHints(document,language){
  const hints=[];let active=null,pinned=false,hideTimer;
  function hide(){clearTimeout(hideTimer);if(active){active.text.hidden=true;active.button.setAttribute('aria-expanded','false');active=null;}pinned=false;}
  function place(){if(!active)return;const {button,text}=active,win=document.defaultView,r=button.getBoundingClientRect(),gap=8,pad=12;
-  if(r.bottom<0||r.top>win.innerHeight){hide();return;}
-  text.style.maxWidth=Math.max(0,Math.min(320,win.innerWidth-pad*2))+'px';const box=text.getBoundingClientRect();
-  text.style.left=Math.max(pad,Math.min(r.left,win.innerWidth-box.width-pad))+'px';
-  text.style.top=Math.max(pad,r.bottom+gap+box.height<=win.innerHeight-pad?r.bottom+gap:r.top-box.height-gap)+'px';
+  const body=win.getComputedStyle(document.body),viewport=win.visualViewport;
+  const left=(viewport?.offsetLeft||0)+Math.max(pad,parseFloat(body.paddingLeft)||0),right=(viewport?.offsetLeft||0)+(viewport?.width||win.innerWidth)-Math.max(pad,parseFloat(body.paddingRight)||0);
+  const top=(viewport?.offsetTop||0)+Math.max(pad,parseFloat(body.paddingTop)||0),bottom=(viewport?.offsetTop||0)+(viewport?.height||win.innerHeight)-Math.max(pad,parseFloat(body.paddingBottom)||0);
+  if(r.bottom<top||r.top>bottom){hide();return;}
+  text.style.maxWidth=Math.max(0,Math.min(320,right-left))+'px';text.style.maxHeight=Math.max(0,bottom-top)+'px';const box=text.getBoundingClientRect();
+  text.style.left=Math.max(left,Math.min(r.left,right-box.width))+'px';
+  text.style.top=Math.max(top,Math.min(bottom-box.height,r.bottom+gap+box.height<=bottom?r.bottom+gap:r.top-box.height-gap))+'px';
  }
  function show(h){clearTimeout(hideTimer);if(active!==h){hide();active=h;}h.text.hidden=false;h.button.setAttribute('aria-expanded','true');place();}
  function later(h){clearTimeout(hideTimer);hideTimer=setTimeout(()=>{if(active===h&&!pinned&&!h.button.matches(':focus-visible'))hide();},160);}
@@ -37,7 +41,7 @@ export function createHints(document,language){
    const stats=parent.querySelector('#stats'),row=document.createElement('div');row.className='stats-help-row';stats.before(row);row.append(stats,button);
   }else{button.classList.add('hint-standalone');const tools=parent.querySelector(':scope > .art-tools');if(tools)tools.append(button);else text.before(button);}
   const h={text,button,heading:heading||parent.closest('section,dialog')?.querySelector('h2,h3')};hints.push(h);
-  button.addEventListener('pointerenter',()=>show(h));button.addEventListener('pointerleave',e=>{if(active===h&&!pinned&&!text.contains(e.relatedTarget)&&!button.matches(':focus-visible'))later(h);});
+  button.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch')show(h);});button.addEventListener('pointerleave',e=>{if(active===h&&!pinned&&!text.contains(e.relatedTarget)&&!button.matches(':focus-visible'))later(h);});
   text.addEventListener('pointerenter',()=>clearTimeout(hideTimer));
   text.addEventListener('pointerleave',e=>{if(active===h&&!pinned&&e.relatedTarget!==button&&!button.matches(':focus-visible'))later(h);});
   button.addEventListener('focus',()=>{if(button.matches(':focus-visible'))show(h);});button.addEventListener('blur',()=>{if(active===h)hide();});
@@ -46,6 +50,6 @@ export function createHints(document,language){
  document.addEventListener('pointerdown',e=>{if(active&&!active.button.contains(e.target)&&!active.text.contains(e.target))hide();});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')hide();});document.addEventListener('close',hide,true);
  document.defaultView.addEventListener('resize',hide);document.addEventListener('scroll',place,true);
- function render(){for(const {button,heading:title}of hints){const heading=title?.textContent?.trim();button.setAttribute('aria-label',language()==='ko'?`${heading||'사용'} 안내`:`About ${heading||'this feature'}`);}if(active)place();}
+ function render(){for(const {button,heading:title}of hints){const heading=title?.textContent?.trim();button.setAttribute('aria-label',localeText(language(),language()==='ko'?`${heading||'사용'} 안내`:`About ${heading||'this feature'}`));}if(active)place();}
  render();return{render,hide};
 }

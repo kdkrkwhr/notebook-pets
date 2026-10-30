@@ -1,3 +1,80 @@
+# Web 0.7.1 — 진행 안내·홈 복구·앨범 통합 — 2026-10-19
+
+사용자 요청에 따라 웹에 적용 가능한 Anna `cba0513` 변경을 merge `94c72c5`로 가져왔습니다. Anna **1.4.13 / working revision 89 / review ID 1446 / tool 0.9.5**는 유지합니다. 이번 작업에서는 Anna 업로드·설치·cut·심사 제출을 하지 않습니다.
+
+- 공유 진행 안내를 웹 빌드에 포함하고 홈 생성 단계, 채팅·돌봄·산책·진화·배치·그림 저장에 연결했습니다. 경과 시간은 안내만 제공하며 자동 AI 재요청은 없습니다. Gemini/Ollama/ComfyUI와 웹 참고 이미지 입력을 유지합니다.
+- 홈 진입 시 저장된 외형을 새로 읽고 실제 이미지 해독 성공 여부로 누락 안내를 표시합니다. 메인/도감 앨범의 패딩·프레임·contain 표시를 통일했습니다. 저장 스키마·Python 규칙·보상에는 변경이 없습니다.
+- 로컬 Edge에서 웹 기본·월드·현재 기능·진화·로컬 AI·7개 테마 검증과 제공자 단위 6건 통과. 생성 지연 31초 안내·360px 화면·중복 호출 없음·저장 실패 후 AI 없는 재시도·홈 이미지 실패 후 재진입·대화 오류 후 안내 정리·360/620/1280px 양쪽 앨범을 추가 검증했습니다. IndexedDB 보존·백업·초기화 경쟁 상태도 통과했고 페이지 오류는 없습니다. 모든 AI는 모의 응답이며 유료 사용은 없습니다.
+- 배포 완료: 런타임 **6b0b24a / 0.7.1**, [Pages 39184697747](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39184697747)와 [공통 CI 39184697850](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39184697850) 성공. 공개 주소에서 별도 공책으로 월드·현재 기능 시나리오를 다시 통과했고 주요 JS/CSS 14개가 검증 빌드와 일치합니다(BOM/줄바꿈 정규화). 공개 검증에서도 페이지 오류·실제 유료 AI 호출은 없습니다. Anna API의 전체 앱 정보·초안·전체 버전 목록은 배포 전후 동일하여 심사본·소개 자료·working revision이 유지됨을 확인했습니다. 기존 사용자 저장은 열거나 변경하지 않았습니다.
+
+---
+
+
+# Gated item fitting source · 2026-10-24
+
+Source-only implementation on Anna `release`, based on **a9b6843**. No Anna deployment, production-data changes, live image calls, new credential/permission grant, public-web publish or review submission. Installed app/tool versions are not changed by this work. Both UI and tool fitting flags remain **false**; the app manifest continues to permit only image.generate.
+
+The transaction reserves without consuming, stages and preserves the result, then atomically commits portrait pointer + one-item consumption + discovery history + receipt. Reconnect/save recovery does not generate another image. Explicit preview/application and pending cancellation are included; no unequip/refund rules were introduced. The existing ownership-based regional reward rule is unchanged.
+
+Local checks: **234 Python / 6 engine / 106 JS / 79 storage-protocol / 138 browser**, strict validation, Pyodide and locked Linux Executa build/smoke passed. Focused browser recheck passed **3/3**. Exact remote SHA/CI are reported in the task result. See [verification](releases/EQUIPMENT_20261024.md) and [API/design/release conditions](docs/EQUIPMENT.md).
+
+Remaining: actual image quality, catalog-art matching, anatomy fit, deployed API/grant and cross-window platform validation. The confirmed single-image edit contract does not establish multi-image composition support. Unseen provider results cannot be recovered without provider support; automatic paid retries remain blocked. Explicit activation/versioning/deployment requires a later authorized step.
+
+
+---
+
+
+# Anna 1.4.16 storage declaration fix — 2026-10-23
+
+Runtime source **daa3014**. The reported server error was reproduced: the tool's cached runtime manifest declared only `aps.kv`, while the app also required files and tool read/write access. Tool **0.9.7** declares all four capabilities in distribution metadata and its runtime `describe`, without a separate tool `storage` field. App permissions, UI source, gameplay, save format and AI behavior are unchanged. Full-manifest protocol and packaged-binary smoke assertions prevent an incomplete declaration from passing validation.
+
+[Anna CI 39711760114](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39711760114) passed Windows and Linux: each **135 browser / 96 JS / 76 storage-protocol**, strict validation and standalone build/smoke. [Shared CI 39711760205](https://github.com/kdkrkwhr/notebook-pets/actions/runs/39711760205) passed. Full local Windows checks passed the same counts plus binary smoke. Initial local generated-engine staleness was resolved by `prepare:assets` and a full passing rerun; the first Windows CI attempt timed out after slow tooling setup, and the rerun passed. Both tested platform packages are published and their CDN bytes/metadata hashes match the tested archives; exact hashes are in **releases/RELEASE_1416.md**.
+
+Installed owner app **1.4.16 / revision 92 / 0.0.0-draft**, actual cloud tool **0.9.7 / immutable Executa 818 / master 1193 / user executable 35689 loaded/running**. Final install status is **success / Already loaded**. An initial stale executable-path error was resolved by reinstalling only this tool and reopening the draft. The cloud agent resumed on the following day's refresh and still runs 0.9.7. UI is connected with no notice; the existing portrait and two chat messages load, home sprite is ready, and installed **app.js / mobile.css / data.mjs / home-sprite.mjs / anna-tool-ids.js** hashes match the local bundle. All five owner APS documents (game, art, chat, walk story, personality draft) retain identical values and ETags. Paid AI calls: **0 text / 0 images**.
+
+Fresh user authorization covers **1.4.16**, since immutable 1.4.15 cannot be overwritten. Cut **1.4.16 / ID 1587** freezes tool **0.9.7 / Executa 818**, bundle **1472 / 175 files / 171604935 bytes**, manifest SHA-256 **83c7c16b6be79de692bdb8608d3eb57a0af446dcaf0bfd4c3cd3669f237cba8a**. Working hash **c6ed85cf2c262e4f340f1b4610f1c1c42058c758c8b5be3c22cf4727957e6fcf**, **dirty_vs_latest_cut false**, minimum/exact tool **0.9.7**. The release request returned **pending / is_latest false / published_at null**; old **1.4.15 / 1486** is **superseded**. Developer Console confirms **1.4.16 in release review**. Public **1.4.13 / 1446**, its complete immutable row, listing and six screenshots remain unchanged; no public web deployment.
+
+Server manifest validation passed after installation, overnight and for frozen 1.4.16 after submission, with **valid true / errors []** and all four cached capabilities retained. Approval/publication, physical mobile/native-shell behavior and new provider-quality testing are not claimed. Private evidence: **.local/storage-fix-{cut-result,submission,final,ui-final,validation-binaries,validation-latest}.json** and test/build logs; do not commit these owner-data snapshots. See **releases/RELEASE_1416.md** and **reviews/REVIEW_1416.md**.
+
+
+---
+
+# Anna 1.4.15 mobile support — 2026-10-20
+
+Runtime source **cc36c65**. Anna CI **39273350333** passed Windows and Linux: each **135 browser / 96 JS / 76 storage-protocol** checks, strict manifest validation and standalone build/smoke. Shared CI **39273349842** passed all three jobs. Focused mobile suite **4/4** passed locally; the earlier full local run passed 134 before the fourth mobile scenario was added.
+
+Installed owner app **1.4.15 / working revision 91 / 0.0.0-draft**. Actual cloud tool stays **0.9.6 / immutable Executa 786 / master 1193 / user executable 35689 loaded/running**; no tool-source or binary replacement was needed. Actual installed bundle, official SDK and official host bridge passed five-locale reads at 320px, tappable care help and landscape home checks. Changed installed **mobile.css / hints.mjs / app.js** SHA-256 hashes match local source. Owner game ETag and artwork/chat/story/personality values and ETags are unchanged. Paid AI calls for this task: **0 text / 0 images**.
+
+Immutable review **1.4.15 / ID 1486**, bundle **1382 / 175 files / 171605357 bytes**. Manifest SHA-256 **cf07354d7aff7af92f3fdee68f6c769f1c072252b6b39cdba02bd624f87c95b1**; working content hash **b9f555e67b0d56f659ae5840a953015350254557555ec91349546fa5fb3bda41**; `dirty_vs_latest_cut: false`. Frozen manifest contains `form_factors: ["desktop", "mobile"]`, minimum width **320** and exact/minimum tool **0.9.6**. The owner explicitly requested this review update after mobile verification. `apps release 1.4.15` queued **release_review_state: pending**, current candidate **1.4.15**, `is_latest: false`, `published_at: null`. Public **1.4.13**, its immutable row and shared listing/screenshots remain unchanged; public web was not deployed.
+
+Limits: touch emulation and a reduced-height viewport do not establish physical iOS/Android or native keyboard/hardware-back behavior. The dedicated Anna mobile-shell endpoint returned 401 with available credentials after the browser session expired; native-shell verification is not claimed. Owner installed UI and real cloud RPC were verified independently through the existing authorized CLI identity and official bridge, with a read-only RPC guard. The owner plans to check mobile-client availability and physical-device behavior. Private evidence: `.local/mobile-live-proof.json`, `.local/mobile-preservation-proof.json`, `.local/mobile-final-proof.json`, `.local/mobile-support/` and CI logs. No new translation-provider or image-provider quality test was performed.
+
+See **releases/RELEASE_1415.md** and **reviews/REVIEW_1415.md**.
+
+---
+
+# Anna 1.4.14 multilingual update — 2026-10-19
+
+Owner-authorized app **1.4.14 / working revision 90 / installed 0.0.0-draft**, actual cloud tool **0.9.6 / Executa 786 / master 1193 loaded/running**. Review **1.4.14 / ID 1478 / pending**; public **1.4.13** retained. Per-version release review is pending while the app lifecycle remains published; no immediate public promotion or web deployment.
+
+- Added **Japanese / Simplified Chinese / Traditional Chinese** across static UI, furniture/items, fallback stories and selected-language AI output prompts. Old names, chats, portraits and prose remain original; optional new personality text and evolution prose support all five locale codes. No automatic translation/AI on language changes. Includes album containment and truthful 64-message/40-KB retention copy.
+- Final source **f3f655b**, CI **39247474069** passed both OSes: **131 browser / 96 JS / 76 storage-protocol**, strict validation and executable build/smoke. Shared CI **39247474128** passed. Earlier Windows cold page-load timeouts were addressed in the test harness; focused **11** checks also passed. Both tested platform archives were published together.
+- Used exactly **six authorized text calls / zero images**, public copy only, no paid retries. Raw results saved before local JSON framing repair. Traditional Chinese converted offline; glossary corrected, including the calm mood meaning of Content. **1,064** static entries. Native-speaker editorial review and physical PC execution remain unperformed.
+- Installed source hashes match; actual five-language UI/tool reads passed. Game ETag and art/chat/story/personality values/ETags are unchanged. Shared listing and all six screenshots retained; public release is separate from this review submission.
+- Bundle **1374 / 174 files / 171598743 bytes**, manifest SHA-256 **f5c1811787c3a0bab742f7ae20d2f499a8e50fc7dc287c1d0dbb13ef5e12109f**; working hash **f6bf2d50a2f5787d4e079fd576bd1e23fe2eecd71acde485c43c8cace493570a**, **dirty_vs_latest_cut false**, exact/minimum tool **0.9.6**. Details: **releases/RELEASE_1414.md**, **reviews/REVIEW_1414.md**, **locales/README.md**.
+
+---
+
+# Anna growth-album image containment — 2026-10-18
+
+CSS-only source **1f2e312**, owner draft **1.4.13 / working revision 89 / installed 0.0.0-draft**, actual cloud tool **0.9.5 / Executa 774 / master 1193 loaded/running**. Review **1.4.13 / ID 1446** and shared listing must remain unchanged; public web excluded.
+
+- Measured the owner's four saved album portraits: each 90px image exceeded the bordered 92px frame's inner height by approximately **0.83px at both top and bottom** at the current display scale. Original portrait files and album records are unchanged.
+- Add 4px inner padding, contain images within the frame's content box and clip overflow at the rounded frame boundary. Keep `object-fit: contain`, so images scale without cropping. Use shrinkable album grid columns/items. Applies to both the main growth album and collection album.
+- Verified **21 layouts / 168 images** across seven themes and widths **360 / 620 / 1120**, with no boundary or horizontal overflow. Existing theme browser **3/3** and strict validation passed. No new permanent test or paid AI call. Private screenshots and measurements: `.local/album-layout/`. Installed `ui-polish.css` hash matches source; all four owner portraits are loaded and fully inside their 4px padded frames. UI is Connected with no notice. Game ETag and artwork/chat/story/personality values/ETags, frozen review row **1446** and shared listing remain unchanged. No tool or app version bump. Working bundle **172 files / 171338211 bytes**, content hash **c8dabd5ba1fdc2fcfd4b162965c633302b6e3083a0aa9cf5d0822b8105ec9cdc**. No additional AI calls.
+
+---
+
 # Anna 1.4.13 review refresh — 2026-10-18
 
 Fresh owner instruction authorizes this replacement. Candidate **1.4.13 / immutable ID 1446 / pending_review** replaces **1.4.12 / 1445**. Owner test app **1.4.13 / working revision 88 / installed 0.0.0-draft**. Tool remains **0.9.5 / frozen Executa 774 / master 1193 loaded/running**. No public release or web deployment.
@@ -6,6 +83,8 @@ Fresh owner instruction authorizes this replacement. Candidate **1.4.13 / immuta
 - Runtime CI **39116562365** passed Windows and Linux (**130 browser / 92 JS / 73 storage-protocol**, strict validation, standalone build/smoke); shared CI **39116562380** passed. Release packaging passed strict validation and JS **92** again. Existing personal directional sheet displays in the actual installed home; all three changed runtime source hashes match. Additional paid AI calls: **0**.
 - Cut froze bundle **1343 / 172 files / 171337956 bytes**, manifest SHA-256 **1419a6f232f68be462dc7aa0b782f9c7ab2c0cbae375c751f9f3d6988b4a1ddf**. Working content hash **6858a171240677535ee2e6a0c21ada8fe46a667af6c8390034f46522ecc36098**. Fresh platform read confirms candidate **1446**, revision **88**, **dirty_vs_latest_cut false**, correct minimum/exact tool 0.9.5 dependency, Connected UI and no notice.
 - Existing shared listing is unchanged and all six screenshots decode. Owner game ETag and art/chat/story/personality values/ETags remain unchanged. Approval, publication, fresh provider-quality testing and physical-PC execution are not claimed. Future review replacement requires another explicit request. See **releases/RELEASE_1413.md** and **reviews/REVIEW_1413.md**.
+
+---
 
 ---
 

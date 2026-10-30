@@ -1,0 +1,9 @@
+# Static language resources
+
+Supported interface locales: `en`, `ko`, `ja`, `zh-Hans`, `zh-Hant`. `locale.mjs` normalizes presentation preferences such as `ja-JP`, `zh-CN`, and `zh-TW`; the game tool receives only the five canonical codes.
+
+`catalog.json` contains public UI strings, item and furniture descriptions, fallback story text, and presentation labels. The owner authorized **at most six Anna text calls / zero image calls** on 2026-10-19. Exactly six text calls produced Japanese and Simplified Chinese drafts; no personal conversations, photos, names, API keys or game saves were sent. Raw responses were saved privately before parsing. JSON framing and one extra empty field were repaired locally without another request. Traditional Chinese was derived offline with OpenCC and terminology reviewed separately. Public copy only; no translation provider is called at runtime. Native-speaker editorial review has not been performed.
+
+`overrides.json` holds reviewed terminology and corrected recovery/privacy copy. `scripts/prepare_assets.py` merges these resources and generates `bundle/locale-data.mjs` and `executas/notebuddy/localization_data.py`. Both generated files are committed so installed UI and standalone tools carry the same strings. Do not edit generated resources manually.
+
+`{name}`-style fields and internal `{p0}` template arguments must stay unchanged. Only explicit UI text and presentation fields are translated. User names, chat history, stored AI prose and artwork remain original; no automatic translation or regeneration occurs on language changes. Older bilingual personalities retain their original description; a new personality can include the creation language alongside its existing English/Korean fields. New AI responses request the selected language/script.

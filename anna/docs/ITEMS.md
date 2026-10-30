@@ -43,3 +43,7 @@ All eight expansion items use the same collection and future fit rules as the or
 - Analysis is planned per portrait, not per catalog click. Character regeneration remains an explicit AI action, with usage disclosed. Runtime inspection and persistent fit data are deferred until equipment is implemented; the current catalog only explains item requirements.
 
 Items for the remaining planned dungeons will be considered when those regions are implemented.
+
+## Gated fitting implementation · 2026-10-24
+
+The [equipment implementation](EQUIPMENT.md) adds reserved generation, saved-image recovery, explicit preview/application and atomic one-item consumption with discovery-history preservation. It is **disabled in both UI and tool** pending image quality/product decisions and a separately approved `image.edit` grant. The existing collection and reward rules remain active. No deployed fitting, unequip or refund behavior is claimed.

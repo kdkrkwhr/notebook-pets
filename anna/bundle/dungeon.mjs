@@ -1,3 +1,4 @@
+import {localeText,localeObject} from './locale.mjs';
 import {t} from './i18n.mjs';
 import {items} from './items.mjs';
 import {createDungeonScene,paintDungeon,WALK_MS,ROUND_MS} from './dungeon-scene.mjs';
@@ -88,7 +89,7 @@ export function createDungeons(h){
     $('#dungeon-result').textContent=run.format==='stage-v1'?tr(run.complete?'dungeonReward':run.outcome==='win'?'dungeonStageDone':'dungeonStageLost',{coins:run.coins_awarded,damage:run.trap_damage}):tr(run.coins_awarded?'dungeonReward':'dungeonRetry',{coins:run.coins_awarded});
     if(Object.hasOwn(run,'item_awarded')){
       const item=items.find(i=>i.id===run.item_awarded),ko=h.language()==='ko';
-      $('#dungeon-result').textContent+=item?(ko?` · 획득: ${item.name[1]}`:` · Collected: ${item.name[0]}`):(ko?' · 이 지역의 아이템을 모두 모았어요.':' · Regional collection complete.');
+      $('#dungeon-result').textContent+=item?(localeText(h.language(),ko?` · 획득: ${item.name[1]}`:` · Collected: ${localeText(h.language(),item.name[0])}`)):(localeText(h.language(),ko?' · 이 지역의 아이템을 모두 모았어요.':' · Regional collection complete.'));
     }
     const next=h.view()?.status?.dungeons?.expedition;
     $('#dungeon-enter').hidden=!(next?.phase==='next'&&next.dungeon_id===selected);

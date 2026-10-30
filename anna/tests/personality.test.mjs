@@ -14,6 +14,8 @@ function fixture(){
 test('both name and actual appearance are explicit inputs, untrusted fields are bounded',()=>{
  const prompt=personalityPrompt('Mochi','round face, no wings');assert.match(prompt,/Mochi/);assert.match(prompt,/round face, no wings/);
  const p=parsePersonality({content:{text:JSON.stringify(raw)}},'round face','reference');assert.equal(p.source,'reference');
+ const multilingual=structuredClone(raw);for(const key of ['summary','voice','habit'])multilingual[key].ja='優しい友達';
+ const native=parsePersonality({content:{text:JSON.stringify(multilingual)}},'round face','reference');assert.equal(native.summary.ja,'優しい友達');assert.equal(native.summary.en,raw.summary.en);assert.match(personalityPrompt('Feed','round','zh-Hant'),/zh-Hant/);
  assert.throws(()=>parsePersonality({content:{text:JSON.stringify({...raw,traits:{...raw.traits,energy:99}})}},'round','reference'));
  assert.throws(()=>parsePersonality({stopReason:'contentFilter'},'round','reference'));
 });

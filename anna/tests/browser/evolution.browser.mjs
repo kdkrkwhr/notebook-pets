@@ -22,7 +22,7 @@ async function setup(t){
   const file=u.pathname==='/'?'index.html':u.pathname.slice(1);if(file.includes('..'))return route.abort();try{await route.fulfill({body:await readFile(new URL(file,bundle)),contentType:/\.m?js$/.test(file)?'text/javascript':file.endsWith('.css')?'text/css':file.endsWith('.png')?'image/png':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.json')?'application/json':'text/html'});}catch{await route.fulfill({status:404,body:''});}
  });
  await page.addInitScript(save=>{if(!localStorage.getItem('test-host'))localStorage.setItem('test-host',JSON.stringify({sequence:0,save,kv:{'notebuddy/chat-v1':[{id:'chat',role:'user',text:'I like quiet walks.',at:1}]}}));sessionStorage.setItem('test-faults',JSON.stringify({evolutionCore:true}));},save);
- await page.goto('https://notebuddy.test');await page.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled);await page.locator('#title-start').click();await page.locator('#open-evolution').click();
+ await page.goto('https://notebuddy.test',{waitUntil:'domcontentloaded'});await page.waitForFunction(()=>window.hostTest&&!document.querySelector('#refresh').disabled);await page.locator('#title-start').click();await page.locator('#open-evolution').click();
  return {page,state:()=>state};
 }
 const calls=page=>page.evaluate(()=>hostTest.calls.filter(c=>c.method==='llm'||c.method==='image'||c.method==='home-image'));

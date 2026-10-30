@@ -6,6 +6,8 @@ Meet a friend from your own drawing, offer them a meal, tell them about your day
 
 **[Get Notebuddy on the Anna App Store](https://anna.partners/store/@kdkrkwhr/notebuddy)**
 
+**Update 1.4.15 is in review.** The owner test app supports English, Korean, Japanese, Simplified Chinese and Traditional Chinese, plus mobile layouts tested at 320px with tap-accessible help, safe areas and portrait/landscape views. Language changes use no AI and keep previous conversations and generated prose in their original language. Public store version: 1.4.13. Physical iOS/Android verification remains separate.
+
 Anna is a platform for installing and using AI apps. An Anna account is required; chat, image generation and other AI features use your own account's AI allowance.
 
 <p align="center">

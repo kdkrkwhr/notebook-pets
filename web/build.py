@@ -28,10 +28,11 @@ template = template.replace('__ANNA_THEMES__', dialog('theme-dialog'))
 template = template.replace('__ANNA_COLLECTION__', dialog('item-catalog') + '\n' + dialog('item-detail'))
 template = template.replace('__ANNA_HOME_DUNGEON__', dialog('home-dialog') + '\n' + dialog('dungeon-dialog'))
 template = template.replace('__ANNA_WALK__', dialog('walk-story'))
+template = template.replace('__ANNA_MEMORIES__', dialog('memories-dialog'))
 teaser = re.search(r'<section class="paper item-book-teaser"[\s\S]*?</section>', shared_html).group()
 template = template.replace('__ANNA_TEASER__', teaser)
 shutil.copyfile(anna / 'style.css', OUT / 'anna-style.css')
-for name in ('activity.mjs', 'evolution.mjs', 'birth-art.mjs', 'theme.css', 'themes.css', 'themes.mjs', 'home.css', 'ui-polish.css', 'hints.mjs', 'garden-art.mjs', 'walk-stories.mjs', 'walk-story-dialog.mjs', 'journey-stories.mjs', 'reactions.mjs', 'icon.svg', 'title-screen.mjs', 'item-catalog.mjs', 'items.mjs', 'i18n.mjs',
+for name in ('activity.mjs', 'evolution.mjs', 'birth-art.mjs', 'theme.css', 'themes.css', 'themes.mjs', 'home.css', 'ui-polish.css', 'hints.mjs', 'garden-art.mjs', 'walk-stories.mjs', 'walk-story-dialog.mjs', 'journey-stories.mjs', 'reactions.mjs', 'icon.svg', 'title-screen.mjs', 'item-catalog.mjs', 'items.mjs', 'i18n.mjs', 'locale.mjs', 'locale-data.mjs', 'equipment.mjs', 'memories.mjs', 'memory-text.mjs', 'memories.css',
              'model.mjs', 'data.mjs', 'pixel-pet.mjs', 'home.mjs', 'home-scene.mjs', 'home-walk.mjs', 'home-sprite.mjs',
              'dungeon.mjs', 'dungeon-scene.mjs', 'dungeon-avatar.mjs', 'dungeon-map.mjs', 'dungeon-enemies.mjs', 'dungeon-journey.mjs'):
     shutil.copyfile(anna / name, OUT / name)
@@ -43,7 +44,7 @@ for folder in ('starters-v1', 'items-v1', 'dungeons-v2', 'home-v2'):
 shutil.copyfile(ROOT / 'anna' / 'THIRD_PARTY_NOTICES.txt', OUT / 'THIRD_PARTY_NOTICES.txt')
 for folder in ('core', 'data', 'pyodide'):
     (OUT / folder).mkdir(exist_ok=True)
-for name in ('evolution', 'engine', 'domain', 'ports', 'game_api', 'art', 'dungeons', 'collectibles', 'journeys', 'personality', 'home', 'home_world'):
+for name in ('evolution', 'engine', 'domain', 'ports', 'game_api', 'art', 'dungeons', 'collectibles', 'equipment', 'journeys', 'personality', 'home', 'home_world', 'memories'):
     shutil.copyfile(ROOT / 'engine' / f'{name}.py', OUT / 'core' / f'{name}.py')
 for name in ('game_data.json', 'image_prompts.json'):
     shutil.copyfile(ROOT / 'data' / name, OUT / 'data' / name)
@@ -59,7 +60,7 @@ for module in [*OUT.glob('*.js'), *OUT.glob('*.mjs')]:
     source = module.read_text(encoding='utf-8')
     source = re.sub(r"(['\"])(\./[a-zA-Z0-9_-]+\.(?:js|mjs))\1", lambda m: f'{m[1]}{m[2]}?v={release}{m[1]}', source)
     module.write_text(source, encoding='utf-8', newline='\n')
-for name in ('app.js', 'anna-style.css', 'theme.css', 'themes.css', 'home.css', 'ui-polish.css', 'style.css'):
+for name in ('app.js', 'anna-style.css', 'theme.css', 'themes.css', 'home.css', 'ui-polish.css', 'memories.css', 'style.css'):
     digest = hashlib.sha256((OUT / name).read_bytes()).hexdigest()[:12]
     template = template.replace(f'"./{name}"', f'"./{name}?v={digest}"')
 (OUT / 'index.html').write_text(template, encoding='utf-8')

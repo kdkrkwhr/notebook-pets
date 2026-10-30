@@ -1,4 +1,5 @@
 // Appearance is a local preference, independent of the game and AI runtime.
+import {localeText,localeObject} from './locale.mjs';
 export const THEME_KEY='notebuddy/theme-v1';
 export const themes=[
  {id:'notebook',icon:'▤',en:['Notebook','Warm paper and familiar green'],ko:['기본 공책','따뜻한 종이와 익숙한 초록빛']},
@@ -37,7 +38,7 @@ export function createThemes(doc,preferences,getLanguage){
   });
  }
  function render(){
-  const lang=getLanguage()==='ko'?'ko':'en',text=copy[lang];
+  const lang=getLanguage()==='ko'?'ko':'en',text=localeObject(getLanguage(),copy[lang]);
   button.textContent=`◐ ${text.open}`;
   doc.querySelector('#theme-heading').textContent=text.heading;
   doc.querySelector('#theme-help').textContent=text.help;
@@ -47,8 +48,8 @@ export function createThemes(doc,preferences,getLanguage){
   for(const [i,label] of [...grid.children].entries()){
    const theme=themes[i],chosen=theme.id===current;
    label.querySelector('input').checked=chosen;
-   label.querySelector('.theme-name').textContent=theme[lang][0];
-   label.querySelector('.theme-description').textContent=theme[lang][1];
+   label.querySelector('.theme-name').textContent=localeText(getLanguage(),theme[lang][0]);
+   label.querySelector('.theme-description').textContent=localeText(getLanguage(),theme[lang][1]);
    label.querySelector('.theme-selected').textContent=chosen?`✓ ${text.selected}`:'';
   }
  }

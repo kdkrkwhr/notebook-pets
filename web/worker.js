@@ -3,7 +3,7 @@ let py;
 const ready=(async()=>{
   py=await loadPyodide({indexURL:'./pyodide/'});
   py.FS.mkdir('/core');
-  const modules=['evolution','engine','domain','ports','game_api','art','dungeons','collectibles','journeys','personality','home','home_world'];
+  const modules=['evolution','engine','domain','ports','game_api','art','dungeons','collectibles','equipment','journeys','personality','home','home_world','memories'];
   async function get(url){const response=await fetch(url+new URL(import.meta.url).search);if(!response.ok)throw Error(`불러오기 실패: ${url}`);return response.text();}
   await Promise.all(modules.map(async name=>py.FS.writeFile(`/core/${name}.py`,await get(`./core/${name}.py`))));
   py.globals.set('rules_json',await get('./data/game_data.json'));
@@ -12,6 +12,7 @@ const ready=(async()=>{
 sys.path.insert(0,'/core')
 from game_api import transition
 from ports import ExecutionContext
+import memories
 rules=json.loads(rules_json)
 templates=json.loads(templates_json)
 def execute(raw):
@@ -22,7 +23,7 @@ def execute(raw):
     status=transition(r.state,'status',context).result
     home=transition(r.state,'home',context).result if r.state else {}
     album=transition(r.state,'album',context).result.get('album') if r.state else None
-    view=dict(r.result,status=status,home=home.get('home'),home_candidates=home.get('home_candidates'),album=album)
+    view=dict(r.result,status=status,home=home.get('home'),home_candidates=home.get('home_candidates'),album=album,memories=memories.view(r.state) if r.state else [])
     if r.state:
         view.update(pet_id=r.state['pet_id'],stage=r.state['stage'],species_key=r.state['species'],element_key=r.state['element'])
     return json.dumps(dict(result=r.result,state=r.state,changed=r.changed,view=view),ensure_ascii=False)

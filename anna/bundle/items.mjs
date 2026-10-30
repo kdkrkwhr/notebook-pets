@@ -1,4 +1,5 @@
 // Cosmetic catalog. Regional rewards are granted by the game engine; equipment is deferred.
+import {localeText} from './locale.mjs';
 export const regions=['common','hellgate','icekingdom','dreamforest','sunkenpalace','clockworkcity'];
 export const slots=['head','neck','back','aura'];
 const item=(id,region,slot,name,description,rarity='standard',reward='regional')=>({id,region,slot,name,description,rarity,reward,icon:`assets/items-v1/${id}.png`});
@@ -31,7 +32,7 @@ export const items=[
 
 export function selectItems({region='all',slot='all',query='',language='en'}={}){
  const index=language==='ko'?1:0,needle=query.trim().toLocaleLowerCase();
- return items.filter(i=>(region==='all'||i.region===region)&&(slot==='all'||i.slot===slot)&&(!needle||`${i.name[index]} ${i.description[index]}`.toLocaleLowerCase().includes(needle)));
+ return items.filter(i=>(region==='all'||i.region===region)&&(slot==='all'||i.slot===slot)&&(!needle||`${localeText(language,i.name[index])} ${localeText(language,i.description[index])}`.toLocaleLowerCase().includes(needle)));
 }
 
 // A slot describes a required attachment area, never a reason to add anatomy.

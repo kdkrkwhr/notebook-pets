@@ -1,0 +1,12 @@
+#memories-dialog{box-sizing:border-box;width:min(640px,calc(100vw - 24px));max-width:calc(100vw - 24px);max-height:calc(100dvh - 32px);padding:clamp(16px,4vw,28px);overflow:auto;overflow-wrap:anywhere}
+.memory-heading,.memory-note-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.memory-heading h2{margin:0;flex:1;min-width:100px}
+#memories-dialog button,.memory-save,#open-memories{min-height:44px;min-width:44px;white-space:normal;max-width:100%}
+#memory-milestones,#memory-notes{list-style:none;padding:0;margin:12px 0 24px;display:grid;gap:12px}
+#memory-milestones li{border-left:3px solid var(--accent,#71816a);padding:8px 12px;display:grid;gap:4px}
+#memories-dialog time{font-size:.8rem;opacity:.7}
+#memory-notes li{border:1px solid var(--line,#d9d6cd);border-radius:12px;padding:14px;min-width:0}
+.memory-note-text{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
+.memory-save{display:block;margin-top:8px;font-size:.78rem;padding:6px 10px}
+#memory-chat-status:empty,#memory-status:empty{display:none}
+.album-card .section-heading{flex-wrap:wrap;gap:8px}

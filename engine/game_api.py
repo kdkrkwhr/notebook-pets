@@ -36,13 +36,16 @@ def validate_request(actor_id, command, arguments, request_id):
     elif command in {'evolution_prepare','evolution_options','evolve'}:
         if len(arguments)!=1 or len(arguments[0])>4096:
             raise GameError('invalid_arguments','A bounded evolution request is required.')
+    elif command in engine.equipment.COMMANDS:
+        if len(arguments)!=1 or len(arguments[0])>1024:
+            raise GameError('invalid_arguments','A bounded equipment request is required.')
     elif command in {'home_buy','home_apply','home_undo'}:
         if len(arguments)!=1 or len(arguments[0])>1024:
             raise GameError('invalid_arguments','A bounded home request is required.')
     elif command != 'start' and arguments:
         raise GameError('invalid_arguments', '이 명령에는 추가 인자가 필요하지 않습니다.')
     name = ' '.join(arguments)
-    if command not in {'evolution_prepare','evolution_options','evolve','personality','home_buy','home_apply','home_undo'} and (len(name) > 80 or any(ord(c) < 32 for c in name)):
+    if command not in engine.equipment.COMMANDS | {'evolution_prepare','evolution_options','evolve','personality','home_buy','home_apply','home_undo'} and (len(name) > 80 or any(ord(c) < 32 for c in name)):
         raise GameError('invalid_arguments', '이름은 제어문자 없이 80자 이내로 입력해 주세요.')
     return command
 

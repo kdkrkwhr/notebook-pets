@@ -11,7 +11,7 @@ import sys
 import time
 import uuid
 
-ALLOWED = frozenset({'evolution_prepare','evolution_options','evolve','home','home_buy','home_apply','home_undo','personality', 'start', 'status', 'feed', 'snack', 'play', 'sleep', 'train',
+ALLOWED = frozenset({'equipment_prepare','equipment_apply','equipment_cancel','evolution_prepare','evolution_options','evolve','home','home_buy','home_apply','home_undo','personality', 'start', 'status', 'feed', 'snack', 'play', 'sleep', 'train',
                      'walk_begin', 'walk_collect', 'walk_leave', 'walk', 'battle', 'flee', 'attendance', 'quests', 'claimquest',
                      'album', 'titles', 'help', 'explore_hellgate', 'explore_icekingdom', 'explore_dreamforest',
                      'explore_sunkenpalace', 'explore_clockworkcity', 'dungeon_safe', 'dungeon_risk'})
@@ -28,6 +28,7 @@ def run(payload):
     sys.path.insert(0, str(source / 'engine'))
     import engine
     import art
+    import memories
     from game_api import transition
     from ports import ExecutionContext, execution
     context = ExecutionContext(
@@ -43,6 +44,7 @@ def run(payload):
             arguments = [payload.get('choice_id', '')]
         if command == 'personality': arguments = [payload.get('profile', '')]
         if command in ('home_buy','home_apply','home_undo'):arguments=[payload.get('home_payload','')]
+        if command.startswith('equipment_'):arguments=[payload.get('equipment_payload','')]
         if command in ('evolution_prepare','evolution_options','evolve'):arguments=[payload.get('evolution_payload','')]
         outcome = transition(previous, command, context, actor_id='1', arguments=arguments, request_id=payload.get('request_id'))
         result, current = outcome.result, outcome.state
@@ -64,7 +66,7 @@ def run(payload):
                     current['processed_requests'][request]['result'] = result.copy()
         status = transition(current, 'status', context).result if current else None
         album = transition(current, 'album', context).result.get('album') if current else None
-        view = {'status': status, 'album': album}
+        view = {'status': status, 'album': album, 'memories': memories.view(current) if current else []}
         if current:
             import home
             view['home']=home.view(current)

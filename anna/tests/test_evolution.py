@@ -5,6 +5,20 @@ from test_anna import MemoryAPS,GameClient
 from receipts import byte_size,pack,MAX_SAVE_BYTES
 
 class EvolutionStorageTests(unittest.IsolatedAsyncioTestCase):
+    async def test_three_new_locales_keep_saved_evolution_prose_and_rules(self):
+        for stage,language in enumerate(['ja','zh-Hans','zh-Hant'],1):
+            prepared=await self.client.invoke(self.request('evolution_prepare','prepare-'+language,stage=stage))
+            pending=prepared['status']['evolution']['pending'];token=pending['id']
+            routes=['keep']+[r['id'] for r in prepared['status']['evolution']['catalog'] if r['id']!='keep'][:2]
+            options=[dict(route_id=r,title='友達',reason='一緒に過ごした記録',appearance='元の姿を大切にする') for r in routes]
+            suggested=await self.client.invoke(self.request('evolution_options','options-'+language,choice_id=token,options=options,features='Round friend',memory='Shared walks',language=language))
+            self.assertTrue(suggested['ok'],suggested.get('code'))
+            before=copy.deepcopy(self.storage.value['stats'])
+            evolved=await self.client.invoke(self.request('evolve','evolve-'+language,choice_id=token,route_id='keep'))
+            self.assertTrue(evolved['ok'],evolved.get('code'))
+            self.assertEqual(self.storage.value['evolution']['records'][-1]['prose']['language'],language)
+            self.assertEqual(self.storage.value['stats'],before)
+
     async def asyncSetUp(self):
         self.storage=MemoryAPS();self.client=GameClient(self.storage)
         self.born=await self.client.invoke({'command':'start','name':'Growing','request_id':'born'})

@@ -8,6 +8,7 @@ import sys
 import threading
 
 from executa_sdk import StorageClient, StorageError, bind_invoke
+from executa_sdk.storage import FilesClient
 from storage_errors import precondition_failed
 from game_worker import ALLOWED
 from privacy import privacy, erased
@@ -15,7 +16,9 @@ from reset import reset, pending, ready, ID_KEY
 from localization import localize
 from receipts import disposition, event_key, prefix, commit_result, SaveCapacityError, pack, unpack
 
-VERSION = '0.9.5'
+# Enabled after approved image editing, live quality and real APS validation.
+EQUIPMENT_ENABLED = True
+VERSION = '0.9.9'
 BIRTH_SPECIES = ('mammal','bird','reptile','machine','fairy','monster','dragon','plant','ghost')
 BIRTH_ELEMENTS = ('fire','water','thunder','nature','wind','earth','light','dark','random')
 SAVE_KEY = 'notebuddy/game-v1'
@@ -23,12 +26,14 @@ READ = frozenset({'home','status', 'album', 'titles', 'quests', 'help'})
 MANIFEST = {
     'name': 'tool-dev-notebuddy', 'display_name': 'Notebuddy Game', 'version': VERSION,
     'description': 'Care for the authenticated user’s lifelong pet. Python rules are authoritative.',
-    'host_capabilities': ['aps.kv'],
-    'storage': {'kv': True, 'files': True, 'scopes': {'tool': 'rw'}},
+    # Executa describe/cache preserves legacy capability strings. The app uses
+    # schema-3 storage; both must normalize to the same complete declaration.
+    'host_capabilities': ['aps.kv', 'aps.files', 'aps.scope.tool.read', 'aps.scope.tool.write'],
     'tools': [{
         'name': 'game', 'description': 'Read or care for your pet. Never choose a user or provide game state. Read status first. For a new action append a unique suffix to request_id_prefix from the latest response. Reuse the entire request_id on retries. Never restamp an expired request automatically.',
         'timeout': 60,
         'parameters': [
+            {'name':'equipment_payload','type':'string','required':False,'description':'UI-confirmed equipment transaction only. Reserve without consumption; apply a stored preview once. Bounded JSON <=1024 chars. No automatic generation or paid retry.'},
             {'name':'evolution_payload','type':'string','required':False,'description':'Explicit user evolution only. JSON <=4096 chars with current pet_id. evolution_prepare adds current stage to reserve three routes once; evolution_options adds choice_id, three allowed options (keep first), language, memory <=600 chars and observed appearance features <=1200 chars; evolve adds choice_id and the exact route_id the user selected. Never evolve automatically or invent elements/stats. Read status.evolution first.'},
             {'name':'home_payload','type':'string','required':False,'description':'home_buy/home_apply/home_undo only: bounded JSON. Current pet_id and home revision required. Buy adds item_id; apply adds a current home_candidates candidate_id and short reason. Invoke home_apply only for explicit room-decoration requests. Buying/viewing/animation never require AI.'},
             {'name': 'profile', 'type': 'string', 'required': False, 'description': 'personality only: bounded JSON with appearance, source (reference/portrait/starter), traits (curiosity/warmth/energy/caution: -1/0/1), and bilingual en/ko summary, voice, habit. Establish once from the pet name and visual features. Cannot overwrite an existing personality or change rewards.'},
@@ -38,7 +43,7 @@ MANIFEST = {
             {'name': 'name', 'type': 'string', 'required': False, 'description': 'Pet name, only for start. Up to 24 characters.'},
             {'name':'birth_species','type':'string','required':False,'enum':list(BIRTH_SPECIES),'description':'Drawing-based first creation only: species inferred from the user artwork. Omit for a random start. Cannot change an existing pet.'},
             {'name':'birth_element','type':'string','required':False,'enum':list(BIRTH_ELEMENTS),'description':'Drawing-based first creation only: visible element cues, or random when absent. Requires birth_species.'},
-            {'name': 'language', 'type': 'string', 'required': False, 'enum': ['en', 'ko'],
+            {'name': 'language', 'type': 'string', 'required': False, 'enum': ['en', 'ko', 'ja', 'zh-Hans', 'zh-Hant'],
              'description': 'Response language. Defaults to English. Presentation only; reuse request_id when switching language on a retry.'},
             {'name': 'request_id', 'type': 'string', 'required': False,
              'description': 'Required for new actions: latest request_id_prefix plus a unique suffix, e.g. nb2:12:my-action. Reuse the exact ID for retries. Old unsequenced IDs can only replay retained results.'},
@@ -67,8 +72,9 @@ def evaluate(payload):
 
 
 class GameService:
-    def __init__(self, storage):
+    def __init__(self, storage, files=None):
         self.storage = storage
+        self.files = files
         self.lock = asyncio.Lock()
 
     async def privacy(self, args):
@@ -80,14 +86,20 @@ class GameService:
             return await reset(self.storage, SAVE_KEY, args, lambda payload: asyncio.to_thread(evaluate, payload))
 
     async def invoke(self, args, context=None):
-        if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language', 'birth_species', 'birth_element', 'choice_id', 'profile','home_payload','evolution_payload'}:
+        if not isinstance(args, dict) or set(args) - {'command', 'name', 'request_id', 'language', 'birth_species', 'birth_element', 'choice_id', 'profile','home_payload','evolution_payload','equipment_payload'}:
             raise ValueError('Invalid game arguments.')
         language = args.get('language', 'en')
-        if language not in ('en', 'ko'):
-            raise ValueError('Language must be en or ko.')
+        if language not in ('en', 'ko', 'ja', 'zh-Hans', 'zh-Hant'):
+            raise ValueError('Unsupported response language.')
         command = args.get('command')
         if not isinstance(command, str) or command not in ALLOWED:
             raise ValueError('Unsupported game command.')
+        if command.startswith('equipment_') and not EQUIPMENT_ENABLED:
+            return {'ok':False,'code':'equipment_disabled','msg':'Item fitting is unavailable pending image quality validation.'}
+        equipment_payload=args.get('equipment_payload')
+        if command.startswith('equipment_'):
+            if not isinstance(equipment_payload,str) or not 1<=len(equipment_payload)<=1024:raise ValueError('A bounded equipment payload is required.')
+        elif equipment_payload is not None:raise ValueError('Only equipment accepts equipment_payload.')
         birth_species = args.get('birth_species')
         birth_element = args.get('birth_element', 'random')
         if 'birth_species' in args or 'birth_element' in args:
@@ -146,17 +158,24 @@ class GameService:
                 computed = await asyncio.to_thread(evaluate, {
                     'command': 'status' if mode == 'expired' else command, 'name': name,
                     'request_id': event_key(event) if event and mode != 'expired' else None,
-                    'state': None if awaiting_start else previous, 'choice_id':choice_id, 'profile':profile,'home_payload':home_payload,'evolution_payload':evolution_payload,
+                    'state': None if awaiting_start else previous, 'choice_id':choice_id, 'profile':profile,'home_payload':home_payload,'evolution_payload':evolution_payload,'equipment_payload':equipment_payload,
                     'birth_species': birth_species if mode != 'expired' else None, 'birth_element': birth_element})
                 if mode == 'expired' and computed['result'].get('code') != 'invalid_state':
                     computed['result'] = {'ok': False, 'code': 'request_expired', 'msg': ''}
+                if command == 'equipment_apply' and mode == 'new' and computed['result'].get('ok'):
+                    # Do not trust a caller-supplied image path or a UI success flag.
+                    path=computed['state']['equipment']['portrait']['path']
+                    if self.files is None:raise ValueError('Equipment file verification unavailable.')
+                    listing=await self.files.list(prefix=path,limit=2,scope='app')
+                    if not any(row.get('path')==path and type(row.get('size_bytes')) is int and row['size_bytes']>0 for row in listing.get('items',[])):
+                        raise ValueError('Equipment image has not been stored.')
                 committed = previous
                 # Cache terminal failures too: retrying a failed action later
                 # must not silently turn it into a successful, new game action.
                 if mode == 'new' and isinstance(computed.get('state'), dict):
                     try:
                         candidate = commit_result(computed['state'], previous, event,
-                                                  command, name, computed['result'], choice_id=choice_id, profile=profile,home_payload=home_payload,evolution_payload=evolution_payload)
+                                                  command, name, computed['result'], choice_id=choice_id, profile=profile,home_payload=home_payload,evolution_payload=evolution_payload,equipment_payload=equipment_payload)
                     except SaveCapacityError:
                         computed = await asyncio.to_thread(evaluate, {'command': 'status', 'state': None if awaiting_start else previous})
                         computed['result'] = {'ok': False, 'code': 'save_capacity', 'msg': ''}
@@ -204,7 +223,8 @@ async def serve():
             sys.stdout.flush()
 
     storage = StorageClient(write_frame=write)
-    service = GameService(storage)
+    files = FilesClient(write_frame=write)
+    service = GameService(storage, files)
     loop = asyncio.get_running_loop()
     finished = asyncio.Event()
     tasks = set()
@@ -249,7 +269,7 @@ async def serve():
                 except ValueError:
                     write({'jsonrpc': '2.0', 'id': None, 'error': {'code': -32700, 'message': 'Invalid JSON request.'}})
                     continue
-                if storage.dispatch_response(frame):
+                if storage.dispatch_response(frame) or files.dispatch_response(frame):
                     continue
                 method, rid = frame.get('method'), frame.get('id')
                 if method == 'invoke':

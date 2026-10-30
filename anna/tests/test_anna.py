@@ -231,8 +231,16 @@ class ProtocolTests(unittest.TestCase):
         distribution = json.loads((PLUGIN / 'executa.json').read_text(encoding='utf-8'))
         self.assertEqual(manifest, MANIFEST)
         self.assertEqual(distribution['version'], VERSION)
-        self.assertIn('aps.kv', manifest['host_capabilities'])
-        self.assertEqual(manifest['storage']['scopes'], {'tool': 'rw'})
+        self.assertNotIn('storage', manifest)
+        caps = set(manifest['host_capabilities'])
+        self.assertEqual(caps, {'aps.kv', 'aps.files', 'aps.scope.tool.read', 'aps.scope.tool.write'})
+        # Compare what survives Executa manifest-cache normalization with the
+        # schema-3 app declaration, not an unsupported raw `storage` field.
+        app = json.loads((PLUGIN.parents[1] / 'manifest.json').read_text(encoding='utf-8'))
+        normalized = {'kv': 'aps.kv' in caps, 'files': 'aps.files' in caps,
+                      'scopes': {'tool': ''.join(flag for flag, cap in
+                          [('r', 'aps.scope.tool.read'), ('w', 'aps.scope.tool.write')] if cap in caps)}}
+        self.assertEqual(normalized, app['storage'])
         # Anna runner indexes description directly, even when schema validation permits omission.
         for tool in manifest['tools']:
             self.assertTrue(tool['description'])
@@ -250,7 +258,8 @@ class ProtocolTests(unittest.TestCase):
             send({'id':1,'method':'initialize','params':{'protocolVersion':'2.0'}})
             self.assertEqual(json.loads(process.stdout.readline())['result']['protocolVersion'], '2.0')
             send({'id':2,'method':'describe'})
-            self.assertEqual(json.loads(process.stdout.readline())['result']['tools'][0]['name'],'game')
+            described = json.loads(process.stdout.readline())['result']
+            self.assertEqual(described, MANIFEST)
             send({'id':3,'method':'invoke','params':{'tool':'game','arguments':{'command':'status'},'context':{'invoke_id':'trusted-event'}}})
             reverse = json.loads(process.stdout.readline())
             self.assertEqual(reverse['method'], 'storage/get')

@@ -2,7 +2,9 @@
 
 [Back to the user guide](README.en.md) · [한국어](DEVELOPMENT.md)
 
-Current owner test app: **1.4.13 / working revision 89 / game tool 0.9.5**. Review candidate **1.4.13 / ID 1446 / pending_review** includes the verified home image-link recovery fix. Existing description and six screenshots are retained. No public release or web deployment. [Latest handoff](HANDOFF.md) · [Release record](releases/RELEASE_1413.md).
+Owner test app **1.4.16 / working revision 92 / game tool 0.9.7** is verified. Review candidate **1.4.16 / ID 1587 / pending** fixes storage declaration drift and retains the mobile layouts and five languages from 1.4.15, which is now superseded. Public Anna **1.4.13** remains live; web unchanged. [Latest handoff](HANDOFF.md) · [Release record](releases/RELEASE_1416.md).
+
+For a published app, a new unapproved cut enters per-version release review through `apps release <version>`. This submission returned `release_review_state: pending`, `is_latest: false`, `published_at: null`; the existing public version stayed current. The initial-listing `submit-review` route rejects published apps. Do not unpublish the app to bypass it. Releasing an already-approved version can go live immediately, so inspect its state and distinguish review authorization from immediate publication. [Operator explanation](https://forum.anna.partners/t/is-review-now-required-for-every-new-app-version-i-couldn-t-find-this-change-in-the-changelog/224).
 
 ## Development
 
@@ -40,6 +42,14 @@ New actions append a unique suffix to `request_id_prefix` from the latest status
 ## First-partner creation
 
 Before the first write, the adapter rechecks whether another agent already created a partner while the engine was computing. This preserves that partner and its progress when observed. The final read/write gap remains: APS has no supported atomic create-if-absent operation. The owner accepted this limitation for review submission; platform support remains a follow-up. See [FIRST_CREATION.md](docs/FIRST_CREATION.md) for the API evidence, offline reproducer, and closure criteria.
+
+## Anna mobile container
+
+`manifest.json` declares `ui.form_factors: ["desktop", "mobile"]`, shares `index.html` and permits a 320px minimum view width. The Anna shell injects viewport metadata; do not add a second viewport meta to the bundle. Test hosts and future standalone adapters must provide their own appropriate container viewport.
+
+`bundle/mobile.css` handles both `env(safe-area-inset-*)` and `--anna-safe-area-*`. Mobile controls and explanation triggers use at least 44×44 CSS pixels. Help opens/closes on tap, evolution actions and collection headers remain reachable while scrolling, and short landscape home views place the shop beside the world. No game-rule or paid-AI changes are introduced.
+
+Run `node --test tests/browser/mobile.browser.mjs` for touch-enabled Chromium coverage: 320px layouts in all five locales, synthetic safe areas, rotation and reduced-height keyboard space. Requests are isolated and no paid provider is used. This is not physical iOS/Android, OS keyboard or hardware-back verification. See [Anna mobile requirements](https://anna.partners/developers/apps/app-mobile.md).
 
 ## Structure
 

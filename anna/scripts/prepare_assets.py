@@ -9,6 +9,10 @@ ROOT = APP.parent
 ART = APP / 'bundle' / 'assets'
 CORE = APP / 'executas' / 'notebuddy' / 'game_core'
 ART.mkdir(parents=True, exist_ok=True)
+catalog=json.loads((APP/'locales'/'catalog.json').read_text(encoding='utf-8'))
+catalog.update(json.loads((APP/'locales'/'overrides.json').read_text(encoding='utf-8')))
+(APP/'bundle'/'locale-data.mjs').write_text('// Generated from locales/catalog.json; no runtime translation service.\nexport const catalog='+json.dumps(catalog,ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
+(APP/'executas'/'notebuddy'/'localization_data.py').write_text('# Generated from locales/catalog.json; presentation only.\nCATALOG='+repr(catalog)+'\n',encoding='utf-8')
 shutil.copytree(ROOT / 'assets' / 'home-v1', ART / 'home-v1', dirs_exist_ok=True)
 shutil.copytree(ROOT / 'assets' / 'home-v2', ART / 'home-v2', dirs_exist_ok=True)
 # A versioned path prevents browsers from reusing the old sample artwork.
@@ -41,7 +45,7 @@ for path in ART.glob('*_stage1.png'):
 for path in (ROOT / 'assets' / 'anchored_evolution').glob('*.png'):
     if not path.name.endswith('_stage1.png'):
         shutil.copy2(path, ART / path.name)
-for directory, names in [('engine', ['engine.py', 'runtime.py', 'domain.py', 'ports.py', 'game_api.py', 'repositories.py', 'local_runtime.py', 'art.py', 'dungeons.py', 'collectibles.py', 'journeys.py', 'personality.py','home.py','home_world.py','evolution.py']),
+for directory, names in [('engine', ['engine.py', 'runtime.py', 'domain.py', 'ports.py', 'game_api.py', 'repositories.py', 'local_runtime.py', 'art.py', 'dungeons.py', 'collectibles.py', 'equipment.py', 'journeys.py', 'personality.py','home.py','home_world.py','evolution.py','memories.py']),
                           ('data', ['game_data.json', 'image_prompts.json'])]:
     (CORE / directory).mkdir(parents=True, exist_ok=True)
     for name in names:

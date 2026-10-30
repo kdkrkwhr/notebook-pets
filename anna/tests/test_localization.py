@@ -7,6 +7,30 @@ from test_anna import MemoryAPS, GameClient, evaluate
 from localization import localize
 
 class LocalizationTests(unittest.IsolatedAsyncioTestCase):
+    async def test_new_locales_preserve_names_state_and_action_receipts(self):
+        await self.service.invoke({'command':'start','name':'Growing','request_id':'locale-name'})
+        meal=await self.service.invoke({'command':'feed','request_id':'same-meal','language':'ja'})
+        before=copy.deepcopy(self.storage.document)
+        for language in ['ja','zh-Hans','zh-Hant']:
+            result=await self.service.invoke({'command':'status','language':language})
+            self.assertEqual(result['status']['name'],'Growing')
+            self.assertEqual(result['language'],language)
+            self.assertNotEqual(result['status']['stage_label'],'Hatchling')
+            self.assertNotRegex(result['status']['stage_label'],r'[가-힣]')
+            self.assertEqual(result['status']['mood'],{'ja':'穏やか','zh-Hans':'平静','zh-Hant':'平靜'}[language])
+            replay=await self.service.invoke({'command':'feed','request_id':'same-meal','language':language})
+            self.assertTrue(replay['replayed']);self.assertEqual(replay['xp_result'],meal['xp_result'])
+            self.assertEqual(self.storage.document,before)
+
+    def test_localized_dynamic_messages_preserve_user_input_and_cooldown_values(self):
+        for language in ['ja','zh-Hans','zh-Hant']:
+            welcome=localize({'ok':True,'status':{'name':'Feed'}},'start',language)
+            self.assertIn('Feed',welcome['msg']);self.assertEqual(welcome['status']['name'],'Feed')
+            self.assertNotIn('Welcome,',welcome['msg'])
+            error=localize({'ok':False,'msg':'쿨타임 7분 남음'},'feed',language)
+            self.assertEqual(error['retry_after_minutes'],7);self.assertIn('7',error['msg'])
+            self.assertNotIn('Try again',error['msg'])
+
     async def asyncSetUp(self):
         self.storage=MemoryAPS()
         self.service=GameClient(self.storage)

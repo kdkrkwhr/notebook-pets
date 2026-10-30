@@ -90,18 +90,21 @@ def cells(key,position):
 def occupied(layout):
     return set().union(*(cells(k,p) for k,p in layout.items() if CATALOG[k]['layer']=='floor')) if layout else set()
 
-def path(layout,target):
+def path(layout,target,start=DOOR,adjacent=True):
     """2x2 body/carry footprint; a doorway remains an accessible staging point."""
     blocks=occupied(layout)
     def free(p):
         x,y=p
         return 0<=x<=WIDTH-2 and 0<=y<=HEIGHT-2 and not {(x,y),(x+1,y),(x,y+1),(x+1,y+1)}&blocks
-    if not free(DOOR):return None
-    queue=deque([DOOR]);previous={DOOR:None}
+    start=tuple(start)
+    if not free(start):return None
+    queue=deque([start]);previous={start:None}
     while queue:
         p=queue.popleft();x,y=p
         # Stand adjacent to, never inside, the target furniture footprint.
-        if any(abs(a-c)+abs(b-d)==1 for a,b in ((x,y),(x+1,y),(x,y+1),(x+1,y+1)) for c,d in target):
+        reached=(any(abs(a-c)+abs(b-d)==1 for a,b in ((x,y),(x+1,y),(x,y+1),(x+1,y+1)) for c,d in target)
+                 if adjacent else p in target)
+        if reached:
             result=[]
             while p is not None:result.append(list(p));p=previous[p]
             return result[::-1]
@@ -149,12 +152,33 @@ def validate(st):
         for p in step['route']:
             if not isinstance(p,list) or len(p)!=2 or any(type(v) is not int for v in p) or not 0<=p[0]<=WIDTH-2 or not 0<=p[1]<=HEIGHT-2:raise ValueError('Invalid home route')
 
+def life_tour(layout,values):
+    """A bounded, read-only visit to each reachable activity furniture item."""
+    curiosity,warmth,energy,caution=((values.get(k,50)-50)/10 for k in ('curiosity','warmth','energy','caution'))
+    scores={'nest':warmth+caution-energy,'bookshelf':2*curiosity+caution,'plant':curiosity+warmth+energy}
+    activities={'nest':'rest','bookshelf':'read','plant':'plant'}
+    tour=[];start=DOOR
+    for key in sorted(activities,key=lambda k:-scores[k]):
+        if key not in layout:continue
+        route=path(layout,cells(key,layout[key]),start)
+        if route is None:continue
+        x,y=route[-1];tx,ty=layout[key];w,h=CATALOG[key]['size']
+        dx,dy=tx+w/2-(x+1),ty+h/2-(y+1)
+        face=('right' if dx>0 else 'left') if abs(dx)>abs(dy) else ('down' if dy>0 else 'up')
+        pause=round(max(3,min(8,4.5+scores[key]*.75-energy*.5)),2)
+        tour.append(dict(route=route,pause=pause,face=face,activity=activities[key],item=key));start=(x,y)
+    back=path(layout,{DOOR},start,adjacent=False)
+    tour.append(dict(route=back or [list(DOOR)],pause=.4,face='down',next='yard'))
+    return tour
+
 def view(st):
     from home_world import world
+    from personality import view as personality_view
     h=state(st)
     roam=path(h['layout'],cells('nest',h['layout']['nest']))
+    values=(personality_view(st) or {}).get('values',{})
     return {**h,'pet_id':st.get('pet_id'),'coins':st.get('coins',0),'catalog':[{'id':k,**copy.deepcopy(v)} for k,v in CATALOG.items()],
-            'width':WIDTH,'height':HEIGHT,'door':list(DOOR),'roam':roam,'world':world(h,CATALOG,roam)}
+            'width':WIDTH,'height':HEIGHT,'door':list(DOOR),'roam':roam,'world':world(h,CATALOG,life_tour(h['layout'],values))}
 
 def motions(old,new):
     moved=[k for k in CATALOG if old.get(k)!=new.get(k) and CATALOG[k].get('area')!='yard']

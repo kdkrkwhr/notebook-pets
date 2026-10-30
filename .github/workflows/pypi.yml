@@ -1,0 +1,75 @@
+name: Python package
+
+on:
+  push:
+    branches: [release, feat/pypi-cli]
+    paths: ['pyproject.toml', 'cli/**', 'engine/**', 'data/game_data.json', 'data/image_prompts.json', 'tools/mcp_server.py', 'LICENSE', '.github/workflows/pypi.yml']
+  pull_request:
+    paths: ['pyproject.toml', 'cli/**', 'engine/**', 'data/game_data.json', 'data/image_prompts.json', 'tools/mcp_server.py', 'LICENSE', '.github/workflows/pypi.yml']
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: 'Publish the tested distribution to PyPI (requires configured trusted publisher)'
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: python -m pip install build twine
+      - run: python -m build
+      - run: python -m twine check --strict dist/*
+      - uses: actions/upload-artifact@v4
+        with:
+          name: python-distributions
+          path: dist/*
+          if-no-files-found: error
+
+  test:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-distributions
+          path: dist
+      - name: Install the actual wheel with optional MCP support
+        shell: bash
+        run: |
+          python -c "from pathlib import Path; import subprocess,sys; w=next(Path('dist').glob('*.whl')); subprocess.check_call([sys.executable,'-m','pip','install',str(w)+'[mcp]'])"
+          python -m pip check
+      - run: python -m unittest discover -s cli/tests -p "test_*.py" -v
+
+  publish:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish && github.ref == 'refs/heads/release'
+    needs: [build, test]
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/notebook-pets/
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: python-distributions
+          path: dist
+      - name: Upload the verified artifact
+        uses: pypa/gh-action-pypi-publish@release/v1

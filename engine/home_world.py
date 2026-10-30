@@ -63,7 +63,7 @@ def valid_garden(layout):
 def point(p):
     return [64+(p[0]+1)*32,64+(p[1]+1)*32]
 
-def world(home,catalog,roam):
+def world(home,catalog,tour):
     objects=[]
     widths={'nest':62,'bookshelf':62,'desk':62,'lamp':20,'side-table':30,
             'rug':124,'cushion':30,'plant':30,'wall-art':30,'curtain':62,'tea':24,'basket':30}
@@ -74,9 +74,7 @@ def world(home,catalog,roam):
         if layer=='wall':y=72
         if layer=='surface':y-=20
         objects.append(dict(kind=key,x=x,y=y,w=widths[key],layer=layer))
-    route=[point(p) for p in roam]
     inside=dict(size=[448,352],start=point([4,6]),objects=objects,tour=[
-        dict(route=route,pause=3,face='up'),
-        dict(route=route[::-1],pause=.4,face='down',next='yard')])
+        {**leg,'route':[point(p) for p in leg['route']]} for leg in tour])
     signature=tuple(sorted((k,tuple(p)) for k,p in home['layout'].items() if catalog[k].get('area')=='yard'))
     return dict(yard=copy.deepcopy(garden(signature)),inside=inside)

@@ -78,3 +78,7 @@
 - 2026-10-14 확인: [이미지 입력 답변](https://forum.anna.partners/t/developer-feedback-image-inputs-to-llm-complete-may-not-be-reaching-the-model-and-the-documentation-is-less-explicit-than-for-agent-session/322/2)은 `llm.complete` 등의 이미지 블록 누락과 host `1.1.0-beta.169` 수정 안내다. 현재 `checkArtwork`의 이미지 블록 형식은 안내와 일치한다. `image.edit`의 제공자 경로가 고쳐졌다는 근거는 아니며, [별도 편집 오류 문의](https://forum.anna.partners/t/image-edit-fails-with-provider-errors-readerror-and-fal-ai-image-to-image-404/400)에는 확인한 시점에 답변이 없다. 이번 확인에서는 추가 유료 편집 요청을 하지 않았다.
 
 던전 기획의 최초 원본은 사용자가 제공한 `DUNGEON_AVATAR_SPEC.md`다. 기존 예시 던전 3종을 이번에 합의한 지옥문·얼음왕국·몽환의 숲으로 대체하고, 이 문서를 현재 콘셉트와 순서의 기준으로 사용한다.
+
+### 2026-10-24 착용 구현 상태
+
+[착용 트랜잭션·UI·복구 구현](EQUIPMENT.md)은 release 소스에 추가하되 기본 비활성화한다. 적용 성공 때만 1개 소모하며 해제·환불은 이번 승인 범위에 포함하지 않는다. 단일 원본 편집으로 아이템 그림의 재현 품질을 충족할지와 응답 유실 복구 한계는 미해결 출시 조건이다. 라이브 이미지 호출·Anna 배포·권한 승인은 수행하지 않았다.
